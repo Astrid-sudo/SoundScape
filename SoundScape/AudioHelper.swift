@@ -1,0 +1,122 @@
+//
+//  AudioHelper.swift
+//  SoundScape
+//
+//  Created by Astrid on 2021/10/18.
+//
+
+import Foundation
+import AVFoundation
+
+enum AudioSessionMode {
+    case record
+    case play
+}
+
+
+class AudioHelper:NSObject, AVAudioRecorderDelegate {
+    var audioRecorder: AVAudioRecorder?
+    var audioPlayer: AVAudioPlayer?
+    var isRecording = false
+    
+    var url: URL? {
+        didSet {
+            guard let url = url else { return }
+            
+            do {
+                audioPlayer = try AVAudioPlayer(contentsOf: url)
+            } catch {
+                print("fail to create AVAudioPlayer")
+            }
+        }
+    }
+    
+    func settingAudioSession(toMode mode:AudioSessionMode) {
+        audioPlayer?.stop()
+        
+        let session = AVAudioSession.sharedInstance()
+        do {
+            switch mode {
+            case .record:
+                try session.setCategory(.playAndRecord, mode: .default, options: [])
+            case .play:
+                try session.setCategory(.playback, mode: .default, options: [])
+            }
+            try session.setActive(false)
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+        if flag == true {
+            do {
+                audioPlayer = try AVAudioPlayer(contentsOf: recorder.url)
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func recordAudio() {
+        settingAudioSession(toMode: .record)
+        audioRecorder?.prepareToRecord()
+        audioRecorder?.record()
+        isRecording = true
+    }
+    
+    func stopRecording() -> URL? {
+        audioRecorder?.stop()
+        isRecording = false
+        settingAudioSession(toMode: .play)
+        
+        return url
+    }
+    
+    func play() {
+        if isRecording == false {
+//            audioPlayer?.stop()
+//            audioPlayer?.currentTime = 0
+            audioPlayer?.play()
+        }
+    }
+    
+    func stop() {
+        if isRecording == false {
+            audioPlayer?.stop()
+            audioPlayer?.currentTime = 0
+        }
+    }
+    
+    func pause() {
+        if isRecording == false {
+            audioPlayer?.pause()
+//            audioPlayer?.currentTime = 0
+        }
+    }
+
+    
+    override init() {
+        super.init()
+        
+        //init an audio recorder
+        //        let filename = "User.wav"
+        //        let path = NSHomeDirectory() + "/Documents/" + filename
+        //        self.url = URL(fileURLWithPath: path)
+        //        let recordSettings:[String:Any] = [
+        //            AVEncoderAudioQualityKey: AVAudioQuality.min.rawValue,
+        //            AVEncoderBitRateKey: 16,
+        //            AVNumberOfChannelsKey: 2,
+        //            AVSampleRateKey:44100.0
+        //        ]
+        
+        //        guard let url = self.url else { return }
+        //
+        //        do{
+        //            audioRecorder = try AVAudioRecorder(url: url, settings: recordSettings)
+        //            audioRecorder?.delegate = self
+        //        }catch{
+        //            print(error.localizedDescription)
+        //        }
+    }
+}

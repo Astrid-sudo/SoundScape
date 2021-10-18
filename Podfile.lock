@@ -1,16 +1,20 @@
 PODS:
+  - DSWaveformImage (6.1.1)
   - SwiftLint (0.44.0)
 
 DEPENDENCIES:
+  - DSWaveformImage (~> 6.1)
   - SwiftLint
 
 SPEC REPOS:
   trunk:
+    - DSWaveformImage
     - SwiftLint
 
 SPEC CHECKSUMS:
+  DSWaveformImage: 3c718a0cf99291887ee70d1d0c18d80101d3d9ce
   SwiftLint: e96c0a8c770c7ebbc4d36c55baf9096bb65c4584
 
-PODFILE CHECKSUM: 89a6a7b062b1049d5b13cd12a1d92a60724b0c51
+PODFILE CHECKSUM: d232204d853ce6df7f7425b2a4cafcb3810d60f2
 
 COCOAPODS: 1.11.2

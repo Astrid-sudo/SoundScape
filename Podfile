@@ -7,5 +7,5 @@ target 'SoundScape' do
 
   # Pods for SoundScape
   pod 'SwiftLint'
-
+  pod 'DSWaveformImage', '~> 6.1'
 end

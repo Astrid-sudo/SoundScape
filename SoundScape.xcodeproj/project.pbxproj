@@ -10,10 +10,14 @@
 		0130CC1600F3AB0D61D15930 /* Pods_SoundScape.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D1F5476A787CCE1C926A2EA /* Pods_SoundScape.framework */; };
 		5679F0FB271D084A00663001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FA271D084A00663001 /* AppDelegate.swift */; };
 		5679F0FD271D084A00663001 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FC271D084A00663001 /* SceneDelegate.swift */; };
-		5679F0FF271D084A00663001 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FE271D084A00663001 /* ViewController.swift */; };
+		5679F0FF271D084A00663001 /* SoundDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FE271D084A00663001 /* SoundDetailVC.swift */; };
 		5679F102271D084A00663001 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5679F100271D084A00663001 /* Main.storyboard */; };
 		5679F104271D084B00663001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5679F103271D084B00663001 /* Assets.xcassets */; };
 		5679F107271D084B00663001 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5679F105271D084B00663001 /* LaunchScreen.storyboard */; };
+		5679F112271D582700663001 /* example_sound_2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 5679F111271D582700663001 /* example_sound_2.m4a */; };
+		5679F115271D641B00663001 /* AudioHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F114271D641B00663001 /* AudioHelper.swift */; };
+		5679F117271D6B2500663001 /* example_sound.wav in Resources */ = {isa = PBXBuildFile; fileRef = 5679F116271D6B2500663001 /* example_sound.wav */; };
+		5679F119271D6D8400663001 /* memories.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5679F118271D6D8400663001 /* memories.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,11 +26,15 @@
 		5679F0F7271D084A00663001 /* SoundScape.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoundScape.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5679F0FA271D084A00663001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5679F0FC271D084A00663001 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		5679F0FE271D084A00663001 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		5679F0FE271D084A00663001 /* SoundDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundDetailVC.swift; sourceTree = "<group>"; };
 		5679F101271D084A00663001 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5679F103271D084B00663001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5679F106271D084B00663001 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5679F108271D084B00663001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5679F111271D582700663001 /* example_sound_2.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = example_sound_2.m4a; sourceTree = "<group>"; };
+		5679F114271D641B00663001 /* AudioHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioHelper.swift; sourceTree = "<group>"; };
+		5679F116271D6B2500663001 /* example_sound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = example_sound.wav; sourceTree = "<group>"; };
+		5679F118271D6D8400663001 /* memories.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = memories.mp3; sourceTree = "<group>"; };
 		8CA8FF313E2441739C961F12 /* Pods-SoundScape.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SoundScape.debug.xcconfig"; path = "Target Support Files/Pods-SoundScape/Pods-SoundScape.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -63,15 +71,27 @@
 		5679F0F9271D084A00663001 /* SoundScape */ = {
 			isa = PBXGroup;
 			children = (
+				5679F113271D584C00663001 /* Resources */,
 				5679F0FA271D084A00663001 /* AppDelegate.swift */,
+				5679F114271D641B00663001 /* AudioHelper.swift */,
 				5679F0FC271D084A00663001 /* SceneDelegate.swift */,
-				5679F0FE271D084A00663001 /* ViewController.swift */,
+				5679F0FE271D084A00663001 /* SoundDetailVC.swift */,
 				5679F100271D084A00663001 /* Main.storyboard */,
 				5679F103271D084B00663001 /* Assets.xcassets */,
 				5679F105271D084B00663001 /* LaunchScreen.storyboard */,
 				5679F108271D084B00663001 /* Info.plist */,
 			);
 			path = SoundScape;
+			sourceTree = "<group>";
+		};
+		5679F113271D584C00663001 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5679F118271D6D8400663001 /* memories.mp3 */,
+				5679F116271D6B2500663001 /* example_sound.wav */,
+				5679F111271D582700663001 /* example_sound_2.m4a */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		7E64B7E6DB8FC6FCC8429D99 /* Frameworks */ = {
@@ -103,6 +123,7 @@
 				5679F0F4271D084A00663001 /* Frameworks */,
 				5679F0F5271D084A00663001 /* Resources */,
 				5679F10E271D112900663001 /* ShellScript */,
+				514A335EAE3FE0DB3303B9A0 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -151,15 +172,35 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5679F112271D582700663001 /* example_sound_2.m4a in Resources */,
+				5679F117271D6B2500663001 /* example_sound.wav in Resources */,
 				5679F107271D084B00663001 /* LaunchScreen.storyboard in Resources */,
 				5679F104271D084B00663001 /* Assets.xcassets in Resources */,
 				5679F102271D084A00663001 /* Main.storyboard in Resources */,
+				5679F119271D6D8400663001 /* memories.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		514A335EAE3FE0DB3303B9A0 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		5679F10E271D112900663001 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -206,8 +247,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5679F0FF271D084A00663001 /* ViewController.swift in Sources */,
+				5679F0FF271D084A00663001 /* SoundDetailVC.swift in Sources */,
 				5679F0FB271D084A00663001 /* AppDelegate.swift in Sources */,
+				5679F115271D641B00663001 /* AudioHelper.swift in Sources */,
 				5679F0FD271D084A00663001 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
