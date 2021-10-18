@@ -13,11 +13,27 @@ enum AudioSessionMode {
     case play
 }
 
-
-class AudioHelper:NSObject, AVAudioRecorderDelegate {
+class AudioHelper:NSObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
+    
     var audioRecorder: AVAudioRecorder?
+    
     var audioPlayer: AVAudioPlayer?
+    
     var isRecording = false
+    
+    var currentTime: Double {
+        guard let audioPlayer = audioPlayer else {
+            return 0.0
+        }
+        return audioPlayer.currentTime
+    }
+    
+    var duration: Double {
+        guard let audioPlayer = audioPlayer else {
+            return 0.0
+        }
+        return audioPlayer.duration
+    }
     
     var url: URL? {
         didSet {
@@ -32,6 +48,7 @@ class AudioHelper:NSObject, AVAudioRecorderDelegate {
     }
     
     func settingAudioSession(toMode mode:AudioSessionMode) {
+        
         audioPlayer?.stop()
         
         let session = AVAudioSession.sharedInstance()
@@ -75,8 +92,6 @@ class AudioHelper:NSObject, AVAudioRecorderDelegate {
     
     func play() {
         if isRecording == false {
-//            audioPlayer?.stop()
-//            audioPlayer?.currentTime = 0
             audioPlayer?.play()
         }
     }
@@ -91,10 +106,9 @@ class AudioHelper:NSObject, AVAudioRecorderDelegate {
     func pause() {
         if isRecording == false {
             audioPlayer?.pause()
-//            audioPlayer?.currentTime = 0
         }
     }
-
+    
     
     override init() {
         super.init()
@@ -120,3 +134,4 @@ class AudioHelper:NSObject, AVAudioRecorderDelegate {
         //        }
     }
 }
+

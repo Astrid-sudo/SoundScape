@@ -19,9 +19,22 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hmk-x4-uch" customClass="WaveformImageView" customModule="DSWaveformImage">
                                 <rect key="frame" x="0.0" y="537" width="414" height="175"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iDp-hF-h1Q" customClass="WaveformImageView" customModule="DSWaveformImage">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="175"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="175" id="SMf-9Q-7Ow"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
+                                    <constraint firstItem="iDp-hF-h1Q" firstAttribute="top" secondItem="Hmk-x4-uch" secondAttribute="top" id="cBG-Xg-Ylg"/>
+                                    <constraint firstAttribute="trailing" secondItem="iDp-hF-h1Q" secondAttribute="trailing" id="fdO-oi-2Ur"/>
                                     <constraint firstAttribute="height" constant="175" id="rRk-Q0-wS6"/>
+                                    <constraint firstItem="iDp-hF-h1Q" firstAttribute="leading" secondItem="Hmk-x4-uch" secondAttribute="leading" id="uh5-UC-jNY"/>
+                                    <constraint firstAttribute="bottom" secondItem="iDp-hF-h1Q" secondAttribute="bottom" id="vpt-iK-dzQ"/>
                                 </constraints>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="hjz-3h-n0z">
@@ -66,6 +79,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="waveformProgressView" destination="iDp-hF-h1Q" id="2LT-iu-i7E"/>
                         <outlet property="waveformView" destination="Hmk-x4-uch" id="oy9-DL-Ygm"/>
                     </connections>
                 </viewController>
