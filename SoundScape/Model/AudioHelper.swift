@@ -13,13 +13,15 @@ enum AudioSessionMode {
     case play
 }
 
-class AudioHelper:NSObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
+class AudioHelper: NSObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
     
     var audioRecorder: AVAudioRecorder?
     
     var audioPlayer: AVAudioPlayer?
     
     var isRecording = false
+    
+    var isPlaying = false
     
     var currentTime: Double {
         guard let audioPlayer = audioPlayer else {
@@ -47,7 +49,7 @@ class AudioHelper:NSObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
         }
     }
     
-    func settingAudioSession(toMode mode:AudioSessionMode) {
+    func settingAudioSession(toMode mode: AudioSessionMode) {
         
         audioPlayer?.stop()
         
@@ -93,12 +95,14 @@ class AudioHelper:NSObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
     func play() {
         if isRecording == false {
             audioPlayer?.play()
+            isPlaying = true
         }
     }
     
     func stop() {
         if isRecording == false {
             audioPlayer?.stop()
+            isPlaying = false
             audioPlayer?.currentTime = 0
         }
     }
@@ -106,9 +110,9 @@ class AudioHelper:NSObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
     func pause() {
         if isRecording == false {
             audioPlayer?.pause()
+            isPlaying = false
         }
     }
-    
     
     override init() {
         super.init()
@@ -133,5 +137,6 @@ class AudioHelper:NSObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
         //            print(error.localizedDescription)
         //        }
     }
+    
 }
 

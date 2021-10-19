@@ -32,7 +32,7 @@ class SoundDetailVC: UIViewController {
     private var playbackRateObserver: NSObjectProtocol!
     
     var timer: Timer?
-
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -61,8 +61,11 @@ class SoundDetailVC: UIViewController {
         
         audioHelper.play()
         
-        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updatePlaybackTime), userInfo: nil, repeats: true)
-
+        timer = Timer.scheduledTimer(timeInterval: 0.1,
+                                     target: self,
+                                     selector: #selector(updatePlaybackTime),
+                                     userInfo: nil,
+                                     repeats: true)
     }
     
     @IBAction func pauseAudio(_ sender: UIButton) {
@@ -116,19 +119,19 @@ class SoundDetailVC: UIViewController {
         }
     }
     
-        func updateProgressWaveform(_ progress: Double) {
-            
-            let fullRect = waveformProgressView.bounds
-            let newWidth = Double(fullRect.size.width) * progress
-    
-            let maskLayer = CAShapeLayer()
-            let maskRect = CGRect(x: 0.0, y: 0.0, width: newWidth, height: Double(fullRect.size.height))
-    
-            let path = CGPath(rect: maskRect, transform: nil)
-            maskLayer.path = path
-    
-            waveformProgressView.layer.mask = maskLayer
-        }
+    func updateProgressWaveform(_ progress: Double) {
+        
+        let fullRect = waveformProgressView.bounds
+        let newWidth = Double(fullRect.size.width) * progress
+        
+        let maskLayer = CAShapeLayer()
+        let maskRect = CGRect(x: 0.0, y: 0.0, width: newWidth, height: Double(fullRect.size.height))
+        
+        let path = CGPath(rect: maskRect, transform: nil)
+        maskLayer.path = path
+        
+        waveformProgressView.layer.mask = maskLayer
+    }
     
     @objc func updatePlaybackTime() {
         
@@ -136,7 +139,7 @@ class SoundDetailVC: UIViewController {
         
         updateProgressWaveform(audioHelper.currentTime / audioHelper.duration)
     }
-
+    
     private func setAudioHelper() {
         
         audioHelper.url = audioURL
