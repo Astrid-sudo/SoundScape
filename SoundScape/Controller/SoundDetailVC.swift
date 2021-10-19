@@ -17,6 +17,8 @@ class SoundDetailVC: UIViewController {
     
     @IBOutlet weak var waveformProgressView: WaveformImageView!
     
+    @IBOutlet weak var playButton: UIButton!
+    
     // MARK: - properties
     
     private let waveformImageDrawer = WaveformImageDrawer()
@@ -27,12 +29,12 @@ class SoundDetailVC: UIViewController {
     
     private let audioURL = Bundle.main.url(forResource: "memories", withExtension: "mp3")
     
-    lazy var audioHelper = AudioHelper()
-    
-    private var playbackRateObserver: NSObjectProtocol!
+     var audioHelper = AudioHelper.shared
     
     var timer: Timer?
     
+    weak var delegate: DetailPageShowableDelegate?
+
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -57,36 +59,40 @@ class SoundDetailVC: UIViewController {
     
     // MARK: - action
     
+    @IBAction func leaveDetailPage(_ sender: UIButton) {
+        guard let leave = delegate?.leaveDetailPage else { return }
+        leave()
+        timer?.invalidate()
+    }
+    
     @IBAction func playAudio(_ sender: UIButton) {
-        
-        audioHelper.play()
-        
-        timer = Timer.scheduledTimer(timeInterval: 0.1,
-                                     target: self,
-                                     selector: #selector(updatePlaybackTime),
-                                     userInfo: nil,
-                                     repeats: true)
+        manipulatePlayer()
     }
     
-    @IBAction func pauseAudio(_ sender: UIButton) {
-        
-        audioHelper.pause()
-        
-        if let timer = timer {
-            timer.invalidate()
-        }
-    }
-    
-    @IBAction func stopAudio(_ sender: UIButton) {
-        
-        audioHelper.stop()
-        
-        if let timer = timer {
-            timer.invalidate()
-        }
-        
-    }
     // MARK: - method
+    
+    private func manipulatePlayer() {
+        
+        if audioHelper.isPlaying == true {
+            
+                self.audioHelper.pause()
+            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+            if let timer = timer {
+                timer.invalidate()
+            }
+        } else {
+            
+                audioHelper.play()
+            
+            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
+            timer = Timer.scheduledTimer(timeInterval: 0.1,
+                                         target: self,
+                                         selector: #selector(updatePlaybackTime),
+                                         userInfo: nil,
+                                         repeats: true)
+        }
+    }
+
     
     private func updateWaveformImages() {
         // always uses background thread rendering
@@ -119,7 +125,7 @@ class SoundDetailVC: UIViewController {
         }
     }
     
-    func updateProgressWaveform(_ progress: Double) {
+    private func updateProgressWaveform(_ progress: Double) {
         
         let fullRect = waveformProgressView.bounds
         let newWidth = Double(fullRect.size.width) * progress
@@ -137,12 +143,35 @@ class SoundDetailVC: UIViewController {
         
         print(audioHelper.currentTime)
         
-        updateProgressWaveform(audioHelper.currentTime / audioHelper.duration)
+        let progress = audioHelper.currentTime / audioHelper.duration
+        
+        updateProgressWaveform(progress)
+        
+        if progress == 1 {
+            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+            timer?.invalidate()
+        }
     }
     
     private func setAudioHelper() {
-        
         audioHelper.url = audioURL
+    }
+    
+    func updateUI() {
+        
+        timer = Timer.scheduledTimer(timeInterval: 0.1,
+                                     target: self,
+                                     selector: #selector(updatePlaybackTime),
+                                     userInfo: nil,
+                                     repeats: true)
+
+        if audioHelper.isPlaying == true {
+
+            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
+        } else {
+            
+            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+        }
     }
     
 }

@@ -7,6 +7,11 @@
 
 import UIKit
 
+@objc protocol DetailPageShowableDelegate: AnyObject {
+    @objc optional func showDetailPage()
+    @objc optional func leaveDetailPage()
+}
+
 class AudioPlayerWindow {
     
     // MARK: - UI properties
@@ -14,6 +19,8 @@ class AudioPlayerWindow {
     var window: UIWindow?
     
     let vc = AudioPlayerVC()
+    
+    weak var delegate: DetailPageShowableDelegate?
     
     // MARK: - properties
     
@@ -26,7 +33,17 @@ class AudioPlayerWindow {
         window?.rootViewController = vc
         window?.isHidden = true
         window?.makeKeyAndVisible()
+        vc.delegate = self
     }
     
     // MARK: - method
+}
+
+extension AudioPlayerWindow: DetailPageShowableDelegate {
+    
+    func showDetailPage() {
+        guard let showdetailPage = delegate?.showDetailPage else {return }
+        showdetailPage()
+    }
+    
 }

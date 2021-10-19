@@ -16,4 +16,10 @@ struct CommonUsage {
     static let font = "PingFang TC"
     static let audioImage = "audioImage"
     static let scGreen = "scGreen"
+    
+    struct SFSymbol {
+        static let play = "play.fill"
+        static let pause = "pause.fill"
+        static let heart = "heart.fill"
+    }
 }

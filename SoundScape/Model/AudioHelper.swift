@@ -15,6 +15,10 @@ enum AudioSessionMode {
 
 class AudioHelper: NSObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
     
+        // MARK: - properties
+    
+    static let shared = AudioHelper()
+    
     var audioRecorder: AVAudioRecorder?
     
     var audioPlayer: AVAudioPlayer?
@@ -48,6 +52,34 @@ class AudioHelper: NSObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
             }
         }
     }
+    
+    // MARK: - init
+    
+    private override init() {
+        super.init()
+        
+        //init an audio recorder
+        //        let filename = "User.wav"
+        //        let path = NSHomeDirectory() + "/Documents/" + filename
+        //        self.url = URL(fileURLWithPath: path)
+        //        let recordSettings:[String:Any] = [
+        //            AVEncoderAudioQualityKey: AVAudioQuality.min.rawValue,
+        //            AVEncoderBitRateKey: 16,
+        //            AVNumberOfChannelsKey: 2,
+        //            AVSampleRateKey:44100.0
+        //        ]
+        
+        //        guard let url = self.url else { return }
+        //
+        //        do{
+        //            audioRecorder = try AVAudioRecorder(url: url, settings: recordSettings)
+        //            audioRecorder?.delegate = self
+        //        }catch{
+        //            print(error.localizedDescription)
+        //        }
+    }
+
+    // MARK: - method
     
     func settingAudioSession(toMode mode: AudioSessionMode) {
         
@@ -112,30 +144,6 @@ class AudioHelper: NSObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
             audioPlayer?.pause()
             isPlaying = false
         }
-    }
-    
-    override init() {
-        super.init()
-        
-        //init an audio recorder
-        //        let filename = "User.wav"
-        //        let path = NSHomeDirectory() + "/Documents/" + filename
-        //        self.url = URL(fileURLWithPath: path)
-        //        let recordSettings:[String:Any] = [
-        //            AVEncoderAudioQualityKey: AVAudioQuality.min.rawValue,
-        //            AVEncoderBitRateKey: 16,
-        //            AVNumberOfChannelsKey: 2,
-        //            AVSampleRateKey:44100.0
-        //        ]
-        
-        //        guard let url = self.url else { return }
-        //
-        //        do{
-        //            audioRecorder = try AVAudioRecorder(url: url, settings: recordSettings)
-        //            audioRecorder?.delegate = self
-        //        }catch{
-        //            print(error.localizedDescription)
-        //        }
     }
     
 }

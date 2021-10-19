@@ -11,15 +11,17 @@ class AudioPlayerVC: UIViewController {
     
     // MARK: - properties
     
+    weak var delegate: DetailPageShowableDelegate?
+    
     var timer: Timer?
     
-    let audioHelper = AudioHelper()
+    let audioHelper = AudioHelper.shared
     
     private let audioURL = Bundle.main.url(forResource: "memories", withExtension: "mp3")
     
     // MARK: - UI properties
     
-    private(set) lazy var audioImage: UIImageView = {
+    private lazy var audioImage: UIImageView = {
         let image = UIImageView()
         image.layer.cornerRadius = 10
         image.contentMode = .scaleAspectFill
@@ -28,7 +30,7 @@ class AudioPlayerVC: UIViewController {
         return image
     }()
     
-    private(set) lazy var audioTitleLabel: UILabel = {
+    private lazy var audioTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
         label.font = UIFont(name: CommonUsage.font, size: 15)
@@ -36,7 +38,7 @@ class AudioPlayerVC: UIViewController {
         return label
     }()
     
-    private(set) lazy var authorLabel: UILabel = {
+    private lazy var authorLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
         label.font = UIFont(name: CommonUsage.font, size: 12)
@@ -44,17 +46,17 @@ class AudioPlayerVC: UIViewController {
         return label
     }()
     
-    lazy var favoriteButton: UIButton = {
+    private lazy var favoriteButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.heart), for: .normal)
         button.tintColor = .red
         //      button.addTarget(self, action: #selector(), for: .touchUpInside)
         return button
     }()
     
-    lazy var playButton: UIButton = {
+    private lazy var playButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "play.fill"), for: .normal)
+        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(manipulatePlayer), for: .touchUpInside)
         return button
@@ -72,7 +74,7 @@ class AudioPlayerVC: UIViewController {
         return view
     }()
     
-    lazy var detailButton: UIButton = {
+    private lazy var detailButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .clear
         button.addTarget(self, action: #selector(presentDetail), for: .touchUpInside)
@@ -202,16 +204,15 @@ class AudioPlayerVC: UIViewController {
     // MARK: - action
     
     @objc func manipulatePlayer() {
-        
         if audioHelper.isPlaying == true {
-            audioHelper.pause()
-            playButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
+            self.audioHelper.pause()
+            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
             if let timer = timer {
                 timer.invalidate()
             }
         } else {
             audioHelper.play()
-            playButton.setImage(UIImage(systemName: "pause.fill"), for: .normal)
+            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
             timer = Timer.scheduledTimer(timeInterval: 0.1,
                                          target: self,
                                          selector: #selector(updatePlaybackTime),
@@ -222,13 +223,13 @@ class AudioPlayerVC: UIViewController {
     
     @objc func updatePlaybackTime() {
         print(audioHelper.currentTime)
-        updateProgressWaveform(audioHelper.currentTime / audioHelper.duration)
+        let progress = audioHelper.currentTime / audioHelper.duration
+        updateProgressWaveform(progress)
     }
     
     @objc func presentDetail() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let soundDetailVC = storyboard.instantiateViewController(withIdentifier: "SoundDetailVC") as? SoundDetailVC else { return }
-        present(soundDetailVC, animated: true, completion: nil)
+        guard let showdetailPage = delegate?.showDetailPage else {return }
+        showdetailPage()
     }
     
     // MARK: - method
@@ -237,7 +238,7 @@ class AudioPlayerVC: UIViewController {
         audioHelper.url = audioURL
     }
     
-    func updateProgressWaveform(_ progress: Double) {
+    private func updateProgressWaveform(_ progress: Double) {
         let fullRect = progressView.bounds
         let newWidth = Double(fullRect.size.width) * progress
         let maskLayer = CAShapeLayer()
@@ -245,6 +246,20 @@ class AudioPlayerVC: UIViewController {
         let path = CGPath(rect: maskRect, transform: nil)
         maskLayer.path = path
         progressView.layer.mask = maskLayer
+    }
+    
+    func updateUI() {
+        timer = Timer.scheduledTimer(timeInterval: 0.1,
+                                     target: self,
+                                     selector: #selector(updatePlaybackTime),
+                                     userInfo: nil,
+                                     repeats: true)
+        
+        if audioHelper.isPlaying == true {
+            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
+        } else {
+            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+        }
     }
     
 }
