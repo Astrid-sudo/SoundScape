@@ -12,5 +12,7 @@ target 'SoundScape' do
   pod 'FirebaseFirestoreSwift'
   pod 'Firebase/Storage'
   pod 'Firebase/Database'
+  pod 'IQKeyboardManagerSwift'
+
 
 end
