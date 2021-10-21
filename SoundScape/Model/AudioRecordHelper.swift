@@ -2,56 +2,42 @@
 //  AudioHelper.swift
 //  SoundScape
 //
-//  Created by Astrid on 2021/10/18.
+//  Created by Astrid on 2021/10/20.
 //
 
 import Foundation
 import AVFoundation
+
+protocol PlayRecoredStateChangableDelegate: AnyObject {
+    func didFinishPlaying()
+}
 
 enum AudioSessionMode {
     case record
     case play
 }
 
-class AudioHelper: NSObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
+class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     
-        // MARK: - properties
+    // MARK: - properties
     
-    static let shared = AudioHelper()
+    static let shared = AudioRecordHelper()
     
     var audioRecorder: AVAudioRecorder?
-    
-    var audioPlayer: AVAudioPlayer?
+   
+    var audioPlayer: AVAudioPlayer? {
+        didSet{
+            audioPlayer?.delegate = self
+        }
+    }
     
     var isRecording = false
     
     var isPlaying = false
     
-    var currentTime: Double {
-        guard let audioPlayer = audioPlayer else {
-            return 0.0
-        }
-        return audioPlayer.currentTime
-    }
+    var url: URL?
     
-    var duration: Double {
-        guard let audioPlayer = audioPlayer else {
-            return 0.0
-        }
-        return audioPlayer.duration
-    }
-    
-    var url: URL? {
-        didSet {
-            guard let url = url else { return }
-            
-            do {
-                audioPlayer = try AVAudioPlayer(contentsOf: url)
-            } catch {
-                print("fail to create AVAudioPlayer")
-            }
-        }
-    }
+    weak var delegate: PlayRecoredStateChangableDelegate?
     
     // MARK: - init
     
@@ -59,30 +45,30 @@ class AudioHelper: NSObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
         super.init()
         
         //init an audio recorder
-        //        let filename = "User.wav"
-        //        let path = NSHomeDirectory() + "/Documents/" + filename
-        //        self.url = URL(fileURLWithPath: path)
-        //        let recordSettings:[String:Any] = [
-        //            AVEncoderAudioQualityKey: AVAudioQuality.min.rawValue,
-        //            AVEncoderBitRateKey: 16,
-        //            AVNumberOfChannelsKey: 2,
-        //            AVSampleRateKey:44100.0
-        //        ]
+        let filename = "User.wav"
+        let path = NSHomeDirectory() + "/Documents/" + filename
+        //        let url = URL(fileURLWithPath: path)
+        self.url = URL(fileURLWithPath: path)
+        let recordSettings: [String:Any] = [
+            AVEncoderAudioQualityKey: AVAudioQuality.min.rawValue,
+            AVEncoderBitRateKey: 16,
+            AVNumberOfChannelsKey: 2,
+            AVSampleRateKey:44100.0
+        ]
         
-        //        guard let url = self.url else { return }
-        //
-        //        do{
-        //            audioRecorder = try AVAudioRecorder(url: url, settings: recordSettings)
-        //            audioRecorder?.delegate = self
-        //        }catch{
-        //            print(error.localizedDescription)
-        //        }
+        guard let url = self.url else { return }
+        
+        do {
+            audioRecorder = try AVAudioRecorder(url: url, settings: recordSettings)
+            audioRecorder?.delegate = self
+        } catch {
+            print(error.localizedDescription)
+        }
     }
-
+    
     // MARK: - method
     
     func settingAudioSession(toMode mode: AudioSessionMode) {
-        
         audioPlayer?.stop()
         
         let session = AVAudioSession.sharedInstance()
@@ -124,14 +110,23 @@ class AudioHelper: NSObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
         return url
     }
     
-    func play() {
+    func playRecordedSound() {
         if isRecording == false {
+//            audioPlayer?.stop()
+//            audioPlayer?.currentTime = 0
             audioPlayer?.play()
-            isPlaying = true
+             isPlaying = true
         }
     }
     
-    func stop() {
+    func pausePlayRecorded() {
+        if isRecording == false {
+            audioPlayer?.pause()
+             isPlaying = false
+        }
+    }
+    
+    func stopPlaying() {
         if isRecording == false {
             audioPlayer?.stop()
             isPlaying = false
@@ -139,12 +134,11 @@ class AudioHelper: NSObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
         }
     }
     
-    func pause() {
-        if isRecording == false {
-            audioPlayer?.pause()
-            isPlaying = false
-        }
-    }
-    
 }
 
+extension AudioRecordHelper: AVAudioPlayerDelegate {
+    
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        delegate?.didFinishPlaying()
+    }
+}

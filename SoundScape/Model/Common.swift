@@ -19,7 +19,19 @@ struct CommonUsage {
     
     struct SFSymbol {
         static let play = "play.fill"
+        static let stopPlay = "stop.fill"
         static let pause = "pause.fill"
+        static let record = "record.circle"
+        static let stopRecord = "stop.circle"
+        static let edit = "scissors"
         static let heart = "heart.fill"
+
+    }
+    
+    struct Text {
+        static let title = "Title"
+        static let description = "Description"
+        static let category = "Category"
+        static let pinOnMap = "Pin On Map"
     }
 }

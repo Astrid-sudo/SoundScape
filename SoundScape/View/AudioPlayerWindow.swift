@@ -42,7 +42,7 @@ class AudioPlayerWindow {
 extension AudioPlayerWindow: DetailPageShowableDelegate {
     
     func showDetailPage() {
-        guard let showdetailPage = delegate?.showDetailPage else {return }
+        guard let showdetailPage = delegate?.showDetailPage else { return }
         showdetailPage()
     }
     

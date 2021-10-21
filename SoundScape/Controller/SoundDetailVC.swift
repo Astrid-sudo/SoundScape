@@ -25,11 +25,11 @@ class SoundDetailVC: UIViewController {
     
     //    private let audioURL = Bundle.main.url(forResource: "example_sound_2", withExtension: "m4a")
     
-    //    private let audioURL = Bundle.main.url(forResource: "example_sound", withExtension: "wav")
+//        private let audioURL = URL(string: "https://anonfiles.com/D195a4P3ud/_18_m4a")
     
     private let audioURL = Bundle.main.url(forResource: "memories", withExtension: "mp3")
     
-     var audioHelper = AudioHelper.shared
+    var audioHelper = AudioPlayHelper.shared
     
     var timer: Timer?
     
@@ -66,6 +66,9 @@ class SoundDetailVC: UIViewController {
     }
     
     @IBAction func playAudio(_ sender: UIButton) {
+        
+//        RemotePlayHelper().playRemoteURL()
+        
         manipulatePlayer()
     }
     
@@ -93,7 +96,6 @@ class SoundDetailVC: UIViewController {
         }
     }
 
-    
     private func updateWaveformImages() {
         // always uses background thread rendering
         

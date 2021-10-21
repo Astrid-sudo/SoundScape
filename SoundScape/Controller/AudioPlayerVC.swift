@@ -15,7 +15,7 @@ class AudioPlayerVC: UIViewController {
     
     var timer: Timer?
     
-    let audioHelper = AudioHelper.shared
+    let audioHelper = AudioPlayHelper.shared
     
     private let audioURL = Bundle.main.url(forResource: "memories", withExtension: "mp3")
     
