@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0130CC1600F3AB0D61D15930 /* Pods_SoundScape.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D1F5476A787CCE1C926A2EA /* Pods_SoundScape.framework */; };
+		565ABC012721529600D4596E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 565ABC002721529600D4596E /* GoogleService-Info.plist */; };
 		565C9C29271E6AFE00189B85 /* AudioPlayerWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565C9C28271E6AFE00189B85 /* AudioPlayerWindow.swift */; };
 		565C9C2B271E6F7300189B85 /* AudioPlayerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565C9C2A271E6F7300189B85 /* AudioPlayerVC.swift */; };
 		565C9C2D271E79E700189B85 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565C9C2C271E79E700189B85 /* Common.swift */; };
@@ -31,6 +32,7 @@
 /* Begin PBXFileReference section */
 		0D1F5476A787CCE1C926A2EA /* Pods_SoundScape.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SoundScape.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		33696CC8AD27A37242783EC7 /* Pods-SoundScape.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SoundScape.release.xcconfig"; path = "Target Support Files/Pods-SoundScape/Pods-SoundScape.release.xcconfig"; sourceTree = "<group>"; };
+		565ABC002721529600D4596E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		565C9C28271E6AFE00189B85 /* AudioPlayerWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerWindow.swift; sourceTree = "<group>"; };
 		565C9C2A271E6F7300189B85 /* AudioPlayerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerVC.swift; sourceTree = "<group>"; };
 		565C9C2C271E79E700189B85 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
@@ -127,6 +129,7 @@
 				5679F100271D084A00663001 /* Main.storyboard */,
 				5679F103271D084B00663001 /* Assets.xcassets */,
 				5679F105271D084B00663001 /* LaunchScreen.storyboard */,
+				565ABC002721529600D4596E /* GoogleService-Info.plist */,
 				5679F108271D084B00663001 /* Info.plist */,
 			);
 			path = SoundScape;
@@ -226,6 +229,7 @@
 				5679F104271D084B00663001 /* Assets.xcassets in Resources */,
 				5679F102271D084A00663001 /* Main.storyboard in Resources */,
 				5679F119271D6D8400663001 /* memories.mp3 in Resources */,
+				565ABC012721529600D4596E /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
