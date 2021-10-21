@@ -33,5 +33,13 @@ struct CommonUsage {
         static let description = "Description"
         static let category = "Category"
         static let pinOnMap = "Pin On Map"
+        static let upload = "UPLOAD"
     }
+    
+    struct CollectionName {
+        static let allUsers = "AllUsers"
+        static let allAudioFiles = "AllAudioFiles"
+        static let allLocations = "AllLocations"
+    }
+    
 }

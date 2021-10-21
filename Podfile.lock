@@ -292,6 +292,9 @@ PODS:
   - GTMSessionFetcher/Core (1.7.0)
   - IQKeyboardManagerSwift (6.5.6)
   - leveldb-library (1.22.1)
+  - ModernAVPlayer (1.7.3):
+    - ModernAVPlayer/Core (= 1.7.3)
+  - ModernAVPlayer/Core (1.7.3)
   - nanopb (1.30906.0):
     - nanopb/decode (= 1.30906.0)
     - nanopb/encode (= 1.30906.0)
@@ -307,6 +310,7 @@ DEPENDENCIES:
   - Firebase/Storage
   - FirebaseFirestoreSwift
   - IQKeyboardManagerSwift
+  - ModernAVPlayer
   - SwiftLint
 
 SPEC REPOS:
@@ -328,6 +332,7 @@ SPEC REPOS:
     - GTMSessionFetcher
     - IQKeyboardManagerSwift
     - leveldb-library
+    - ModernAVPlayer
     - nanopb
     - PromisesObjC
     - SwiftLint
@@ -350,10 +355,11 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
   IQKeyboardManagerSwift: c7df9d2deb356c04522f5c4b7b6e4ce4d8ed94fe
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
+  ModernAVPlayer: d04d53be7b620990250d0e13bee3be7217dc6214
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   SwiftLint: e96c0a8c770c7ebbc4d36c55baf9096bb65c4584
 
-PODFILE CHECKSUM: e6ab93926dd87c7e5ff92d97d17b4a1c505f5bf8
+PODFILE CHECKSUM: df4d41a1eb1ba48e399991edac79a11722da8d2f
 
 COCOAPODS: 1.11.2

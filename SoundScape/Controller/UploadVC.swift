@@ -17,6 +17,8 @@ class UploadVC: UIViewController {
     
     // MARK: - properties
     
+    let firebasemanager = FirebaseManager.shared
+    
     // MARK: - UI properties
     
     private lazy var titleLabel: UILabel = {
@@ -98,6 +100,15 @@ class UploadVC: UIViewController {
         return view
     }()
     
+    private lazy var uploadButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = UIColor(named: CommonUsage.scGreen)
+        button.setTitle(CommonUsage.Text.upload, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.addTarget(self, action: #selector(upload), for: .touchUpInside)
+        return button
+    }()
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -111,6 +122,7 @@ class UploadVC: UIViewController {
         setCategorySegmentControl()
         setMapLabel()
         setMapView()
+        setUploadButton()
         
     }
     
@@ -191,11 +203,57 @@ class UploadVC: UIViewController {
             mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             mapView.topAnchor.constraint(equalTo: mapLabel.bottomAnchor, constant: 16),
-            mapView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+            mapView.heightAnchor.constraint(equalToConstant: 100)
         ])
     }
-
+    
+    private func setUploadButton() {
+        view.addSubview(uploadButton)
+        uploadButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            uploadButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            uploadButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            uploadButton.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 16),
+            uploadButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    
     // MARK: - method
     
+    func popFillAlert(){
+        let alert = UIAlertController(title: "請填滿所有欄位", message:"登入後即可PO聲", preferredStyle: .alert )
+        let okButton = UIAlertAction(title: "是！", style: .default)
+        
+        alert.addAction(okButton)
+        present(alert, animated: true, completion: nil)
+    }
+    
     // MARK: - action
+    
+    @objc func upload() {
+        
+        guard let title =  titleTextField.text,
+              let content = descriptionTextView.text,
+              let category = categorySegmentControl.titleForSegment(at: categorySegmentControl.selectedSegmentIndex) else {
+                  popFillAlert()
+                  return
+                  
+              }
+        
+        let post = SCPost(documentID: "",
+                          authorID: "yaheyyodude",
+                          authIDProvider: "facebook",
+                          authorName: "厘題恩",
+                          title: title,
+                          content: content,
+                          category: category)
+        
+        let filename = "User.wav"
+        let path = NSHomeDirectory() + "/Documents/" + filename
+        let url = URL(fileURLWithPath: path)
+        
+        firebasemanager.upload(localURL: url,post: post)
+        
+    }
 }
