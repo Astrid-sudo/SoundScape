@@ -238,18 +238,28 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="80e-IJ-Kho">
-                                <rect key="frame" x="173.5" y="432.5" width="67" height="31"/>
+                                <rect key="frame" x="161" y="164" width="92" height="31"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="LOAD URL"/>
                                 <connections>
-                                    <action selector="play:" destination="bfu-aq-MLz" eventType="touchUpInside" id="MB0-lJ-udn"/>
+                                    <action selector="loadRemoteURL:" destination="bfu-aq-MLz" eventType="touchUpInside" id="Iqi-cB-LM8"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OzI-Vn-JDw">
+                                <rect key="frame" x="157.5" y="631" width="99" height="31"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="playLoaded"/>
+                                <connections>
+                                    <action selector="playLoaded:" destination="bfu-aq-MLz" eventType="touchUpInside" id="ac0-QR-xL5"/>
                                 </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="aIa-bd-m4X"/>
                         <color key="backgroundColor" systemColor="systemRedColor"/>
                         <constraints>
-                            <constraint firstItem="80e-IJ-Kho" firstAttribute="centerY" secondItem="Pjc-sJ-aON" secondAttribute="centerY" id="TiW-fo-iF0"/>
+                            <constraint firstItem="aIa-bd-m4X" firstAttribute="bottom" secondItem="OzI-Vn-JDw" secondAttribute="bottom" constant="200" id="DJL-z0-mIi"/>
+                            <constraint firstItem="OzI-Vn-JDw" firstAttribute="centerX" secondItem="Pjc-sJ-aON" secondAttribute="centerX" id="hOr-yn-ulw"/>
+                            <constraint firstItem="80e-IJ-Kho" firstAttribute="top" secondItem="aIa-bd-m4X" secondAttribute="top" constant="120" id="pOV-9E-Nh9"/>
                             <constraint firstItem="80e-IJ-Kho" firstAttribute="centerX" secondItem="Pjc-sJ-aON" secondAttribute="centerX" id="wBn-SN-UTW"/>
                         </constraints>
                     </view>
