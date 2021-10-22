@@ -13,6 +13,8 @@ class SCTabBarController: UITabBarController {
     
     // MARK: - UI properties
     
+    static let reuseIdentifier = String(describing: SCTabBarController.self)
+    
     let audioPlayerWindow = AudioPlayerWindow()
     
     private var dontShowDetailConstraint = NSLayoutConstraint()

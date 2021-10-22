@@ -8,7 +8,7 @@
 import AVFoundation
 import ModernAVPlayer
 
-struct PlayerConfigurationExample: PlayerConfiguration {
+struct SCRemotePlayerConfig: PlayerConfiguration {
     
     // Buffering State
     let rateObservingTimeout: TimeInterval = 3

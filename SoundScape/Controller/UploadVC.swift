@@ -11,6 +11,9 @@ enum AudioCategory: String, CaseIterable {
     case nature = "Nature"
     case meaningful = "Meaningful"
     case unique = "Unique"
+    case city = "City"
+    case animal = "Animal"
+    case other = "Other"
 }
 
 class UploadVC: UIViewController {

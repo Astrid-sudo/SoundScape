@@ -128,8 +128,7 @@ class FirebaseManager {
         }
     }
     
-    
-    func upload(localURL:URL, post: SCPost) {
+    func upload(localURL: URL, post: SCPost) {
         
         var fullPost = post
         
@@ -162,7 +161,7 @@ class FirebaseManager {
                 fullPost.documentID = document.documentID
                 
                 do {
-                    try document.setData(from:fullPost)
+                    try document.setData(from: fullPost)
                 } catch {
                     print("Failed add data to firestire \(error)")
                 }
