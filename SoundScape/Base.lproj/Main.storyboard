@@ -50,7 +50,7 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="zVm-ge-GBW">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zVm-ge-GBW">
                                 <rect key="frame" x="16" y="239.5" width="382" height="200"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
@@ -109,7 +109,7 @@
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" systemColor="systemBrownColor"/>
+                        <color key="backgroundColor" name="scLightBlue"/>
                         <constraints>
                             <constraint firstItem="Hmk-x4-uch" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="5Wh-A7-cES"/>
                             <constraint firstItem="zVm-ge-GBW" firstAttribute="top" secondItem="ExV-j7-b0k" secondAttribute="bottom" constant="100" id="Arn-ge-0aX"/>
@@ -130,7 +130,10 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="Item" image="ticket" catalog="system" id="4db-Nu-Q1k"/>
                     <connections>
+                        <outlet property="authorLabel" destination="hTx-2k-XRQ" id="iDb-dJ-zp6"/>
+                        <outlet property="contentTextView" destination="zVm-ge-GBW" id="75M-e6-OrM"/>
                         <outlet property="playButton" destination="kod-Ct-41r" id="VVT-Js-9co"/>
+                        <outlet property="titleLabel" destination="ExV-j7-b0k" id="wsx-IU-MLY"/>
                         <outlet property="waveformProgressView" destination="iDp-hF-h1Q" id="2LT-iu-i7E"/>
                         <outlet property="waveformView" destination="Hmk-x4-uch" id="oy9-DL-Ygm"/>
                     </connections>
@@ -162,8 +165,22 @@
                     <view key="view" contentMode="scaleToFill" id="ViH-y6-qpk">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Er3-Hh-z9E">
+                                <rect key="frame" x="173.5" y="432.5" width="67" height="31"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                <connections>
+                                    <action selector="selectFile:" destination="aSM-Zi-js2" eventType="touchUpInside" id="0AL-Sh-4vR"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="XXH-tT-t64"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Er3-Hh-z9E" firstAttribute="centerX" secondItem="ViH-y6-qpk" secondAttribute="centerX" id="IgZ-ve-zD9"/>
+                            <constraint firstItem="Er3-Hh-z9E" firstAttribute="centerY" secondItem="ViH-y6-qpk" secondAttribute="centerY" id="R9c-aI-lMS"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="30w-yN-vPv"/>
                 </viewController>
@@ -202,10 +219,10 @@
             </objects>
             <point key="canvasLocation" x="1399" y="1625"/>
         </scene>
-        <!--View Controller-->
+        <!--RecordVC-->
         <scene sceneID="KCO-hM-psp">
             <objects>
-                <viewController id="oqK-vV-JW6" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RecordVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="oqK-vV-JW6" customClass="RecordVC" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="pd1-A7-3wq">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -217,45 +234,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BZL-v6-Mc4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2216" y="1625"/>
-        </scene>
-        <!--Try Class-->
-        <scene sceneID="5YO-WA-hGF">
-            <objects>
-                <viewController id="bfu-aq-MLz" customClass="TryClass" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Pjc-sJ-aON">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="80e-IJ-Kho">
-                                <rect key="frame" x="161" y="164" width="92" height="31"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="LOAD URL"/>
-                                <connections>
-                                    <action selector="loadRemoteURL:" destination="bfu-aq-MLz" eventType="touchUpInside" id="Iqi-cB-LM8"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OzI-Vn-JDw">
-                                <rect key="frame" x="157.5" y="631" width="99" height="31"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="playLoaded"/>
-                                <connections>
-                                    <action selector="playLoaded:" destination="bfu-aq-MLz" eventType="touchUpInside" id="ac0-QR-xL5"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="aIa-bd-m4X"/>
-                        <color key="backgroundColor" systemColor="systemRedColor"/>
-                        <constraints>
-                            <constraint firstItem="aIa-bd-m4X" firstAttribute="bottom" secondItem="OzI-Vn-JDw" secondAttribute="bottom" constant="200" id="DJL-z0-mIi"/>
-                            <constraint firstItem="OzI-Vn-JDw" firstAttribute="centerX" secondItem="Pjc-sJ-aON" secondAttribute="centerX" id="hOr-yn-ulw"/>
-                            <constraint firstItem="80e-IJ-Kho" firstAttribute="top" secondItem="aIa-bd-m4X" secondAttribute="top" constant="120" id="pOV-9E-Nh9"/>
-                            <constraint firstItem="80e-IJ-Kho" firstAttribute="centerX" secondItem="Pjc-sJ-aON" secondAttribute="centerX" id="wBn-SN-UTW"/>
-                        </constraints>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="sXM-5b-3AI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1001" y="117"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="2B6-mG-fiR">
@@ -422,14 +400,8 @@
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
-        <systemColor name="systemBrownColor">
-            <color red="0.63529411764705879" green="0.51764705882352946" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
         <systemColor name="systemGreenColor">
             <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="tertiarySystemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

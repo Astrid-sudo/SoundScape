@@ -13,12 +13,21 @@ protocol PostsPassableDelegate: AnyObject {
     func passPosts(posts: [SCPost])
 }
 
-enum Category: String, CaseIterable {
-    case nature
-    case city
-    case unique
-    case meaningful
-    case other
+//enum Category: String, CaseIterable {
+//    case nature
+//    case city
+//    case unique
+//    case meaningful
+//    case other
+//}
+
+enum AudioCategory: String, CaseIterable {
+    case nature = "Nature"
+    case meaningful = "Meaningful"
+    case unique = "Unique"
+    case city = "City"
+    case animal = "Animal"
+    case other = "Other"
 }
 
 struct SCUser: Codable {
@@ -52,6 +61,7 @@ struct SCPost: Codable {
     //    var audioBase64: String?
     var category: String
     var audioLocation: GeoPoint?
+    var duration: Double
 }
 
 struct SCComment: Codable {
@@ -169,7 +179,7 @@ class FirebaseManager {
         }
         
         uploadTask.observe(.progress) { snapshot in
-            print(snapshot.progress ?? "No more progress")
+            print("Audio upload progress \(String(describing: snapshot.progress))")
         }
         
     }

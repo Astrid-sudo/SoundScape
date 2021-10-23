@@ -19,19 +19,23 @@ class SoundDetailVC: UIViewController {
     
     @IBOutlet weak var playButton: UIButton!
     
+    @IBOutlet weak var authorLabel: UILabel!
+    
+    @IBOutlet weak var titleLabel: UILabel!
+    
+    @IBOutlet weak var contentTextView: UITextView!
+   
     // MARK: - properties
     
     private let waveformImageDrawer = WaveformImageDrawer()
-    
-    //    private let audioURL = Bundle.main.url(forResource: "example_sound_2", withExtension: "m4a")
-    
-    //        private let audioURL = URL(string: "https://anonfiles.com/D195a4P3ud/_18_m4a")
     
     private let audioURL = Bundle.main.url(forResource: "memories", withExtension: "mp3")
     
     var audioHelper = AudioPlayHelper.shared
     
     var timer: Timer?
+    
+    var fileNameCount = 0
     
     weak var delegate: DetailPageShowableDelegate?
     
@@ -42,21 +46,14 @@ class SoundDetailVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        addObserver()
         setAudioHelper()
     }
     
-    override func viewDidLayoutSubviews() {
-        
-        updateWaveformImages()
-    }
+    // MARK: - deinit
     
-    override func viewDidAppear(_ animated: Bool) {
-        // get access to the raw, normalized amplitude samples
-        guard let audioURL = audioURL else { return }
-        let waveformAnalyzer = WaveformAnalyzer(audioAssetURL: audioURL)
-        waveformAnalyzer?.samples(count: 10) { samples in
-            print("sampled down to 10, results are \(samples ?? [])")
-        }
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - action
@@ -79,43 +76,111 @@ class SoundDetailVC: UIViewController {
                     || remotePlayerHelper.state == .stopped {
             remotePlayerHelper.play()
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-            
         }
         
     }
     
     // MARK: - method
     
-    private func manipulatePlayer() {
+    func addObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updatePlayInfo),
+                                               name: .playingAudioChange,
+                                               object: nil)
+       
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(changeButtImage),
+                                               name: .didStateChange,
+                                               object: nil)
         
-        if audioHelper.isPlaying == true {
-            
-            self.audioHelper.pause()
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-            if let timer = timer {
-                timer.invalidate()
-            }
-        } else {
-            
-            audioHelper.play()
-            
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-            timer = Timer.scheduledTimer(timeInterval: 0.1,
-                                         target: self,
-                                         selector: #selector(updatePlaybackTime),
-                                         userInfo: nil,
-                                         repeats: true)
-        }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updatePlaybackTime),
+                                               name: .didCurrentTimeChange,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(changeButtImage),
+                                               name: .didItemPlayToEndTime,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(renderRemoteURLWave),
+                                               name: .remoteURLDidSelect,
+                                               object: nil)
+
     }
     
-    private func updateWaveformImages() {
+    @objc func renderRemoteURLWave(notification: Notification) {
+        
+        guard let remoteURL = notification.userInfo?["UserInfo"] as? URL else { return }
+        
+        let task = URLSession.shared.downloadTask(with: remoteURL) { downloadedURL, urlResponse, error in
+            guard let downloadedURL = downloadedURL else { return }
+
+            let cachesFolderURL = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            
+            self.fileNameCount += 1
+            
+            let audioFileURL = cachesFolderURL?.appendingPathComponent("localFile\(self.fileNameCount).wav")
+            
+            guard let localURL = audioFileURL else { return }
+            
+            try? FileManager.default.copyItem(at: downloadedURL, to: localURL)
+
+            DispatchQueue.main.async {
+                
+                self.updateWaveformImages(localURL: localURL)
+                
+                let waveformAnalyzer = WaveformAnalyzer(audioAssetURL: localURL)
+                waveformAnalyzer?.samples(count: 10) { samples in
+                    print("sampled down to 10, results are \(samples ?? [])")
+                }
+
+            }
+        }
+        task.resume()
+    }
+    
+    @objc func updatePlaybackTime(notification: Notification) {
+        //        localUpdatePlaybackTime()
+        
+        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
+        let currentTime = playProgress.currentTime
+        let duration = playProgress.duration
+        let timeProgress = currentTime / duration
+        
+        updateProgressWaveform(timeProgress)
+
+    }
+
+    @objc func changeButtImage() {
+        
+        if remotePlayerHelper.state == .stopped
+            || remotePlayerHelper.state == .buffering
+            || remotePlayerHelper.state == .paused
+            || remotePlayerHelper.state == .loaded {
+            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+        }
+        
+        if remotePlayerHelper.state == .playing {
+            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
+        }
+        
+    }
+    
+    @objc func updatePlayInfo(notification: Notification) {
+        guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
+        titleLabel.text = nowPlayingInfo.title
+        authorLabel.text = nowPlayingInfo.author
+        contentTextView.text = nowPlayingInfo.content
+    }
+    
+    private func updateWaveformImages(localURL: URL) {
         // always uses background thread rendering
         
-        guard let audioURL = audioURL else { return }
-        
-        waveformImageDrawer.waveformImage(fromAudioAt: audioURL,
+        waveformImageDrawer.waveformImage(fromAudioAt: localURL,
                                           size: waveformView.bounds.size,
-                                          color: .systemPink,
+                                          color: UIColor(named: CommonUsage.scLightGreen) ?? .green,
                                           style: .striped,
                                           position: .middle) { image in
             // need to jump back to main queue
@@ -126,9 +191,9 @@ class SoundDetailVC: UIViewController {
             }
         }
         
-        waveformImageDrawer.waveformImage(fromAudioAt: audioURL,
+        waveformImageDrawer.waveformImage(fromAudioAt: localURL,
                                           size: waveformProgressView.bounds.size,
-                                          color: .green,
+                                          color: UIColor(named: CommonUsage.scOrange) ?? .orange,
                                           style: .striped,
                                           position: .middle) { image in
             // need to jump back to main queue
@@ -153,20 +218,6 @@ class SoundDetailVC: UIViewController {
         waveformProgressView.layer.mask = maskLayer
     }
     
-    @objc func updatePlaybackTime() {
-        
-        print(audioHelper.currentTime)
-        
-        let progress = audioHelper.currentTime / audioHelper.duration
-        
-        updateProgressWaveform(progress)
-        
-        if progress == 1 {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-            timer?.invalidate()
-        }
-    }
-    
     private func setAudioHelper() {
         audioHelper.url = audioURL
     }
@@ -182,7 +233,7 @@ class SoundDetailVC: UIViewController {
         if audioHelper.isPlaying == true {
             
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-       
+            
         } else {
             
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)

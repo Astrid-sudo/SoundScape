@@ -105,13 +105,19 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
         guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
+        
+        let title = firebaseData[indexPath.item].title
+        let author = firebaseData[indexPath.item].authorName
+        let content = firebaseData[indexPath.item].content
+        let duration = firebaseData[indexPath.item].duration
+        
         remotePlayHelper.url = firebaseData[indexPath.item].audioURL
-        remotePlayHelper.currentPlayTitle = firebaseData[indexPath.item].title
-        remotePlayHelper.currentAuthor = firebaseData[indexPath.item].authorName
+//        remotePlayHelper.currentPlayTitle = firebaseData[indexPath.item].title
+//        remotePlayHelper.currentAuthor = firebaseData[indexPath.item].authorName
+//        remotePlayHelper.setMetadata(title: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName, content: firebaseData[indexPath.item].content)
+        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration)
         scTabBarController.showAudioPlayer()
     }
     
 }
-
-
 
