@@ -7,7 +7,7 @@
 
 import UIKit
 import DSWaveformImage
-import AVFAudio
+//import AVFAudio
 
 class SoundDetailVC: UIViewController {
     

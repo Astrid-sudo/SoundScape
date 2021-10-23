@@ -8,16 +8,7 @@
 import UIKit
 import UniformTypeIdentifiers
 
-
 class CreateAudioVC: UIViewController {
-    
-    // MARK: - properties
-    
-    
-    // MARK: - UI properties
-    
-    @IBOutlet weak var imageView: UIImageView!
-    
     
     // MARK: - life cycle
     
@@ -25,10 +16,7 @@ class CreateAudioVC: UIViewController {
         super.viewDidLoad()
         
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
-        
     }
-    
-    // MARK: - UI method
     
     // MARK: - action
     
@@ -50,16 +38,12 @@ extension CreateAudioVC: UIDocumentPickerDelegate {
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             
-        if let url = urls.first {
-            print(url)
+        if let url = urls.last {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            guard let uploadVC = storyboard.instantiateViewController(withIdentifier: "UploadVC") as? UploadVC else { return }
-            uploadVC.selectedFileURL = url
-            navigationController?.pushViewController(uploadVC, animated: true)
-
+            guard let editVC = storyboard.instantiateViewController(withIdentifier: "EditVC") as? EditVC else { return }
+            editVC.selectedFileURL = url
+            navigationController?.pushViewController(editVC, animated: true)
         }
-        
-
     }
     
 }
