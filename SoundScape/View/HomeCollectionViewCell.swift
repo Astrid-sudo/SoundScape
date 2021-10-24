@@ -11,7 +11,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     
     static let reuseIdentifier = String(describing: HomeCollectionViewCell.self)
     
-    // MARK:- UI properties
+    //MARK: - UI properties
     
     private lazy var audioImage: UIImageView = {
         let image = UIImageView()
@@ -35,7 +35,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    // MARK:- init
+    //MARK: - init
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -48,7 +48,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK:- configUI method
+    //MARK: - configUI method
     
     private func setAudioImage() {
         contentView.addSubview(audioImage)

@@ -11,7 +11,6 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
     
     static let reuseIdentifier = String(describing: HomeTableViewHeader.self)
 
-    
     private(set) lazy var categoryLabel: UILabel = {
       let label = UILabel()
       label.textColor = .white

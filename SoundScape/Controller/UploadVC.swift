@@ -15,6 +15,8 @@ class UploadVC: UIViewController {
     
     var selectedFileURL: URL?
     
+    var selectedFileDuration: Double?
+    
     // MARK: - UI properties
     
     private lazy var titleLabel: UILabel = {
@@ -60,8 +62,6 @@ class UploadVC: UIViewController {
         textField.layer.borderWidth = 0.5
         textField.textAlignment = .left
         textField.backgroundColor = .clear
-        //      textField.delegate = self
-        //      textField.addRightButtonOnKeyboardWithText(Stylish.Title.textFieldStepperButtOnKeyboard, target: self, action: #selector(done))
         return textField
     }()
     
@@ -218,7 +218,6 @@ class UploadVC: UIViewController {
         ])
     }
     
-    
     // MARK: - method
     
     func popFillAlert() {
@@ -249,18 +248,13 @@ class UploadVC: UIViewController {
                           category: category,
                           duration: 0.0)
         
-        let filename = "User.wav"
-        let path = NSHomeDirectory() + "/Documents/" + filename
-        let url = URL(fileURLWithPath: path)
         
-        if let duration = AudioRecordHelper.shared.duration {
-            post.duration = duration
+        if let selectedFileDuration = selectedFileDuration {
+            post.duration = selectedFileDuration
         }
         
         if let selectedFileURL = selectedFileURL {
             firebasemanager.upload(localURL: selectedFileURL, post: post)
-        } else {
-            firebasemanager.upload(localURL: url, post: post)
         }
         
         navigationController?.popToRootViewController(animated: true)

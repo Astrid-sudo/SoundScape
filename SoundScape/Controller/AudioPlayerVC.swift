@@ -90,8 +90,6 @@ class AudioPlayerVC: UIViewController {
         
         addObserver()
         
-//        remotePlayerHelper.delegate = self
-        
         view.backgroundColor = UIColor(named: CommonUsage.scGreen)
         //        setAudioHelper()
         setAudioImage()
@@ -214,16 +212,13 @@ class AudioPlayerVC: UIViewController {
     // MARK: - action
     
     @objc func manipulatePlayer() {
-        //        localManipulatePlayer()
         if remotePlayerHelper.state == .playing {
             remotePlayerHelper.pause()
-//            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
         } else if remotePlayerHelper.state == .paused
                     || remotePlayerHelper.state == .loaded
                     || remotePlayerHelper.state == .buffering
                     || remotePlayerHelper.state == .stopped {
             remotePlayerHelper.play()
-//            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
         }
     }
     
@@ -254,16 +249,27 @@ class AudioPlayerVC: UIViewController {
     
     // MARK: - method
     
-    func addObserver(){
+    func addObserver() {
         
-        NotificationCenter.default.addObserver(self, selector: #selector(updatePlayInfo), name: .playingAudioChange, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updatePlayInfo),
+                                               name: .playingAudioChange,
+                                               object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeButtImage), name: .didStateChange, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(changeButtImage),
+                                               name: .didStateChange,
+                                               object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(updatePlaybackTime), name: .didCurrentTimeChange, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updatePlaybackTime),
+                                               name: .didCurrentTimeChange,
+                                               object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(changeButtImage), name: .didItemPlayToEndTime, object: nil)
-
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(changeButtImage),
+                                               name: .didItemPlayToEndTime,
+                                               object: nil)
     }
     
     @objc func changeButtImage() {
@@ -343,42 +349,6 @@ class AudioPlayerVC: UIViewController {
         } else if remotePlayerHelper.state == .paused {
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
         }
-    }
-    
-}
-
-extension AudioPlayerVC: MetadataDisplayableDelegate {
-    
-    func didPlayEnd() {
-        playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-    }
-    
-    
-    func getCurrentTime(current: Double, duration: Double) {
-        
-        //        print(remotePlayerHelper.currentTime)
-        let progress = audioHelper.currentTime / audioHelper.duration
-        updateProgressWaveform(progress)
-        
-        if remotePlayerHelper.state == .playing {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-        } else if remotePlayerHelper.state == .paused {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-        }
-        
-    }
-    
-    
-    func display(title: String?, author: String?) {
-        
-        if let title = title {
-            audioTitleLabel.text = title
-        }
-        
-        if let author = author {
-            authorLabel.text = author
-        }
-        
     }
     
 }

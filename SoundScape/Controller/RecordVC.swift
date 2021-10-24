@@ -137,9 +137,17 @@ class RecordVC: UIViewController {
     }
 
     @objc func pushToNext() {
+        
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let uploadVC = storyboard.instantiateViewController(withIdentifier: "UploadVC") as? UploadVC else { return }
-        navigationController?.pushViewController(uploadVC, animated: true)
+        guard let editVC = storyboard.instantiateViewController(withIdentifier: "EditVC") as? EditVC else { return }
+        
+        let filename = "User.wav"
+        let path = NSHomeDirectory() + "/Documents/" + filename
+        let url = URL(fileURLWithPath: path)
+
+        editVC.selectedFileURL = url
+        navigationController?.pushViewController(editVC, animated: true)
+
     }
     
 }

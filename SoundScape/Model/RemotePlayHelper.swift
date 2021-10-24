@@ -9,12 +9,6 @@ import Foundation
 import AVFoundation
 import ModernAVPlayer
 
-protocol MetadataDisplayableDelegate: AnyObject {
-    func display(title: String?, author: String?)
-    func getCurrentTime(current: Double, duration: Double)
-    func didPlayEnd()
-}
-
 struct PlayInfo {
     let title: String
     let author: String
@@ -29,6 +23,10 @@ struct PlayProgress {
 
 class RemotePlayHelper {
     
+/*
+ Must set url first, then set playInfo. (Because in class RemotePlayHelper, set url will make playinfo be nil.)
+ */
+    
     // MARK: - properties
     
     static let shared = RemotePlayHelper()
@@ -39,28 +37,18 @@ class RemotePlayHelper {
         return player
     }()
     
-    weak var delegate: MetadataDisplayableDelegate?
-    
     var playerMedia: PlayerMedia?
     
     var metadata: ModernAVPlayerMediaMetadata?
     
     var state: ModernAVPlayer.State?
     
-    
-    var currentPlayInfo: PlayInfo? {
-        didSet {
-            guard let currentPlayInfo = currentPlayInfo else { return }
-            
-            let userInfoKey = "UserInfo"
-            let userInfo: [AnyHashable: Any] = [userInfoKey: currentPlayInfo]
-            NotificationCenter.default.post(name: .playingAudioChange, object: nil, userInfo: userInfo)
-        }
-    }
-    
     var url: URL? {
         
         didSet {
+            
+            currentPlayInfo = nil
+            
             guard let url = url else { return }
             playerMedia = ModernAVPlayerMedia(url: url, type: .clip, metadata: metadata)
             
@@ -77,6 +65,17 @@ class RemotePlayHelper {
         
     }
     
+    var currentPlayInfo: PlayInfo? {
+        didSet {
+            guard let currentPlayInfo = currentPlayInfo else { return }
+            
+            let userInfoKey = "UserInfo"
+            let userInfo: [AnyHashable: Any] = [userInfoKey: currentPlayInfo]
+            NotificationCenter.default.post(name: .playingAudioChange, object: nil, userInfo: userInfo)
+        }
+    }
+
+    
     // MARK: - init
     
     private init() {
@@ -86,15 +85,29 @@ class RemotePlayHelper {
     // MARK: - action
     
     func play() {
-        player.play()
+        DispatchQueue.main.async { [weak self] in
+            self?.player.play()
+        }
     }
     
     func pause() {
-        player.pause()
+        DispatchQueue.main.async { [weak self] in
+            self?.player.pause()
+        }
     }
     
     func stop() {
-        player.stop()
+        DispatchQueue.main.async { [weak self] in
+            self?.player.stop()
+        }
+    }
+    
+    func seek(offset: Double) {
+        player.seek(offset: offset)
+    }
+    
+    func seek(position: Double) {
+        player.seek(position: position)
     }
     
     // MARK: - method
@@ -126,22 +139,40 @@ extension RemotePlayHelper: ModernAVPlayerDelegate {
     
     func modernAVPlayer(_ player: ModernAVPlayer, didCurrentTimeChange currentTime: Double) {
         print("Message from RemotePlayHelper: didCurrentTimeChange_ \(currentTime)")
-//        delegate?.getCurrentTime(current: currentTime, duration: 100000.0)
         
-        guard let currentPlayInfo = currentPlayInfo else { return }
+        // play audio from firebase (SoundDetailVC and AudioPlayerVC will get this Notification)
+        if let currentPlayInfo = currentPlayInfo {
+            
+            let playProgress = PlayProgress(currentTime: currentTime, duration: currentPlayInfo.duration)
+            let userInfoKey = "UserInfo"
+            let userInfo: [AnyHashable: Any] = [userInfoKey: playProgress]
+           
+            NotificationCenter.default.post(name: .didCurrentTimeChange, object: nil, userInfo: userInfo)
         
-        let playProgress = PlayProgress(currentTime: currentTime, duration: currentPlayInfo.duration)
-        
-        let userInfoKey = "UserInfo"
-        let userInfo: [AnyHashable: Any] = [userInfoKey: playProgress]
-        NotificationCenter.default.post(name: .didCurrentTimeChange, object: nil, userInfo: userInfo)
+        } else { //play audio from local url (EditVC will get this Notification)
+            
+            let userInfoKey = "UserInfo"
+            let userInfo: [AnyHashable: Any] = [userInfoKey: currentTime]
+            NotificationCenter.default.post(name: .didCurrentTimeChange, object: nil, userInfo: userInfo)
+
+            
+        }
 
     }
     
     func modernAVPlayer(_ player: ModernAVPlayer, didItemPlayToEndTime endTime: Double) {
         print("Message from RemotePlayHelper: didItemPlayToEndTime_ \(endTime)")
-//        delegate?.didPlayEnd()
         NotificationCenter.default.post(name: .didItemPlayToEndTime, object: nil, userInfo: nil)
+    }
+    
+    func modernAVPlayer(_ player: ModernAVPlayer, didItemDurationChange itemDuration: Double?) {
+        
+        //EditVC is observing this Notification
+        print("Message from RemotePlayHelper: didItemDurationChange \(itemDuration)")
+        let userInfoKey = "UserInfo"
+        let userInfo: [AnyHashable: Any] = [userInfoKey: itemDuration]
+        NotificationCenter.default.post(name: .didItemDurationChange, object: nil, userInfo: userInfo)
+
     }
 }
 
@@ -151,5 +182,7 @@ extension Notification.Name {
     static let didCurrentTimeChange = Notification.Name("didCurrentTimeChange")
     static let didStateChange = Notification.Name("didStateChange")
     static let remoteURLDidSelect = Notification.Name("remoteURLDidSelect")
+    static let didItemDurationChange = Notification.Name("didItemDurationChange")
+
 
 }

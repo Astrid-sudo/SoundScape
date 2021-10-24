@@ -31,7 +31,6 @@ class SCTabBarController: UITabBarController {
         
         view.backgroundColor = .orange
         audioPlayerWindow.delegate = self
-//        showAudioPlayer()
         addDetailPage()
     }
     
@@ -105,4 +104,3 @@ extension SCTabBarController: DetailPageShowableDelegate {
     }
     
 }
-

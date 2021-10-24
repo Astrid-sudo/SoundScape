@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 class HomeTableViewCell: UITableViewCell {
     
     // MARK: - properties
@@ -44,7 +43,7 @@ class HomeTableViewCell: UITableViewCell {
         return collectionView
     }()
     
-    //MARK:- init
+    // MARK:- init
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -68,7 +67,8 @@ class HomeTableViewCell: UITableViewCell {
             collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
         
-        collectionView.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: HomeCollectionViewCell.reuseIdentifier)
+        collectionView.register(HomeCollectionViewCell.self,
+                                forCellWithReuseIdentifier: HomeCollectionViewCell.reuseIdentifier)
     }
     
 }
@@ -80,7 +80,8 @@ extension HomeTableViewCell: UICollectionViewDataSource {
         return firebaseData.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         // swiftlint:disable line_length
         
@@ -88,7 +89,8 @@ extension HomeTableViewCell: UICollectionViewDataSource {
         
         // swiftlint:enable line_length
         
-        cell.setCell(image: nil, audioTitle: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName)
+        cell.setCell(image: nil,
+                     audioTitle: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName)
 
         return cell
     }
@@ -111,13 +113,11 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         let content = firebaseData[indexPath.item].content
         let duration = firebaseData[indexPath.item].duration
         
+//         Must set url first, then set playInfo.
+//        (Because in class RemotePlayHelper, set url will make playinfo be nil.)
         remotePlayHelper.url = firebaseData[indexPath.item].audioURL
-//        remotePlayHelper.currentPlayTitle = firebaseData[indexPath.item].title
-//        remotePlayHelper.currentAuthor = firebaseData[indexPath.item].authorName
-//        remotePlayHelper.setMetadata(title: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName, content: firebaseData[indexPath.item].content)
         remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration)
         scTabBarController.showAudioPlayer()
     }
     
 }
-

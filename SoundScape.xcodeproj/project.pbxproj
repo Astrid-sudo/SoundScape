@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0130CC1600F3AB0D61D15930 /* Pods_SoundScape.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D1F5476A787CCE1C926A2EA /* Pods_SoundScape.framework */; };
 		56201C972721D21F0080A7C7 /* SCRemotePlayerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56201C962721D21F0080A7C7 /* SCRemotePlayerConfig.swift */; };
+		563396C5272596A600882711 /* TrimAudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563396C4272596A600882711 /* TrimAudioManager.swift */; };
 		565ABC012721529600D4596E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 565ABC002721529600D4596E /* GoogleService-Info.plist */; };
 		565ABC032721595B00D4596E /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565ABC022721595B00D4596E /* FirebaseManager.swift */; };
 		565C9C29271E6AFE00189B85 /* AudioPlayerWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565C9C28271E6AFE00189B85 /* AudioPlayerWindow.swift */; };
@@ -42,6 +43,7 @@
 		0D1F5476A787CCE1C926A2EA /* Pods_SoundScape.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SoundScape.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		33696CC8AD27A37242783EC7 /* Pods-SoundScape.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SoundScape.release.xcconfig"; path = "Target Support Files/Pods-SoundScape/Pods-SoundScape.release.xcconfig"; sourceTree = "<group>"; };
 		56201C962721D21F0080A7C7 /* SCRemotePlayerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCRemotePlayerConfig.swift; sourceTree = "<group>"; };
+		563396C4272596A600882711 /* TrimAudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrimAudioManager.swift; sourceTree = "<group>"; };
 		565ABC002721529600D4596E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		565ABC022721595B00D4596E /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		565C9C28271E6AFE00189B85 /* AudioPlayerWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerWindow.swift; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 				5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */,
 				565ABC022721595B00D4596E /* FirebaseManager.swift */,
 				56201C962721D21F0080A7C7 /* SCRemotePlayerConfig.swift */,
+				563396C4272596A600882711 /* TrimAudioManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -346,6 +349,7 @@
 				568340DF271F113F00543677 /* CreateAudioVC.swift in Sources */,
 				5679F0FD271D084A00663001 /* SceneDelegate.swift in Sources */,
 				569A7D7A27229EB200CEE3EA /* HomeTableViewCell.swift in Sources */,
+				563396C5272596A600882711 /* TrimAudioManager.swift in Sources */,
 				565C9C2F271E8D6900189B85 /* SCTabBarController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

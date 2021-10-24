@@ -7,7 +7,6 @@
 
 import UIKit
 import DSWaveformImage
-//import AVFAudio
 
 class SoundDetailVC: UIViewController {
     
@@ -66,7 +65,6 @@ class SoundDetailVC: UIViewController {
     
     @IBAction func playAudio(_ sender: UIButton) {
         
-        //        manipulatePlayer()
         if remotePlayerHelper.state == .playing {
             remotePlayerHelper.pause()
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
@@ -115,6 +113,7 @@ class SoundDetailVC: UIViewController {
         guard let remoteURL = notification.userInfo?["UserInfo"] as? URL else { return }
         
         let task = URLSession.shared.downloadTask(with: remoteURL) { downloadedURL, urlResponse, error in
+            
             guard let downloadedURL = downloadedURL else { return }
 
             let cachesFolderURL = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
