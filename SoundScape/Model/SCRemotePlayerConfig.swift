@@ -21,7 +21,7 @@ struct SCRemotePlayerConfig: PlayerConfiguration {
 
     // Reachability Service
     let reachabilityURLSessionTimeout: TimeInterval = 3
-    //swiftlint:disable:next force_unwrapping
+    // swiftlint:disable:next force_unwrapping
     let reachabilityNetworkTestingURL = URL(string: "https://www.google.com")!
     let reachabilityNetworkTestingTickTime: TimeInterval = 3
     let reachabilityNetworkTestingIteration: UInt = 10

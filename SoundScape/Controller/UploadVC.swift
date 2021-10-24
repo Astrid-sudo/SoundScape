@@ -7,26 +7,21 @@
 
 import UIKit
 
-enum AudioCategory: String, CaseIterable {
-    case nature = "Nature"
-    case meaningful = "Meaningful"
-    case unique = "Unique"
-    case city = "City"
-    case animal = "Animal"
-    case other = "Other"
-}
-
 class UploadVC: UIViewController {
     
     // MARK: - properties
     
     let firebasemanager = FirebaseManager.shared
     
+    var selectedFileURL: URL?
+    
+    var selectedFileDuration: Double?
+    
     // MARK: - UI properties
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor.black
+        label.textColor = UIColor.white
         label.font = UIFont(name: CommonUsage.font, size: 15)
         label.textAlignment = .left
         label.text = CommonUsage.Text.title
@@ -35,7 +30,7 @@ class UploadVC: UIViewController {
     
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor.black
+        label.textColor = UIColor.white
         label.font = UIFont(name: CommonUsage.font, size: 15)
         label.textAlignment = .left
         label.text = CommonUsage.Text.description
@@ -44,7 +39,7 @@ class UploadVC: UIViewController {
     
     private lazy var categoryLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor.black
+        label.textColor = UIColor.white
         label.font = UIFont(name: CommonUsage.font, size: 15)
         label.textAlignment = .left
         label.text = CommonUsage.Text.category
@@ -53,7 +48,7 @@ class UploadVC: UIViewController {
     
     private  lazy var mapLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor.black
+        label.textColor = UIColor.white
         label.font = UIFont(name: CommonUsage.font, size: 15)
         label.textAlignment = .left
         label.text = CommonUsage.Text.pinOnMap
@@ -63,11 +58,10 @@ class UploadVC: UIViewController {
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
         textField.borderStyle = .roundedRect
-        textField.textColor = .black
+        textField.textColor = .white
         textField.layer.borderWidth = 0.5
         textField.textAlignment = .left
-        //      textField.delegate = self
-        //      textField.addRightButtonOnKeyboardWithText(Stylish.Title.textFieldStepperButtOnKeyboard, target: self, action: #selector(done))
+        textField.backgroundColor = .clear
         return textField
     }()
     
@@ -75,12 +69,13 @@ class UploadVC: UIViewController {
         let textView = UITextView()
         textView.layer.borderWidth = 1
         textView.layer.borderColor = UIColor.black.cgColor
-        textView.textColor = .black
+        textView.textColor = .white
         textView.font = UIFont(name: CommonUsage.font, size: 15)
         textView.textAlignment = .left
         textView.isEditable = true
-        textView.isSelectable = false
+        textView.isSelectable = true
         textView.isScrollEnabled = false
+        textView.backgroundColor = .clear
         return textView
     }()
     
@@ -97,9 +92,10 @@ class UploadVC: UIViewController {
         return control
     }()
     
-    private lazy var mapView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .green
+    private lazy var mapView: UIImageView = {
+        let view = UIImageView()
+        view.image = UIImage(named: CommonUsage.fakeMap)
+        view.contentMode = .scaleAspectFill
         return view
     }()
     
@@ -127,6 +123,7 @@ class UploadVC: UIViewController {
         setMapView()
         setUploadButton()
         
+        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
     }
     
     // MARK: - UI method
@@ -221,11 +218,10 @@ class UploadVC: UIViewController {
         ])
     }
     
-    
     // MARK: - method
     
-    func popFillAlert(){
-        let alert = UIAlertController(title: "請填滿所有欄位", message:"登入後即可PO聲", preferredStyle: .alert )
+    func popFillAlert() {
+        let alert = UIAlertController(title: "請填滿所有欄位", message: "登入後即可PO聲", preferredStyle: .alert )
         let okButton = UIAlertAction(title: "是！", style: .default)
         
         alert.addAction(okButton)
@@ -241,22 +237,27 @@ class UploadVC: UIViewController {
               let category = categorySegmentControl.titleForSegment(at: categorySegmentControl.selectedSegmentIndex) else {
                   popFillAlert()
                   return
-                  
               }
         
-        let post = SCPost(documentID: "",
+        var post = SCPost(documentID: "",
                           authorID: "yaheyyodude",
                           authIDProvider: "facebook",
                           authorName: "厘題恩",
                           title: title,
                           content: content,
-                          category: category)
+                          category: category,
+                          duration: 0.0)
         
-        let filename = "User.wav"
-        let path = NSHomeDirectory() + "/Documents/" + filename
-        let url = URL(fileURLWithPath: path)
         
-        firebasemanager.upload(localURL: url,post: post)
+        if let selectedFileDuration = selectedFileDuration {
+            post.duration = selectedFileDuration
+        }
+        
+        if let selectedFileURL = selectedFileURL {
+            firebasemanager.upload(localURL: selectedFileURL, post: post)
+        }
+        
+        navigationController?.popToRootViewController(animated: true)
         
     }
 }

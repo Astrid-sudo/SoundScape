@@ -31,7 +31,6 @@ class SCTabBarController: UITabBarController {
         
         view.backgroundColor = .orange
         audioPlayerWindow.delegate = self
-//        showAudioPlayer()
         addDetailPage()
     }
     
@@ -79,7 +78,7 @@ extension SCTabBarController: DetailPageShowableDelegate {
         
         audioPlayerWindow.vc.timer?.invalidate()
         
-        soundDetailVC.updateUI()
+//        soundDetailVC.updateUI()
 
         dontShowDetailConstraint.isActive = false
         showDetailConstraint.isActive = true
@@ -88,8 +87,6 @@ extension SCTabBarController: DetailPageShowableDelegate {
           soundDetailVC.view.isHidden = false
             self.view.layoutIfNeeded()
         }
-        
-        
         
     }
     
@@ -107,4 +104,3 @@ extension SCTabBarController: DetailPageShowableDelegate {
     }
     
 }
-

@@ -37,6 +37,8 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     
     var url: URL?
     
+    var duration: Double?
+    
     weak var delegate: PlayRecoredStateChangableDelegate?
     
     // MARK: - init
@@ -49,11 +51,11 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         let path = NSHomeDirectory() + "/Documents/" + filename
         //        let url = URL(fileURLWithPath: path)
         self.url = URL(fileURLWithPath: path)
-        let recordSettings: [String:Any] = [
+        let recordSettings: [String: Any] = [
             AVEncoderAudioQualityKey: AVAudioQuality.min.rawValue,
             AVEncoderBitRateKey: 16,
             AVNumberOfChannelsKey: 2,
-            AVSampleRateKey:44100.0
+            AVSampleRateKey: 44100.0
         ]
         
         guard let url = self.url else { return }
@@ -86,9 +88,13 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     }
     
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+        
         if flag == true {
             do {
                 audioPlayer = try AVAudioPlayer(contentsOf: recorder.url)
+                self.duration = audioPlayer?.duration
+                print(duration)
+
             } catch {
                 print(error.localizedDescription)
             }

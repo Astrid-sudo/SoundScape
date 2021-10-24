@@ -88,7 +88,7 @@ class AudioPlayerVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        remotePlayerHelper.delegate = self
+        addObserver()
         
         view.backgroundColor = UIColor(named: CommonUsage.scGreen)
         //        setAudioHelper()
@@ -97,7 +97,7 @@ class AudioPlayerVC: UIViewController {
         setAuthorLabel()
         setPlayButton()
         setFavoriteButton()
-        setFakedata()
+        //        setFakedata()
         setFullDurationView()
         setProgressView()
         setDetailButton()
@@ -112,6 +112,10 @@ class AudioPlayerVC: UIViewController {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - UI method
@@ -208,23 +212,26 @@ class AudioPlayerVC: UIViewController {
     // MARK: - action
     
     @objc func manipulatePlayer() {
-        //        localManipulatePlayer()
         if remotePlayerHelper.state == .playing {
             remotePlayerHelper.pause()
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-        } else if remotePlayerHelper.state == .paused || remotePlayerHelper.state == .loaded || remotePlayerHelper.state == .buffering ||
-                    remotePlayerHelper.state == .stopped
-         {
+        } else if remotePlayerHelper.state == .paused
+                    || remotePlayerHelper.state == .loaded
+                    || remotePlayerHelper.state == .buffering
+                    || remotePlayerHelper.state == .stopped {
             remotePlayerHelper.play()
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-            
         }
     }
     
-    @objc func updatePlaybackTime() {
+    @objc func updatePlaybackTime(notification: Notification) {
         //        localUpdatePlaybackTime()
         
+        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
+        let currentTime = playProgress.currentTime
+        let duration = playProgress.duration
+        let timeProgress = currentTime / duration
         
+        updateProgressWaveform(timeProgress)
+
     }
     
     @objc func presentDetail() {
@@ -232,7 +239,53 @@ class AudioPlayerVC: UIViewController {
         showdetailPage()
     }
     
+    @objc func updatePlayInfo(notification: Notification) {
+        
+        guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
+        audioTitleLabel.text = nowPlayingInfo.title
+        authorLabel.text = nowPlayingInfo.author
+        
+    }
+    
     // MARK: - method
+    
+    func addObserver() {
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updatePlayInfo),
+                                               name: .playingAudioChange,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(changeButtImage),
+                                               name: .didStateChange,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updatePlaybackTime),
+                                               name: .didCurrentTimeChange,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(changeButtImage),
+                                               name: .didItemPlayToEndTime,
+                                               object: nil)
+    }
+    
+    @objc func changeButtImage() {
+        
+        if remotePlayerHelper.state == .stopped
+            || remotePlayerHelper.state == .buffering
+            || remotePlayerHelper.state == .paused
+            || remotePlayerHelper.state == .loaded {
+            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+        }
+        
+        if remotePlayerHelper.state == .playing {
+            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
+        }
+        
+    }
     
     func localManipulatePlayer() {
         if audioHelper.isPlaying == true {
@@ -296,42 +349,6 @@ class AudioPlayerVC: UIViewController {
         } else if remotePlayerHelper.state == .paused {
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
         }
-    }
-    
-}
-
-extension AudioPlayerVC: MetadataDisplayableDelegate {
-    
-    func didPlayEnd() {
-        playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-    }
-    
-    
-    func getCurrentTime(current: Double, duration: Double) {
-        
-        //        print(remotePlayerHelper.currentTime)
-        let progress = audioHelper.currentTime / audioHelper.duration
-        updateProgressWaveform(progress)
-        
-        if remotePlayerHelper.state == .playing {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-        } else if remotePlayerHelper.state == .paused {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-        }
-        
-    }
-    
-    
-    func display(title: String?, author: String?) {
-        
-        if let title = title {
-            audioTitleLabel.text = title
-        }
-        
-        if let author = author {
-            authorLabel.text = author
-        }
-        
     }
     
 }
