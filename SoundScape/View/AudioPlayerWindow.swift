@@ -16,6 +16,8 @@ class AudioPlayerWindow {
     
     // MARK: - UI properties
     
+    static let shared = AudioPlayerWindow()
+    
     var window: UIWindow?
     
     let vc = AudioPlayerVC()
@@ -26,24 +28,67 @@ class AudioPlayerWindow {
     
     // MARK: - init
     
-    init() {
+    private init() {
         window = UIWindow(frame: CGRect(x: 0, y: CommonUsage.screenHeight - 140,
                                         width: CommonUsage.screenWidth, height: 60))
-        window?.windowLevel = .alert
-        window?.rootViewController = vc
-        window?.isHidden = true
-        window?.makeKeyAndVisible()
+        guard let scene = UIApplication.shared
+                .connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene else { return }
+        guard let window = window else { return }
+        window.windowScene = scene
+
+        
+//        window = UIWindow(frame: CGRect(x: 0, y: 0,
+//                                        width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
+
+        window.windowLevel = .alert
+        window.rootViewController = vc
+        window.isHidden = true
+        window.makeKeyAndVisible()
         vc.delegate = self
     }
     
     // MARK: - method
+    
+    func show() {
+        window?.isHidden = false
+
+    }
+    
+//    func resizeFrame(newWidth: CGFloat, newHeight: CGFloat) {
+//        if let originalFrame = window?.frame {
+//            let newSize = CGSize(width: newWidth, height: newHeight)
+//            window?.setFrame(CGRect(origin: originalFrame.origin, size: newSize), display: true, animate: true)
+//        }
+//    }
+    
+    
 }
 
 extension AudioPlayerWindow: DetailPageShowableDelegate {
     
     func showDetailPage() {
-        guard let showdetailPage = delegate?.showDetailPage else { return }
-        showdetailPage()
+        
+//        vc.view.isHidden = true
+        delegate?.showDetailPage?()
+
+        if let window = window {
+//            window.canResizeToFitContent = true
+            
+            UIView.animate(withDuration: 1, delay: 0, options: .curveEaseIn) {
+                window.frame = CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight)
+                window.layoutIfNeeded()
+            }
+
+            
+        }
+        
+//        window?.canResizeToFitContent = true
+////        resizeFrame(newWidth: CommonUsage.screenWidth, newHeight: CommonUsage.screenHeight)
+//        window?.frame = CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight)
+//        
+//        window?.layoutIfNeeded()
+        
+//        guard let showdetailPage = delegate?.showDetailPage else { return }
     }
     
 }

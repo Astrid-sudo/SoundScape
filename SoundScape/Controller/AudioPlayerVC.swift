@@ -21,7 +21,19 @@ class AudioPlayerVC: UIViewController {
     
     private let audioURL = Bundle.main.url(forResource: "memories", withExtension: "mp3")
     
+    private var dontShowDetailConstraint = NSLayoutConstraint()
+    
+    private var showDetailConstraint = NSLayoutConstraint()
+    
+    var soundDetailVC: SoundDetailVC?
+    
     // MARK: - UI properties
+    
+    lazy var baseView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(named: CommonUsage.scGreen)
+        return view
+    }()
     
     private lazy var audioImage: UIImageView = {
         let image = UIImageView()
@@ -87,22 +99,22 @@ class AudioPlayerVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+       
         addObserver()
-        
         view.backgroundColor = UIColor(named: CommonUsage.scGreen)
-        //        setAudioHelper()
+        
+        setupBaseVew()
         setAudioImage()
         setAudioTitle()
         setAuthorLabel()
         setPlayButton()
         setFavoriteButton()
-        //        setFakedata()
         setFullDurationView()
         setProgressView()
         setDetailButton()
-        
+        addDetailPage()
     }
+    
     
     // MARK: - init
     
@@ -118,30 +130,71 @@ class AudioPlayerVC: UIViewController {
         NotificationCenter.default.removeObserver(self)
     }
     
+    // MARK: - method
+    
+    private func addDetailPage() {
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "SoundDetailVC") as? SoundDetailVC else { return }
+
+        self.soundDetailVC = vc
+        guard let soundDetailVC = soundDetailVC else { return }
+        soundDetailVC.delegate = self
+        
+      view.addSubview(soundDetailVC.view)
+        soundDetailVC.view.translatesAutoresizingMaskIntoConstraints = false
+      
+        dontShowDetailConstraint = soundDetailVC.view.topAnchor.constraint(equalTo: view.bottomAnchor)
+        showDetailConstraint = soundDetailVC.view.topAnchor.constraint(equalTo: view.topAnchor)
+      
+      NSLayoutConstraint.activate([
+        soundDetailVC.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+        soundDetailVC.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        soundDetailVC.view.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight),
+        dontShowDetailConstraint
+      ])
+      
+        soundDetailVC.view.isHidden = true
+    }
+
+    
     // MARK: - UI method
     
+    private func setupBaseVew() {
+        view.addSubview(baseView)
+        baseView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            baseView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            baseView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            baseView.topAnchor.constraint(equalTo: view.topAnchor),
+            baseView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+//            baseView.heightAnchor.constraint(equalToConstant: 60),
+//            baseView.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: -120)
+        ])
+    }
+    
     private func setAudioImage() {
-        view.addSubview(audioImage)
+        baseView.addSubview(audioImage)
         audioImage.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            audioImage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
-            audioImage.topAnchor.constraint(equalTo: view.topAnchor, constant: 4),
+            audioImage.leadingAnchor.constraint(equalTo: baseView.leadingAnchor, constant: 8),
+            audioImage.topAnchor.constraint(equalTo: baseView.topAnchor, constant: 4),
             audioImage.widthAnchor.constraint(equalToConstant: 40),
             audioImage.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
     
     private func setAudioTitle() {
-        view.addSubview(audioTitleLabel)
+        baseView.addSubview(audioTitleLabel)
         audioTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             audioTitleLabel.leadingAnchor.constraint(equalTo: audioImage.trailingAnchor, constant: 20),
-            audioTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 4)
+            audioTitleLabel.topAnchor.constraint(equalTo: baseView.topAnchor, constant: 4)
         ])
     }
     
     private func setAuthorLabel() {
-        view.addSubview(authorLabel)
+        baseView.addSubview(authorLabel)
         authorLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             authorLabel.leadingAnchor.constraint(equalTo: audioImage.trailingAnchor, constant: 20),
@@ -150,10 +203,10 @@ class AudioPlayerVC: UIViewController {
     }
     
     private func setPlayButton() {
-        view.addSubview(playButton)
+        baseView.addSubview(playButton)
         playButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            playButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            playButton.trailingAnchor.constraint(equalTo: baseView.trailingAnchor, constant: -16),
             playButton.centerYAnchor.constraint(equalTo: audioImage.centerYAnchor),
             playButton.widthAnchor.constraint(equalToConstant: 50),
             playButton.heightAnchor.constraint(equalToConstant: 50)
@@ -161,7 +214,7 @@ class AudioPlayerVC: UIViewController {
     }
     
     private func setFavoriteButton() {
-        view.addSubview(favoriteButton)
+        baseView.addSubview(favoriteButton)
         favoriteButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             favoriteButton.trailingAnchor.constraint(equalTo: playButton.leadingAnchor, constant: -8),
@@ -177,35 +230,35 @@ class AudioPlayerVC: UIViewController {
     }
     
     private func setFullDurationView() {
-        view.addSubview(fullDurationView)
+        baseView.addSubview(fullDurationView)
         fullDurationView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            fullDurationView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            fullDurationView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            fullDurationView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -6),
+            fullDurationView.leadingAnchor.constraint(equalTo: baseView.leadingAnchor),
+            fullDurationView.trailingAnchor.constraint(equalTo: baseView.trailingAnchor),
+            fullDurationView.bottomAnchor.constraint(equalTo: baseView.bottomAnchor, constant: -6),
             fullDurationView.heightAnchor.constraint(equalToConstant: 2)
         ])
     }
     
     private func setProgressView() {
-        view.addSubview(progressView)
+        baseView.addSubview(progressView)
         progressView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            progressView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            progressView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            progressView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -6),
+            progressView.leadingAnchor.constraint(equalTo: baseView.leadingAnchor),
+            progressView.trailingAnchor.constraint(equalTo: baseView.trailingAnchor),
+            progressView.bottomAnchor.constraint(equalTo: baseView.bottomAnchor, constant: -6),
             progressView.heightAnchor.constraint(equalToConstant: 2)
         ])
     }
     
     private func setDetailButton() {
-        view.addSubview(detailButton)
+        baseView.addSubview(detailButton)
         detailButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            detailButton.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            detailButton.leadingAnchor.constraint(equalTo: baseView.leadingAnchor),
             detailButton.trailingAnchor.constraint(equalTo: favoriteButton.leadingAnchor),
-            detailButton.topAnchor.constraint(equalTo: view.topAnchor),
-            detailButton.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            detailButton.topAnchor.constraint(equalTo: baseView.topAnchor),
+            detailButton.bottomAnchor.constraint(equalTo: baseView.bottomAnchor)
         ])
     }
     
@@ -235,8 +288,29 @@ class AudioPlayerVC: UIViewController {
     }
     
     @objc func presentDetail() {
-        guard let showdetailPage = delegate?.showDetailPage else {return }
-        showdetailPage()
+//        guard let showdetailPage = delegate?.showDetailPage else {return }
+//        showdetailPage()
+        
+        AudioPlayerWindow.shared.showDetailPage()
+        
+//        view.isHidden = true
+        
+            
+            guard let soundDetailVC = soundDetailVC else { return }
+            
+    //        audioPlayerWindow.vc.timer?.invalidate()
+            
+    //        soundDetailVC.updateUI()
+
+            dontShowDetailConstraint.isActive = false
+            showDetailConstraint.isActive = true
+
+        UIView.animate(withDuration: 0.9, delay: 0, options: .curveLinear) {
+              soundDetailVC.view.isHidden = false
+                self.view.layoutIfNeeded()
+            }
+            
+        
     }
     
     @objc func updatePlayInfo(notification: Notification) {
@@ -348,6 +422,41 @@ class AudioPlayerVC: UIViewController {
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
         } else if remotePlayerHelper.state == .paused {
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+        }
+    }
+    
+}
+
+extension AudioPlayerVC: DetailPageShowableDelegate {
+    
+    func showDetailPage() {
+        
+        guard let soundDetailVC = soundDetailVC else { return }
+        
+//        audioPlayerWindow.vc.timer?.invalidate()
+        
+//        soundDetailVC.updateUI()
+
+        dontShowDetailConstraint.isActive = false
+        showDetailConstraint.isActive = true
+
+        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseIn) {
+          soundDetailVC.view.isHidden = false
+            self.view.layoutIfNeeded()
+        }
+        
+    }
+    
+    func leaveDetailPage() {
+        
+//        audioPlayerWindow.vc.updateUI()
+        
+        showDetailConstraint.isActive = false
+
+        dontShowDetailConstraint.isActive = true
+
+        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseIn) {
+            self.view.layoutIfNeeded()
         }
     }
     

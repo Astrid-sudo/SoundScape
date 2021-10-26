@@ -59,8 +59,13 @@ class SoundDetailVC: UIViewController {
     
     @IBAction func leaveDetailPage(_ sender: UIButton) {
         guard let leave = delegate?.leaveDetailPage else { return }
-        leave()
         timer?.invalidate()
+    
+        AudioPlayerWindow.shared.window?.frame = CGRect(x: 0, y: CommonUsage.screenHeight - 140,
+                                                            width: CommonUsage.screenWidth, height: 60)
+        
+        AudioPlayerWindow.shared.window?.rootViewController?.view.isHidden = false
+        leave()
     }
     
     @IBAction func playAudio(_ sender: UIButton) {

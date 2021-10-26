@@ -10,6 +10,7 @@ import AVFoundation
 
 protocol PlayRecoredStateChangableDelegate: AnyObject {
     func didFinishPlaying()
+    func updateRecordingTime(currentTime: TimeInterval)
 }
 
 enum AudioSessionMode {
@@ -26,7 +27,7 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     var audioRecorder: AVAudioRecorder?
    
     var audioPlayer: AVAudioPlayer? {
-        didSet{
+        didSet {
             audioPlayer?.delegate = self
         }
     }
@@ -40,6 +41,8 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     var duration: Double?
     
     weak var delegate: PlayRecoredStateChangableDelegate?
+    
+    var timer: Timer?
     
     // MARK: - init
     
@@ -106,12 +109,22 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         audioRecorder?.prepareToRecord()
         audioRecorder?.record()
         isRecording = true
+        timer = Timer.scheduledTimer(timeInterval: 0.5,
+                                     target: self,
+                                     selector: #selector(updateRecordTime),
+                                     userInfo: nil,
+                                     repeats: true)
+
     }
     
     func stopRecording() -> URL? {
         audioRecorder?.stop()
         isRecording = false
         settingAudioSession(toMode: .play)
+        
+        if let timer = timer {
+            timer.invalidate()
+        }
         
         return url
     }
@@ -138,6 +151,14 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
             isPlaying = false
             audioPlayer?.currentTime = 0
         }
+    }
+    
+    @objc func updateRecordTime() {
+        
+        guard let audioRecorder = audioRecorder else {
+            return
+        }
+        delegate?.updateRecordingTime(currentTime: audioRecorder.currentTime)
     }
     
 }

@@ -434,10 +434,6 @@ Cut
         return view
     }()
     
-    
-    //    var trimHeadOriginConstraint = NSLayoutConstraint()
-    
-    
     // MARK: - config UI method
     
     private func setGoUploadPageButton() {
@@ -534,8 +530,6 @@ Cut
     }
     
     private func setTrimHeadView() {
-        
-        //        trimHeadOriginConstraint = trimHeadView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
         
         view.addSubview(trimHeadView)
         

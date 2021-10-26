@@ -15,9 +15,30 @@ class RecordVC: UIViewController {
     
     // MARK: - UI properties
     
+    private lazy var goEditButton: UIButton = {
+        let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 30)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.edit, withConfiguration: config)
+        button.setImage(bigImage, for: .normal)
+        button.tintColor = .red
+        button.addTarget(self, action: #selector(pushToNext), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var recordTimeLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.textAlignment = .left
+        label.font = UIFont(name: CommonUsage.font, size: 40)
+        label.text = "00:0.0"
+        return label
+    }()
+
     private lazy var recordButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.record), for: .normal)
+        let config = UIImage.SymbolConfiguration(pointSize: 50)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.record, withConfiguration: config)
+        button.setImage(bigImage, for: .normal)
         button.tintColor = .red
               button.addTarget(self, action: #selector(manipulaterecord), for: .touchUpInside)
         return button
@@ -25,33 +46,34 @@ class RecordVC: UIViewController {
     
     private lazy var playbackButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+        let config = UIImage.SymbolConfiguration(pointSize: 50)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
+        button.setImage(bigImage, for: .normal)
         button.tintColor = .black
-              button.addTarget(self, action: #selector(manipulatePlayback), for: .touchUpInside)
+        button.addTarget(self, action: #selector(manipulatePlayback), for: .touchUpInside)
+        button.isHidden = true
         return button
     }()
     
     private lazy var stopButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.stopPlay), for: .normal)
+        let config = UIImage.SymbolConfiguration(pointSize: 50)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.stopPlay, withConfiguration: config)
+        button.setImage(bigImage, for: .normal)
         button.tintColor = .black
               button.addTarget(self, action: #selector(stopPlaying), for: .touchUpInside)
+        button.isHidden = true
+
         return button
     }()
 
-    private lazy var goEditButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.edit), for: .normal)
-        button.tintColor = .red
-        button.addTarget(self, action: #selector(pushToNext), for: .touchUpInside)
-        return button
-    }()
     
     // MARK: - life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setRecordTimeLabel()
         setRecordButton()
         setPlaybackButton()
         setStopButton()
@@ -64,6 +86,24 @@ class RecordVC: UIViewController {
     
     // MARK: - UI method
     
+    private func setGoEditButton() {
+        view.addSubview(goEditButton)
+        goEditButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            goEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            goEditButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
+        ])
+    }
+    
+    private func setRecordTimeLabel() {
+        view.addSubview(recordTimeLabel)
+        recordTimeLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            recordTimeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            recordTimeLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+
     private func setRecordButton() {
         view.addSubview(recordButton)
         recordButton.translatesAutoresizingMaskIntoConstraints = false
@@ -77,7 +117,7 @@ class RecordVC: UIViewController {
         view.addSubview(playbackButton)
         playbackButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            playbackButton.leadingAnchor.constraint(equalTo: recordButton.trailingAnchor, constant: 50),
+            playbackButton.leadingAnchor.constraint(equalTo: recordButton.trailingAnchor, constant: 10),
             playbackButton.centerYAnchor.constraint(equalTo: recordButton.centerYAnchor)
         ])
     }
@@ -91,40 +131,30 @@ class RecordVC: UIViewController {
         ])
     }
     
-    private func setGoEditButton() {
-        view.addSubview(goEditButton)
-        goEditButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            goEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            goEditButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
-        ])
-    }
-    
     // MARK: - action
     
     @objc func manipulaterecord() {
-        
+       
+        toggleRecordButtonImage()
         if audioRecordHelper.isRecording == false {
             audioRecordHelper.recordAudio()
-            recordButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.stopRecord), for: .normal)
+            playbackButton.isHidden = true
+            stopButton.isHidden = true
         } else {
-            audioRecordHelper.stopRecording()
-            recordButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.record), for: .normal)
+           audioRecordHelper.stopRecording()
+            playbackButton.isHidden = false
+            stopButton.isHidden = false
 
         }
-        
     }
     
     @objc func manipulatePlayback() {
-       
+        
+        togglePlayButtonImage()
         if audioRecordHelper.isPlaying == false {
             audioRecordHelper.playRecordedSound()
-            playbackButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-        
         } else {
-            
             audioRecordHelper.pausePlayRecorded()
-            playbackButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
         }
     }
     
@@ -132,8 +162,45 @@ class RecordVC: UIViewController {
         
         audioRecordHelper.stopPlaying()
         
-        playbackButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+        let config = UIImage.SymbolConfiguration(pointSize: 50)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
+        playbackButton.setImage(bigImage, for: .normal)
+    }
     
+    func toggleRecordButtonImage() {
+        
+        if audioRecordHelper.isRecording == false {
+            
+            let config = UIImage.SymbolConfiguration(pointSize: 50)
+            let bigImage = UIImage(systemName: CommonUsage.SFSymbol.stopRecord, withConfiguration: config)
+            recordButton.setImage(bigImage, for: .normal)
+
+        } else {
+            
+            let config = UIImage.SymbolConfiguration(pointSize: 50)
+            let bigImage = UIImage(systemName: CommonUsage.SFSymbol.record, withConfiguration: config)
+            recordButton.setImage(bigImage, for: .normal)
+
+        }
+        
+    }
+    
+    func togglePlayButtonImage() {
+        
+        if audioRecordHelper.isPlaying == false {
+            
+            let config = UIImage.SymbolConfiguration(pointSize: 50)
+            let bigImage = UIImage(systemName: CommonUsage.SFSymbol.pause, withConfiguration: config)
+            playbackButton.setImage(bigImage, for: .normal)
+
+        } else {
+            
+            let config = UIImage.SymbolConfiguration(pointSize: 50)
+            let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
+            playbackButton.setImage(bigImage, for: .normal)
+
+        }
+        
     }
 
     @objc func pushToNext() {
@@ -155,7 +222,18 @@ class RecordVC: UIViewController {
 extension RecordVC: PlayRecoredStateChangableDelegate {
     
     func didFinishPlaying() {
-        playbackButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+        let config = UIImage.SymbolConfiguration(pointSize: 50)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
+        playbackButton.setImage(bigImage, for: .normal)
+    }
+    
+    func updateRecordingTime(currentTime: TimeInterval) {
+        
+        let current = String(describing: currentTime).dropLast(13)
+        
+        recordTimeLabel.text = String(current)
+        print(String(current))
+        
     }
     
 }

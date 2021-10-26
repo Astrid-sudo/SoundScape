@@ -67,6 +67,7 @@ class RemotePlayHelper {
     
     var currentPlayInfo: PlayInfo? {
         didSet {
+            
             guard let currentPlayInfo = currentPlayInfo else { return }
             
             let userInfoKey = "UserInfo"
