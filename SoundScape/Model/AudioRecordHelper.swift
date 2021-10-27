@@ -10,7 +10,7 @@ import AVFoundation
 
 protocol PlayRecoredStateChangableDelegate: AnyObject {
     func didFinishPlaying()
-    func updateRecordingTime(currentTime: TimeInterval)
+    func updateTimeAndPower(currentTime: TimeInterval, power: Float)
 }
 
 enum AudioSessionMode {
@@ -50,7 +50,7 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         super.init()
         
         //init an audio recorder
-        let filename = "User.wav"
+        let filename = "User.m4a"
         let path = NSHomeDirectory() + "/Documents/" + filename
         //        let url = URL(fileURLWithPath: path)
         self.url = URL(fileURLWithPath: path)
@@ -65,6 +65,7 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         
         do {
             audioRecorder = try AVAudioRecorder(url: url, settings: recordSettings)
+            audioRecorder?.isMeteringEnabled = true
             audioRecorder?.delegate = self
         } catch {
             print(error.localizedDescription)
@@ -109,9 +110,9 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         audioRecorder?.prepareToRecord()
         audioRecorder?.record()
         isRecording = true
-        timer = Timer.scheduledTimer(timeInterval: 0.5,
+        timer = Timer.scheduledTimer(timeInterval: 0.001,
                                      target: self,
-                                     selector: #selector(updateRecordTime),
+                                     selector: #selector(updateTimeAndPower),
                                      userInfo: nil,
                                      repeats: true)
 
@@ -153,13 +154,30 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         }
     }
     
-    @objc func updateRecordTime() {
+    @objc func updateTimeAndPower() {
         
         guard let audioRecorder = audioRecorder else {
             return
         }
-        delegate?.updateRecordingTime(currentTime: audioRecorder.currentTime)
+        
+        let avaragePower = audioRecorder.averagePower(forChannel: 0)
+        let peak = audioRecorder.peakPower(forChannel: 0)
+        print("from AudioHelper Recorder_avaragePower: \(avaragePower), peak: \(peak)")
+
+        delegate?.updateTimeAndPower(currentTime: audioRecorder.currentTime, power: avaragePower)
+        
     }
+    
+//    func showAveragePower() {
+//        
+//        guard let audioRecorder = audioRecorder else { return }
+//        
+//        let avaragePower = audioRecorder.averagePower(forChannel: 0)
+//        let peak = audioRecorder.peakPower(forChannel: 0)
+//        print("from AudioHelper Recorder_avaragePower: \(avaragePower), peak: \(peak)")
+//        
+//
+//    }
     
 }
 

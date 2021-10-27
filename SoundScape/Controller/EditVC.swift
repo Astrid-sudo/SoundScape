@@ -54,11 +54,11 @@ class EditVC: UIViewController {
             
             durationLabel.text = String(describing: originDuraion)
             
-                        if originDuraion <= 120 {
-                            goUploadPageButton.isHidden = false
-                        } else {
-                            goUploadPageButton.isHidden = true
-                        }
+            if originDuraion <= 120 {
+                goUploadPageButton.isHidden = false
+            } else {
+                goUploadPageButton.isHidden = true
+            }
             
         }
     }
@@ -80,7 +80,7 @@ class EditVC: UIViewController {
             
             //render waveform
             
-            waveformImageView.waveformColor = .clear
+            //            waveformImageView.waveformColor = .clear
             
             guard let selectedFileURL = selectedFileURL else { return }
             
@@ -125,7 +125,11 @@ class EditVC: UIViewController {
         super.viewDidLayoutSubviews()
         
         setTrimHeadView()
+        setTrimHeadPreciseView()
+        
         setTrimTailView()
+        
+        setTrimTailPreciseView()
         
     }
     
@@ -166,13 +170,13 @@ class EditVC: UIViewController {
         uploadVC.selectedFileURL = selectedFileURL
         uploadVC.selectedFileDuration = originDuraion
         navigationController?.pushViewController(uploadVC, animated: true)
-
+        
     }
     
     @objc func setDurationText(notification: Notification) {
         guard let duration = notification.userInfo?["UserInfo"] as? Double else { return }
         print("EditVC recieved duration \(duration)")
-        slider.maximumValue = Float(duration)
+//        slider.maximumValue = Float(duration)
         self.originDuraion = duration
     }
     
@@ -202,7 +206,7 @@ class EditVC: UIViewController {
         
         DispatchQueue.main.async { [self] in
             self.currentTimeLabel.text = String(describing: currentTime)
-            self.slider.value = Float(currentTime)
+//            self.slider.value = Float(currentTime)
             
         }
     }
@@ -210,20 +214,27 @@ class EditVC: UIViewController {
     private func updateWaveformImages(localURL: URL) {
         // always uses background thread rendering
         
-        DispatchQueue.main.async {
+        let config = Waveform.Style.StripeConfig.init(color: UIColor(named: CommonUsage.scOrange) ?? .orange, width: 3.0, spacing: 3.5, lineCap: .butt)
+        
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             self.waveformImageDrawer.waveformImage(fromAudioAt: localURL,
-                                                   size: self.waveformImageView.bounds.size,
-                                                   color: UIColor(named: CommonUsage.scOrange) ?? .orange,
-                                                   style: .striped,
-                                                   position: .middle) { image in
-                // need to jump back to main queue
+                                                   with: Waveform.Configuration(size: self.waveformImageView.bounds.size,
+                                                                                backgroundColor: .white, style: .striped(config) ,
+                                                                                dampening: nil,
+                                                                                position: .middle,
+                                                                                scale: 10.0 ,
+                                                                                verticalScalingFactor: 0.5,
+                                                                                shouldAntialias: true),
+                                                   completionHandler: { image in
                 DispatchQueue.main.async {
                     self.waveformImageView.image = image
-                    
                 }
-            }
+            })
             
         }
+        
         
     }
     
@@ -250,21 +261,26 @@ class EditVC: UIViewController {
     }
     
     @objc func scrubToTime() {
-        remotePlayerHelper.seek(position: Double(slider.value))
+//        remotePlayerHelper.seek(position: Double(slider.value))
     }
     
     @objc func handleHeadPanGesture(pan: UIPanGestureRecognizer) {
+        
         let translation = pan.translation(in: view)
         print("*****translation \(translation)******************")
         guard let trimHeadView = pan.view else {
             return
         }
+        
         trimHeadView.center.x = translation.x +  trimHeadView.center.x
-        view.layoutIfNeeded()
+        
         pan.setTranslation(.zero, in: view)
+        
         guard pan.state == .ended else {
             return
         }
+//        view.layoutIfNeeded()
+
         let velocity = pan.velocity(in: view)
         let vectorToFinalPoint = CGPoint(x: velocity.x / 15, y: velocity.y / 15)
         let bounds = view.bounds.inset(by: view.safeAreaInsets)
@@ -275,8 +291,16 @@ class EditVC: UIViewController {
         if finalPoint.x >= trimTailViewX {
             finalPoint.x = trimTailViewX - 5
         }
+        
         trimHeadView.center.x = finalPoint.x
+        
+        trimHeadView.frame = CGRect(x: finalPoint.x, y: slider.center.y - 100, width: 60, height: 200)
+        
+        
+        
         trimHeadViewX = trimHeadView.center.x
+//        view.layoutIfNeeded()
+
         calculateDuration()
     }
     
@@ -300,7 +324,7 @@ class EditVC: UIViewController {
         //        finalPoint.x = min(max(finalPoint.x, bounds.minX), bounds.maxX)
         finalPoint.x = min(max(finalPoint.x, sliderCenterX), bounds.maxX)
         if finalPoint.x <= trimHeadViewX {
-            finalPoint.x = trimHeadViewX + 5 
+            finalPoint.x = trimHeadViewX + 5
         }
         trimTailView.center.x = finalPoint.x
         trimTailViewX = trimTailView.center.x
@@ -315,7 +339,7 @@ class EditVC: UIViewController {
         button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
         button.backgroundColor = UIColor(named: CommonUsage.scRed)
         button.layer.cornerRadius = 15
-              button.addTarget(self, action: #selector(goUpload), for: .touchUpInside)
+        button.addTarget(self, action: #selector(goUpload), for: .touchUpInside)
         return button
     }()
     
@@ -401,10 +425,9 @@ Cut
         //        image.withTintColor(.red)
         //        slider.setThumbImage(image, for: .normal)
         
-        
         slider.minimumValue = 0
-        //        slider.maximumValue = 100
-        slider.value = 0
+                slider.maximumValue = 100
+        slider.value = 50
         slider.isEnabled = true
         slider.isContinuous = true
         
@@ -414,25 +437,42 @@ Cut
                 #selector(scrubToTime),
             for: UIControl.Event.valueChanged)
         
-        
         return slider
     }()
     
     private lazy var trimHeadView: UIView = {
         let view = UIView()
-        view.backgroundColor = .yellow
+        //        view.backgroundColor = .yellow
+        view.backgroundColor = UIColor(red: 0, green: 0, blue: 100, alpha: 0.01)
         let trimHeadPanReconizer = UIPanGestureRecognizer(target: self, action: #selector(handleHeadPanGesture))
+        trimHeadPanReconizer.delegate = self
         view.addGestureRecognizer(trimHeadPanReconizer)
         return view
     }()
     
     private lazy var trimTailView: UIView = {
         let view = UIView()
-        view.backgroundColor = .red
+        //        view.backgroundColor = .red
+        view.backgroundColor = UIColor(red: 139, green: 0, blue: 0, alpha: 0.01)
+        
         let trimTailPanReconizer = UIPanGestureRecognizer(target: self, action: #selector(handleTailPanGesture))
+        trimTailPanReconizer.delegate = self
         view.addGestureRecognizer(trimTailPanReconizer)
         return view
     }()
+    
+    private lazy var trimHeadPreciseView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemBlue
+        return view
+    }()
+    
+    private lazy var trimTailPreciseView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemIndigo
+        return view
+    }()
+    
     
     // MARK: - config UI method
     
@@ -462,10 +502,10 @@ Cut
         view.addSubview(waveformImageView)
         waveformImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            waveformImageView.topAnchor.constraint(equalTo: lowCutButton.bottomAnchor, constant: 60),
+            waveformImageView.topAnchor.constraint(equalTo: lowCutButton.bottomAnchor, constant: 16),
             waveformImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             waveformImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            waveformImageView.heightAnchor.constraint(equalToConstant: 200)
+            waveformImageView.heightAnchor.constraint(equalToConstant: 100)
         ])
     }
     
@@ -486,9 +526,7 @@ Cut
         playButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             playButton.topAnchor.constraint(equalTo: trimButton.bottomAnchor, constant: 16),
-            playButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            playButton.heightAnchor.constraint(equalToConstant: 60),
-            playButton.widthAnchor.constraint(equalToConstant: 60)
+            playButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
     
@@ -505,7 +543,7 @@ Cut
         view.addSubview(durationTitleLabel)
         durationTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            durationTitleLabel.topAnchor.constraint(equalTo: currentTimeLabel.bottomAnchor, constant: 16),
+            durationTitleLabel.topAnchor.constraint(equalTo: currentTimeLabel.bottomAnchor, constant: 8),
             durationTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 100)
         ])
     }
@@ -533,23 +571,49 @@ Cut
         
         view.addSubview(trimHeadView)
         
-        trimHeadView.frame = CGRect(x: slider.center.x - slider.frame.width / 2,
-                                    y: slider.center.y - 100,
-                                    width: 10,
-                                    height: 200)
+                trimHeadView.frame = CGRect(x: slider.center.x - slider.frame.width / 2 - 2,
+                                            y: slider.center.y - 100,
+                                            width: 60,
+                                            height: 200)
         view.layoutIfNeeded()
     }
     
     private func setTrimTailView() {
         view.addSubview(trimTailView)
         
-        trimTailView.frame = CGRect(x: CommonUsage.screenWidth - 26,
+        trimTailView.frame = CGRect(x: CommonUsage.screenWidth - 75,
                                     y: slider.center.y - 100,
-                                    width: 10,
+                                    width: 60,
                                     height: 200)
+
+        trimTailView.center.x = 195.0
+
         view.layoutIfNeeded()
         
     }
+    
+    private func setTrimHeadPreciseView() {
+        
+        trimHeadView.addSubview(trimHeadPreciseView)
+        trimHeadPreciseView.frame = CGRect(x: 0,
+                                           y: 0,
+                                           width: 3,
+                                           height: 200)
+        
+    }
+    
+    private func setTrimTailPreciseView() {
+        
+        trimTailView.addSubview(trimTailPreciseView)
+        
+        trimTailPreciseView.frame = CGRect(x: trimTailView.frame.width,
+                                           y: 0,
+                                           width: 3,
+                                           height: 200)
+        view.layoutIfNeeded()
+    }
+    
+    
     
 }
 
@@ -558,4 +622,8 @@ extension EditVC: TrimAudioManagerDelegate {
     func didExport(to url: URL) {
         selectedFileURL = url
     }
+}
+
+extension EditVC: UIGestureRecognizerDelegate {
+    
 }

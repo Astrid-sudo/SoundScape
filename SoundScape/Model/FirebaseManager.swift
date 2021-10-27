@@ -143,8 +143,8 @@ class FirebaseManager {
         var fullPost = post
         
         let metadata = StorageMetadata()
-        metadata.contentType = "audio/wav"
-        let audioName = NSUUID().uuidString + ".wav"
+        metadata.contentType = "audio/m4a"
+        let audioName = NSUUID().uuidString + ".m4a"
         
         let audioReference = storage.child("\(audioName)")
         let uploadTask = audioReference.putFile(from: localURL, metadata: nil) { metadata, error in

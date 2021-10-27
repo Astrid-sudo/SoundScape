@@ -133,7 +133,7 @@ class UploadVC: UIViewController {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 150)
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
         ])
     }
     
@@ -163,7 +163,7 @@ class UploadVC: UIViewController {
             descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             descriptionTextView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 16),
-            descriptionTextView.heightAnchor.constraint(equalToConstant: 100)
+            descriptionTextView.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
@@ -183,7 +183,7 @@ class UploadVC: UIViewController {
             categorySegmentControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             categorySegmentControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             categorySegmentControl.topAnchor.constraint(equalTo: categoryLabel.bottomAnchor, constant: 16),
-            categorySegmentControl.heightAnchor.constraint(equalToConstant: 30)
+            categorySegmentControl.heightAnchor.constraint(equalToConstant: 15)
         ])
     }
     
@@ -203,7 +203,7 @@ class UploadVC: UIViewController {
             mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             mapView.topAnchor.constraint(equalTo: mapLabel.bottomAnchor, constant: 16),
-            mapView.heightAnchor.constraint(equalToConstant: 100)
+            mapView.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
