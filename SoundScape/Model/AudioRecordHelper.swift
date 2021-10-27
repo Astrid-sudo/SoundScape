@@ -10,6 +10,7 @@ import AVFoundation
 
 protocol PlayRecoredStateChangableDelegate: AnyObject {
     func didFinishPlaying()
+    func updateTimeAndPower(currentTime: TimeInterval, power: Float)
 }
 
 enum AudioSessionMode {
@@ -26,7 +27,7 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     var audioRecorder: AVAudioRecorder?
    
     var audioPlayer: AVAudioPlayer? {
-        didSet{
+        didSet {
             audioPlayer?.delegate = self
         }
     }
@@ -41,13 +42,15 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     
     weak var delegate: PlayRecoredStateChangableDelegate?
     
+    var timer: Timer?
+    
     // MARK: - init
     
     private override init() {
         super.init()
         
         //init an audio recorder
-        let filename = "User.wav"
+        let filename = "User.m4a"
         let path = NSHomeDirectory() + "/Documents/" + filename
         //        let url = URL(fileURLWithPath: path)
         self.url = URL(fileURLWithPath: path)
@@ -62,6 +65,7 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         
         do {
             audioRecorder = try AVAudioRecorder(url: url, settings: recordSettings)
+            audioRecorder?.isMeteringEnabled = true
             audioRecorder?.delegate = self
         } catch {
             print(error.localizedDescription)
@@ -106,12 +110,22 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         audioRecorder?.prepareToRecord()
         audioRecorder?.record()
         isRecording = true
+        timer = Timer.scheduledTimer(timeInterval: 0.001,
+                                     target: self,
+                                     selector: #selector(updateTimeAndPower),
+                                     userInfo: nil,
+                                     repeats: true)
+
     }
     
     func stopRecording() -> URL? {
         audioRecorder?.stop()
         isRecording = false
         settingAudioSession(toMode: .play)
+        
+        if let timer = timer {
+            timer.invalidate()
+        }
         
         return url
     }
@@ -139,6 +153,31 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
             audioPlayer?.currentTime = 0
         }
     }
+    
+    @objc func updateTimeAndPower() {
+        
+        guard let audioRecorder = audioRecorder else {
+            return
+        }
+        
+        let avaragePower = audioRecorder.averagePower(forChannel: 0)
+        let peak = audioRecorder.peakPower(forChannel: 0)
+        print("from AudioHelper Recorder_avaragePower: \(avaragePower), peak: \(peak)")
+
+        delegate?.updateTimeAndPower(currentTime: audioRecorder.currentTime, power: avaragePower)
+        
+    }
+    
+//    func showAveragePower() {
+//        
+//        guard let audioRecorder = audioRecorder else { return }
+//        
+//        let avaragePower = audioRecorder.averagePower(forChannel: 0)
+//        let peak = audioRecorder.peakPower(forChannel: 0)
+//        print("from AudioHelper Recorder_avaragePower: \(avaragePower), peak: \(peak)")
+//        
+//
+//    }
     
 }
 

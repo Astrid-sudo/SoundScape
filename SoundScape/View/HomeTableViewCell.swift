@@ -43,7 +43,7 @@ class HomeTableViewCell: UITableViewCell {
         return collectionView
     }()
     
-    // MARK:- init
+    // MARK: - init
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -117,7 +117,8 @@ extension HomeTableViewCell: UICollectionViewDelegate {
 //        (Because in class RemotePlayHelper, set url will make playinfo be nil.)
         remotePlayHelper.url = firebaseData[indexPath.item].audioURL
         remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration)
-        scTabBarController.showAudioPlayer()
+//        scTabBarController.showAudioPlayer()
+        AudioPlayerWindow.shared.show()
     }
     
 }

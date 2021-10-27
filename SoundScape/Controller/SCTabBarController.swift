@@ -15,7 +15,7 @@ class SCTabBarController: UITabBarController {
     
     static let reuseIdentifier = String(describing: SCTabBarController.self)
     
-    let audioPlayerWindow = AudioPlayerWindow()
+//    let audioPlayerWindow = AudioPlayerWindow()
     
     private var dontShowDetailConstraint = NSLayoutConstraint()
     
@@ -30,18 +30,12 @@ class SCTabBarController: UITabBarController {
         super.viewDidLoad()
         
         view.backgroundColor = .orange
-        audioPlayerWindow.delegate = self
-        addDetailPage()
+//        audioPlayerWindow.delegate = self
+//        addDetailPage()
     }
     
     // MARK: - method
     
-    func showAudioPlayer() {
-        
-        if let audioPlayerWindow = audioPlayerWindow.window {
-            view.addSubview(audioPlayerWindow)
-        }
-    }
     
     private func addDetailPage() {
         
@@ -76,10 +70,6 @@ extension SCTabBarController: DetailPageShowableDelegate {
         
         guard let soundDetailVC = soundDetailVC else { return }
         
-        audioPlayerWindow.vc.timer?.invalidate()
-        
-//        soundDetailVC.updateUI()
-
         dontShowDetailConstraint.isActive = false
         showDetailConstraint.isActive = true
 
@@ -91,8 +81,6 @@ extension SCTabBarController: DetailPageShowableDelegate {
     }
     
     func leaveDetailPage() {
-        
-        audioPlayerWindow.vc.updateUI()
         
         showDetailConstraint.isActive = false
 
