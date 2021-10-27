@@ -8,7 +8,6 @@
 import UIKit
 import DSWaveformImage
 
-
 class RecordVC: UIViewController {
     
     // MARK: - properties
@@ -76,7 +75,6 @@ class RecordVC: UIViewController {
         return button
     }()
     
-    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -141,7 +139,6 @@ class RecordVC: UIViewController {
         ])
     }
 
-    
     private func setRecordTimeLabel() {
         view.addSubview(recordTimeLabel)
         recordTimeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -279,14 +276,11 @@ extension RecordVC: PlayRecoredStateChangableDelegate {
         
         print(String(current), linear)
 
-
         // Here we add the same sample 3 times to speed up the animation.
         // Usually you'd just add the sample once.
         waveformLiveView.add(samples: [linear])
 
-
     }
-    
     
     func didFinishPlaying() {
         let config = UIImage.SymbolConfiguration(pointSize: 50)
@@ -294,24 +288,5 @@ extension RecordVC: PlayRecoredStateChangableDelegate {
         playbackButton.setImage(bigImage, for: .normal)
     }
     
-//    func updateRecordingTime(currentTime: TimeInterval) {
-//
-//        let current = String(describing: currentTime).dropLast(13)
-//        audioRecordHelper.audioRecorder?.updateMeters()
-//        recordTimeLabel.text = String(current)
-//        print(String(current))
-//
-//    }
-    
-    
-    
 }
 
-/*
- let linear = 1 - pow(10, avaragePower / 20)
-
- // Here we add the same sample 3 times to speed up the animation.
- // Usually you'd just add the sample once.
- waveformView.add(samples: [linear, linear, linear])
-
- */

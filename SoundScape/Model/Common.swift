@@ -21,20 +21,20 @@ struct CommonUsage {
     static let scDarkGreen = "scDarkGreen"
     static let scGreen = "scGreen"
     static let scLightGreen = "scLightGreen"
-
+    
     static let scBlue = "scBlue"
     static let scLightBlue = "scLightBlue"
     static let scSuperLightBlue = "scSuperLightBlue"
-
+    
     static let scDarkYellow = "scDarkYellow"
     static let scYellow = "scYellow"
-
+    
     static let scOrange = "scOrange"
     static let scRed = "scRed"
-
+    
     static let scWhite = "scWhite"
     static let scGray = "scGray"
-
+    
     struct SFSymbol {
         static let play = "play.fill"
         static let stopPlay = "stop.fill"
@@ -65,15 +65,25 @@ struct CommonUsage {
 
 extension UITextField {
     
-    func setLeftPaddingPoints(amount:CGFloat) {
+    func setLeftPaddingPoints(amount: CGFloat) {
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
         self.leftView = paddingView
         self.leftViewMode = .always
     }
     
-    func setRightPaddingPoints(amount:CGFloat) {
+    func setRightPaddingPoints(amount: CGFloat) {
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
         self.rightView = paddingView
         self.rightViewMode = .always
+    }
+}
+
+extension UIView {
+    func snapshot() -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(self.bounds.size, true, UIScreen.main.scale)
+        self.layer.render(in: UIGraphicsGetCurrentContext()!)
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return img
     }
 }

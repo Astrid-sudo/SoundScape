@@ -23,9 +23,9 @@ struct PlayProgress {
 
 class RemotePlayHelper {
     
-/*
- Must set url first, then set playInfo. (Because in class RemotePlayHelper, set url will make playinfo be nil.)
- */
+    /*
+     Must set url first, then set playInfo. (Because in class RemotePlayHelper, set url will make playinfo be nil.)
+     */
     
     // MARK: - properties
     
@@ -59,7 +59,7 @@ class RemotePlayHelper {
             let userInfoKey = "UserInfo"
             let userInfo: [AnyHashable: Any] = [userInfoKey: url]
             NotificationCenter.default.post(name: .remoteURLDidSelect, object: nil, userInfo: userInfo)
-
+            
             player.load(media: playerMedia, autostart: false)
         }
         
@@ -75,7 +75,7 @@ class RemotePlayHelper {
             NotificationCenter.default.post(name: .playingAudioChange, object: nil, userInfo: userInfo)
         }
     }
-
+    
     
     // MARK: - init
     
@@ -111,6 +111,24 @@ class RemotePlayHelper {
         player.seek(position: position)
     }
     
+    func limitCurrentTime(head: Double, tail: Double) {
+        
+        
+        if player.currentTime < head {
+            if player.state == .playing {
+                pause()
+            }
+            seek(position: head)
+        }
+        
+        if player.currentTime > tail {
+            if player.state == .playing {
+                pause()
+            }
+            seek(position: head)
+        }
+        
+    }
     // MARK: - method
     
     // Consider whether keep this method or not
@@ -135,7 +153,7 @@ extension RemotePlayHelper: ModernAVPlayerDelegate {
         let userInfoKey = "UserInfo"
         let userInfo: [AnyHashable: Any] = [userInfoKey: ModernAVPlayer.State.self]
         NotificationCenter.default.post(name: .didStateChange, object: nil, userInfo: userInfo)
-
+        
     }
     
     func modernAVPlayer(_ player: ModernAVPlayer, didCurrentTimeChange currentTime: Double) {
@@ -147,18 +165,18 @@ extension RemotePlayHelper: ModernAVPlayerDelegate {
             let playProgress = PlayProgress(currentTime: currentTime, duration: currentPlayInfo.duration)
             let userInfoKey = "UserInfo"
             let userInfo: [AnyHashable: Any] = [userInfoKey: playProgress]
-           
+            
             NotificationCenter.default.post(name: .didCurrentTimeChange, object: nil, userInfo: userInfo)
-        
+            
         } else { //play audio from local url (EditVC will get this Notification)
             
             let userInfoKey = "UserInfo"
             let userInfo: [AnyHashable: Any] = [userInfoKey: currentTime]
             NotificationCenter.default.post(name: .didCurrentTimeChange, object: nil, userInfo: userInfo)
-
+            
             
         }
-
+        
     }
     
     func modernAVPlayer(_ player: ModernAVPlayer, didItemPlayToEndTime endTime: Double) {
@@ -173,7 +191,7 @@ extension RemotePlayHelper: ModernAVPlayerDelegate {
         let userInfoKey = "UserInfo"
         let userInfo: [AnyHashable: Any] = [userInfoKey: itemDuration]
         NotificationCenter.default.post(name: .didItemDurationChange, object: nil, userInfo: userInfo)
-
+        
     }
 }
 
@@ -184,6 +202,6 @@ extension Notification.Name {
     static let didStateChange = Notification.Name("didStateChange")
     static let remoteURLDidSelect = Notification.Name("remoteURLDidSelect")
     static let didItemDurationChange = Notification.Name("didItemDurationChange")
-
-
+    
+    
 }

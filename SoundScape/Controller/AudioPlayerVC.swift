@@ -99,7 +99,7 @@ class AudioPlayerVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+        
         addObserver()
         view.backgroundColor = UIColor(named: CommonUsage.scGreen)
         
@@ -136,27 +136,27 @@ class AudioPlayerVC: UIViewController {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let vc = storyboard.instantiateViewController(withIdentifier: "SoundDetailVC") as? SoundDetailVC else { return }
-
+        
         self.soundDetailVC = vc
         guard let soundDetailVC = soundDetailVC else { return }
         soundDetailVC.delegate = self
         
-      view.addSubview(soundDetailVC.view)
+        view.addSubview(soundDetailVC.view)
         soundDetailVC.view.translatesAutoresizingMaskIntoConstraints = false
-      
+        
         dontShowDetailConstraint = soundDetailVC.view.topAnchor.constraint(equalTo: view.bottomAnchor)
         showDetailConstraint = soundDetailVC.view.topAnchor.constraint(equalTo: view.topAnchor)
-      
-      NSLayoutConstraint.activate([
-        soundDetailVC.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-        soundDetailVC.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        soundDetailVC.view.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight),
-        dontShowDetailConstraint
-      ])
-      
+        
+        NSLayoutConstraint.activate([
+            soundDetailVC.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            soundDetailVC.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            soundDetailVC.view.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight),
+            dontShowDetailConstraint
+        ])
+        
         soundDetailVC.view.isHidden = true
     }
-
+    
     
     // MARK: - UI method
     
@@ -168,8 +168,8 @@ class AudioPlayerVC: UIViewController {
             baseView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             baseView.topAnchor.constraint(equalTo: view.topAnchor),
             baseView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-//            baseView.heightAnchor.constraint(equalToConstant: 60),
-//            baseView.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: -120)
+            //            baseView.heightAnchor.constraint(equalToConstant: 60),
+            //            baseView.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: -120)
         ])
     }
     
@@ -284,32 +284,32 @@ class AudioPlayerVC: UIViewController {
         let timeProgress = currentTime / duration
         
         updateProgressWaveform(timeProgress)
-
+        
     }
     
     @objc func presentDetail() {
-//        guard let showdetailPage = delegate?.showDetailPage else {return }
-//        showdetailPage()
+        //        guard let showdetailPage = delegate?.showDetailPage else {return }
+        //        showdetailPage()
         
         AudioPlayerWindow.shared.showDetailPage()
         
-//        view.isHidden = true
+        //        view.isHidden = true
         
-            
-            guard let soundDetailVC = soundDetailVC else { return }
-            
-    //        audioPlayerWindow.vc.timer?.invalidate()
-            
-    //        soundDetailVC.updateUI()
-
-            dontShowDetailConstraint.isActive = false
-            showDetailConstraint.isActive = true
-
+        
+        guard let soundDetailVC = soundDetailVC else { return }
+        
+        //        audioPlayerWindow.vc.timer?.invalidate()
+        
+        //        soundDetailVC.updateUI()
+        
+        dontShowDetailConstraint.isActive = false
+        showDetailConstraint.isActive = true
+        
         UIView.animate(withDuration: 0.9, delay: 0, options: .curveLinear) {
-              soundDetailVC.view.isHidden = false
-                self.view.layoutIfNeeded()
-            }
-            
+            soundDetailVC.view.isHidden = false
+            self.view.layoutIfNeeded()
+        }
+        
         
     }
     
@@ -433,15 +433,15 @@ extension AudioPlayerVC: DetailPageShowableDelegate {
         
         guard let soundDetailVC = soundDetailVC else { return }
         
-//        audioPlayerWindow.vc.timer?.invalidate()
+        //        audioPlayerWindow.vc.timer?.invalidate()
         
-//        soundDetailVC.updateUI()
-
+        //        soundDetailVC.updateUI()
+        
         dontShowDetailConstraint.isActive = false
         showDetailConstraint.isActive = true
-
+        
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseIn) {
-          soundDetailVC.view.isHidden = false
+            soundDetailVC.view.isHidden = false
             self.view.layoutIfNeeded()
         }
         
@@ -449,12 +449,12 @@ extension AudioPlayerVC: DetailPageShowableDelegate {
     
     func leaveDetailPage() {
         
-//        audioPlayerWindow.vc.updateUI()
+        //        audioPlayerWindow.vc.updateUI()
         
         showDetailConstraint.isActive = false
-
+        
         dontShowDetailConstraint.isActive = true
-
+        
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseIn) {
             self.view.layoutIfNeeded()
         }
