@@ -114,7 +114,6 @@ class RecordVC: UIViewController {
                                                                              verticalScalingFactor: nil, shouldDampenSides: true, shouldAntialias: false)
         
         waveformLiveView.shouldDrawSilencePadding = true
-//        audioManager.prepareAudioRecording()
     }
 
     // MARK: - UI method

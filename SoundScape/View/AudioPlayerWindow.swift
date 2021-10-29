@@ -36,10 +36,6 @@ class AudioPlayerWindow {
         guard let window = window else { return }
         window.windowScene = scene
 
-        
-//        window = UIWindow(frame: CGRect(x: 0, y: 0,
-//                                        width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
-
         window.windowLevel = .alert
         window.rootViewController = vc
         window.isHidden = true
@@ -68,11 +64,9 @@ extension AudioPlayerWindow: DetailPageShowableDelegate {
     
     func showDetailPage() {
         
-//        vc.view.isHidden = true
         delegate?.showDetailPage?()
 
         if let window = window {
-//            window.canResizeToFitContent = true
             
             UIView.animate(withDuration: 1, delay: 0, options: .curveEaseIn) {
                 window.frame = CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight)
@@ -82,13 +76,6 @@ extension AudioPlayerWindow: DetailPageShowableDelegate {
             
         }
         
-//        window?.canResizeToFitContent = true
-////        resizeFrame(newWidth: CommonUsage.screenWidth, newHeight: CommonUsage.screenHeight)
-//        window?.frame = CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight)
-//        
-//        window?.layoutIfNeeded()
-        
-//        guard let showdetailPage = delegate?.showDetailPage else { return }
     }
     
 }

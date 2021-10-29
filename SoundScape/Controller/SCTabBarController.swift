@@ -30,8 +30,6 @@ class SCTabBarController: UITabBarController {
         super.viewDidLoad()
         
         view.backgroundColor = .orange
-//        audioPlayerWindow.delegate = self
-//        addDetailPage()
     }
     
     // MARK: - method

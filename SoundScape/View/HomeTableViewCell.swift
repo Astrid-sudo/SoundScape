@@ -117,7 +117,6 @@ extension HomeTableViewCell: UICollectionViewDelegate {
 //        (Because in class RemotePlayHelper, set url will make playinfo be nil.)
         remotePlayHelper.url = firebaseData[indexPath.item].audioURL
         remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration)
-//        scTabBarController.showAudioPlayer()
         AudioPlayerWindow.shared.show()
     }
     
