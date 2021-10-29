@@ -12,7 +12,6 @@ class EditVC: UIViewController {
     
     // MARK: - properties
     
-    
     var trimHeadViewX: CGFloat {
         trimHeadView.center.x
     }
@@ -21,17 +20,14 @@ class EditVC: UIViewController {
         trimTailView.center.x
     }
     
-    
     var trimHeadTime: Double {
         guard let originDuraion = originDuraion else { return 0.0}
         return (trimHeadViewX - 21) / (CommonUsage.screenWidth - 32) * originDuraion
-        
     }
     
     var trimTailTime: Double {
         guard let originDuraion = originDuraion else { return 0.0 }
         return (trimTailViewX + 30)  * originDuraion / (slider.frame.width)
-        //        return (trimTailViewX - 100) / (CommonUsage.screenWidth - 32) * originDuraion
     }
     var sliderCenterX: CGFloat {
         CGFloat(slider.value / slider.maximumValue) * (CommonUsage.screenWidth - 32)
@@ -79,7 +75,7 @@ class EditVC: UIViewController {
             
             // prepare player
             remotePlayerHelper.url = selectedFileURL
-            TrimAudioManager.shared.originalURL = selectedFileURL
+            EditAudioManager.shared.originalURL = selectedFileURL
             
         }
     }
@@ -91,7 +87,7 @@ class EditVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        TrimAudioManager.shared.delegate = self
+        EditAudioManager.shared.delegate = self
         
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
@@ -154,12 +150,26 @@ class EditVC: UIViewController {
     }
     
     @objc func goUpload() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let uploadVC = storyboard.instantiateViewController(withIdentifier: "UploadVC") as? UploadVC else { return }
-        uploadVC.selectedFileURL = selectedFileURL
-        uploadVC.selectedFileDuration = originDuraion
-        navigationController?.pushViewController(uploadVC, animated: true)
         
+        if EditAudioManager.shared.highPassOn {
+            
+            EditAudioManager.shared.renderEQtoFile(completion: { [weak self] url in
+                
+                guard let self = self else { return }
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                guard let uploadVC = storyboard.instantiateViewController(withIdentifier: "UploadVC") as? UploadVC else { return }
+                uploadVC.selectedFileURL = url
+                uploadVC.selectedFileDuration = self.originDuraion
+                self.navigationController?.pushViewController(uploadVC, animated: true)
+            })
+            
+        } else {
+                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                    guard let uploadVC = storyboard.instantiateViewController(withIdentifier: "UploadVC") as? UploadVC else { return }
+                    uploadVC.selectedFileURL = selectedFileURL
+                    uploadVC.selectedFileDuration = originDuraion
+                    navigationController?.pushViewController(uploadVC, animated: true)
+        }
     }
     
     @objc func setDurationText(notification: Notification) {
@@ -171,18 +181,8 @@ class EditVC: UIViewController {
     
     @objc func trim() {
         
-        TrimAudioManager.shared.trimAudio(from: trimHeadTime, to: trimTailTime)
+        EditAudioManager.shared.trimAudio(from: trimHeadTime, to: trimTailTime)
     }
-    /*
-     let button = UIButton()
-     let config = UIImage.SymbolConfiguration(pointSize: 50)
-     let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
-     button.setImage(bigImage, for: .normal)
-     button.tintColor = .black
-     button.addTarget(self, action: #selector(manipulatePlayback), for: .touchUpInside)
-     button.isHidden = true
-
-     */
 
     @objc func changeButtImage() {
         
@@ -253,13 +253,30 @@ class EditVC: UIViewController {
     
     @objc func manipulatePlayer() {
         
-        if remotePlayerHelper.state == .playing {
-            remotePlayerHelper.pause()
-        } else if remotePlayerHelper.state == .paused
-                    || remotePlayerHelper.state == .loaded
-                    || remotePlayerHelper.state == .buffering
-                    || remotePlayerHelper.state == .stopped {
-            remotePlayerHelper.play()
+        EditAudioManager.shared.manipulatePlay()
+        
+//        if remotePlayerHelper.state == .playing {
+//            remotePlayerHelper.pause()
+//        } else if remotePlayerHelper.state == .paused
+//                    || remotePlayerHelper.state == .loaded
+//                    || remotePlayerHelper.state == .buffering
+//                    || remotePlayerHelper.state == .stopped {
+//            remotePlayerHelper.play()
+//        }
+        
+    }
+    
+    @objc func highPass() {
+        EditAudioManager.shared.manipulateHighPass()
+        
+        if EditAudioManager.shared.highPassOn {
+           
+            lowCutButton.backgroundColor = UIColor(named: CommonUsage.scOrange)
+       
+        } else {
+            
+            lowCutButton.backgroundColor = UIColor(named: CommonUsage.scYellow)
+
         }
         
     }
@@ -335,7 +352,6 @@ class EditVC: UIViewController {
             }
             trimTailView.center.x = finalPoint
         }
-        //        trimTailViewX = trimTailView.center.x
         pan.setTranslation(.zero, in: view)
         
         calculateDuration()
@@ -362,8 +378,8 @@ Cut
         button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
         button.titleLabel?.numberOfLines = 0
         //        button.titleLabel?.font = UIFont(name: CommonUsage.font, size: 8)
-        button.backgroundColor = UIColor(named: CommonUsage.scOrange)
-        //      button.addTarget(self, action: #selector(removeThisCell), for: .touchUpInside)
+        button.backgroundColor = UIColor(named: CommonUsage.scYellow)
+              button.addTarget(self, action: #selector(highPass), for: .touchUpInside)
         button.layer.cornerRadius = 30
         return button
     }()
@@ -433,7 +449,6 @@ Cut
         slider.setThumbImage(colorImage, for: .normal)
         
         slider.minimumValue = 0
-        //        slider.maximumValue = 100
         slider.value = 0
         slider.isEnabled = true
         slider.isContinuous = true
@@ -457,7 +472,6 @@ Cut
     
     private lazy var trimTailView: UIView = {
         let view = UIView()
-        //        view.backgroundColor = .red
         view.backgroundColor = UIColor(red: 139, green: 0, blue: 0, alpha: 0.01)
         
         let trimTailPanReconizer = UIPanGestureRecognizer(target: self, action: #selector(handleTailPanGesture))
@@ -614,13 +628,11 @@ Cut
         view.layoutIfNeeded()
     }
     
-    
 }
 
-extension EditVC: TrimAudioManagerDelegate {
+extension EditVC: EditAudioManagerDelegate {
     
     func didExport(to url: URL) {
         selectedFileURL = url
     }
 }
-

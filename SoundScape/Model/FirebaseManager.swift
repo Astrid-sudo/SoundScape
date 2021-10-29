@@ -13,14 +13,6 @@ protocol PostsPassableDelegate: AnyObject {
     func passPosts(posts: [SCPost])
 }
 
-//enum Category: String, CaseIterable {
-//    case nature
-//    case city
-//    case unique
-//    case meaningful
-//    case other
-//}
-
 enum AudioCategory: String, CaseIterable {
     case nature = "Nature"
     case meaningful = "Meaningful"
@@ -98,7 +90,7 @@ class FirebaseManager {
     
     // MARK: - init / deinit
     
-    private init () {}
+    private init() {}
     
     deinit {
         postListener?.remove()

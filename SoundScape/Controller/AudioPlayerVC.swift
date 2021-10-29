@@ -157,7 +157,6 @@ class AudioPlayerVC: UIViewController {
         soundDetailVC.view.isHidden = true
     }
     
-    
     // MARK: - UI method
     
     private func setupBaseVew() {
@@ -288,19 +287,10 @@ class AudioPlayerVC: UIViewController {
     }
     
     @objc func presentDetail() {
-        //        guard let showdetailPage = delegate?.showDetailPage else {return }
-        //        showdetailPage()
         
         AudioPlayerWindow.shared.showDetailPage()
         
-        //        view.isHidden = true
-        
-        
         guard let soundDetailVC = soundDetailVC else { return }
-        
-        //        audioPlayerWindow.vc.timer?.invalidate()
-        
-        //        soundDetailVC.updateUI()
         
         dontShowDetailConstraint.isActive = false
         showDetailConstraint.isActive = true
@@ -433,10 +423,6 @@ extension AudioPlayerVC: DetailPageShowableDelegate {
         
         guard let soundDetailVC = soundDetailVC else { return }
         
-        //        audioPlayerWindow.vc.timer?.invalidate()
-        
-        //        soundDetailVC.updateUI()
-        
         dontShowDetailConstraint.isActive = false
         showDetailConstraint.isActive = true
         
@@ -448,8 +434,6 @@ extension AudioPlayerVC: DetailPageShowableDelegate {
     }
     
     func leaveDetailPage() {
-        
-        //        audioPlayerWindow.vc.updateUI()
         
         showDetailConstraint.isActive = false
         
