@@ -8,12 +8,14 @@
 import UIKit
 
 protocol PressPassableDelegate: AnyObject {
-    func goCategoryPage()
+    func goCategoryPage(from section: Int)
 }
 
 class HomeTableViewHeader: UITableViewHeaderFooterView {
     
     static let reuseIdentifier = String(describing: HomeTableViewHeader.self)
+    
+    private var section: Int?
     
     weak var delegate: PressPassableDelegate?
     
@@ -55,7 +57,10 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
     // MARK: - action
     
     @objc func pressBackgroundButton() {
-        delegate?.goCategoryPage()
+        
+        guard let section = section else { return }
+        
+        delegate?.goCategoryPage(from: section)
     }
     
     // MARK: - method
@@ -92,7 +97,8 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
 
     }
     
-     func setContent(content: String) {
+    func config(section: Int, content: String) {
+        self.section = section
         categoryLabel.text = content
     }
     

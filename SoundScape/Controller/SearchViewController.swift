@@ -11,57 +11,86 @@ class SearchViewController: UIViewController {
     
     // MARK: - properties
     
-    let firebaseManager = FirebaseManager.shared
+    private let firebaseManager = FirebaseManager.shared
     
-    var allAudioFiles = [SCPost]()
+    private let remotePlayHelper = RemotePlayHelper.shared
     
-    var resultAudioFiles = [SCPost]()
+    private var selectedCategories = [AudioCategory]()
     
-    var fakeData = [SCPost(documentID: "",
-                           authorID: "Santa",
-                           authIDProvider: "Google",
-                           authorName: "來自北極的聖誕老公公",
-                           title: "雪琪天晴朗",
-                           content: "聖誕節快到了",
-                           category: "Unique",
-                           duration: 110),
-                    SCPost(documentID: "",
-                           authorID: "yyy",
-                           authIDProvider: "Google",
-                           authorName: "來自南極的企鵝老婆婆",
-                           title: "晴朗",
-                           content: "哇哈哈",
-                           category: "Unique",
-                           duration: 110),
-                    SCPost(documentID: "",
-                           authorID: "mmm",
-                           authIDProvider: "Google",
-                           authorName: "南極企鵝",
-                           title: "我家在哪",
-                           content: "了",
-                           category: "Unique",
-                           duration: 110)]
+    private var keyWord: String?
+    
+    private var allAudioFiles = [SCPost]()
+    
+    private var resultAudioFiles = [SCPost]() {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     
     // MARK: - life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        fetchDataFromFirebase()
+        setViewBackgroundColor()
         setSearchBar()
         setCategoryTitleLabel()
         setCollectionView()
         setSearchResultTitleLabel()
         setTableView()
-        
-        
-        
     }
     
     // MARK: - method
     
+    private func fetchDataFromFirebase() {
+        
+        firebaseManager.checkPostsChange { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let posts):
+                self.allAudioFiles = posts
+                
+            case.failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    private func search() {
+        
+        guard let keyword = self.keyWord else { return }
+        let titleResult = allAudioFiles.filter({$0.title.lowercased().contains(keyword.lowercased())})
+        let authorResult = allAudioFiles.filter({$0.authorName.lowercased().contains(keyword.lowercased())})
+        let contentResult = allAudioFiles.filter({$0.content.lowercased().contains(keyword.lowercased())})
+        let allResult = titleResult + authorResult + contentResult
+        let resultSet = Set(allResult)
+        let resultArray = Array(resultSet)
+ 
+        if selectedCategories.count == 0 {
+            
+            resultAudioFiles = resultArray
+       
+        } else {
+            
+            var filteredResult = [SCPost]()
+            
+            for result in resultArray {
+                for category in selectedCategories {
+                    if result.category == category.rawValue {
+                        filteredResult.append(result)
+                    }
+                }
+            }
+            
+            resultAudioFiles = filteredResult
+            
+        }
+    }
+    
     // MARK: - UI Properties
     
-    lazy var searchBar: UISearchBar = {
+    private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.backgroundImage = UIImage()
         searchBar.barTintColor = UIColor(named: CommonUsage.scLightBlue)
@@ -73,7 +102,7 @@ class SearchViewController: UIViewController {
         return searchBar
     }()
     
-    lazy var categoryTitleLabel: UILabel = {
+    private lazy var categoryTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(named: CommonUsage.scWhite)
         label.font = UIFont(name: CommonUsage.font, size: 18)
@@ -82,7 +111,7 @@ class SearchViewController: UIViewController {
         return label
     }()
     
-    lazy var searchResultTitleLabel: UILabel = {
+    private lazy var searchResultTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(named: CommonUsage.scWhite)
         label.font = UIFont(name: CommonUsage.font, size: 18)
@@ -106,9 +135,10 @@ class SearchViewController: UIViewController {
         collectionView.allowsMultipleSelection = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.backgroundColor = .clear
-
-        collectionView.register(SearchCollectionViewCell.self, forCellWithReuseIdentifier: SearchCollectionViewCell.reuseIdentifier)
-
+        
+        collectionView.register(SearchCollectionViewCell.self,
+                                forCellWithReuseIdentifier: SearchCollectionViewCell.reuseIdentifier)
+        
         return collectionView
     }()
     
@@ -116,7 +146,7 @@ class SearchViewController: UIViewController {
         let table = UITableView()
         table.dataSource = self
         table.delegate = self
-        table.allowsSelection = false
+        table.allowsSelection = true
         table.separatorStyle = .none
         table.showsVerticalScrollIndicator = false
         table.backgroundColor = .clear
@@ -126,6 +156,10 @@ class SearchViewController: UIViewController {
     
     // MARK: - UI method
     
+    private func setViewBackgroundColor() {
+        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+    }
+    
     private func setSearchBar() {
         view.addSubview(searchBar)
         searchBar.translatesAutoresizingMaskIntoConstraints = false
@@ -134,7 +168,6 @@ class SearchViewController: UIViewController {
             searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8)
         ])
-
     }
     
     private func setCategoryTitleLabel() {
@@ -177,8 +210,10 @@ class SearchViewController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 30)
         ])
     }
-
+    
 }
+
+// MARK: - conform to UICollectionViewDataSource
 
 extension SearchViewController: UICollectionViewDataSource {
     
@@ -187,7 +222,8 @@ extension SearchViewController: UICollectionViewDataSource {
         AudioCategory.allCases.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchCollectionViewCell.reuseIdentifier,
                                                             for: indexPath) as? SearchCollectionViewCell else { return UICollectionViewCell()}
@@ -197,53 +233,87 @@ extension SearchViewController: UICollectionViewDataSource {
     
 }
 
+// MARK: - conform to UICollectionViewDelegate
+
 extension SearchViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        //搜尋那個種類
+        
+        let selected = AudioCategory.allCases[indexPath.item]
+        
+        guard let cell = collectionView.cellForItem(at: indexPath) as? SearchCollectionViewCell else { return }
+        
+        if selectedCategories.contains(selected) {
+            selectedCategories.removeAll(where: {$0 == selected})
+            cell.setLabelColorGreen()
+        } else {
+            selectedCategories.append(selected)
+            cell.setLabelColorRed()
+        }
+        
+        search()
     }
+    
 }
+
+// MARK: - conform to UITableViewDataSource
 
 extension SearchViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        fakeData.count
+        resultAudioFiles.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.reuseIdentifier, for: indexPath) as? SearchTableViewCell else { return UITableViewCell()}
-        let data = fakeData[indexPath.row]
+        let data = resultAudioFiles[indexPath.row]
         cell.setContent(title: data.title, author: data.authorName)
         return cell
     }
     
 }
 
+// MARK: - conform to UITableViewDelegate
+
 extension SearchViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-300
-        
+        300
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         UITableView.automaticDimension
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let title = resultAudioFiles[indexPath.item].title
+        let author = resultAudioFiles[indexPath.item].authorName
+        let content = resultAudioFiles[indexPath.item].content
+        let duration = resultAudioFiles[indexPath.item].duration
+
+        remotePlayHelper.url = resultAudioFiles[indexPath.item].audioURL
+        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration)
+        AudioPlayerWindow.shared.show()
+
+    }
+    
 }
+
+// MARK: - conform to UISearchBarDelegate
 
 extension SearchViewController: UISearchBarDelegate {
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        //搜尋local資料
-        tableView.reloadData()
+        keyWord = searchBar.text
+        search()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        //搜尋local資料 清空搜尋bar
-        searchBar.text = ""
+        keyWord = searchBar.text
+        search()
         searchBar.endEditing(true)
-        tableView.reloadData()
+        searchBar.text = nil
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {

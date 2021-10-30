@@ -11,32 +11,11 @@ class CategoryViewController: UIViewController {
     
     // MARK: - properties
     
-    var category = "Unique"
+    private let remotePlayHelper = RemotePlayHelper.shared
     
-    var fakeData = [SCPost(documentID: "",
-                           authorID: "Santa",
-                           authIDProvider: "Google",
-                           authorName: "來自北極的聖誕老公公",
-                           title: "雪琪天晴朗",
-                           content: "聖誕節快到了",
-                           category: "Unique",
-                           duration: 110),
-                    SCPost(documentID: "",
-                           authorID: "yyy",
-                           authIDProvider: "Google",
-                           authorName: "來自南極的企鵝老婆婆",
-                           title: "晴朗",
-                           content: "哇哈哈",
-                           category: "Unique",
-                           duration: 110),
-                    SCPost(documentID: "",
-                           authorID: "mmm",
-                           authIDProvider: "Google",
-                           authorName: "南極企鵝",
-                           title: "我家在哪",
-                           content: "了",
-                           category: "Unique",
-                           duration: 110)]
+    private var category: AudioCategory?
+    
+    private var data = [SCPost]()
 
     // MARK: - UI properties
     
@@ -51,7 +30,9 @@ class CategoryViewController: UIViewController {
         let label = UILabel()
         label.textColor = UIColor(named: CommonUsage.scWhite)
         label.textAlignment = .center
-        label.font = UIFont(name: CommonUsage.fontBungee, size: 70)
+        label.adjustsFontSizeToFitWidth = true
+        label.font = UIFont(name: CommonUsage.fontBungee, size: 40)
+        
         return label
     }()
     
@@ -59,7 +40,7 @@ class CategoryViewController: UIViewController {
         let table = UITableView()
         table.dataSource = self
         table.delegate = self
-        table.allowsSelection = false
+        table.allowsSelection = true
         table.separatorStyle = .none
         table.showsVerticalScrollIndicator = false
         table.backgroundColor = UIColor(named: CommonUsage.scBlue)
@@ -80,6 +61,11 @@ class CategoryViewController: UIViewController {
     }
     
     // MARK: - method
+    
+    func config(category: AudioCategory, data: [SCPost]) {
+        self.category = category
+        self.data = data
+    }
     
     // MARK: - config UI method
     
@@ -115,28 +101,44 @@ class CategoryViewController: UIViewController {
     }
     
     private func setHeadViewTitle() {
-        categoryTitleLabel.text = category
+        categoryTitleLabel.text = category?.rawValue
         headView.image = UIImage(named: CommonUsage.audioImage2)
     }
 
 }
 
+// MARK: - conform to UITableViewDataSource
+
 extension CategoryViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        fakeData.count
+        data.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell =
                 tableView.dequeueReusableCell(withIdentifier: CategoryTableViewCell.reuseIdentifier) as? CategoryTableViewCell else { return UITableViewCell()}
-        let data = fakeData[indexPath.row]
+        let data = data[indexPath.row]
         cell.setContent(title: data.title, author: data.authorName)
         return cell
     }
     
 }
 
+// MARK: - conform to UITableViewDelegate
+
 extension CategoryViewController: UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+       
+        let title = data[indexPath.item].title
+        let author = data[indexPath.item].authorName
+        let content = data[indexPath.item].content
+        let duration = data[indexPath.item].duration
+        
+        remotePlayHelper.url = data[indexPath.item].audioURL
+        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration)
+        AudioPlayerWindow.shared.show()
+
+    }
 }

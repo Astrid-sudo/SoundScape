@@ -15,7 +15,7 @@ class SearchCollectionViewCell: UICollectionViewCell {
     
     // MARK: - UI properties
     
-    lazy var textLabel: UILabel = {
+    private lazy var textLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(named: CommonUsage.scYellow)
         label.backgroundColor = UIColor(named: CommonUsage.scLightGreen)
@@ -54,7 +54,14 @@ class SearchCollectionViewCell: UICollectionViewCell {
     
     func setContent(content: String) {
         textLabel.text = content
-        
     }
     
+    func setLabelColorRed() {
+        textLabel.backgroundColor = UIColor(named: CommonUsage.scRed)
+    }
+    
+    func setLabelColorGreen() {
+        textLabel.backgroundColor = UIColor(named: CommonUsage.scLightGreen)
+    }
+
 }
