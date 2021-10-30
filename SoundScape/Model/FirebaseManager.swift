@@ -97,6 +97,23 @@ class FirebaseManager {
     }
     
     // MARK: - method
+    /*
+     func queryMembers(ids: [String], completion: @escaping (Result<[Member], Error>) -> Void) {
+             dataBase.collection("members").whereField(FieldPath.documentID(), in: ids).getDocuments { (querySnapshot, error) in
+                 if let querySnapshot = querySnapshot {
+
+                     let members = querySnapshot.documents.compactMap({ querySnapshot in
+                         try? querySnapshot.data(as: Member.self)
+                     })
+                     completion(Result.success(members))
+
+                 } else if let error = error {
+                     completion(Result.failure(error))
+                 }
+             }
+         }
+
+     */
     
     func fetchPost() {
         
