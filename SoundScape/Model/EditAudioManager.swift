@@ -90,7 +90,7 @@ class EditAudioManager {
             print(error)
         }
         
-        //Remove previous existing file
+        // Remove previous existing file
         _ = try? fileManager.removeItem(at: outputURL)
         
         guard let exportSession = AVAssetExportSession(asset: asset,
@@ -192,13 +192,11 @@ class EditAudioManager {
               needsRenderFileScheduled
              else { return }
         
-        
         renderPlayer.scheduleFile(file, at: nil) {
             self.needsRenderFileScheduled = true
         }
     }
 
-    
     func manipulateHighPass() {
         
         if highPassOn {

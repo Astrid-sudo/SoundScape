@@ -13,9 +13,13 @@ struct CommonUsage {
     static let screenWidth = UIScreen.main.bounds.width
     static let screenHeight = UIScreen.main.bounds.height
     
+    static let fontBungee = "Bungee-Regular"
     static let font = "PingFang TC"
+    static let fontSemibold = "PingFangTC-Semibold"
+
     static let fakeMap = "fakeMap"
     static let audioImage = "audioImage"
+    static let audioImage2 = "audioImage2"
     static let line = "line"
     
     static let scDarkGreen = "scDarkGreen"
@@ -53,6 +57,8 @@ struct CommonUsage {
         static let category = "Category"
         static let pinOnMap = "Pin On Map"
         static let upload = "UPLOAD"
+        static let searchResult = "Search Result"
+        static let search = "Search"
     }
     
     struct CollectionName {
@@ -85,5 +91,15 @@ extension UIView {
         let img = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return img
+    }
+}
+
+extension UIImageView {
+    func applyBlurEffect() {
+        let blurEffect = UIBlurEffect(style: .regular)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        addSubview(blurEffectView)
     }
 }

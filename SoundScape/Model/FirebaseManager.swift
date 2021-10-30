@@ -39,7 +39,7 @@ struct SCFavorite {
     let documentID: String
 }
 
-struct SCPost: Codable {
+struct SCPost: Codable, Hashable {
     var documentID: String
     var authorID: String
     var authIDProvider: String
@@ -80,7 +80,7 @@ class FirebaseManager {
     
     static let shared = FirebaseManager()
     
-    weak var delegate: PostsPassableDelegate?
+//    weak var delegate: PostsPassableDelegate?
     
     private var postListener: ListenerRegistration?
     
@@ -97,39 +97,46 @@ class FirebaseManager {
     }
     
     // MARK: - method
-    
-    func fetchPost() {
+    func fetchPosts(completion: @escaping (Result<[SCPost], Error>) -> Void) {
         
         allAudioCollectionRef.order(by: "createdTime").getDocuments { [weak self] snapshot, error in
-            guard let self = self,
-                  let snapshot = snapshot else { return }
-            let posts = snapshot.documents.compactMap { snapshot in
-                try? snapshot.data(as: SCPost.self)
+           
+            if let error = error {
+                completion(Result.failure(error))
+                return
             }
-            self.delegate?.passPosts(posts: posts.reversed())
+            
+            if let snapshot = snapshot {
+                let posts = snapshot.documents.compactMap({ snapshot in
+                    try? snapshot.data(as: SCPost.self)
+                })
+                
+                completion(Result.success(posts.reversed()))
+                
+            }
         }
     }
     
-    func checkPostChange() {
+    func checkPostsChange(completion: @escaping (Result<[SCPost], Error>) -> Void) {
         
         postListener = allAudioCollectionRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot else { return }
             snapshot.documentChanges.forEach { documentChange in
                 switch documentChange.type {
                 case .added:
-                    self.fetchPost()
+                    self.fetchPosts(completion: completion)
                     print("added")
                 case .modified:
-                    self.fetchPost()
+                    self.fetchPosts(completion: completion)
                     print("modified")
                 case .removed:
-                    self.fetchPost()
+                    self.fetchPosts(completion: completion)
                     print("removed")
                 }
             }
         }
     }
-    
+
     func upload(localURL: URL, post: SCPost) {
         
         var fullPost = post
@@ -177,4 +184,3 @@ class FirebaseManager {
     }
     
 }
-

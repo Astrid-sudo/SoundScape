@@ -356,22 +356,6 @@
             </objects>
             <point key="canvasLocation" x="2216" y="1625"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="2B6-mG-fiR">
-            <objects>
-                <viewController id="pYo-mK-CJu" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="J57-Pm-GJg">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="auz-QL-0E1"/>
-                        <color key="backgroundColor" name="scBlue"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="duL-0c-MWA"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="jZG-12-jsR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-1181" y="1625"/>
-        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="FiX-p1-RY9">
             <objects>
@@ -394,11 +378,11 @@
             </objects>
             <point key="canvasLocation" x="131.8840579710145" y="116.51785714285714"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Search-->
         <scene sceneID="jYj-F6-wO1">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="tDT-kx-dbn" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="magnifyingglass" catalog="system" id="5Ev-Yt-RNR"/>
+                    <tabBarItem key="tabBarItem" title="Search" image="magnifyingglass" catalog="system" id="5Ev-Yt-RNR"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="hus-ab-oXb">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -406,18 +390,18 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="pYo-mK-CJu" kind="relationship" relationship="rootViewController" id="C5d-77-HTl"/>
+                        <segue destination="oOc-u0-vZU" kind="relationship" relationship="rootViewController" id="AcM-lp-Ir6"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="exv-NZ-v3Q" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1181.1594202898552" y="877.90178571428567"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Home-->
         <scene sceneID="aMo-hx-CPo">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="G85-ez-cE6" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="house.fill" catalog="system" id="eW0-U4-vPP"/>
+                    <tabBarItem key="tabBarItem" title="Home" image="house.fill" catalog="system" id="eW0-U4-vPP"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="mAd-yj-5ni">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -432,11 +416,11 @@
             </objects>
             <point key="canvasLocation" x="-317" y="878"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Upload-->
         <scene sceneID="CcT-Kj-Yd2">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Z6U-sV-Qee" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="arrow.up.heart.fill" catalog="system" id="0F7-bP-h7s"/>
+                    <tabBarItem key="tabBarItem" title="Upload" image="arrow.up.heart.fill" catalog="system" id="0F7-bP-h7s"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Vai-3E-kQV">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -451,11 +435,11 @@
             </objects>
             <point key="canvasLocation" x="505.79710144927537" y="877.90178571428567"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Profile-->
         <scene sceneID="Oaj-il-eDD">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="dTq-Ql-oJi" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="person.fill" catalog="system" id="fqd-zo-ILa"/>
+                    <tabBarItem key="tabBarItem" title="Profile" image="person.fill" catalog="system" id="fqd-zo-ILa"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Ebg-HY-bzZ">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -470,11 +454,11 @@
             </objects>
             <point key="canvasLocation" x="1398.5507246376812" y="877.90178571428567"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Record-->
         <scene sceneID="52y-LZ-PDx">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="pXR-Ln-skx" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="mic.fill" catalog="system" id="AWA-pu-dNE"/>
+                    <tabBarItem key="tabBarItem" title="Record" image="mic.fill" catalog="system" id="AWA-pu-dNE"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="M4d-ew-SnX">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -504,6 +488,37 @@
             </objects>
             <point key="canvasLocation" x="1399" y="2314"/>
         </scene>
+        <!--Search View Controller-->
+        <scene sceneID="0CK-NC-I5v">
+            <objects>
+                <viewController storyboardIdentifier="SearchViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="oOc-u0-vZU" customClass="SearchViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="L4A-Zr-5dM">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="GoJ-je-aXr"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="aK6-ru-jjh"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ulx-TU-sxV" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1181" y="1625"/>
+        </scene>
+        <!--Category View Controller-->
+        <scene sceneID="95b-3b-xkk">
+            <objects>
+                <viewController storyboardIdentifier="CategoryViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Soh-e0-h5k" customClass="CategoryViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Dye-cQ-yPi">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="lFw-Av-enp"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iQZ-hE-AYp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-275" y="2314"/>
+        </scene>
     </scenes>
     <resources>
         <image name="arrow.up.heart.fill" catalog="system" width="128" height="109"/>
@@ -518,9 +533,6 @@
         <image name="repeat" catalog="system" width="128" height="98"/>
         <image name="text.bubble.fill" catalog="system" width="128" height="110"/>
         <image name="ticket" catalog="system" width="128" height="84"/>
-        <namedColor name="scBlue">
-            <color red="0.1679999977350235" green="0.23100000619888306" blue="0.27399998903274536" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <namedColor name="scGreen">
             <color red="0.36899998784065247" green="0.4779999852180481" blue="0.43900001049041748" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

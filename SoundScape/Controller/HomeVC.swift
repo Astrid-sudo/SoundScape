@@ -30,7 +30,7 @@ class HomeVC: UIViewController {
         table.showsVerticalScrollIndicator = false
         table.backgroundColor = .clear
         table.register(HomeTableViewCell.self, forCellReuseIdentifier: HomeTableViewCell.reuseIdentifier)
-//        table.register(HomeTableViewHeader.self, forHeaderFooterViewReuseIdentifier: HomeTableViewHeader.reuseIdentifier)
+        table.register(HomeTableViewHeader.self, forHeaderFooterViewReuseIdentifier: HomeTableViewHeader.reuseIdentifier)
         return table
     }()
     
@@ -39,12 +39,20 @@ class HomeVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        firebaseManager.delegate = self
-        firebaseManager.fetchPost()
-        firebaseManager.checkPostChange()
+        fetchDataFromFirebase()
         setTableView()
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.isNavigationBarHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.isNavigationBarHidden = false
     }
     
     // MARK: - config UI method
@@ -61,6 +69,22 @@ class HomeVC: UIViewController {
     }
     
     // MARK: - method
+    
+    private func fetchDataFromFirebase() {
+        
+        firebaseManager.checkPostsChange { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let posts):
+                self.allAudioFiles = posts
+                
+            case.failure(let error):
+                print(error)
+            }
+        }
+
+    }
 }
 
 // MARK: - conform to UITableViewDataSource
@@ -77,8 +101,10 @@ extension HomeVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell else { return UITableViewCell() }
+        
+        let filteredFiles = allAudioFiles.filter({$0.category == AudioCategory.allCases[indexPath.section].rawValue})
         cell.backgroundColor = .clear
-        cell.firebaseData = allAudioFiles
+        cell.firebaseData = filteredFiles
         cell.category = AudioCategory.allCases[indexPath.item].rawValue
         return cell
     }
@@ -90,18 +116,15 @@ extension HomeVC: UITableViewDataSource {
 extension HomeVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let headerView = view as? HomeTableViewHeader else { return nil }
-        headerView.tintColor = .clear
-        headerView.categoryLabel.text = AudioCategory.allCases[section].rawValue
+        guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomeTableViewHeader.reuseIdentifier) as? HomeTableViewHeader else { return UIView()}
+        
+        headerView.delegate = self
+        headerView.config(section: section, content: AudioCategory.allCases[section].rawValue)
         return headerView
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        AudioCategory.allCases[section].rawValue
-    }
-    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        59
+        50
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -114,11 +137,35 @@ extension HomeVC: UITableViewDelegate {
     
 }
 
-extension HomeVC: PostsPassableDelegate {
+extension HomeVC: PressPassableDelegate {
     
-    func passPosts(posts: [SCPost]) {
+    func goCategoryPage(from section: Int) {
         
-        self.allAudioFiles = posts
+        let category = AudioCategory.allCases[section]
+        
+        var data = [SCPost]()
+        
+        for file in allAudioFiles {
+            
+            if file.category == category.rawValue {
+                data.append(file)
+            }
+        }
+        
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
+        
+        categoryPage.config(category: category, data: data)
+        navigationController?.pushViewController(categoryPage, animated: true)
+
+    }
+    
+    func goCategoryPage() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
+        
+        navigationController?.pushViewController(categoryPage, animated: true)
     }
     
 }
