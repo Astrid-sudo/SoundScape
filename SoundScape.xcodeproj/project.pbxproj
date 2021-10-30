@@ -8,25 +8,84 @@
 
 /* Begin PBXBuildFile section */
 		0130CC1600F3AB0D61D15930 /* Pods_SoundScape.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D1F5476A787CCE1C926A2EA /* Pods_SoundScape.framework */; };
+		56201C972721D21F0080A7C7 /* SCRemotePlayerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56201C962721D21F0080A7C7 /* SCRemotePlayerConfig.swift */; };
+		563396C5272596A600882711 /* EditAudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563396C4272596A600882711 /* EditAudioManager.swift */; };
+		564C79F8272C2056005EEA53 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564C79F7272C2056005EEA53 /* CategoryViewController.swift */; };
+		564C79FA272C2180005EEA53 /* CategoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564C79F9272C2180005EEA53 /* CategoryTableViewCell.swift */; };
+		565ABC012721529600D4596E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 565ABC002721529600D4596E /* GoogleService-Info.plist */; };
+		565ABC032721595B00D4596E /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565ABC022721595B00D4596E /* FirebaseManager.swift */; };
+		565C9C29271E6AFE00189B85 /* AudioPlayerWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565C9C28271E6AFE00189B85 /* AudioPlayerWindow.swift */; };
+		565C9C2B271E6F7300189B85 /* AudioPlayerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565C9C2A271E6F7300189B85 /* AudioPlayerVC.swift */; };
+		565C9C2D271E79E700189B85 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565C9C2C271E79E700189B85 /* Common.swift */; };
+		565C9C2F271E8D6900189B85 /* SCTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565C9C2E271E8D6900189B85 /* SCTabBarController.swift */; };
+		5662743B2727DE47000C62EB /* DSWaveformImage in Frameworks */ = {isa = PBXBuildFile; productRef = 5662743A2727DE47000C62EB /* DSWaveformImage */; };
+		5678FFA6272418B500E1ADD5 /* TestEditVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5678FFA5272418B500E1ADD5 /* TestEditVC.swift */; };
+		5678FFA827243FA300E1ADD5 /* EditVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5678FFA727243FA300E1ADD5 /* EditVC.swift */; };
 		5679F0FB271D084A00663001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FA271D084A00663001 /* AppDelegate.swift */; };
 		5679F0FD271D084A00663001 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FC271D084A00663001 /* SceneDelegate.swift */; };
-		5679F0FF271D084A00663001 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FE271D084A00663001 /* ViewController.swift */; };
+		5679F0FF271D084A00663001 /* SoundDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FE271D084A00663001 /* SoundDetailVC.swift */; };
 		5679F102271D084A00663001 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5679F100271D084A00663001 /* Main.storyboard */; };
 		5679F104271D084B00663001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5679F103271D084B00663001 /* Assets.xcassets */; };
 		5679F107271D084B00663001 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5679F105271D084B00663001 /* LaunchScreen.storyboard */; };
+		5679F112271D582700663001 /* example_sound_2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 5679F111271D582700663001 /* example_sound_2.m4a */; };
+		5679F115271D641B00663001 /* AudioPlayHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F114271D641B00663001 /* AudioPlayHelper.swift */; };
+		5679F117271D6B2500663001 /* example_sound.wav in Resources */ = {isa = PBXBuildFile; fileRef = 5679F116271D6B2500663001 /* example_sound.wav */; };
+		5679F119271D6D8400663001 /* memories.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5679F118271D6D8400663001 /* memories.mp3 */; };
+		568210C82723DAE40055642E /* RecordVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568210C72723DAE40055642E /* RecordVC.swift */; };
+		568340DF271F113F00543677 /* CreateAudioVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568340DE271F113F00543677 /* CreateAudioVC.swift */; };
+		568340E1271F11AC00543677 /* UploadVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568340E0271F11AC00543677 /* UploadVC.swift */; };
+		56950630271FDD08009E4C74 /* RemotePlayHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */; };
+		569A7D7827229AE500CEE3EA /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7727229AE500CEE3EA /* HomeVC.swift */; };
+		569A7D7A27229EB200CEE3EA /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7927229EB200CEE3EA /* HomeTableViewCell.swift */; };
+		569A7D7C2722A03500CEE3EA /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7B2722A03500CEE3EA /* HomeCollectionViewCell.swift */; };
+		569A7D7E2722B75A00CEE3EA /* HomeTableViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7D2722B75A00CEE3EA /* HomeTableViewHeader.swift */; };
+		56D3F0B4272CDFFD00A3B3B3 /* Bungee-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 56D3F0B3272CDFFD00A3B3B3 /* Bungee-Regular.ttf */; };
+		56F07D35272BCA7600ABC7B9 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */; };
+		56F07D37272BCC0F00ABC7B9 /* SearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F07D36272BCC0F00ABC7B9 /* SearchTableViewCell.swift */; };
+		56F07D39272BCFB300ABC7B9 /* SearchCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F07D38272BCFB300ABC7B9 /* SearchCollectionViewCell.swift */; };
+		56F1C849271FA8F400F64846 /* AudioRecordHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F1C848271FA8F400F64846 /* AudioRecordHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0D1F5476A787CCE1C926A2EA /* Pods_SoundScape.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SoundScape.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		33696CC8AD27A37242783EC7 /* Pods-SoundScape.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SoundScape.release.xcconfig"; path = "Target Support Files/Pods-SoundScape/Pods-SoundScape.release.xcconfig"; sourceTree = "<group>"; };
+		56201C962721D21F0080A7C7 /* SCRemotePlayerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCRemotePlayerConfig.swift; sourceTree = "<group>"; };
+		563396C4272596A600882711 /* EditAudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAudioManager.swift; sourceTree = "<group>"; };
+		564C79F7272C2056005EEA53 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
+		564C79F9272C2180005EEA53 /* CategoryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTableViewCell.swift; sourceTree = "<group>"; };
+		565ABC002721529600D4596E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		565ABC022721595B00D4596E /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
+		565C9C28271E6AFE00189B85 /* AudioPlayerWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerWindow.swift; sourceTree = "<group>"; };
+		565C9C2A271E6F7300189B85 /* AudioPlayerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerVC.swift; sourceTree = "<group>"; };
+		565C9C2C271E79E700189B85 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
+		565C9C2E271E8D6900189B85 /* SCTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCTabBarController.swift; sourceTree = "<group>"; };
+		5678FFA5272418B500E1ADD5 /* TestEditVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEditVC.swift; sourceTree = "<group>"; };
+		5678FFA727243FA300E1ADD5 /* EditVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditVC.swift; sourceTree = "<group>"; };
 		5679F0F7271D084A00663001 /* SoundScape.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoundScape.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5679F0FA271D084A00663001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5679F0FC271D084A00663001 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		5679F0FE271D084A00663001 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		5679F0FE271D084A00663001 /* SoundDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundDetailVC.swift; sourceTree = "<group>"; };
 		5679F101271D084A00663001 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5679F103271D084B00663001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5679F106271D084B00663001 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5679F108271D084B00663001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5679F111271D582700663001 /* example_sound_2.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = example_sound_2.m4a; sourceTree = "<group>"; };
+		5679F114271D641B00663001 /* AudioPlayHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayHelper.swift; sourceTree = "<group>"; };
+		5679F116271D6B2500663001 /* example_sound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = example_sound.wav; sourceTree = "<group>"; };
+		5679F118271D6D8400663001 /* memories.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = memories.mp3; sourceTree = "<group>"; };
+		568210C72723DAE40055642E /* RecordVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVC.swift; sourceTree = "<group>"; };
+		568340DE271F113F00543677 /* CreateAudioVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAudioVC.swift; sourceTree = "<group>"; };
+		568340E0271F11AC00543677 /* UploadVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadVC.swift; sourceTree = "<group>"; };
+		5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemotePlayHelper.swift; sourceTree = "<group>"; };
+		569A7D7727229AE500CEE3EA /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
+		569A7D7927229EB200CEE3EA /* HomeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
+		569A7D7B2722A03500CEE3EA /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
+		569A7D7D2722B75A00CEE3EA /* HomeTableViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewHeader.swift; sourceTree = "<group>"; };
+		56D3F0B3272CDFFD00A3B3B3 /* Bungee-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Bungee-Regular.ttf"; sourceTree = "<group>"; };
+		56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		56F07D36272BCC0F00ABC7B9 /* SearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewCell.swift; sourceTree = "<group>"; };
+		56F07D38272BCFB300ABC7B9 /* SearchCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCollectionViewCell.swift; sourceTree = "<group>"; };
+		56F1C848271FA8F400F64846 /* AudioRecordHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecordHelper.swift; sourceTree = "<group>"; };
 		8CA8FF313E2441739C961F12 /* Pods-SoundScape.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SoundScape.debug.xcconfig"; path = "Target Support Files/Pods-SoundScape/Pods-SoundScape.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -35,6 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5662743B2727DE47000C62EB /* DSWaveformImage in Frameworks */,
 				0130CC1600F3AB0D61D15930 /* Pods_SoundScape.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -42,6 +102,52 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		565C9C30271EB42900189B85 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				565C9C2C271E79E700189B85 /* Common.swift */,
+				5679F114271D641B00663001 /* AudioPlayHelper.swift */,
+				56F1C848271FA8F400F64846 /* AudioRecordHelper.swift */,
+				5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */,
+				565ABC022721595B00D4596E /* FirebaseManager.swift */,
+				56201C962721D21F0080A7C7 /* SCRemotePlayerConfig.swift */,
+				563396C4272596A600882711 /* EditAudioManager.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		565C9C31271EB44500189B85 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				5679F0FE271D084A00663001 /* SoundDetailVC.swift */,
+				565C9C2A271E6F7300189B85 /* AudioPlayerVC.swift */,
+				565C9C2E271E8D6900189B85 /* SCTabBarController.swift */,
+				568340DE271F113F00543677 /* CreateAudioVC.swift */,
+				568340E0271F11AC00543677 /* UploadVC.swift */,
+				569A7D7727229AE500CEE3EA /* HomeVC.swift */,
+				568210C72723DAE40055642E /* RecordVC.swift */,
+				5678FFA5272418B500E1ADD5 /* TestEditVC.swift */,
+				5678FFA727243FA300E1ADD5 /* EditVC.swift */,
+				56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */,
+				564C79F7272C2056005EEA53 /* CategoryViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		565C9C32271EB46D00189B85 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				565C9C28271E6AFE00189B85 /* AudioPlayerWindow.swift */,
+				569A7D7927229EB200CEE3EA /* HomeTableViewCell.swift */,
+				569A7D7B2722A03500CEE3EA /* HomeCollectionViewCell.swift */,
+				569A7D7D2722B75A00CEE3EA /* HomeTableViewHeader.swift */,
+				56F07D36272BCC0F00ABC7B9 /* SearchTableViewCell.swift */,
+				56F07D38272BCFB300ABC7B9 /* SearchCollectionViewCell.swift */,
+				564C79F9272C2180005EEA53 /* CategoryTableViewCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		5679F0EE271D084A00663001 = {
 			isa = PBXGroup;
 			children = (
@@ -63,15 +169,30 @@
 		5679F0F9271D084A00663001 /* SoundScape */ = {
 			isa = PBXGroup;
 			children = (
+				565C9C32271EB46D00189B85 /* View */,
+				565C9C31271EB44500189B85 /* Controller */,
+				565C9C30271EB42900189B85 /* Model */,
+				5679F113271D584C00663001 /* Resources */,
 				5679F0FA271D084A00663001 /* AppDelegate.swift */,
 				5679F0FC271D084A00663001 /* SceneDelegate.swift */,
-				5679F0FE271D084A00663001 /* ViewController.swift */,
 				5679F100271D084A00663001 /* Main.storyboard */,
 				5679F103271D084B00663001 /* Assets.xcassets */,
 				5679F105271D084B00663001 /* LaunchScreen.storyboard */,
+				565ABC002721529600D4596E /* GoogleService-Info.plist */,
 				5679F108271D084B00663001 /* Info.plist */,
 			);
 			path = SoundScape;
+			sourceTree = "<group>";
+		};
+		5679F113271D584C00663001 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				56D3F0B3272CDFFD00A3B3B3 /* Bungee-Regular.ttf */,
+				5679F118271D6D8400663001 /* memories.mp3 */,
+				5679F116271D6B2500663001 /* example_sound.wav */,
+				5679F111271D582700663001 /* example_sound_2.m4a */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		7E64B7E6DB8FC6FCC8429D99 /* Frameworks */ = {
@@ -103,12 +224,16 @@
 				5679F0F4271D084A00663001 /* Frameworks */,
 				5679F0F5271D084A00663001 /* Resources */,
 				5679F10E271D112900663001 /* ShellScript */,
+				514A335EAE3FE0DB3303B9A0 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = SoundScape;
+			packageProductDependencies = (
+				5662743A2727DE47000C62EB /* DSWaveformImage */,
+			);
 			productName = SoundScape;
 			productReference = 5679F0F7271D084A00663001 /* SoundScape.app */;
 			productType = "com.apple.product-type.application";
@@ -137,6 +262,9 @@
 				Base,
 			);
 			mainGroup = 5679F0EE271D084A00663001;
+			packageReferences = (
+				566274392727DE47000C62EB /* XCRemoteSwiftPackageReference "DSWaveformImage" */,
+			);
 			productRefGroup = 5679F0F8271D084A00663001 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -151,15 +279,37 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5679F112271D582700663001 /* example_sound_2.m4a in Resources */,
+				5679F117271D6B2500663001 /* example_sound.wav in Resources */,
 				5679F107271D084B00663001 /* LaunchScreen.storyboard in Resources */,
+				56D3F0B4272CDFFD00A3B3B3 /* Bungee-Regular.ttf in Resources */,
 				5679F104271D084B00663001 /* Assets.xcassets in Resources */,
 				5679F102271D084A00663001 /* Main.storyboard in Resources */,
+				5679F119271D6D8400663001 /* memories.mp3 in Resources */,
+				565ABC012721529600D4596E /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		514A335EAE3FE0DB3303B9A0 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		5679F10E271D112900663001 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -206,9 +356,33 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5679F0FF271D084A00663001 /* ViewController.swift in Sources */,
+				565ABC032721595B00D4596E /* FirebaseManager.swift in Sources */,
+				565C9C2B271E6F7300189B85 /* AudioPlayerVC.swift in Sources */,
+				569A7D7E2722B75A00CEE3EA /* HomeTableViewHeader.swift in Sources */,
+				565C9C2D271E79E700189B85 /* Common.swift in Sources */,
+				5679F0FF271D084A00663001 /* SoundDetailVC.swift in Sources */,
+				568210C82723DAE40055642E /* RecordVC.swift in Sources */,
+				56F1C849271FA8F400F64846 /* AudioRecordHelper.swift in Sources */,
+				569A7D7C2722A03500CEE3EA /* HomeCollectionViewCell.swift in Sources */,
+				568340E1271F11AC00543677 /* UploadVC.swift in Sources */,
+				56F07D39272BCFB300ABC7B9 /* SearchCollectionViewCell.swift in Sources */,
+				564C79F8272C2056005EEA53 /* CategoryViewController.swift in Sources */,
 				5679F0FB271D084A00663001 /* AppDelegate.swift in Sources */,
+				5678FFA6272418B500E1ADD5 /* TestEditVC.swift in Sources */,
+				56201C972721D21F0080A7C7 /* SCRemotePlayerConfig.swift in Sources */,
+				5679F115271D641B00663001 /* AudioPlayHelper.swift in Sources */,
+				56F07D35272BCA7600ABC7B9 /* SearchViewController.swift in Sources */,
+				5678FFA827243FA300E1ADD5 /* EditVC.swift in Sources */,
+				569A7D7827229AE500CEE3EA /* HomeVC.swift in Sources */,
+				56950630271FDD08009E4C74 /* RemotePlayHelper.swift in Sources */,
+				565C9C29271E6AFE00189B85 /* AudioPlayerWindow.swift in Sources */,
+				568340DF271F113F00543677 /* CreateAudioVC.swift in Sources */,
 				5679F0FD271D084A00663001 /* SceneDelegate.swift in Sources */,
+				569A7D7A27229EB200CEE3EA /* HomeTableViewCell.swift in Sources */,
+				56F07D37272BCC0F00ABC7B9 /* SearchTableViewCell.swift in Sources */,
+				563396C5272596A600882711 /* EditAudioManager.swift in Sources */,
+				565C9C2F271E8D6900189B85 /* SCTabBarController.swift in Sources */,
+				564C79FA272C2180005EEA53 /* CategoryTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,6 +445,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				EXCLUDED_ARCHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -285,7 +460,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -332,6 +507,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				EXCLUDED_ARCHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -340,7 +516,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -359,8 +535,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XN354JRCK2;
+				EXCLUDED_ARCHS = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SoundScape/Info.plist;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = " App 需要您的同意, 才能訪問麥克風";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -372,7 +550,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SoundScape.Astrid;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -390,8 +568,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XN354JRCK2;
+				EXCLUDED_ARCHS = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SoundScape/Info.plist;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = " App 需要您的同意, 才能訪問麥克風";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -403,7 +583,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SoundScape.Astrid;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -434,6 +614,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		566274392727DE47000C62EB /* XCRemoteSwiftPackageReference "DSWaveformImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dmrschmidt/DSWaveformImage";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5662743A2727DE47000C62EB /* DSWaveformImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 566274392727DE47000C62EB /* XCRemoteSwiftPackageReference "DSWaveformImage" */;
+			productName = DSWaveformImage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5679F0EF271D084A00663001 /* Project object */;
 }

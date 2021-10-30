@@ -8,4 +8,11 @@ target 'SoundScape' do
   # Pods for SoundScape
   pod 'SwiftLint'
 
+  pod 'Firebase/Firestore'
+  pod 'FirebaseFirestoreSwift'
+  pod 'Firebase/Storage'
+  pod 'Firebase/Database'
+  pod 'IQKeyboardManagerSwift'
+  pod 'ModernAVPlayer'
+
 end
