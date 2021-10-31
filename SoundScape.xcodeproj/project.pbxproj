@@ -11,6 +11,7 @@
 		56201C972721D21F0080A7C7 /* SCRemotePlayerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56201C962721D21F0080A7C7 /* SCRemotePlayerConfig.swift */; };
 		5630FE23272E1AA2003A38FB /* FirebaseDataStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5630FE22272E1AA2003A38FB /* FirebaseDataStructure.swift */; };
 		5630FE25272E1C54003A38FB /* SignInManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5630FE24272E1C54003A38FB /* SignInManager.swift */; };
+		5630FE27272EB5D7003A38FB /* OthersProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5630FE26272EB5D7003A38FB /* OthersProfileViewController.swift */; };
 		563396C5272596A600882711 /* EditAudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563396C4272596A600882711 /* EditAudioManager.swift */; };
 		564C79F8272C2056005EEA53 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564C79F7272C2056005EEA53 /* CategoryViewController.swift */; };
 		564C79FA272C2180005EEA53 /* CategoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564C79F9272C2180005EEA53 /* CategoryTableViewCell.swift */; };
@@ -55,6 +56,7 @@
 		56201C962721D21F0080A7C7 /* SCRemotePlayerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCRemotePlayerConfig.swift; sourceTree = "<group>"; };
 		5630FE22272E1AA2003A38FB /* FirebaseDataStructure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseDataStructure.swift; sourceTree = "<group>"; };
 		5630FE24272E1C54003A38FB /* SignInManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInManager.swift; sourceTree = "<group>"; };
+		5630FE26272EB5D7003A38FB /* OthersProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OthersProfileViewController.swift; sourceTree = "<group>"; };
 		563396C4272596A600882711 /* EditAudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAudioManager.swift; sourceTree = "<group>"; };
 		564C79F7272C2056005EEA53 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		564C79F9272C2180005EEA53 /* CategoryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTableViewCell.swift; sourceTree = "<group>"; };
@@ -304,6 +306,7 @@
 			isa = PBXGroup;
 			children = (
 				56D3F0C2272D813C00A3B3B3 /* ProfileViewController.swift */,
+				5630FE26272EB5D7003A38FB /* OthersProfileViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -494,6 +497,7 @@
 				565C9C29271E6AFE00189B85 /* AudioPlayerWindow.swift in Sources */,
 				568340DF271F113F00543677 /* CreateAudioVC.swift in Sources */,
 				5679F0FD271D084A00663001 /* SceneDelegate.swift in Sources */,
+				5630FE27272EB5D7003A38FB /* OthersProfileViewController.swift in Sources */,
 				569A7D7A27229EB200CEE3EA /* HomeTableViewCell.swift in Sources */,
 				56F07D37272BCC0F00ABC7B9 /* SearchTableViewCell.swift in Sources */,
 				563396C5272596A600882711 /* EditAudioManager.swift in Sources */,

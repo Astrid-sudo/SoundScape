@@ -1,39 +1,28 @@
 //
-//  ProfileViewController.swift
+//  OthersProfileViewController.swift
 //  SoundScape
 //
-//  Created by Astrid on 2021/10/30.
+//  Created by Astrid on 2021/10/31.
 //
 
 import UIKit
 
-struct UserIdentity {
-    let userID: String
-    let userIDProvider: String
-}
-
-enum ProfilePageSection: String, CaseIterable {
-    case followingsLatest = "Followings Latest"
-    case myFavorite = "My Favorite"
-    case myAudio = "My Audio"
-}
-
-class ProfileViewController: UIViewController {
+class OthersProfileViewController: UIViewController {
     
     // MARK: - properties
     
-//    var idWillDisplay: UserIdentity?
-//
-//    var userWillDisplay: SCUser? {
-//        didSet {
-//            setUserProfile()
-//        }
-//    }
-//
-//    var displayOthersProfile = false
-//
     let signInManager = SignInManager.shared
     
+    var idWillDisplay: UserIdentity?
+    
+    var userWillDisplay: SCUser? {
+        didSet {
+            setUserProfile()
+            fetchUserFavoriteList()
+            fetchAmountOfFollows()
+        }
+    }
+
     let firebaseManager = FirebaseManager.shared
     
     private var allAudioFiles = [SCPost]() {
@@ -42,12 +31,230 @@ class ProfileViewController: UIViewController {
         }
     }
     
-    private var currentUserFavoriteDocumentIDs: [String]? {
+    private var userFavoriteDocumentIDs: [String]? {
         didSet {
             tableView.reloadData()
         }
     }
     
+    private var numbersOfFollowers: Int? {
+        didSet {
+            guard let numbersOfFollowers = numbersOfFollowers else { return }
+            followersNumberLabel.text = String(describing: numbersOfFollowers)
+        }
+    }
+    
+    private var numbersOfFollowings: Int? {
+        didSet {
+            guard let numbersOfFollowings = numbersOfFollowings else { return }
+            followingsNumberLabel.text = String(describing: numbersOfFollowings)
+        }
+    }
+    private var othersFollowingList: [SCFollow]? {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+    
+    //current signin 的
+    private var currentUserFollowingList: [SCFollow]? {
+        didSet {
+            manipulateFollowButton()
+        }
+    }
+
+    
+    // MARK: - life cycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        fetchCurrentUserFollowingList()
+        fetchUserInfo()
+        fetchDataFromFirebase()
+        setBackgroundColor()
+        setCoverImageView()
+        setTableView()
+        setUserImageView()
+        setNameLabel()
+        setSocialStackView()
+        setFollowersStackView()
+        setFollowingsStackView()
+        setFollowButton()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        userImageView.layer.cornerRadius = userImageView.frame.width / 2
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.isNavigationBarHidden = true
+        manipulateFollowButton()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.isNavigationBarHidden = false
+    }
+    
+    // MARK: - Action
+    
+    @objc func manipulateFollow() {
+        guard let userWillDisplay = userWillDisplay,
+        let userInfoDoumentID = userWillDisplay.userInfoDoumentID,
+        let loggedInUserInfo = signInManager.currentUserInfo,
+        let loggedInUserInfoDocumentID = loggedInUserInfo.userInfoDoumentID else { return }
+        
+        firebaseManager.manipulateFollow(userInfoDoumentID: userInfoDoumentID,
+                                         userInfo: SCFollow(userID: userWillDisplay.userID,
+                                                            provider: userWillDisplay.provider), loggedInUserInfoDocumentID: loggedInUserInfoDocumentID,
+                                         loggedInUserInfo: SCFollow(userID: loggedInUserInfo.userID,
+                                                                    provider: loggedInUserInfo.provider),
+                                         followCompletion: makeButtonFollowed,
+                                         unfollowCompletion: makeButtonUnFollow)
+    }
+    
+    // MARK: - method
+    
+    private func manipulateFollowButton() {
+        
+        guard let currentUserFollowingList = currentUserFollowingList,
+        let userWillDisplay = userWillDisplay else { return }
+        
+        for following in currentUserFollowingList {
+            if following.userID == userWillDisplay.userID,
+               following.provider == userWillDisplay.provider {
+                makeButtonFollowed()
+            }
+        }
+    }
+    
+    private func makeButtonFollowed() {
+        followButton.setTitle(CommonUsage.Text.unfollow, for: .normal)
+        followButton.backgroundColor = UIColor(named: CommonUsage.scOrange)
+    }
+    
+    private func makeButtonUnFollow() {
+        followButton.setTitle(CommonUsage.Text.follow, for: .normal)
+        followButton.backgroundColor = UIColor(named: CommonUsage.scYellow)
+
+    }
+    
+    private func fetchCurrentUserFollowingList() {
+        guard let currentUserInfoDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
+            print("OthersProfileController: please logIn")
+            return }
+        firebaseManager.checkFollowersChange(userInfoDoumentID: currentUserInfoDocumentID) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let followers):
+                
+                self.currentUserFollowingList = followers
+                
+            case .failure(let error): print(error)
+            }
+        }
+
+        
+    }
+    
+    private func fetchAmountOfFollows() {
+        guard let userWillDisplay = userWillDisplay,
+              let userInfoDoumentID = userWillDisplay.userInfoDoumentID else { return }
+        firebaseManager.checkFollowersChange(userInfoDoumentID: userInfoDoumentID) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let followers):
+                
+                self.numbersOfFollowers = followers.count
+                
+            case .failure(let error): print(error)
+            }
+        }
+        
+        firebaseManager.checkFollowingsChange(userInfoDoumentID: userInfoDoumentID) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let followings):
+                self.numbersOfFollowings = followings.count
+                self.othersFollowingList = followings
+            case .failure(let error): print(error)
+            }
+        }
+    }
+
+    private func fetchUserInfo() {
+        
+        guard let userID = idWillDisplay?.userID,
+        let userIDProider = idWillDisplay?.userIDProvider else {
+            print("OtherProfileVC: Dont know who to display")
+            return
+        }
+        
+        firebaseManager.fetchUser(userID: userID, userIDProvider: userIDProider) { result in
+           
+            switch result {
+                
+            case .success(let user):
+                self.userWillDisplay = user
+                
+            case.failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    private func fetchUserFavoriteList() {
+        
+        guard let userProfileDocumentID = userWillDisplay?.userInfoDoumentID else {
+            print("OtherProfileVC: Cant get favorite")
+            return
+        }
+        firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self]
+            
+            result in
+            
+            guard let self = self else { return }
+            
+            switch result {
+                
+            case .success(let scFavorites):
+                self.userFavoriteDocumentIDs = scFavorites.map({$0.favoriteDocumentID})
+                
+            case .failure(let error):
+                print("AudioPlayerVC: Failed to get favoriteDocumentID \(error)")
+                
+            }
+        }
+    }
+
+    private func fetchDataFromFirebase() {
+        
+        firebaseManager.checkPostsChange { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let posts):
+                self.allAudioFiles = posts
+                
+            case.failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    private func setUserProfile() {
+        
+        guard let userWillDisplay = userWillDisplay else { return }
+        coverImageView.image = UIImage(named: CommonUsage.profileCover2)
+        userImageView.image = UIImage(named: CommonUsage.audioImage2)
+            nameLabel.text = userWillDisplay.username
+            followersNumberLabel.text = "0"
+            followingsNumberLabel.text = "0"
+        }
+        
     // MARK: - UI properties
     
     private lazy var coverImageView: UIImageView = {
@@ -149,57 +356,14 @@ class ProfileViewController: UIViewController {
     private lazy var followButton: UIButton = {
         let button = UIButton()
         button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
-        button.setTitle(CommonUsage.Text.settings, for: .normal)
-
-        //        btn.addTarget(self, action: #selector(logOut), for: .touchUpInside)
-        button.backgroundColor = UIColor(named: CommonUsage.scDarkYellow)
+        button.addTarget(self, action: #selector(manipulateFollow), for: .touchUpInside)
+        button.backgroundColor = UIColor(named: CommonUsage.scYellow)
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor(named: CommonUsage.scLightGreen)?.cgColor
         button.layer.cornerRadius = 15
-        
-//        if displayOthersProfile {
-//            button.setTitle(CommonUsage.Text.follow, for: .normal)
-//        } else {
-//            button.setTitle(CommonUsage.Text.settings, for: .normal)
-//        }
-        
+        button.setTitle(CommonUsage.Text.follow, for: .normal)
         return button
     }()
-    
-    // MARK: - life cycle
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-//        tellMyProfileOrOthers()
-        
-        fetchUserInfoFromFirebase()
-        fetchDataFromFirebase()
-        setBackgroundColor()
-        setCoverImageView()
-        setTableView()
-        setUserImageView()
-        setNameLabel()
-        setSocialStackView()
-        setFollowersStackView()
-        setFollowingsStackView()
-        setFollowButton()
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        userImageView.layer.cornerRadius = userImageView.frame.width / 2
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.isNavigationBarHidden = true
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.isNavigationBarHidden = false
-    }
     
     // MARK: - config UI method
     
@@ -280,82 +444,11 @@ class ProfileViewController: UIViewController {
             followButton.heightAnchor.constraint(equalTo: nameLabel.heightAnchor, multiplier: 0.75),
             followButton.widthAnchor.constraint(equalToConstant: 80)
         ])
-        
     }
     
-    // MARK: - method
-    
-//    private func tellMyProfileOrOthers() {
-//        // 從sound detail page 推過來 才需要判斷是不是自己
-//
-//        guard let idWillDisplay = idWillDisplay,
-//         let currentUserInfo =  signInManager.currentUserInfo else { return }
-//
-//        if idWillDisplay.userID == currentUserInfo.userID,
-//           idWillDisplay.userIDProvider == currentUserInfo.provider {
-//            return
-//        } else {
-//            //整套要換成這位user的 而且button 要顯示 follow
-//            displayOthersProfile = true
-//        }
-//
-//    }
-    
-    private func fetchUserFavoriteList() {
-        
-        guard let userProfileDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
-            print("AudioPlayerVC: Cant get favorite before login")
-            return
-        }
-        firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self]
-            result in
-            
-            guard let self = self else { return }
-            
-            switch result {
-                
-            case .success(let scFavorites):
-                self.currentUserFavoriteDocumentIDs = scFavorites.map({$0.favoriteDocumentID})
-                
-            case .failure(let error):
-                print("AudioPlayerVC: Failed to get favoriteDocumentID \(error)")
-                
-            }
-        }
-    }
-    
-    private func fetchDataFromFirebase() {
-        
-        firebaseManager.checkPostsChange { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .success(let posts):
-                self.allAudioFiles = posts
-                
-            case.failure(let error):
-                print(error)
-            }
-        }
-    }
-    
-    private func fetchUserInfoFromFirebase() {
-        signInManager.checkUser(completion: setUserProfile)
-    }
-    
-    private func setUserProfile() {
-            coverImageView.image = UIImage(named: signInManager.profileCover)
-            userImageView.image = UIImage(named: signInManager.userPic)
-            nameLabel.text = signInManager.currentUserInfo?.username
-            followersNumberLabel.text = "236"
-            followingsNumberLabel.text = "719"
-            fetchUserFavoriteList()
-    }
 }
 
-// MARK: - conform to UITableViewDataSource
-
-extension ProfileViewController: UITableViewDataSource {
+extension OthersProfileViewController: UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
         ProfilePageSection.allCases.count
@@ -366,21 +459,41 @@ extension ProfileViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell,
+        let userWillDisplay = userWillDisplay else { return UITableViewCell() }
         
         switch indexPath.section {
             
+        case 0:
+            guard let followings = othersFollowingList else {
+                print("ProfilePage cant get othersFollowingList")
+                return UITableViewCell()
+            }
+            
+            var myFollowingsUserFiles = [SCPost]()
+            for audioFile in allAudioFiles {
+                for folloing in followings {
+                    if audioFile.authorID == folloing.userID, audioFile.authIDProvider == folloing.provider {
+                        myFollowingsUserFiles.append(audioFile)
+                    }
+                }
+            }
+            cell.firebaseData = myFollowingsUserFiles
+            cell.profileSection = ProfilePageSection.allCases[indexPath.section]
+
+            
+            
         case 1:
             
-            guard let currentUserFavoriteDocumentIDs = currentUserFavoriteDocumentIDs else {
-                print("ProfilePage cant get currentUserFavoriteDocumentIDs")
+            guard let userFavoriteDocumentIDs = userFavoriteDocumentIDs else {
+                print("ProfilePage cant get userFavoriteDocumentIDs")
                 return UITableViewCell()
             }
             
             var myFavoriteFiles = [SCPost]()
             
             for audioFile in allAudioFiles {
-                for favorite in currentUserFavoriteDocumentIDs {
+                for favorite in userFavoriteDocumentIDs {
                     if audioFile.documentID == favorite {
                         myFavoriteFiles.append(audioFile)
                     }
@@ -390,7 +503,7 @@ extension ProfileViewController: UITableViewDataSource {
             cell.profileSection = ProfilePageSection.allCases[indexPath.section]
             
         case 2:
-            let myAudioFiles = allAudioFiles.filter({$0.authorName == signInManager.currentUserInfo?.username})
+            let myAudioFiles = allAudioFiles.filter({$0.authorName == userWillDisplay.username})
             cell.firebaseData = myAudioFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section]
             
@@ -401,7 +514,7 @@ extension ProfileViewController: UITableViewDataSource {
         }
         
         //        let filteredFiles = allAudioFiles.filter({$0.category == AudioCategory.allCases[indexPath.section].rawValue})
-        cell.backgroundColor = .clear
+        cell.backgroundColor = UIColor(named: CommonUsage.scBlue)
         //        cell.firebaseData = filteredFiles
         //        cell.category = AudioCategory.allCases[indexPath.item].rawValue
         return cell
@@ -411,7 +524,7 @@ extension ProfileViewController: UITableViewDataSource {
 
 // MARK: - conform to UITableViewDelegate
 
-extension ProfileViewController: UITableViewDelegate {
+extension OthersProfileViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomeTableViewHeader.reuseIdentifier) as? HomeTableViewHeader else { return UIView()}
@@ -435,7 +548,7 @@ extension ProfileViewController: UITableViewDelegate {
     
 }
 
-extension ProfileViewController: PressPassableDelegate {
+extension OthersProfileViewController: PressPassableDelegate {
     
     func goCategoryPage(from section: Int) {
         
@@ -467,4 +580,5 @@ extension ProfileViewController: PressPassableDelegate {
     }
     
 }
+
 

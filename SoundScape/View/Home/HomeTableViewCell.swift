@@ -111,11 +111,13 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         let content = firebaseData[indexPath.item].content
         let duration = firebaseData[indexPath.item].duration
         let documentID = firebaseData[indexPath.item].documentID
+        let authorUserID = firebaseData[indexPath.item].authorID
+        let authorAccountProvider = firebaseData[indexPath.item].authIDProvider
         
 //         Must set url first, then set playInfo.
 //        (Because in class RemotePlayHelper, set url will make playinfo be nil.)
         remotePlayHelper.url = firebaseData[indexPath.item].audioURL
-        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration, documentID:documentID)
+        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration, documentID:documentID, authorUserID: authorUserID, authorAccountProvider:authorAccountProvider)
         AudioPlayerWindow.shared.show()
     }
     

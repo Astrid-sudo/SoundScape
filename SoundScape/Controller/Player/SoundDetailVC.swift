@@ -18,6 +18,8 @@ class SoundDetailVC: UIViewController {
     
     @IBOutlet weak var playButton: UIButton!
     
+    @IBOutlet weak var authorButton: UIButton!
+    
     @IBOutlet weak var authorLabel: UILabel!
     
     @IBOutlet weak var titleLabel: UILabel!
@@ -40,6 +42,8 @@ class SoundDetailVC: UIViewController {
     
     let remotePlayerHelper = RemotePlayHelper.shared
     
+    var authorIdentity: UserIdentity?
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -57,10 +61,36 @@ class SoundDetailVC: UIViewController {
     
     // MARK: - action
     
+    
+    @IBAction func goAuthorProfile(_ sender: UIButton) {
+        
+        guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
+        
+        
+        scTabBarController.selectedIndex = 0
+
+        guard let homeVC = scTabBarController.viewControllers?[0].children[0] as? HomeVC else { return }
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let othersProfileViewController = storyboard.instantiateViewController(withIdentifier: String(describing: OthersProfileViewController.self)) as? OthersProfileViewController,
+        let authorIdentity = self.authorIdentity  else { return }
+        
+        othersProfileViewController.idWillDisplay = authorIdentity
+        
+        homeVC.navigationController?.pushViewController(othersProfileViewController, animated: true)
+        
+        guard let leave = delegate?.leaveDetailPage else { return }
+        timer?.invalidate()
+        AudioPlayerWindow.shared.window?.frame = CGRect(x: 0, y: CommonUsage.screenHeight - 140,
+                                                            width: CommonUsage.screenWidth, height: 60)
+        AudioPlayerWindow.shared.window?.rootViewController?.view.isHidden = false
+        leave()
+
+    }
+    
     @IBAction func leaveDetailPage(_ sender: UIButton) {
         guard let leave = delegate?.leaveDetailPage else { return }
         timer?.invalidate()
-    
         AudioPlayerWindow.shared.window?.frame = CGRect(x: 0, y: CommonUsage.screenHeight - 140,
                                                             width: CommonUsage.screenWidth, height: 60)
         
@@ -175,8 +205,10 @@ class SoundDetailVC: UIViewController {
     @objc func updatePlayInfo(notification: Notification) {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
         titleLabel.text = nowPlayingInfo.title
-        authorLabel.text = nowPlayingInfo.author
+//        authorLabel.text = nowPlayingInfo.author
+        authorButton.setTitle(nowPlayingInfo.author, for: .normal)
         contentTextView.text = nowPlayingInfo.content
+        authorIdentity = UserIdentity(userID: nowPlayingInfo.authorUserID, userIDProvider: nowPlayingInfo.authorAccountProvider)
     }
     
     private func updateWaveformImages(localURL: URL) {

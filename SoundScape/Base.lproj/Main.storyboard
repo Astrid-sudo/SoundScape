@@ -38,20 +38,20 @@
                                     <constraint firstAttribute="bottom" secondItem="iDp-hF-h1Q" secondAttribute="bottom" id="vpt-iK-dzQ"/>
                                 </constraints>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Phillip Winter" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hTx-2k-XRQ">
-                                <rect key="frame" x="20" y="64" width="121" height="23"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hTx-2k-XRQ">
+                                <rect key="frame" x="20" y="64" width="0.0" height="41"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="19"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="陽明山下七股溫泉" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ExV-j7-b0k">
-                                <rect key="frame" x="16" y="107" width="219" height="32.5"/>
+                                <rect key="frame" x="16" y="125" width="219" height="32.5"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zVm-ge-GBW">
-                                <rect key="frame" x="16" y="239.5" width="382" height="200"/>
+                                <rect key="frame" x="16" y="257.5" width="382" height="200"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="200" id="s0V-ED-xYu"/>
@@ -64,40 +64,44 @@
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="38" translatesAutoresizingMaskIntoConstraints="NO" id="TVS-Jf-QV0">
                                 <rect key="frame" x="16" y="815" width="382" height="31"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JBD-jo-CAf">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JBD-jo-CAf">
                                         <rect key="frame" x="0.0" y="0.0" width="67" height="31"/>
-                                        <state key="normal" title="Button"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="Button" image="heart.fill" catalog="system"/>
                                         <buttonConfiguration key="configuration" style="plain" image="heart.fill" catalog="system"/>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MwK-6J-d2D">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MwK-6J-d2D">
                                         <rect key="frame" x="105" y="0.0" width="67" height="31"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="text.bubble.fill" catalog="system"/>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v6G-CT-7ZK">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v6G-CT-7ZK">
                                         <rect key="frame" x="210" y="0.0" width="67" height="31"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="repeat" catalog="system"/>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vyv-Vm-GpB">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vyv-Vm-GpB">
                                         <rect key="frame" x="315" y="0.0" width="67" height="31"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="mappin.and.ellipse" catalog="system"/>
                                     </button>
                                 </subviews>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kod-Ct-41r">
-                                <rect key="frame" x="313" y="460" width="81" height="61"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kod-Ct-41r">
+                                <rect key="frame" x="355" y="477" width="39" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="qB2-Ld-27l"/>
+                                </constraints>
                                 <color key="tintColor" systemColor="tintColor"/>
-                                <state key="normal" title="Button"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="Button" image="play.fill" catalog="system"/>
                                 <buttonConfiguration key="configuration" style="filled" image="play.fill" catalog="system"/>
                                 <connections>
                                     <action selector="playAudio:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mAU-8e-QaD"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RBV-eA-02b">
-                                <rect key="frame" x="366" y="66.5" width="18" height="18"/>
+                                <rect key="frame" x="366" y="75.5" width="18" height="18"/>
                                 <color key="tintColor" systemColor="tertiarySystemBackgroundColor"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="chevron.down" catalog="system">
@@ -107,29 +111,50 @@
                                     <action selector="leaveDetailPage:" destination="BYZ-38-t0r" eventType="touchUpInside" id="E1k-dX-Cbh"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="R8n-Dw-B82">
+                                <rect key="frame" x="20" y="64" width="145" height="41"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="41" id="0Yf-qv-BkZ"/>
+                                </constraints>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Phillip Winter" titleAlignment="leading">
+                                    <fontDescription key="titleFontDescription" type="boldSystem" pointSize="19"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="goAuthorProfile:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fTr-Em-VNe"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="scLightBlue"/>
                         <constraints>
                             <constraint firstItem="Hmk-x4-uch" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="5Wh-A7-cES"/>
+                            <constraint firstItem="R8n-Dw-B82" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="5hb-7J-fOh"/>
                             <constraint firstItem="zVm-ge-GBW" firstAttribute="top" secondItem="ExV-j7-b0k" secondAttribute="bottom" constant="100" id="Arn-ge-0aX"/>
                             <constraint firstItem="Hmk-x4-uch" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="BG3-xw-j0P"/>
                             <constraint firstItem="RBV-eA-02b" firstAttribute="centerY" secondItem="hTx-2k-XRQ" secondAttribute="centerY" id="Bl7-he-nK6"/>
+                            <constraint firstItem="R8n-Dw-B82" firstAttribute="centerY" secondItem="RBV-eA-02b" secondAttribute="centerY" id="EcQ-7d-fg5"/>
                             <constraint firstItem="ExV-j7-b0k" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="GcW-SW-jO2"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="kod-Ct-41r" secondAttribute="trailing" constant="20" id="IFk-ug-OnQ"/>
                             <constraint firstItem="hTx-2k-XRQ" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="MeR-pC-gxc"/>
+                            <constraint firstItem="ExV-j7-b0k" firstAttribute="top" secondItem="R8n-Dw-B82" secondAttribute="bottom" constant="20" id="PQf-C6-btb"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="zVm-ge-GBW" secondAttribute="trailing" constant="16" id="TYa-Fh-LOG"/>
                             <constraint firstItem="zVm-ge-GBW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="Tbp-fn-XB5"/>
+                            <constraint firstItem="Hmk-x4-uch" firstAttribute="top" secondItem="kod-Ct-41r" secondAttribute="bottom" constant="20" id="Uxd-qc-NgE"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="TVS-Jf-QV0" secondAttribute="trailing" constant="16" id="VMU-lT-qAJ"/>
                             <constraint firstItem="ExV-j7-b0k" firstAttribute="top" secondItem="hTx-2k-XRQ" secondAttribute="bottom" constant="20" id="dAD-pM-39e"/>
                             <constraint firstItem="TVS-Jf-QV0" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="fip-zK-zi3"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="TVS-Jf-QV0" secondAttribute="bottom" constant="16" id="h9B-b7-bz9"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="RBV-eA-02b" secondAttribute="trailing" constant="30" id="hSj-RW-MYk"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Hmk-x4-uch" secondAttribute="bottom" constant="150" id="hTh-yZ-1VD"/>
+                            <constraint firstItem="R8n-Dw-B82" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="i4m-jz-0z3"/>
                             <constraint firstItem="hTx-2k-XRQ" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="tgq-DM-s4F"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Item" image="ticket" catalog="system" id="4db-Nu-Q1k"/>
                     <connections>
+                        <outlet property="authorButton" destination="R8n-Dw-B82" id="Vwc-Jv-Q41"/>
                         <outlet property="authorLabel" destination="hTx-2k-XRQ" id="iDb-dJ-zp6"/>
                         <outlet property="contentTextView" destination="zVm-ge-GBW" id="75M-e6-OrM"/>
                         <outlet property="playButton" destination="kod-Ct-41r" id="VVT-Js-9co"/>
@@ -140,7 +165,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3535" y="878"/>
+            <point key="canvasLocation" x="3534.7826086956525" y="877.90178571428567"/>
         </scene>
         <!--HomeVC-->
         <scene sceneID="ddv-Xb-y80">
@@ -202,6 +227,21 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="me9-PK-Drn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="506" y="2314"/>
+        </scene>
+        <!--Others Profile View Controller-->
+        <scene sceneID="d59-Ng-IIY">
+            <objects>
+                <viewController storyboardIdentifier="OthersProfileViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="GKx-tV-8WH" customClass="OthersProfileViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="bmI-N9-Rhv">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="ht5-7z-aCD"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="J12-cr-z1K" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1395" y="2332"/>
         </scene>
         <!--Test EditVC-->
         <scene sceneID="21I-gY-GuF">
@@ -327,7 +367,7 @@
         <!--Profile View Controller-->
         <scene sceneID="1Vr-kE-THn">
             <objects>
-                <viewController restorationIdentifier="ProfileViewController" storyboardIdentifier="ProfileViewController" id="sU8-ob-dcH" customClass="ProfileViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ProfileViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="sU8-ob-dcH" customClass="ProfileViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="7HP-AE-QGt">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -485,7 +525,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yEb-aL-D7q" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1399" y="2314"/>
+            <point key="canvasLocation" x="506" y="2990"/>
         </scene>
         <!--Search View Controller-->
         <scene sceneID="0CK-NC-I5v">
