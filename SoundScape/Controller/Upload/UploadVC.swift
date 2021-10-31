@@ -11,6 +11,8 @@ class UploadVC: UIViewController {
     
     // MARK: - properties
     
+    let signInmanager = SignInManager.shared
+    
     let firebasemanager = FirebaseManager.shared
     
     var selectedFileURL: URL?
@@ -240,9 +242,9 @@ class UploadVC: UIViewController {
               }
         
         var post = SCPost(documentID: "",
-                          authorID: "yaheyyodude",
-                          authIDProvider: "facebook",
-                          authorName: "厘題恩",
+                          authorID: signInmanager.currentUserInfo?.userID ?? "No signIn",
+                          authIDProvider: signInmanager.currentUserInfo?.provider ?? "No signIn",
+                          authorName:  signInmanager.currentUserInfo?.username ?? "No signIn",
                           title: title,
                           content: content,
                           category: category,

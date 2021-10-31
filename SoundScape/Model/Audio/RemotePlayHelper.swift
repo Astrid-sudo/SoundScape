@@ -14,6 +14,7 @@ struct PlayInfo {
     let author: String
     let content: String
     let duration: Double
+    let documentID: String
 }
 
 struct PlayProgress {
@@ -137,8 +138,8 @@ class RemotePlayHelper {
         self.metadata = matadata
     }
     
-    func setPlayInfo(title: String, author: String, content: String, duration: Double) {
-        currentPlayInfo = PlayInfo(title: title, author: author, content: content, duration: duration)
+    func setPlayInfo(title: String, author: String, content: String, duration: Double, documentID: String) {
+        currentPlayInfo = PlayInfo(title: title, author: author, content: content, duration: duration, documentID: documentID)
     }
     
 }

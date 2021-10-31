@@ -291,9 +291,10 @@ extension SearchViewController: UITableViewDelegate {
         let author = resultAudioFiles[indexPath.item].authorName
         let content = resultAudioFiles[indexPath.item].content
         let duration = resultAudioFiles[indexPath.item].duration
+        let documentID =  resultAudioFiles[indexPath.item].documentID
 
         remotePlayHelper.url = resultAudioFiles[indexPath.item].audioURL
-        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration)
+        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration, documentID: documentID)
         AudioPlayerWindow.shared.show()
 
     }

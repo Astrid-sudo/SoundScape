@@ -135,9 +135,10 @@ extension CategoryViewController: UITableViewDelegate {
         let author = data[indexPath.item].authorName
         let content = data[indexPath.item].content
         let duration = data[indexPath.item].duration
+        let documentID = data[indexPath.item].documentID
         
         remotePlayHelper.url = data[indexPath.item].audioURL
-        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration)
+        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration, documentID: documentID)
         AudioPlayerWindow.shared.show()
 
     }

@@ -41,7 +41,7 @@ class HomeVC: UIViewController {
         
         fetchDataFromFirebase()
         setTableView()
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        setViewBackgroundcolor()
         
     }
     
@@ -56,6 +56,10 @@ class HomeVC: UIViewController {
     }
     
     // MARK: - config UI method
+    
+    private func setViewBackgroundcolor() {
+        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+    }
     
     private func setTableView() {
         view.addSubview(tableView)
@@ -151,7 +155,6 @@ extension HomeVC: PressPassableDelegate {
                 data.append(file)
             }
         }
-        
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
