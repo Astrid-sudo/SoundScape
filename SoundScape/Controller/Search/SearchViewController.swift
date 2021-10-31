@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 class SearchViewController: UIViewController {
     
@@ -23,6 +24,13 @@ class SearchViewController: UIViewController {
     
     private var resultAudioFiles = [SCPost]() {
         didSet {
+            
+            if resultAudioFiles.count == 0 {
+                addLottie()
+            } else {
+                animationView.removeFromSuperview()
+            }
+
             tableView.reloadData()
         }
     }
@@ -38,9 +46,22 @@ class SearchViewController: UIViewController {
         setCollectionView()
         setSearchResultTitleLabel()
         setTableView()
+        addLottie()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        animationView.play()
+
     }
     
     // MARK: - method
+    
+    private func addLottie() {
+        view.addSubview(animationView)
+        animationView.play()
+    }
+
     
     private func fetchDataFromFirebase() {
         
@@ -89,6 +110,15 @@ class SearchViewController: UIViewController {
     }
     
     // MARK: - UI Properties
+    
+    private lazy var animationView: AnimationView = {
+        let animationView = AnimationView(name: "74194-sleepy-sleep")
+        animationView.frame = CGRect(x: 0, y: 100, width: 100, height: 100)
+        animationView.center = view.center
+        animationView.contentMode = .scaleAspectFill
+        animationView.loopMode = .loop
+        return animationView
+    }()
     
     private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
