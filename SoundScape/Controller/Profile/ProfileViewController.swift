@@ -48,6 +48,28 @@ class ProfileViewController: UIViewController {
         }
     }
     
+    private var currentUserFollowingList: [SCFollow]? {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+
+    private var numbersOfFollowers: Int? {
+        didSet {
+            guard let numbersOfFollowers = numbersOfFollowers else { return }
+            followersNumberLabel.text = String(describing: numbersOfFollowers)
+        }
+    }
+    
+    private var numbersOfFollowings: Int? {
+        didSet {
+            guard let numbersOfFollowings = numbersOfFollowings else { return }
+            followingsNumberLabel.text = String(describing: numbersOfFollowings)
+        }
+    }
+
+
+    
     // MARK: - UI properties
     
     private lazy var coverImageView: UIImageView = {
@@ -172,7 +194,6 @@ class ProfileViewController: UIViewController {
         super.viewDidLoad()
         
 //        tellMyProfileOrOthers()
-        
         fetchUserInfoFromFirebase()
         fetchDataFromFirebase()
         setBackgroundColor()
@@ -194,6 +215,12 @@ class ProfileViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        fetchAmountOfFollows()
+        fetchCurrentUserFollowingList()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -255,7 +282,7 @@ class ProfileViewController: UIViewController {
         NSLayoutConstraint.activate([
             socialStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
             socialStackView.trailingAnchor.constraint(equalTo: nameLabel.leadingAnchor, constant: -8),
-            socialStackView.centerYAnchor.constraint(equalTo: coverImageView.bottomAnchor)
+            socialStackView.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor)
         ])
         socialStackView.addArrangedSubview(followersStackView)
         socialStackView.addArrangedSubview(followingsStackView)
@@ -276,7 +303,7 @@ class ProfileViewController: UIViewController {
         followButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             followButton.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor, constant: 16),
-            followButton.centerYAnchor.constraint(equalTo: coverImageView.bottomAnchor),
+            followButton.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
             followButton.heightAnchor.constraint(equalTo: nameLabel.heightAnchor, multiplier: 0.75),
             followButton.widthAnchor.constraint(equalToConstant: 80)
         ])
@@ -301,6 +328,24 @@ class ProfileViewController: UIViewController {
 //
 //    }
     
+    private func fetchCurrentUserFollowingList() {
+        guard let currentUserInfoDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
+            print("OthersProfileController: please logIn")
+            return }
+        firebaseManager.checkFollowersChange(userInfoDoumentID: currentUserInfoDocumentID) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let followers):
+                
+                self.currentUserFollowingList = followers
+                
+            case .failure(let error): print(error)
+            }
+        }
+        
+        
+    }
+
     private func fetchUserFavoriteList() {
         
         guard let userProfileDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
@@ -343,12 +388,37 @@ class ProfileViewController: UIViewController {
         signInManager.checkUser(completion: setUserProfile)
     }
     
+    private func fetchAmountOfFollows() {
+        guard let userWillDisplay = signInManager.currentUserInfo,
+              let userInfoDoumentID = userWillDisplay.userInfoDoumentID else { return }
+        firebaseManager.checkFollowersChange(userInfoDoumentID: userInfoDoumentID) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let followers):
+                
+                self.numbersOfFollowers = followers.count
+                
+            case .failure(let error): print(error)
+            }
+        }
+        
+        firebaseManager.checkFollowingsChange(userInfoDoumentID: userInfoDoumentID) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let followings):
+                self.numbersOfFollowings = followings.count
+            case .failure(let error): print(error)
+            }
+        }
+    }
+
+    
     private func setUserProfile() {
             coverImageView.image = UIImage(named: signInManager.profileCover)
             userImageView.image = UIImage(named: signInManager.userPic)
             nameLabel.text = signInManager.currentUserInfo?.username
-            followersNumberLabel.text = "236"
-            followingsNumberLabel.text = "719"
+//            followersNumberLabel.text = "2"
+//            followingsNumberLabel.text = "4"
             fetchUserFavoriteList()
     }
 }
@@ -369,6 +439,24 @@ extension ProfileViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell else { return UITableViewCell() }
         
         switch indexPath.section {
+            
+        case 0:
+            guard let followings = currentUserFollowingList else {
+                print("ProfilePage cant get followingList")
+                return UITableViewCell()
+            }
+            
+            var myFollowingsUserFiles = [SCPost]()
+            for audioFile in allAudioFiles {
+                for folloing in followings {
+                    if audioFile.authorID == folloing.userID, audioFile.authIDProvider == folloing.provider {
+                        myFollowingsUserFiles.append(audioFile)
+                    }
+                }
+            }
+            cell.firebaseData = myFollowingsUserFiles
+            cell.profileSection = ProfilePageSection.allCases[indexPath.section]
+
             
         case 1:
             

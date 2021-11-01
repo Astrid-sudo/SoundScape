@@ -22,7 +22,7 @@ class OthersProfileViewController: UIViewController {
             fetchAmountOfFollows()
         }
     }
-
+    
     let firebaseManager = FirebaseManager.shared
     
     private var allAudioFiles = [SCPost]() {
@@ -62,7 +62,7 @@ class OthersProfileViewController: UIViewController {
             manipulateFollowButton()
         }
     }
-
+    
     
     // MARK: - life cycle
     
@@ -103,9 +103,9 @@ class OthersProfileViewController: UIViewController {
     
     @objc func manipulateFollow() {
         guard let userWillDisplay = userWillDisplay,
-        let userInfoDoumentID = userWillDisplay.userInfoDoumentID,
-        let loggedInUserInfo = signInManager.currentUserInfo,
-        let loggedInUserInfoDocumentID = loggedInUserInfo.userInfoDoumentID else { return }
+              let userInfoDoumentID = userWillDisplay.userInfoDoumentID,
+              let loggedInUserInfo = signInManager.currentUserInfo,
+              let loggedInUserInfoDocumentID = loggedInUserInfo.userInfoDoumentID else { return }
         
         firebaseManager.manipulateFollow(userInfoDoumentID: userInfoDoumentID,
                                          userInfo: SCFollow(userID: userWillDisplay.userID,
@@ -121,32 +121,39 @@ class OthersProfileViewController: UIViewController {
     private func manipulateFollowButton() {
         
         guard let currentUserFollowingList = currentUserFollowingList,
-        let userWillDisplay = userWillDisplay else { return }
+              let userWillDisplay = userWillDisplay else { return }
+        
+        var alreadyFollowed = [SCFollow]()
         
         for following in currentUserFollowingList {
             if following.userID == userWillDisplay.userID,
                following.provider == userWillDisplay.provider {
-                makeButtonFollowed()
+                alreadyFollowed.append(following)
             }
+        }
+        
+        if alreadyFollowed.count != 0 {
+            makeButtonFollowed()
         }
     }
     
     private func makeButtonFollowed() {
         followButton.setTitle(CommonUsage.Text.unfollow, for: .normal)
         followButton.backgroundColor = UIColor(named: CommonUsage.scOrange)
+        view.layoutIfNeeded()
     }
     
     private func makeButtonUnFollow() {
         followButton.setTitle(CommonUsage.Text.follow, for: .normal)
         followButton.backgroundColor = UIColor(named: CommonUsage.scYellow)
-
+        
     }
     
     private func fetchCurrentUserFollowingList() {
         guard let currentUserInfoDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
             print("OthersProfileController: please logIn")
             return }
-        firebaseManager.checkFollowersChange(userInfoDoumentID: currentUserInfoDocumentID) { [weak self] result in
+        firebaseManager.checkFollowingsChange(userInfoDoumentID: currentUserInfoDocumentID) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let followers):
@@ -156,7 +163,6 @@ class OthersProfileViewController: UIViewController {
             case .failure(let error): print(error)
             }
         }
-
         
     }
     
@@ -184,17 +190,17 @@ class OthersProfileViewController: UIViewController {
             }
         }
     }
-
+    
     private func fetchUserInfo() {
         
         guard let userID = idWillDisplay?.userID,
-        let userIDProider = idWillDisplay?.userIDProvider else {
-            print("OtherProfileVC: Dont know who to display")
-            return
-        }
+              let userIDProider = idWillDisplay?.userIDProvider else {
+                  print("OtherProfileVC: Dont know who to display")
+                  return
+              }
         
         firebaseManager.fetchUser(userID: userID, userIDProvider: userIDProider) { result in
-           
+            
             switch result {
                 
             case .success(let user):
@@ -229,7 +235,7 @@ class OthersProfileViewController: UIViewController {
             }
         }
     }
-
+    
     private func fetchDataFromFirebase() {
         
         firebaseManager.checkPostsChange { [weak self] result in
@@ -250,16 +256,16 @@ class OthersProfileViewController: UIViewController {
         guard let userWillDisplay = userWillDisplay else { return }
         coverImageView.image = UIImage(named: CommonUsage.profileCover2)
         userImageView.image = UIImage(named: CommonUsage.audioImage2)
-            nameLabel.text = userWillDisplay.username
-            followersNumberLabel.text = "0"
-            followingsNumberLabel.text = "0"
-        }
-        
+        nameLabel.text = userWillDisplay.username
+        followersNumberLabel.text = "0"
+        followingsNumberLabel.text = "0"
+    }
+    
     // MARK: - UI properties
     
     private lazy var coverImageView: UIImageView = {
         let image = UIImageView()
-        image.contentMode = .scaleToFill
+        image.contentMode = .scaleAspectFill
         return image
     }()
     
@@ -419,7 +425,7 @@ class OthersProfileViewController: UIViewController {
         NSLayoutConstraint.activate([
             socialStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
             socialStackView.trailingAnchor.constraint(equalTo: nameLabel.leadingAnchor, constant: -8),
-            socialStackView.centerYAnchor.constraint(equalTo: coverImageView.bottomAnchor)
+            socialStackView.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor)
         ])
         socialStackView.addArrangedSubview(followersStackView)
         socialStackView.addArrangedSubview(followingsStackView)
@@ -440,7 +446,7 @@ class OthersProfileViewController: UIViewController {
         followButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             followButton.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor, constant: 16),
-            followButton.centerYAnchor.constraint(equalTo: coverImageView.bottomAnchor),
+            followButton.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
             followButton.heightAnchor.constraint(equalTo: nameLabel.heightAnchor, multiplier: 0.75),
             followButton.widthAnchor.constraint(equalToConstant: 80)
         ])
@@ -460,7 +466,7 @@ extension OthersProfileViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell,
-        let userWillDisplay = userWillDisplay else { return UITableViewCell() }
+              let userWillDisplay = userWillDisplay else { return UITableViewCell() }
         
         switch indexPath.section {
             
@@ -480,7 +486,7 @@ extension OthersProfileViewController: UITableViewDataSource {
             }
             cell.firebaseData = myFollowingsUserFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section]
-
+            
             
             
         case 1:

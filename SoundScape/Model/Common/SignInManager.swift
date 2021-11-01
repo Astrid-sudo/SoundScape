@@ -34,17 +34,17 @@ class SignInManager {
     
     // MARK: - user 2
     
-    //            var currentUserID = "astridtingan"
-    //
-    //            var provider = "Google"
-    //
-    //            var userName = "Astrid"
-    //
-    //            var userEmail = "astridtingan@gmail.com"
-    //
-    //            var userPic = CommonUsage.profilePic2
-    //
-    //            var profileCover = CommonUsage.profileCover2
+                var currentUserID = "astridtingan"
+    
+                var provider = "Google"
+    
+                var userName = "Astrid"
+    
+                var userEmail = "astridtingan@gmail.com"
+    
+                var userPic = CommonUsage.profilePic2
+    
+                var profileCover = CommonUsage.profileCover2
     
     // MARK: - user 3
     
@@ -76,17 +76,17 @@ class SignInManager {
 //
     // MARK: - user 5
     
-    var currentUserID = "water"
-
-    var provider = "Google"
-
-    var userName = "A水"
-
-    var userEmail = "water@gmail.com"
-
-    var userPic = CommonUsage.profilePic5
-
-    var profileCover = CommonUsage.profileCover5
+//    var currentUserID = "water"
+//
+//    var provider = "Google"
+//
+//    var userName = "A水"
+//
+//    var userEmail = "water@gmail.com"
+//
+//    var userPic = CommonUsage.profilePic5
+//
+//    var profileCover = CommonUsage.profileCover5
     
     // MARK: - method
     
@@ -106,7 +106,6 @@ class SignInManager {
             }
         }
     }
-    
     
     func checkUser(completion: @escaping() -> Void) {
         
