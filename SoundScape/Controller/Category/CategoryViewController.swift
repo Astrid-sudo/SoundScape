@@ -120,6 +120,7 @@ extension CategoryViewController: UITableViewDataSource {
                 tableView.dequeueReusableCell(withIdentifier: CategoryTableViewCell.reuseIdentifier) as? CategoryTableViewCell else { return UITableViewCell()}
         let data = data[indexPath.row]
         cell.setContent(title: data.title, author: data.authorName)
+        cell.selectionStyle = .none
         return cell
     }
     
@@ -135,9 +136,12 @@ extension CategoryViewController: UITableViewDelegate {
         let author = data[indexPath.item].authorName
         let content = data[indexPath.item].content
         let duration = data[indexPath.item].duration
-        
+        let documentID = data[indexPath.item].documentID
+        let authorUserID = data[indexPath.item].authorID
+        let authorAccountProvider = data[indexPath.item].authIDProvider
+
         remotePlayHelper.url = data[indexPath.item].audioURL
-        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration)
+        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration, documentID:documentID, authorUserID: authorUserID, authorAccountProvider:authorAccountProvider)
         AudioPlayerWindow.shared.show()
 
     }
