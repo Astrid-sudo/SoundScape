@@ -356,7 +356,8 @@ class AudioPlayerVC: UIViewController {
         AudioPlayerWindow.shared.showDetailPage()
         
         guard let soundDetailVC = soundDetailVC else { return }
-        
+        soundDetailVC.view.alpha = 1
+
         dontShowDetailConstraint.isActive = false
         showDetailConstraint.isActive = true
         
@@ -504,7 +505,8 @@ extension AudioPlayerVC: DetailPageShowableDelegate {
     func showDetailPage() {
         
         guard let soundDetailVC = soundDetailVC else { return }
-        
+        soundDetailVC.view.alpha = 1
+
         dontShowDetailConstraint.isActive = false
         showDetailConstraint.isActive = true
         
@@ -521,7 +523,10 @@ extension AudioPlayerVC: DetailPageShowableDelegate {
         
         dontShowDetailConstraint.isActive = true
         
+        guard let soundDetailVC = soundDetailVC else { return }
+        
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseIn) {
+            soundDetailVC.view.alpha = 0
             self.view.layoutIfNeeded()
         }
     }

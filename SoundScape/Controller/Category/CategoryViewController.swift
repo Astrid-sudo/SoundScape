@@ -120,6 +120,7 @@ extension CategoryViewController: UITableViewDataSource {
                 tableView.dequeueReusableCell(withIdentifier: CategoryTableViewCell.reuseIdentifier) as? CategoryTableViewCell else { return UITableViewCell()}
         let data = data[indexPath.row]
         cell.setContent(title: data.title, author: data.authorName)
+        cell.selectionStyle = .none
         return cell
     }
     

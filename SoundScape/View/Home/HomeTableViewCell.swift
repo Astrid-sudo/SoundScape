@@ -36,7 +36,7 @@ class HomeTableViewCell: UITableViewCell {
         layout.minimumLineSpacing = 10
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = UIColor(named: CommonUsage.scBlue)
         collectionView.bounces = true
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -49,6 +49,8 @@ class HomeTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        backgroundColor = UIColor(named: CommonUsage.scBlue)
+        tintColor =  UIColor(named: CommonUsage.scBlue)
         setCollectionView()
     }
     
@@ -93,7 +95,7 @@ extension HomeTableViewCell: UICollectionViewDataSource {
         
         cell.setCell(image: nil,
                      audioTitle: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName)
-
+        
         return cell
     }
     
@@ -114,8 +116,8 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         let authorUserID = firebaseData[indexPath.item].authorID
         let authorAccountProvider = firebaseData[indexPath.item].authIDProvider
         
-//         Must set url first, then set playInfo.
-//        (Because in class RemotePlayHelper, set url will make playinfo be nil.)
+        //         Must set url first, then set playInfo.
+        //        (Because in class RemotePlayHelper, set url will make playinfo be nil.)
         remotePlayHelper.url = firebaseData[indexPath.item].audioURL
         remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration, documentID:documentID, authorUserID: authorUserID, authorAccountProvider:authorAccountProvider)
         AudioPlayerWindow.shared.show()

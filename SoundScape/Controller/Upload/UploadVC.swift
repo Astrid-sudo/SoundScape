@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 class UploadVC: UIViewController {
     
@@ -110,6 +111,15 @@ class UploadVC: UIViewController {
         return button
     }()
     
+    private lazy var animationView: AnimationView = {
+        let animationView = AnimationView(name: "lf30_editor_r2yecdir")
+        animationView.frame = CGRect(x: 0, y: 100, width: 400, height: 400)
+        animationView.center = view.center
+        animationView.contentMode = .scaleAspectFill
+        animationView.loopMode = .loop
+        return animationView
+    }()
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -124,11 +134,15 @@ class UploadVC: UIViewController {
         setMapLabel()
         setMapView()
         setUploadButton()
+        setViewBackgroundColor()
         
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
     }
     
     // MARK: - UI method
+    
+    private func setViewBackgroundColor() {
+        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+    }
     
     private func setTitleLabel() {
         view.addSubview(titleLabel)
@@ -222,6 +236,18 @@ class UploadVC: UIViewController {
     
     // MARK: - method
     
+    private func addLottie() {
+        view.addSubview(animationView)
+        animationView.play()
+    }
+    
+    func backToHome() {
+        navigationController?.popToRootViewController(animated: true)
+        animationView.removeFromSuperview()
+        guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
+        scTabBarController.selectedIndex = 0
+    }
+    
     func popFillAlert() {
         let alert = UIAlertController(title: "請填滿所有欄位", message: "登入後即可PO聲", preferredStyle: .alert )
         let okButton = UIAlertAction(title: "是！", style: .default)
@@ -234,7 +260,9 @@ class UploadVC: UIViewController {
     
     @objc func upload() {
         
-        guard let title =  titleTextField.text,
+        addLottie()
+        
+        guard let title = titleTextField.text,
               let content = descriptionTextView.text,
               let category = categorySegmentControl.titleForSegment(at: categorySegmentControl.selectedSegmentIndex) else {
                   popFillAlert()
@@ -244,7 +272,7 @@ class UploadVC: UIViewController {
         var post = SCPost(documentID: "",
                           authorID: signInmanager.currentUserInfo?.userID ?? "No signIn",
                           authIDProvider: signInmanager.currentUserInfo?.provider ?? "No signIn",
-                          authorName:  signInmanager.currentUserInfo?.username ?? "No signIn",
+                          authorName: signInmanager.currentUserInfo?.username ?? "No signIn",
                           title: title,
                           content: content,
                           category: category,
@@ -256,10 +284,8 @@ class UploadVC: UIViewController {
         }
         
         if let selectedFileURL = selectedFileURL {
-            firebasemanager.upload(localURL: selectedFileURL, post: post)
+            firebasemanager.upload(localURL: selectedFileURL, post: post, completion: backToHome)
         }
-        
-        navigationController?.popToRootViewController(animated: true)
-        
     }
+    
 }

@@ -83,7 +83,7 @@ class FirebaseManager {
         }
     }
     
-    func upload(localURL: URL, post: SCPost) {
+    func upload(localURL: URL, post: SCPost, completion: @escaping () -> Void) {
         
         var fullPost = post
         
@@ -98,6 +98,7 @@ class FirebaseManager {
                 return
             }
             
+            completion()
             print("Upload audio suceeded from localUrl:\(localURL)")
             
             audioReference.downloadURL { [weak self] (url, error) in
