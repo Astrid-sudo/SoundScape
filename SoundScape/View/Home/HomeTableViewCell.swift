@@ -24,6 +24,8 @@ class HomeTableViewCell: UITableViewCell {
     
     var category = ""
     
+    var profileSection: ProfilePageSection?
+    
     // MARK: - UI properties
     
     private lazy var collectionView: UICollectionView = {
@@ -34,7 +36,7 @@ class HomeTableViewCell: UITableViewCell {
         layout.minimumLineSpacing = 10
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = UIColor(named: CommonUsage.scBlue)
         collectionView.bounces = true
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -47,6 +49,8 @@ class HomeTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        backgroundColor = UIColor(named: CommonUsage.scBlue)
+        tintColor =  UIColor(named: CommonUsage.scBlue)
         setCollectionView()
     }
     
@@ -91,7 +95,7 @@ extension HomeTableViewCell: UICollectionViewDataSource {
         
         cell.setCell(image: nil,
                      audioTitle: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName)
-
+        
         return cell
     }
     
@@ -104,19 +108,18 @@ extension HomeTableViewCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("\(category),didSelect \(indexPath), url: \(firebaseData[indexPath.item].audioURL)")
         
-//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-
-//        guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
-        
         let title = firebaseData[indexPath.item].title
         let author = firebaseData[indexPath.item].authorName
         let content = firebaseData[indexPath.item].content
         let duration = firebaseData[indexPath.item].duration
+        let documentID = firebaseData[indexPath.item].documentID
+        let authorUserID = firebaseData[indexPath.item].authorID
+        let authorAccountProvider = firebaseData[indexPath.item].authIDProvider
         
-//         Must set url first, then set playInfo.
-//        (Because in class RemotePlayHelper, set url will make playinfo be nil.)
+        //         Must set url first, then set playInfo.
+        //        (Because in class RemotePlayHelper, set url will make playinfo be nil.)
         remotePlayHelper.url = firebaseData[indexPath.item].audioURL
-        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration)
+        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration, documentID:documentID, authorUserID: authorUserID, authorAccountProvider:authorAccountProvider)
         AudioPlayerWindow.shared.show()
     }
     

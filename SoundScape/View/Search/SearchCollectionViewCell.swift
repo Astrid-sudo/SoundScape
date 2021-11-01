@@ -48,12 +48,12 @@ class SearchCollectionViewCell: UICollectionViewCell {
             textLabel.widthAnchor.constraint(equalToConstant: 90),
             textLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
-        textLabel.layer.cornerRadius = 30
 
     }
     
     func setContent(content: String) {
         textLabel.text = content
+        textLabel.layer.cornerRadius = 10
     }
     
     func setLabelColorRed() {

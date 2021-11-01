@@ -11,6 +11,10 @@ class AudioPlayerVC: UIViewController {
     
     // MARK: - properties
     
+    let signInManager = SignInManager.shared
+    
+    let firebaseManager = FirebaseManager.shared
+    
     weak var delegate: DetailPageShowableDelegate?
     
     var timer: Timer?
@@ -26,6 +30,10 @@ class AudioPlayerVC: UIViewController {
     private var showDetailConstraint = NSLayoutConstraint()
     
     var soundDetailVC: SoundDetailVC?
+    
+    var nowPlayDocumentID: String?
+    
+    var currentUserFavoriteDocumentIDs: [String]?
     
     // MARK: - UI properties
     
@@ -62,9 +70,9 @@ class AudioPlayerVC: UIViewController {
     
     private lazy var favoriteButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.heart), for: .normal)
+        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.heartEmpty), for: .normal)
         button.tintColor = .red
-        //      button.addTarget(self, action: #selector(), for: .touchUpInside)
+        button.addTarget(self, action: #selector(manipulateFavorite), for: .touchUpInside)
         return button
     }()
     
@@ -100,9 +108,9 @@ class AudioPlayerVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        fetchUserFavoriteList()
         addObserver()
-        view.backgroundColor = UIColor(named: CommonUsage.scGreen)
-        
+        setviewBackgroundcolor()
         setupBaseVew()
         setAudioImage()
         setAudioTitle()
@@ -114,7 +122,6 @@ class AudioPlayerVC: UIViewController {
         setDetailButton()
         addDetailPage()
     }
-    
     
     // MARK: - init
     
@@ -131,6 +138,30 @@ class AudioPlayerVC: UIViewController {
     }
     
     // MARK: - method
+    
+    private func fetchUserFavoriteList() {
+        
+        guard let userProfileDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
+            print("AudioPlayerVC: Cant get favorite before login")
+            return
+        }
+        
+        firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self]
+            result in
+            
+            guard let self = self else { return }
+            
+            switch result {
+                
+            case .success(let scFavorites):
+                self.currentUserFavoriteDocumentIDs = scFavorites.map({$0.favoriteDocumentID})
+                
+            case .failure(let error):
+                print("AudioPlayerVC: Failed to get favoriteDocumentID \(error)")
+                
+            }
+        }
+    }
     
     private func addDetailPage() {
         
@@ -157,7 +188,41 @@ class AudioPlayerVC: UIViewController {
         soundDetailVC.view.isHidden = true
     }
     
+    private func fillFavoriteButton() {
+        favoriteButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.heart), for: .normal)
+        favoriteButton.tintColor = .red
+    }
+    
+    private func emptyFavoriteButton() {
+        favoriteButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.heartEmpty), for: .normal)
+        favoriteButton.tintColor = .red
+    }
+    
+    
+    // MARK: - action
+    
+    @objc func manipulateFavorite() {
+        
+        guard let userProfileDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
+            print("Cant addToFavorite before loggin")
+            return
+        }
+        
+        guard let nowPlayDocumentID = nowPlayDocumentID else {
+            return
+        }
+        
+        firebaseManager.manipulateFavorite(userProfileDocumentID: userProfileDocumentID,
+                                           documendID: nowPlayDocumentID,
+                                           addCompletion: fillFavoriteButton,
+                                           removeCompletion: emptyFavoriteButton)
+    }
+    
     // MARK: - UI method
+    
+    private func setviewBackgroundcolor() {
+        view.backgroundColor = UIColor(named: CommonUsage.scGreen)
+    }
     
     private func setupBaseVew() {
         view.addSubview(baseView)
@@ -291,7 +356,8 @@ class AudioPlayerVC: UIViewController {
         AudioPlayerWindow.shared.showDetailPage()
         
         guard let soundDetailVC = soundDetailVC else { return }
-        
+        soundDetailVC.view.alpha = 1
+
         dontShowDetailConstraint.isActive = false
         showDetailConstraint.isActive = true
         
@@ -308,10 +374,27 @@ class AudioPlayerVC: UIViewController {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
         audioTitleLabel.text = nowPlayingInfo.title
         authorLabel.text = nowPlayingInfo.author
+        nowPlayDocumentID = nowPlayingInfo.documentID
+        manipulateFavoriteImage()
         
     }
     
     // MARK: - method
+    
+    private func manipulateFavoriteImage() {
+        
+        guard let currentUserFavoriteDocumentIDs = currentUserFavoriteDocumentIDs,
+              let nowPlayDocumentID = nowPlayDocumentID else {
+                  print("AudioPlayerVC: Cant get currentUserFavoriteDocumentIDs and nowPlayDocumentID  ")
+                  return
+              }
+        
+        if currentUserFavoriteDocumentIDs.contains(nowPlayDocumentID) {
+            fillFavoriteButton()
+        } else {
+            emptyFavoriteButton()
+        }
+    }
     
     func addObserver() {
         
@@ -422,7 +505,8 @@ extension AudioPlayerVC: DetailPageShowableDelegate {
     func showDetailPage() {
         
         guard let soundDetailVC = soundDetailVC else { return }
-        
+        soundDetailVC.view.alpha = 1
+
         dontShowDetailConstraint.isActive = false
         showDetailConstraint.isActive = true
         
@@ -439,7 +523,10 @@ extension AudioPlayerVC: DetailPageShowableDelegate {
         
         dontShowDetailConstraint.isActive = true
         
+        guard let soundDetailVC = soundDetailVC else { return }
+        
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseIn) {
+            soundDetailVC.view.alpha = 0
             self.view.layoutIfNeeded()
         }
     }

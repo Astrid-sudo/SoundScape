@@ -20,6 +20,19 @@ struct CommonUsage {
     static let fakeMap = "fakeMap"
     static let audioImage = "audioImage"
     static let audioImage2 = "audioImage2"
+    static let profileCover = "profileCover"
+    static let profileCover2 = "profileCover2"
+    static let profileCover3 = "profileCover3"
+    static let profileCover4 = "profileCover4"
+    static let profileCover5 = "profileCover5"
+
+    
+    static let profilePic = "profilePic"
+    static let profilePic2 = "profilePic2"
+    static let profilePic3 = "profilePic3"
+    static let profilePic4 = "profilePic4"
+    static let profilePic5 = "profilePic5"
+
     static let line = "line"
     
     static let scDarkGreen = "scDarkGreen"
@@ -47,6 +60,7 @@ struct CommonUsage {
         static let stopRecord = "stop.circle"
         static let edit = "scissors"
         static let heart = "heart.fill"
+        static let heartEmpty = "heart"
         static let right = "chevron.right"
         
     }
@@ -59,6 +73,12 @@ struct CommonUsage {
         static let upload = "UPLOAD"
         static let searchResult = "Search Result"
         static let search = "Search"
+        static let followers = "followers"
+        static let followings = "followings"
+        static let settings = "settings"
+        static let follow = "follow"
+        static let unfollow = "unfollow"
+
     }
     
     struct CollectionName {

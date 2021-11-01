@@ -14,5 +14,6 @@ target 'SoundScape' do
   pod 'Firebase/Database'
   pod 'IQKeyboardManagerSwift'
   pod 'ModernAVPlayer'
+  pod 'lottie-ios'
 
 end
