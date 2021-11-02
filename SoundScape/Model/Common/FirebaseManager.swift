@@ -24,6 +24,8 @@ class FirebaseManager {
     
     private var followingsListenser: ListenerRegistration?
     
+    private var commentListenser: ListenerRegistration?
+    
     private let storage = Storage.storage().reference()
     
     private let allAudioCollectionRef = Firestore.firestore().collection(CommonUsage.CollectionName.allAudioFiles)
@@ -39,6 +41,7 @@ class FirebaseManager {
         favoriteListener?.remove()
         followersListenser?.remove()
         followingsListenser?.remove()
+        commentListenser?.remove()
     }
     
     // MARK: - post method
@@ -353,16 +356,16 @@ class FirebaseManager {
                     //把它從我的collection移除
                     myFollowingSubCollectionRef.document(othersDocIDInMyCollec).delete() { [weak self] error in
                         guard let self = self else { return }
-
+                        
                         if let error = error {
                             print("Error removing favorite: \(error)")
                         } else {
                             print("Person successfully removed from loggedIn's following!")
                             unfollowCompletion()
                             self.removeFollowersDocID(userInfoDoumentID: userInfoDoumentID,
-                                                   userInfo: userInfo,
-                                                   loggedInUserInfoDocumentID: loggedInUserInfoDocumentID,
-                                                   loggedInUserInfo: loggedInUserInfo)
+                                                      userInfo: userInfo,
+                                                      loggedInUserInfoDocumentID: loggedInUserInfoDocumentID,
+                                                      loggedInUserInfo: loggedInUserInfo)
                         }
                     }
                 }
@@ -371,12 +374,12 @@ class FirebaseManager {
     }
     
     func removeFollowersDocID(userInfoDoumentID: String,
-                           userInfo: SCFollow,
-                           loggedInUserInfoDocumentID: String,
-                           loggedInUserInfo: SCFollow) {
+                              userInfo: SCFollow,
+                              loggedInUserInfoDocumentID: String,
+                              loggedInUserInfo: SCFollow) {
         
         let othersFollowedBySubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("followedBy")
-
+        
         othersFollowedBySubCollectionRef.whereField("userID", isEqualTo: loggedInUserInfo.userID).whereField("provider", isEqualTo: loggedInUserInfo.provider).getDocuments { snapshot, error in
             
             if let error = error {
@@ -391,7 +394,7 @@ class FirebaseManager {
                 } else {
                     
                     //我在它的collection的ID
-
+                    
                     guard let meInOthersCollection = snapshot.documents.first?.documentID else {
                         print("failed to get meInOthersCollection ref")
                         return
@@ -456,7 +459,7 @@ class FirebaseManager {
     func checkFollowersChange(userInfoDoumentID: String, completion: @escaping (Result<[SCFollow], Error>) -> Void) {
         
         let followedBySubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("followedBy")
-
+        
         followersListenser = followedBySubCollectionRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot else { return }
             snapshot.documentChanges.forEach { documentChange in
@@ -478,7 +481,7 @@ class FirebaseManager {
     func checkFollowingsChange(userInfoDoumentID: String, completion: @escaping (Result<[SCFollow], Error>) -> Void) {
         
         let followingSubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("following")
-
+        
         followingsListenser = followingSubCollectionRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot else { return }
             snapshot.documentChanges.forEach { documentChange in
@@ -496,32 +499,79 @@ class FirebaseManager {
             }
         }
     }
-
-
-
-
+    
+    // MARK: - comment
+    
+    func addComment(to documentID: String, with comment: SCComment, completion: @escaping () -> Void) {
+        let db = Firestore.firestore()
+        
+        let commentSubCollectionRef = db.collection(CommonUsage.CollectionName.allAudioFiles).document(documentID).collection(CommonUsage.CollectionName.comments)
+        
+        
+        let document = commentSubCollectionRef.document()
+        
+        let newComment = SCComment(commentDocumentID: document.documentID,
+                                   userID: comment.userID,
+                                   userName: comment.userName,
+                                   userImage: comment.userImage,
+                                   createdTime: Timestamp(date:Date()),
+                                   lastEditedTime: nil,
+                                   comment: comment.comment)
+        
+        do {
+            try document.setData(from: newComment)
+            completion()
+        } catch {
+            print("FirebaseManager:mfailed to add comment")
+        }
+    }
+    
+    func fetchComment(from documentID: String, completion: @escaping (Result<[SCComment], Error>) -> Void) {
+        
+        let db = Firestore.firestore()
+        
+        let commentSubCollectionRef = db.collection(CommonUsage.CollectionName.allAudioFiles).document(documentID).collection(CommonUsage.CollectionName.comments)
+        
+        commentSubCollectionRef.getDocuments { snapshot, error in
+            
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            
+            if let snapshot = snapshot {
+                let posts = snapshot.documents.compactMap({ snapshot in
+                    try? snapshot.data(as: SCComment.self)
+                })
+                
+                completion(Result.success(posts))
+                
+            }
+        }
+    }
+    
+    func checkCommentChange(from documentID: String, completion: @escaping (Result<[SCComment], Error>) -> Void) {
+        
+        let db = Firestore.firestore()
+        
+        let commentSubCollectionRef = db.collection(CommonUsage.CollectionName.allAudioFiles).document(documentID).collection(CommonUsage.CollectionName.comments)
+        
+        commentListenser = commentSubCollectionRef.addSnapshotListener { snapshot, error in
+            guard let snapshot = snapshot else { return }
+            snapshot.documentChanges.forEach { documentChange in
+                switch documentChange.type {
+                case .added:
+                    self.fetchComment(from: documentID, completion: completion)
+                    print("comment added")
+                case .modified:
+                    self.fetchComment(from: documentID, completion: completion)
+                    print("comment modified")
+                case .removed:
+                    self.fetchComment(from: documentID, completion: completion)
+                    print("comment removed")
+                }
+            }
+        }
+    }
     
 }
-
-/*
- func checkPostsChange(completion: @escaping (Result<[SCPost], Error>) -> Void) {
-     
-     postListener = allAudioCollectionRef.addSnapshotListener { snapshot, error in
-         guard let snapshot = snapshot else { return }
-         snapshot.documentChanges.forEach { documentChange in
-             switch documentChange.type {
-             case .added:
-                 self.fetchPosts(completion: completion)
-                 print("added")
-             case .modified:
-                 self.fetchPosts(completion: completion)
-                 print("modified")
-             case .removed:
-                 self.fetchPosts(completion: completion)
-                 print("removed")
-             }
-         }
-     }
- }
-
- */
