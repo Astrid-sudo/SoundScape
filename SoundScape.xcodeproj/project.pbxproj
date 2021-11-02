@@ -19,6 +19,9 @@
 		563396C5272596A600882711 /* EditAudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563396C4272596A600882711 /* EditAudioManager.swift */; };
 		564C79F8272C2056005EEA53 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564C79F7272C2056005EEA53 /* CategoryViewController.swift */; };
 		564C79FA272C2180005EEA53 /* CategoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564C79F9272C2180005EEA53 /* CategoryTableViewCell.swift */; };
+		5655908A2731855500300AF7 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565590892731855500300AF7 /* SettingViewController.swift */; };
+		5655908E2731863300300AF7 /* SettingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5655908D2731863300300AF7 /* SettingTableViewCell.swift */; };
+		5655909027318F0D00300AF7 /* lf30_editor_xgoxkd3f.json in Resources */ = {isa = PBXBuildFile; fileRef = 5655908F27318F0D00300AF7 /* lf30_editor_xgoxkd3f.json */; };
 		565ABC012721529600D4596E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 565ABC002721529600D4596E /* GoogleService-Info.plist */; };
 		565ABC032721595B00D4596E /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565ABC022721595B00D4596E /* FirebaseManager.swift */; };
 		565BD479272FE0DB00143108 /* lf30_editor_r2yecdir.json in Resources */ = {isa = PBXBuildFile; fileRef = 565BD478272FE0DB00143108 /* lf30_editor_r2yecdir.json */; };
@@ -69,6 +72,9 @@
 		563396C4272596A600882711 /* EditAudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAudioManager.swift; sourceTree = "<group>"; };
 		564C79F7272C2056005EEA53 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		564C79F9272C2180005EEA53 /* CategoryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTableViewCell.swift; sourceTree = "<group>"; };
+		565590892731855500300AF7 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		5655908D2731863300300AF7 /* SettingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingTableViewCell.swift; sourceTree = "<group>"; };
+		5655908F27318F0D00300AF7 /* lf30_editor_xgoxkd3f.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = lf30_editor_xgoxkd3f.json; sourceTree = "<group>"; };
 		565ABC002721529600D4596E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		565ABC022721595B00D4596E /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		565BD478272FE0DB00143108 /* lf30_editor_r2yecdir.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = lf30_editor_r2yecdir.json; sourceTree = "<group>"; };
@@ -136,6 +142,22 @@
 			path = Comment;
 			sourceTree = "<group>";
 		};
+		5655908B2731855E00300AF7 /* Setting */ = {
+			isa = PBXGroup;
+			children = (
+				565590892731855500300AF7 /* SettingViewController.swift */,
+			);
+			path = Setting;
+			sourceTree = "<group>";
+		};
+		5655908C2731860600300AF7 /* Setting */ = {
+			isa = PBXGroup;
+			children = (
+				5655908D2731863300300AF7 /* SettingTableViewCell.swift */,
+			);
+			path = Setting;
+			sourceTree = "<group>";
+		};
 		565C9C30271EB42900189B85 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -148,6 +170,7 @@
 		565C9C31271EB44500189B85 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				5655908B2731855E00300AF7 /* Setting */,
 				560DE84B27300AC200FFD240 /* Comment */,
 				56D3F0C1272D811B00A3B3B3 /* Profile */,
 				56D3F0BD272D7FE000A3B3B3 /* Search */,
@@ -163,6 +186,7 @@
 		565C9C32271EB46D00189B85 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				5655908C2731860600300AF7 /* Setting */,
 				560DE84E2730110100FFD240 /* Comment */,
 				56D3F0B8272D7F4400A3B3B3 /* Category */,
 				56D3F0B7272D7F2A00A3B3B3 /* Search */,
@@ -213,6 +237,7 @@
 			children = (
 				5630FE28272F01A0003A38FB /* 77378-sunset.json */,
 				56D3F0B3272CDFFD00A3B3B3 /* Bungee-Regular.ttf */,
+				5655908F27318F0D00300AF7 /* lf30_editor_xgoxkd3f.json */,
 				565BD478272FE0DB00143108 /* lf30_editor_r2yecdir.json */,
 				5630FE2A272F049F003A38FB /* 74194-sleepy-sleep.json */,
 				5679F118271D6D8400663001 /* memories.mp3 */,
@@ -435,6 +460,7 @@
 				56D3F0B4272CDFFD00A3B3B3 /* Bungee-Regular.ttf in Resources */,
 				5679F104271D084B00663001 /* Assets.xcassets in Resources */,
 				5679F102271D084A00663001 /* Main.storyboard in Resources */,
+				5655909027318F0D00300AF7 /* lf30_editor_xgoxkd3f.json in Resources */,
 				5679F119271D6D8400663001 /* memories.mp3 in Resources */,
 				565ABC012721529600D4596E /* GoogleService-Info.plist in Resources */,
 			);
@@ -511,6 +537,7 @@
 				569A7D7E2722B75A00CEE3EA /* HomeTableViewHeader.swift in Sources */,
 				565C9C2D271E79E700189B85 /* Common.swift in Sources */,
 				5630FE23272E1AA2003A38FB /* FirebaseDataStructure.swift in Sources */,
+				5655908A2731855500300AF7 /* SettingViewController.swift in Sources */,
 				5679F0FF271D084A00663001 /* SoundDetailVC.swift in Sources */,
 				568210C82723DAE40055642E /* RecordVC.swift in Sources */,
 				56F1C849271FA8F400F64846 /* AudioRecordHelper.swift in Sources */,
@@ -521,6 +548,7 @@
 				564C79F8272C2056005EEA53 /* CategoryViewController.swift in Sources */,
 				5679F0FB271D084A00663001 /* AppDelegate.swift in Sources */,
 				5678FFA6272418B500E1ADD5 /* TestEditVC.swift in Sources */,
+				5655908E2731863300300AF7 /* SettingTableViewCell.swift in Sources */,
 				56201C972721D21F0080A7C7 /* SCRemotePlayerConfig.swift in Sources */,
 				5630FE25272E1C54003A38FB /* SignInManager.swift in Sources */,
 				5679F115271D641B00663001 /* AudioPlayHelper.swift in Sources */,

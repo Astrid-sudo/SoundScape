@@ -244,7 +244,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="J12-cr-z1K" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1399" y="2314"/>
+            <point key="canvasLocation" x="1374" y="2990"/>
         </scene>
         <!--Comment View Controller-->
         <scene sceneID="B1M-AH-HnE">
@@ -575,6 +575,21 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iQZ-hE-AYp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-275" y="2314"/>
+        </scene>
+        <!--Setting View Controller-->
+        <scene sceneID="fdz-G8-xLi">
+            <objects>
+                <viewController storyboardIdentifier="SettingViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="XDf-DY-KIj" customClass="SettingViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="wUc-CR-hPx">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="bim-8u-QI4"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="EAm-B4-Ptg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1374" y="2304"/>
         </scene>
     </scenes>
     <resources>
