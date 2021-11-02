@@ -6,28 +6,30 @@
 //
 
 import UIKit
+import Lottie
 
 class CommentViewController: UIViewController {
     
-    var fakeData = [SCComment(documentID: "",
-                              userID: "yaheyyodude",
-                              userName: "厘題恩",
-                              userImage: nil,
-                              createdTime: nil,
-                              comment: "想去聽，希望這次去可以遇到好的狀況，旁邊也不要太吵，錄到乾淨的聲音。想去聽，希望這次去可以遇到好的狀況，旁邊也不要太吵，錄到乾淨的聲音。"),
-                    SCComment(documentID: "",
-                              userID: "yaheyyodude",
-                              userName: "厘題恩",
-                              userImage: nil,
-                              createdTime: nil,
-                              comment: "想去聽，希望這次去可以遇到好的狀況。"),
-                    SCComment(documentID: "",
-                              userID: "yaheyyodude",
-                              userName: "厘題恩",
-                              userImage: nil,
-                              createdTime: nil,
-                              comment: "想去聽。")
-    ]
+    let firebaseManager = FirebaseManager.shared
+    
+    let signInManager = SignInManager.shared
+    
+    var currentPlayingDocumentID: String? {
+        
+        didSet {
+            
+            guard let currentPlayingDocumentID = currentPlayingDocumentID else { return }
+            
+            checkComment(from: currentPlayingDocumentID)
+            
+        }
+    }
+    
+    var comments = [SCComment]() {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     
     // MARK: - life cycle
     
@@ -44,6 +46,53 @@ class CommentViewController: UIViewController {
     }
     
     // MARK: - method
+    
+    private func checkComment(from documentID: String) {
+        
+        firebaseManager.checkCommentChange(from: documentID) { [weak self] result in
+            
+            guard let self = self else { return }
+            
+            switch result {
+                
+            case .success(let comments):
+                self.comments = comments
+                
+            case .failure(let error):
+                print("Failed to fetch comments \(error)")
+                
+            }
+        }
+        
+    }
+    
+    @objc private func addComment() {
+        
+        addLottie()
+        
+        guard let currentPlayingDocumentID = currentPlayingDocumentID,
+              commentTextView.text != "",
+              let comment = commentTextView.text,
+              let currentUserInfo = signInManager.currentUserInfo else {
+                  print("CommentVC: Add Comment Return.")
+                  animationView.removeFromSuperview()
+                  return }
+        
+        let commentData = SCComment(commentDocumentID: nil,
+                                    userID: currentUserInfo.userID,
+                                    userName: currentUserInfo.username,
+                                    userImage: nil,
+                                    createdTime: nil,
+                                    lastEditedTime: nil,
+                                    comment: comment)
+        
+        firebaseManager.addComment(to: currentPlayingDocumentID, with: commentData) { [weak self] in
+            guard let self = self else { return }
+            
+            self.commentTextView.text = nil
+            self.animationView.removeFromSuperview()
+        }
+    }
     
     @objc func dismissCommentViewController() {
         dismiss(animated: true)
@@ -103,7 +152,6 @@ class CommentViewController: UIViewController {
         textView.backgroundColor = UIColor(named: CommonUsage.scGray)
         textView.layer.cornerRadius = 10
         textView.delegate = self
-//        textView.maximumContentSizeCategory = .small
         textView.textContainer.maximumNumberOfLines = 8
         textView.textContainer.lineBreakMode = .byWordWrapping
         return textView
@@ -115,11 +163,23 @@ class CommentViewController: UIViewController {
         let bigImage = UIImage(systemName: CommonUsage.SFSymbol.paperplaneFill, withConfiguration: config)
         button.setImage(bigImage, for: .normal)
         button.tintColor = UIColor(named: CommonUsage.scLightBlue)
-        button.addTarget(self, action: #selector(dismissCommentViewController), for: .touchUpInside)
+        button.addTarget(self, action: #selector(addComment), for: .touchUpInside)
         button.isHidden = true
         return button
     }()
-
+    
+    private lazy var animationView: AnimationView = {
+        let animationView = AnimationView(name: "lf30_editor_r2yecdir")
+        animationView.frame = CGRect(x: 0, y: 100, width: 400, height: 400)
+        animationView.center = view.center
+        animationView.contentMode = .scaleAspectFill
+        animationView.loopMode = .loop
+        return animationView
+    }()
+    
+    private lazy var emptyTextViewConstraint = NSLayoutConstraint()
+    private lazy var fullTextViewConstraint = NSLayoutConstraint()
+    
 }
 
 // MARK: - conform to UITableViewDataSource
@@ -127,12 +187,12 @@ class CommentViewController: UIViewController {
 extension CommentViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        fakeData.count
+        comments.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CommentTableViewCell.reuseIdentifier, for: indexPath) as? CommentTableViewCell else { return UITableViewCell()}
-        cell.configCell(comment: fakeData[indexPath.row])
+        cell.configCell(comment: comments[indexPath.row])
         return cell
     }
     
@@ -192,7 +252,7 @@ extension CommentViewController {
         currentUserImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             currentUserImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            currentUserImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16),
+            currentUserImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             currentUserImageView.heightAnchor.constraint(equalToConstant: 50),
             currentUserImageView.widthAnchor.constraint(equalToConstant: 50)
             
@@ -202,11 +262,13 @@ extension CommentViewController {
     private func setTextView() {
         view.addSubview(commentTextView)
         commentTextView.translatesAutoresizingMaskIntoConstraints = false
+        emptyTextViewConstraint = commentTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8)
+
         NSLayoutConstraint.activate([
             commentTextView.leadingAnchor.constraint(equalTo: currentUserImageView.trailingAnchor, constant: 8),
-            commentTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            emptyTextViewConstraint,
             commentTextView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 16),
-            commentTextView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16)
+            commentTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
         ])
     }
     
@@ -219,11 +281,16 @@ extension CommentViewController {
         view.addSubview(sendButton)
         sendButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            sendButton.trailingAnchor.constraint(equalTo: commentTextView.trailingAnchor, constant: -4),
+            sendButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -4),
             sendButton.bottomAnchor.constraint(equalTo: commentTextView.bottomAnchor, constant: -4)
         ])
     }
-
+    
+    private func addLottie() {
+        view.addSubview(animationView)
+        animationView.play()
+    }
+    
 }
 
 // MARK: - confrom to UITextViewDelegate
@@ -240,6 +307,11 @@ extension CommentViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         if textView.text != nil, textView.text != "" {
             sendButton.isHidden = false
+            emptyTextViewConstraint.isActive = false
+            fullTextViewConstraint = commentTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40)
+            fullTextViewConstraint.isActive = true
+            
+            
         }
     }
     
@@ -248,6 +320,9 @@ extension CommentViewController: UITextViewDelegate {
             textView.text = CommonUsage.Text.addComment
             textView.textColor = UIColor(named: CommonUsage.scWhite)
             sendButton.isHidden = true
+            fullTextViewConstraint.isActive = false
+            emptyTextViewConstraint.isActive = true
+            view.layoutIfNeeded()
         }
     }
     

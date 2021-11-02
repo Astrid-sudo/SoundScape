@@ -88,6 +88,7 @@ struct CommonUsage {
         static let allUsers = "AllUsers"
         static let allAudioFiles = "AllAudioFiles"
         static let allLocations = "AllLocations"
+        static let comments = "Comments"
     }
     
 }

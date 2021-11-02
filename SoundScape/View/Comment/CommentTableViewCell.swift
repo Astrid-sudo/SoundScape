@@ -119,7 +119,7 @@ class CommentTableViewCell: UITableViewCell {
         commentInfoLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             messageLabel.leadingAnchor.constraint(equalTo: commentStackView.leadingAnchor, constant: 8),
-            messageLabel.trailingAnchor.constraint(equalTo: commentStackView.trailingAnchor, constant: 8),
+            messageLabel.trailingAnchor.constraint(equalTo: commentStackView.trailingAnchor, constant: -8),
             messageLabel.topAnchor.constraint(equalTo: commentStackView.topAnchor, constant: 8),
             
             commentInfoLabel.leadingAnchor.constraint(equalTo: commentStackView.leadingAnchor, constant: 8),
@@ -145,8 +145,14 @@ class CommentTableViewCell: UITableViewCell {
     }
     
     func configCell(comment: SCComment) {
+        
+        guard let createTime = comment.createdTime?.dateValue() else { return }
+        let createdTime = "\(createTime + 28800)"
+        let processedCreatedTime = String(createdTime.dropLast(9))
+        let commentAuthorName = comment.userName
+        
         messageLabel.text = comment.comment
-        commentInfoLabel.text = comment.userName
+        commentInfoLabel.text = "\(commentAuthorName) at \(processedCreatedTime)"
     }
     
 }
