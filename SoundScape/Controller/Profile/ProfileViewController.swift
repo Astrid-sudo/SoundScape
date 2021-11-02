@@ -172,8 +172,7 @@ class ProfileViewController: UIViewController {
         let button = UIButton()
         button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
         button.setTitle(CommonUsage.Text.settings, for: .normal)
-
-        //        btn.addTarget(self, action: #selector(logOut), for: .touchUpInside)
+        button.addTarget(self, action: #selector(goSettingPage), for: .touchUpInside)
         button.backgroundColor = UIColor(named: CommonUsage.scDarkYellow)
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor(named: CommonUsage.scLightGreen)?.cgColor
@@ -417,9 +416,13 @@ class ProfileViewController: UIViewController {
             coverImageView.image = UIImage(named: signInManager.profileCover)
             userImageView.image = UIImage(named: signInManager.userPic)
             nameLabel.text = signInManager.currentUserInfo?.username
-//            followersNumberLabel.text = "2"
-//            followingsNumberLabel.text = "4"
             fetchUserFavoriteList()
+    }
+    
+   @objc func goSettingPage() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let settingViewController = storyboard.instantiateViewController(withIdentifier: String(describing: SettingViewController.self)) as? SettingViewController else { return }
+        navigationController?.pushViewController(settingViewController, animated: true)
     }
 }
 
