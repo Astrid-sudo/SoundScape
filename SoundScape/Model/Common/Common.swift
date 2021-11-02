@@ -26,7 +26,6 @@ struct CommonUsage {
     static let profileCover4 = "profileCover4"
     static let profileCover5 = "profileCover5"
 
-    
     static let profilePic = "profilePic"
     static let profilePic2 = "profilePic2"
     static let profilePic3 = "profilePic3"
@@ -62,7 +61,9 @@ struct CommonUsage {
         static let heart = "heart.fill"
         static let heartEmpty = "heart"
         static let right = "chevron.right"
-        
+        static let chevronDown = "chevron.down"
+        static let paperplaneFill = "paperplane.fill"
+
     }
     
     struct Text {
@@ -78,6 +79,8 @@ struct CommonUsage {
         static let settings = "settings"
         static let follow = "follow"
         static let unfollow = "unfollow"
+        static let comments = "Comments"
+        static let addComment = "Add comment..."
 
     }
     

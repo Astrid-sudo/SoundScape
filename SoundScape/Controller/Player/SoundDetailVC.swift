@@ -62,6 +62,13 @@ class SoundDetailVC: UIViewController {
     // MARK: - action
     
     
+    @IBAction func presentCommentPage(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let commentViewController = storyboard.instantiateViewController(withIdentifier: String(describing: CommentViewController.self)) as? CommentViewController else { return }
+        present(commentViewController, animated: true)
+    }
+    
+    
     @IBAction func goAuthorProfile(_ sender: UIButton) {
         
         guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }

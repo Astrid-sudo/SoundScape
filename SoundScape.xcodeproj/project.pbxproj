@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0130CC1600F3AB0D61D15930 /* Pods_SoundScape.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D1F5476A787CCE1C926A2EA /* Pods_SoundScape.framework */; };
+		560DE84D27300B1200FFD240 /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560DE84C27300B1200FFD240 /* CommentViewController.swift */; };
+		560DE8502730113600FFD240 /* CommentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560DE84F2730113600FFD240 /* CommentTableViewCell.swift */; };
 		56201C972721D21F0080A7C7 /* SCRemotePlayerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56201C962721D21F0080A7C7 /* SCRemotePlayerConfig.swift */; };
 		5630FE23272E1AA2003A38FB /* FirebaseDataStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5630FE22272E1AA2003A38FB /* FirebaseDataStructure.swift */; };
 		5630FE25272E1C54003A38FB /* SignInManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5630FE24272E1C54003A38FB /* SignInManager.swift */; };
@@ -56,6 +58,8 @@
 /* Begin PBXFileReference section */
 		0D1F5476A787CCE1C926A2EA /* Pods_SoundScape.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SoundScape.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		33696CC8AD27A37242783EC7 /* Pods-SoundScape.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SoundScape.release.xcconfig"; path = "Target Support Files/Pods-SoundScape/Pods-SoundScape.release.xcconfig"; sourceTree = "<group>"; };
+		560DE84C27300B1200FFD240 /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
+		560DE84F2730113600FFD240 /* CommentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTableViewCell.swift; sourceTree = "<group>"; };
 		56201C962721D21F0080A7C7 /* SCRemotePlayerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCRemotePlayerConfig.swift; sourceTree = "<group>"; };
 		5630FE22272E1AA2003A38FB /* FirebaseDataStructure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseDataStructure.swift; sourceTree = "<group>"; };
 		5630FE24272E1C54003A38FB /* SignInManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInManager.swift; sourceTree = "<group>"; };
@@ -116,6 +120,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		560DE84B27300AC200FFD240 /* Comment */ = {
+			isa = PBXGroup;
+			children = (
+				560DE84C27300B1200FFD240 /* CommentViewController.swift */,
+			);
+			path = Comment;
+			sourceTree = "<group>";
+		};
+		560DE84E2730110100FFD240 /* Comment */ = {
+			isa = PBXGroup;
+			children = (
+				560DE84F2730113600FFD240 /* CommentTableViewCell.swift */,
+			);
+			path = Comment;
+			sourceTree = "<group>";
+		};
 		565C9C30271EB42900189B85 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -128,6 +148,7 @@
 		565C9C31271EB44500189B85 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				560DE84B27300AC200FFD240 /* Comment */,
 				56D3F0C1272D811B00A3B3B3 /* Profile */,
 				56D3F0BD272D7FE000A3B3B3 /* Search */,
 				56D3F0BC272D7FB700A3B3B3 /* Upload */,
@@ -142,6 +163,7 @@
 		565C9C32271EB46D00189B85 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				560DE84E2730110100FFD240 /* Comment */,
 				56D3F0B8272D7F4400A3B3B3 /* Category */,
 				56D3F0B7272D7F2A00A3B3B3 /* Search */,
 				56D3F0B6272D7F0F00A3B3B3 /* Home */,
@@ -492,6 +514,7 @@
 				5679F0FF271D084A00663001 /* SoundDetailVC.swift in Sources */,
 				568210C82723DAE40055642E /* RecordVC.swift in Sources */,
 				56F1C849271FA8F400F64846 /* AudioRecordHelper.swift in Sources */,
+				560DE84D27300B1200FFD240 /* CommentViewController.swift in Sources */,
 				569A7D7C2722A03500CEE3EA /* HomeCollectionViewCell.swift in Sources */,
 				568340E1271F11AC00543677 /* UploadVC.swift in Sources */,
 				56F07D39272BCFB300ABC7B9 /* SearchCollectionViewCell.swift in Sources */,
@@ -505,6 +528,7 @@
 				5678FFA827243FA300E1ADD5 /* EditVC.swift in Sources */,
 				569A7D7827229AE500CEE3EA /* HomeVC.swift in Sources */,
 				56D3F0C3272D813C00A3B3B3 /* ProfileViewController.swift in Sources */,
+				560DE8502730113600FFD240 /* CommentTableViewCell.swift in Sources */,
 				56950630271FDD08009E4C74 /* RemotePlayHelper.swift in Sources */,
 				565C9C29271E6AFE00189B85 /* AudioPlayerWindow.swift in Sources */,
 				568340DF271F113F00543677 /* CreateAudioVC.swift in Sources */,
@@ -677,6 +701,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -710,6 +735,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
