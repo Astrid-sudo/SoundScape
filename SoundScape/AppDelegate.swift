@@ -12,12 +12,15 @@ import IQKeyboardManagerSwift
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         FirebaseApp.configure()
         IQKeyboardManager.shared.enable = true
+        
+        if let user = Auth.auth().currentUser {
+            print("You're sign in as \(user.uid), email: \(user.email), from provider: \(user.providerID)")
+        }
+        
         return true
     }
 

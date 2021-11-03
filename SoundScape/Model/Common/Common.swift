@@ -81,6 +81,7 @@ struct CommonUsage {
         static let unfollow = "unfollow"
         static let comments = "Comments"
         static let addComment = "Add comment..."
+        static let appName = "SoundScape"
 
     }
     

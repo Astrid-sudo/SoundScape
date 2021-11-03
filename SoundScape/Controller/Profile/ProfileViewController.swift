@@ -341,8 +341,6 @@ class ProfileViewController: UIViewController {
             case .failure(let error): print(error)
             }
         }
-        
-        
     }
 
     private func fetchUserFavoriteList() {
@@ -411,7 +409,6 @@ class ProfileViewController: UIViewController {
         }
     }
 
-    
     private func setUserProfile() {
             coverImageView.image = UIImage(named: signInManager.profileCover)
             userImageView.image = UIImage(named: signInManager.userPic)

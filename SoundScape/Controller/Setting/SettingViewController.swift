@@ -10,7 +10,7 @@ import Lottie
 
 class SettingViewController: UIViewController {
 
-    var settingsOptions = ["隱私權政策", "使用說明", "關於"]
+    var settingsOptions = ["隱私權政策", "使用說明", "關於", "登出"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,7 +33,8 @@ class SettingViewController: UIViewController {
         let table = UITableView()
         table.backgroundColor = UIColor(named: CommonUsage.scDarkGreen)
         table.dataSource = self
-        table.allowsSelection = false
+        table.delegate = self
+        table.allowsSelection = true
         table.separatorStyle = .none
         table.showsVerticalScrollIndicator = false
         table.register(SettingTableViewCell.self, forCellReuseIdentifier: SettingTableViewCell.reuseIdentifier)
@@ -81,4 +82,19 @@ extension SettingViewController: UITableViewDataSource {
         cell.configCell(content: settingsOptions[indexPath.row])
         return cell
     }
+}
+
+extension SettingViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+       
+        if indexPath.row == 3 {
+            //登出
+            //跳轉登入頁
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            guard let signInViewController = storyboard.instantiateViewController(withIdentifier: String(describing: SignInViewController.self)) as? SignInViewController else { return }
+            navigationController?.pushViewController(signInViewController, animated: true)
+        }
+    }
+    
 }

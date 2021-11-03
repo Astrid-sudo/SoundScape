@@ -30,6 +30,8 @@
 		565C9C2D271E79E700189B85 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565C9C2C271E79E700189B85 /* Common.swift */; };
 		565C9C2F271E8D6900189B85 /* SCTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565C9C2E271E8D6900189B85 /* SCTabBarController.swift */; };
 		5662743B2727DE47000C62EB /* DSWaveformImage in Frameworks */ = {isa = PBXBuildFile; productRef = 5662743A2727DE47000C62EB /* DSWaveformImage */; };
+		567566EC27323AAD007ACC61 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567566EB27323AAD007ACC61 /* SignInViewController.swift */; };
+		567566EF273271C6007ACC61 /* SignInHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567566EE273271C6007ACC61 /* SignInHelper.swift */; };
 		5678FFA6272418B500E1ADD5 /* TestEditVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5678FFA5272418B500E1ADD5 /* TestEditVC.swift */; };
 		5678FFA827243FA300E1ADD5 /* EditVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5678FFA727243FA300E1ADD5 /* EditVC.swift */; };
 		5679F0FB271D084A00663001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FA271D084A00663001 /* AppDelegate.swift */; };
@@ -82,6 +84,9 @@
 		565C9C2A271E6F7300189B85 /* AudioPlayerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerVC.swift; sourceTree = "<group>"; };
 		565C9C2C271E79E700189B85 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		565C9C2E271E8D6900189B85 /* SCTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCTabBarController.swift; sourceTree = "<group>"; };
+		567566EB27323AAD007ACC61 /* SignInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
+		567566ED27324070007ACC61 /* SoundScape.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SoundScape.entitlements; sourceTree = "<group>"; };
+		567566EE273271C6007ACC61 /* SignInHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInHelper.swift; sourceTree = "<group>"; };
 		5678FFA5272418B500E1ADD5 /* TestEditVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEditVC.swift; sourceTree = "<group>"; };
 		5678FFA727243FA300E1ADD5 /* EditVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditVC.swift; sourceTree = "<group>"; };
 		5679F0F7271D084A00663001 /* SoundScape.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoundScape.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -170,6 +175,7 @@
 		565C9C31271EB44500189B85 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				567566EA27323A90007ACC61 /* SignIn */,
 				5655908B2731855E00300AF7 /* Setting */,
 				560DE84B27300AC200FFD240 /* Comment */,
 				56D3F0C1272D811B00A3B3B3 /* Profile */,
@@ -196,6 +202,14 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		567566EA27323A90007ACC61 /* SignIn */ = {
+			isa = PBXGroup;
+			children = (
+				567566EB27323AAD007ACC61 /* SignInViewController.swift */,
+			);
+			path = SignIn;
+			sourceTree = "<group>";
+		};
 		5679F0EE271D084A00663001 = {
 			isa = PBXGroup;
 			children = (
@@ -217,6 +231,7 @@
 		5679F0F9271D084A00663001 /* SoundScape */ = {
 			isa = PBXGroup;
 			children = (
+				567566ED27324070007ACC61 /* SoundScape.entitlements */,
 				565C9C32271EB46D00189B85 /* View */,
 				565C9C31271EB44500189B85 /* Controller */,
 				565C9C30271EB42900189B85 /* Model */,
@@ -342,6 +357,7 @@
 				565C9C2C271E79E700189B85 /* Common.swift */,
 				5630FE22272E1AA2003A38FB /* FirebaseDataStructure.swift */,
 				5630FE24272E1C54003A38FB /* SignInManager.swift */,
+				567566EE273271C6007ACC61 /* SignInHelper.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -538,6 +554,7 @@
 				565C9C2D271E79E700189B85 /* Common.swift in Sources */,
 				5630FE23272E1AA2003A38FB /* FirebaseDataStructure.swift in Sources */,
 				5655908A2731855500300AF7 /* SettingViewController.swift in Sources */,
+				567566EF273271C6007ACC61 /* SignInHelper.swift in Sources */,
 				5679F0FF271D084A00663001 /* SoundDetailVC.swift in Sources */,
 				568210C82723DAE40055642E /* RecordVC.swift in Sources */,
 				56F1C849271FA8F400F64846 /* AudioRecordHelper.swift in Sources */,
@@ -564,6 +581,7 @@
 				5630FE27272EB5D7003A38FB /* OthersProfileViewController.swift in Sources */,
 				569A7D7A27229EB200CEE3EA /* HomeTableViewCell.swift in Sources */,
 				56F07D37272BCC0F00ABC7B9 /* SearchTableViewCell.swift in Sources */,
+				567566EC27323AAD007ACC61 /* SignInViewController.swift in Sources */,
 				563396C5272596A600882711 /* EditAudioManager.swift in Sources */,
 				565C9C2F271E8D6900189B85 /* SCTabBarController.swift in Sources */,
 				564C79FA272C2180005EEA53 /* CategoryTableViewCell.swift in Sources */,
@@ -716,6 +734,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SoundScape/SoundScape.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XN354JRCK2;
@@ -750,6 +769,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SoundScape/SoundScape.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XN354JRCK2;
