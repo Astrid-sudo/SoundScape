@@ -12,6 +12,8 @@ class SettingViewController: UIViewController {
 
     var settingsOptions = ["隱私權政策", "使用說明", "關於", "登出"]
     
+    let signInHelper = SignInHelper.shared
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         addLottie()
@@ -68,6 +70,12 @@ class SettingViewController: UIViewController {
         view.addSubview(animationView)
         animationView.play()
     }
+    
+    private func navigateToSignInPage() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let signInViewController = storyboard.instantiateViewController(withIdentifier: String(describing: SignInViewController.self)) as? SignInViewController else { return }
+        navigationController?.pushViewController(signInViewController, animated: true)
+    }
 
 }
 
@@ -89,11 +97,11 @@ extension SettingViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
        
         if indexPath.row == 3 {
-            //登出
-            //跳轉登入頁
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            guard let signInViewController = storyboard.instantiateViewController(withIdentifier: String(describing: SignInViewController.self)) as? SignInViewController else { return }
-            navigationController?.pushViewController(signInViewController, animated: true)
+            
+            signInHelper.signOutAuth { [weak self] in
+                guard let self = self else { return }
+                self.navigateToSignInPage()
+            }
         }
     }
     
