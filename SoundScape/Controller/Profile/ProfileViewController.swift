@@ -447,6 +447,7 @@ extension ProfileViewController: UITableViewDelegate {
         guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomeTableViewHeader.reuseIdentifier) as? HomeTableViewHeader else { return UIView()}
         
         headerView.delegate = self
+        headerView.presentInPage = .profileSection
         headerView.config(section: section, content: ProfilePageSection.allCases[section].rawValue)
         return headerView
     }
@@ -467,34 +468,84 @@ extension ProfileViewController: UITableViewDelegate {
 
 extension ProfileViewController: PressPassableDelegate {
     
-    func goCategoryPage(from section: Int) {
-        
-        let category = AudioCategory.allCases[section]
-        
-        var data = [SCPost]()
-        
-        for file in allAudioFiles {
-            
-            if file.category == category.rawValue {
-                data.append(file)
-            }
-        }
-        
+    func goSectionPage(from section: Int, sectionPageType: SectionPageType) {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
         
-        categoryPage.config(category: category, data: data)
+        switch section {
+            
+        case 0:
+            guard let followings = currentUserFollowingList else {
+                print("ProfilePage cant get followingList")
+                return
+            }
+            
+            var myFollowingsUserFiles = [SCPost]()
+            for audioFile in allAudioFiles {
+                for folloing in followings {
+                    if audioFile.authorID == folloing.userID, audioFile.authIDProvider == folloing.provider {
+                        myFollowingsUserFiles.append(audioFile)
+                    }
+                }
+            }
+            
+            let section = ProfilePageSection.allCases[section]
+            categoryPage.config(profileSection: section, data: myFollowingsUserFiles)
+            
+        case 1:
+            
+            guard let currentUserFavoriteDocumentIDs = currentUserFavoriteDocumentIDs else {
+                print("ProfilePage cant get currentUserFavoriteDocumentIDs")
+                return
+            }
+            
+            var myFavoriteFiles = [SCPost]()
+            
+            for audioFile in allAudioFiles {
+                for favorite in currentUserFavoriteDocumentIDs {
+                    if audioFile.documentID == favorite {
+                        myFavoriteFiles.append(audioFile)
+                    }
+                }
+            }
+            let section = ProfilePageSection.allCases[section]
+            categoryPage.config(profileSection: section, data: myFavoriteFiles)
+            
+        case 2:
+            let myAudioFiles = allAudioFiles.filter({$0.authorName == signInManager.currentUserInfoFirebase?.username})
+            let section = ProfilePageSection.allCases[section]
+            categoryPage.config(profileSection: section, data: myAudioFiles)
+            
+        default:
+            break
+        }
+        
+        
+        //        switch sectionPageType {
+        //        case .profileSection:
+        //            let section = ProfilePageSection.allCases[section]
+        //        case .audioCategory:
+        //            let category = AudioCategory.allCases[section]
+        //            var data = [SCPost]()
+        //            for file in allAudioFiles {
+        //                if file.category == category.rawValue {
+        //                    data.append(file)
+        //                }
+        //            }
+        //            categoryPage.config(category: category, data: data)
+        //        }
+        
         navigationController?.pushViewController(categoryPage, animated: true)
         
     }
     
-    func goCategoryPage() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
-        
-        navigationController?.pushViewController(categoryPage, animated: true)
-    }
+    //    func goCategoryPage() {
+    //        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    //        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
+    //
+    //        navigationController?.pushViewController(categoryPage, animated: true)
+    //    }
     
 }
 

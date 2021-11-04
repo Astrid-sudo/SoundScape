@@ -7,8 +7,13 @@
 
 import UIKit
 
+enum SectionPageType {
+    case profileSection
+    case audioCategory
+}
+
 protocol PressPassableDelegate: AnyObject {
-    func goCategoryPage(from section: Int)
+    func goSectionPage(from section: Int, sectionPageType: SectionPageType)
 }
 
 class HomeTableViewHeader: UITableViewHeaderFooterView {
@@ -18,6 +23,8 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
     private var section: Int?
     
     weak var delegate: PressPassableDelegate?
+    
+    var presentInPage: SectionPageType?
     
     private lazy var categoryLabel: UILabel = {
         let label = UILabel()
@@ -58,9 +65,10 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
     
     @objc func pressBackgroundButton() {
         
-        guard let section = section else { return }
+        guard let section = section,
+        let presentInPage = presentInPage else { return }
         
-        delegate?.goCategoryPage(from: section)
+        delegate?.goSectionPage(from: section, sectionPageType: presentInPage)
     }
     
     // MARK: - method

@@ -110,7 +110,7 @@ class OthersProfileViewController: UIViewController {
     
     private func manipulateFollowButton() {
         guard let otherUserID = userWillDisplay?.userID,
-        let currentUserFollowingsID = signInManager.currentUserFollowingList?.map({$0.userID}) else { return }
+              let currentUserFollowingsID = signInManager.currentUserFollowingList?.map({$0.userID}) else { return }
         if currentUserFollowingsID.contains(otherUserID) {
             makeButtonFollowed()
         }
@@ -495,7 +495,7 @@ extension OthersProfileViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomeTableViewHeader.reuseIdentifier) as? HomeTableViewHeader else { return UIView()}
-        
+        headerView.presentInPage = .profileSection
         headerView.delegate = self
         headerView.config(section: section, content: ProfilePageSection.allCases[section].rawValue)
         return headerView
@@ -517,24 +517,70 @@ extension OthersProfileViewController: UITableViewDelegate {
 
 extension OthersProfileViewController: PressPassableDelegate {
     
-    func goCategoryPage(from section: Int) {
-        
-        let category = AudioCategory.allCases[section]
-        
-        var data = [SCPost]()
-        
-        for file in allAudioFiles {
-            
-            if file.category == category.rawValue {
-                data.append(file)
-            }
-        }
-        
+    func goSectionPage(from section: Int, sectionPageType: SectionPageType) {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
         
-        categoryPage.config(category: category, data: data)
+        switch section {
+            
+        case 0:
+            guard let followings = othersFollowingList else {
+                print("OtherProfilePage cant get othersFollowingList")
+                return
+            }
+            
+            var myFollowingsUserFiles = [SCPost]()
+            for audioFile in allAudioFiles {
+                for folloing in followings {
+                    if audioFile.authorID == folloing.userID, audioFile.authIDProvider == folloing.provider {
+                        myFollowingsUserFiles.append(audioFile)
+                    }
+                }
+            }
+            let section = ProfilePageSection.allCases[section]
+            categoryPage.config(profileSection: section, data: myFollowingsUserFiles)
+            
+        case 1:
+            
+            guard let userFavoriteDocumentIDs = userFavoriteDocumentIDs else {
+                print("ProfilePage cant get userFavoriteDocumentIDs")
+                return
+            }
+            
+            var myFavoriteFiles = [SCPost]()
+            
+            for audioFile in allAudioFiles {
+                for favorite in userFavoriteDocumentIDs {
+                    if audioFile.documentID == favorite {
+                        myFavoriteFiles.append(audioFile)
+                    }
+                }
+            }
+            let section = ProfilePageSection.allCases[section]
+            categoryPage.config(profileSection: section, data: myFavoriteFiles)
+            
+        case 2:
+            guard let userWillDisplay = userWillDisplay else { break }
+            
+            let myAudioFiles = allAudioFiles.filter({$0.authorName == userWillDisplay.username})
+            let section = ProfilePageSection.allCases[section]
+            categoryPage.config(profileSection: section, data: myAudioFiles)
+            
+        default:
+            break
+        }
+        
+        //        let category = AudioCategory.allCases[section]
+        //        var data = [SCPost]()
+        //        for file in allAudioFiles {
+        //            if file.category == category.rawValue {
+        //                data.append(file)
+        //            }
+        //        }
+        
+        
+        
         navigationController?.pushViewController(categoryPage, animated: true)
         
     }
