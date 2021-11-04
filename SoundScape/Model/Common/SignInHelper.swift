@@ -131,9 +131,8 @@ extension SignInHelper: ASAuthorizationControllerDelegate {
             }
             
             var userName = "無名用戶"
-            if let givenName = appleIDCredential.fullName?.givenName,
-               let familyName = appleIDCredential.fullName?.familyName {
-                userName = givenName + familyName
+            if let givenName = appleIDCredential.fullName?.givenName {
+                userName = givenName
             }
             
             guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
@@ -145,7 +144,7 @@ extension SignInHelper: ASAuthorizationControllerDelegate {
                                                       idToken: idTokenString,
                                                       rawNonce: nonce)
             // Sign in with Firebase.
-
+            
             Auth.auth().signIn(with: credential) { (authResult, error) in
                 if let error = error {
                     // Error. If error.code == .MissingOrInvalidNonce, make sure
@@ -155,37 +154,37 @@ extension SignInHelper: ASAuthorizationControllerDelegate {
                     return
                 }
                 
-                if let authResult = authResult {
+                if let authResult = authResult,
+                   let currentUser = Auth.auth().currentUser {
                     
                     print("--------Sucessfully SignIn to firebase--------")
-
-                    if Auth.auth().currentUser?.metadata.creationDate == Auth.auth().currentUser?.metadata.lastSignInDate {
-                        // 幫他創建新帳號
-                        if let userEmail = authResult.user.email {
-                            SignInManager.shared.uploadNewUserToFirebase(userID: authResult.user.uid,
-                                                                         provider: authResult.credential?.provider ?? "dont know",
-                                                                         userEmail: userEmail,
-                                                                         userName: userName)
-
-                        }
-                        
-                    } else {
-                        //幫他下載資料
-                        SignInManager.shared.fetchUserInfoFromFirebase(userID: authResult.user.uid)
-                    }
-                
-//                    SignInManager.shared.checkUserInFirebase(userID: authResult.user.uid,
-//                                                             userProvider: authResult.credential?.provider ?? "dont know" ,
-//                                                             userEmail: authResult.user.email ,
-//                                                             userName: userName)
+                    
+                    //                    if currentUser.metadata.creationDate == currentUser.metadata.lastSignInDate {
+                    //                        // 幫他創建新帳號
+                    //                        if let userEmail = authResult.user.email {
+                    //                            SignInManager.shared.uploadNewUserToFirebase(userID: authResult.user.uid,
+                    //                                                                         provider: authResult.credential?.provider ?? "dont know",
+                    //                                                                         userEmail: userEmail,
+                    //                                                                         userName: userName)
+                    //
+                    //                        }
+                    //
+                    //                    } else {
+                    //                        //幫他下載資料
+                    //                        SignInManager.shared.fetchUserInfoFromFirebase(userID: authResult.user.uid)
+                    //                    }
+                    
+                    SignInManager.shared.checkUserInFirebase(userID: authResult.user.uid,
+                                                             userProvider: authResult.credential?.provider ?? "dont know" ,
+                                                             userEmail: authResult.user.email ,
+                                                             userName: userName)
                     
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
                     guard let tabBarController = storyboard.instantiateViewController(withIdentifier: SCTabBarController.reuseIdentifier) as? SCTabBarController else { return }
                     
                     let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
-
+                    
                     sceneDelegate?.changeRootViewController(tabBarController)
-
                     
                 }
                 

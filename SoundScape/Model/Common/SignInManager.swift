@@ -11,14 +11,35 @@ class SignInManager {
     
     let firebaseManager = FirebaseManager.shared
     
-    //    let signInHelper = SignInManager.shared
-    
     static let shared = SignInManager()
     
-    var currentUserInfo: SCUser?
+    var currentUserInfoFirebase: SCUser? {
+        
+        didSet {
+            checkUserFavoriteList()
+            checkCurrentUserFollowingList()
+            checkCurrentUserFollowerList()
+        }
+    }
     
-    var currentUserInfoFirebase: SCUser?
+    var currentUserFavoriteDocumentIDs: [String]? {
+        didSet {
+            NotificationCenter.default.post(name: .currentUserFavDocIDChange, object: nil, userInfo: nil)
+        }
+    }
     
+    var currentUserFollowingList: [SCFollow]? {
+        didSet {
+            NotificationCenter.default.post(name: .currentUserFollowingsChange, object: nil, userInfo: nil)
+        }
+    }
+    
+    var currentUserFollowerList: [SCFollow]? {
+        didSet {
+            NotificationCenter.default.post(name: .currentUserFollowersChange, object: nil, userInfo: nil)
+        }
+    }
+
     private init() {}
     
     // MARK: - user 1
@@ -92,58 +113,6 @@ class SignInManager {
     //
     //    var profileCover = CommonUsage.profileCover5
     
-    // MARK: - temporary fake member method
-    
-    func fetchUserInfo(completion: @escaping() -> Void) {
-
-        firebaseManager.fetchUsers { [weak self] result in
-            guard let self = self else { return }
-
-            switch result {
-            case .success(let userInfo):
-
-                self.currentUserInfo = userInfo.first
-                completion()
-
-            case.failure(let error):
-                print("fetchUserInfo failed\(error)")
-            }
-        }
-    }
-
-    func checkUser(completion: @escaping() -> Void) {
-
-        firebaseManager.checkUsers(provider: provider, userID: currentUserID) { [weak self] result in
-            guard let self = self else { return }
-
-            switch result {
-            case .success(let userInfo):
-
-                if userInfo.isEmpty {
-                    self.uploadUserInfo(userPic: nil, userProfileCover: nil, userInfoDocumentID: nil)
-                    self.fetchUserInfo(completion: completion)
-                } else {
-                    self.currentUserInfo = userInfo.first
-                    completion()
-                }
-
-            case.failure(let error):
-                print(error)
-            }
-        }
-    }
-
-    func uploadUserInfo(userPic: URL?, userProfileCover: URL?, userInfoDocumentID: String?) {
-
-        firebaseManager.uploadUserInfo(userInfo: SCUser(userID: currentUserID,
-                                                        provider: provider,
-                                                        username: userName,
-                                                        userEmail: userEmail,
-                                                        userPic: userPic,
-                                                        userProfileCover: userProfileCover,
-                                                        userInfoDoumentID: userInfoDocumentID))
-
-    }
     
     // MARK: - real user method
     
@@ -218,4 +187,64 @@ class SignInManager {
         }
     }
     
+    private func checkUserFavoriteList() {
+        
+        guard let userProfileDocumentID = currentUserInfoFirebase?.userInfoDoumentID else { return }
+        firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self]
+            result in
+            
+            guard let self = self else { return }
+            
+            switch result {
+                
+            case .success(let scFavorites):
+                self.currentUserFavoriteDocumentIDs = scFavorites.map({$0.favoriteDocumentID})
+                
+            case .failure(let error):
+                print("SignInManager: Failed to get favoriteDocumentID \(error)")
+                
+            }
+        }
+    }
+    
+    private func checkCurrentUserFollowingList() {
+        guard let currentUserInfoDocumentID = currentUserInfoFirebase?.userInfoDoumentID else {
+            print("SignInManager: Failed to get currentUserInfoDocumentID. ")
+            return }
+        firebaseManager.checkFollowingsChange(userInfoDoumentID: currentUserInfoDocumentID) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let followings):
+                
+                self.currentUserFollowingList = followings
+                
+            case .failure(let error): print(error)
+            }
+        }
+    }
+    
+    private func checkCurrentUserFollowerList() {
+        guard let currentUserInfoDocumentID = currentUserInfoFirebase?.userInfoDoumentID else {
+            print("SignInManager: Failed to get currentUserInfoDocumentID. ")
+            return }
+        firebaseManager.checkFollowersChange(userInfoDoumentID: currentUserInfoDocumentID) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let followers):
+                
+                self.currentUserFollowerList = followers
+                
+            case .failure(let error): print(error)
+            }
+        }
+    }
+
+}
+
+extension Notification.Name {
+    static let currentUserFavDocIDChange = Notification.Name("currentUserFavDocIDChange")
+    static let currentUserFollowingsChange = Notification.Name("currentUserFollowingsChange")
+    static let currentUserFollowersChange = Notification.Name("currentUserFollowersChange")
+
+
 }

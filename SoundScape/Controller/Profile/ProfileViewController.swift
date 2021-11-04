@@ -14,24 +14,14 @@ struct UserIdentity {
 
 enum ProfilePageSection: String, CaseIterable {
     case followingsLatest = "Followings Latest"
-    case myFavorite = "My Favorite"
-    case myAudio = "My Audio"
+    case myFavorite = "Favorite"
+    case myAudio = "Audio"
 }
 
 class ProfileViewController: UIViewController {
     
     // MARK: - properties
     
-//    var idWillDisplay: UserIdentity?
-//
-//    var userWillDisplay: SCUser? {
-//        didSet {
-//            setUserProfile()
-//        }
-//    }
-//
-//    var displayOthersProfile = false
-//
     let signInManager = SignInManager.shared
     
     let firebaseManager = FirebaseManager.shared
@@ -51,24 +41,18 @@ class ProfileViewController: UIViewController {
     private var currentUserFollowingList: [SCFollow]? {
         didSet {
             tableView.reloadData()
+            guard let currentUserFollowingList = currentUserFollowingList else { return }
+            followingsNumberLabel.text = String(describing: currentUserFollowingList.count)
+            
         }
     }
-
+    
     private var numbersOfFollowers: Int? {
         didSet {
             guard let numbersOfFollowers = numbersOfFollowers else { return }
             followersNumberLabel.text = String(describing: numbersOfFollowers)
         }
     }
-    
-    private var numbersOfFollowings: Int? {
-        didSet {
-            guard let numbersOfFollowings = numbersOfFollowings else { return }
-            followingsNumberLabel.text = String(describing: numbersOfFollowings)
-        }
-    }
-
-
     
     // MARK: - UI properties
     
@@ -177,13 +161,6 @@ class ProfileViewController: UIViewController {
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor(named: CommonUsage.scLightGreen)?.cgColor
         button.layer.cornerRadius = 15
-        
-//        if displayOthersProfile {
-//            button.setTitle(CommonUsage.Text.follow, for: .normal)
-//        } else {
-//            button.setTitle(CommonUsage.Text.settings, for: .normal)
-//        }
-        
         return button
     }()
     
@@ -192,8 +169,7 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        tellMyProfileOrOthers()
-        fetchUserInfoFromFirebase()
+        addObserver()
         fetchDataFromFirebase()
         setBackgroundColor()
         setCoverImageView()
@@ -204,6 +180,7 @@ class ProfileViewController: UIViewController {
         setFollowersStackView()
         setFollowingsStackView()
         setFollowButton()
+        setUserProfile()
     }
     
     override func viewDidLayoutSubviews() {
@@ -214,17 +191,18 @@ class ProfileViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        fetchAmountOfFollows()
-        fetchCurrentUserFollowingList()
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.isNavigationBarHidden = false
+    }
+    
+    // MARK: - deinit
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - config UI method
@@ -311,59 +289,35 @@ class ProfileViewController: UIViewController {
     
     // MARK: - method
     
-//    private func tellMyProfileOrOthers() {
-//        // 從sound detail page 推過來 才需要判斷是不是自己
-//
-//        guard let idWillDisplay = idWillDisplay,
-//         let currentUserInfo =  signInManager.currentUserInfo else { return }
-//
-//        if idWillDisplay.userID == currentUserInfo.userID,
-//           idWillDisplay.userIDProvider == currentUserInfo.provider {
-//            return
-//        } else {
-//            //整套要換成這位user的 而且button 要顯示 follow
-//            displayOthersProfile = true
-//        }
-//
-//    }
-    
-    private func fetchCurrentUserFollowingList() {
-        guard let currentUserInfoDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
-            print("OthersProfileController: please logIn")
-            return }
-        firebaseManager.checkFollowersChange(userInfoDoumentID: currentUserInfoDocumentID) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let followers):
-                
-                self.currentUserFollowingList = followers
-                
-            case .failure(let error): print(error)
-            }
-        }
-    }
-
-    private func fetchUserFavoriteList() {
+    private func addObserver() {
         
-        guard let userProfileDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
-            print("AudioPlayerVC: Cant get favorite before login")
-            return
-        }
-        firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self]
-            result in
-            
-            guard let self = self else { return }
-            
-            switch result {
-                
-            case .success(let scFavorites):
-                self.currentUserFavoriteDocumentIDs = scFavorites.map({$0.favoriteDocumentID})
-                
-            case .failure(let error):
-                print("AudioPlayerVC: Failed to get favoriteDocumentID \(error)")
-                
-            }
-        }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(currentFavDocIDChange),
+                                               name: .currentUserFavDocIDChange ,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(currentFollowersChange),
+                                               name: .currentUserFollowersChange ,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(currentFollowingsChange),
+                                               name: .currentUserFollowingsChange ,
+                                               object: nil)
+        
+    }
+    
+    private func fetchFollowerList() {
+        numbersOfFollowers = signInManager.currentUserFollowerList?.count
+    }
+    
+    private func fetchFollowingList() {
+        currentUserFollowingList = signInManager.currentUserFollowingList
+    }
+    
+    private func fetchUserFavoriteList() {
+        currentUserFavoriteDocumentIDs = signInManager.currentUserFavoriteDocumentIDs
     }
     
     private func fetchDataFromFirebase() {
@@ -381,46 +335,34 @@ class ProfileViewController: UIViewController {
         }
     }
     
-    private func fetchUserInfoFromFirebase() {
-        signInManager.checkUser(completion: setUserProfile)
-    }
-    
-    private func fetchAmountOfFollows() {
-        guard let userWillDisplay = signInManager.currentUserInfo,
-              let userInfoDoumentID = userWillDisplay.userInfoDoumentID else { return }
-        firebaseManager.checkFollowersChange(userInfoDoumentID: userInfoDoumentID) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let followers):
-                
-                self.numbersOfFollowers = followers.count
-                
-            case .failure(let error): print(error)
-            }
-        }
-        
-        firebaseManager.checkFollowingsChange(userInfoDoumentID: userInfoDoumentID) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let followings):
-                self.numbersOfFollowings = followings.count
-            case .failure(let error): print(error)
-            }
-        }
-    }
-
     private func setUserProfile() {
-            coverImageView.image = UIImage(named: signInManager.profileCover)
-            userImageView.image = UIImage(named: signInManager.userPic)
-            nameLabel.text = signInManager.currentUserInfo?.username
-            fetchUserFavoriteList()
+        coverImageView.image = UIImage(named: signInManager.profileCover)
+        userImageView.image = UIImage(named: signInManager.userPic)
+        nameLabel.text = signInManager.currentUserInfoFirebase?.username
+        fetchUserFavoriteList()
+        fetchFollowerList()
+        fetchFollowingList()
     }
     
-   @objc func goSettingPage() {
+    
+    @objc func goSettingPage() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let settingViewController = storyboard.instantiateViewController(withIdentifier: String(describing: SettingViewController.self)) as? SettingViewController else { return }
         navigationController?.pushViewController(settingViewController, animated: true)
     }
+    
+    @objc func currentFavDocIDChange() {
+        fetchUserFavoriteList()
+    }
+    
+    @objc func currentFollowersChange() {
+        fetchFollowerList()
+    }
+    
+    @objc func currentFollowingsChange() {
+        fetchFollowingList()
+    }
+    
 }
 
 // MARK: - conform to UITableViewDataSource
@@ -456,7 +398,7 @@ extension ProfileViewController: UITableViewDataSource {
             }
             cell.firebaseData = myFollowingsUserFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section]
-
+            
             
         case 1:
             
@@ -478,7 +420,7 @@ extension ProfileViewController: UITableViewDataSource {
             cell.profileSection = ProfilePageSection.allCases[indexPath.section]
             
         case 2:
-            let myAudioFiles = allAudioFiles.filter({$0.authorName == signInManager.currentUserInfo?.username})
+            let myAudioFiles = allAudioFiles.filter({$0.authorName == signInManager.currentUserInfoFirebase?.username})
             cell.firebaseData = myAudioFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section]
             

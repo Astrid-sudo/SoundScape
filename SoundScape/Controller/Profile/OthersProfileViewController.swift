@@ -20,6 +20,7 @@ class OthersProfileViewController: UIViewController {
             setUserProfile()
             fetchUserFavoriteList()
             fetchAmountOfFollows()
+            manipulateFollowButton()
         }
     }
     
@@ -56,20 +57,10 @@ class OthersProfileViewController: UIViewController {
         }
     }
     
-    //current signin 的
-    private var currentUserFollowingList: [SCFollow]? {
-        didSet {
-            manipulateFollowButton()
-        }
-    }
-    
-    
     // MARK: - life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        fetchCurrentUserFollowingList()
         fetchUserInfo()
         fetchDataFromFirebase()
         setBackgroundColor()
@@ -91,7 +82,6 @@ class OthersProfileViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
-        manipulateFollowButton()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -104,7 +94,7 @@ class OthersProfileViewController: UIViewController {
     @objc func manipulateFollow() {
         guard let userWillDisplay = userWillDisplay,
               let userInfoDoumentID = userWillDisplay.userInfoDoumentID,
-              let loggedInUserInfo = signInManager.currentUserInfo,
+              let loggedInUserInfo = signInManager.currentUserInfoFirebase,
               let loggedInUserInfoDocumentID = loggedInUserInfo.userInfoDoumentID else { return }
         
         firebaseManager.manipulateFollow(userInfoDoumentID: userInfoDoumentID,
@@ -119,20 +109,9 @@ class OthersProfileViewController: UIViewController {
     // MARK: - method
     
     private func manipulateFollowButton() {
-        
-        guard let currentUserFollowingList = currentUserFollowingList,
-              let userWillDisplay = userWillDisplay else { return }
-        
-        var alreadyFollowed = [SCFollow]()
-        
-        for following in currentUserFollowingList {
-            if following.userID == userWillDisplay.userID,
-               following.provider == userWillDisplay.provider {
-                alreadyFollowed.append(following)
-            }
-        }
-        
-        if alreadyFollowed.count != 0 {
+        guard let otherUserID = userWillDisplay?.userID,
+        let currentUserFollowingsID = signInManager.currentUserFollowingList?.map({$0.userID}) else { return }
+        if currentUserFollowingsID.contains(otherUserID) {
             makeButtonFollowed()
         }
     }
@@ -146,23 +125,6 @@ class OthersProfileViewController: UIViewController {
     private func makeButtonUnFollow() {
         followButton.setTitle(CommonUsage.Text.follow, for: .normal)
         followButton.backgroundColor = UIColor(named: CommonUsage.scYellow)
-        
-    }
-    
-    private func fetchCurrentUserFollowingList() {
-        guard let currentUserInfoDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
-            print("OthersProfileController: please logIn")
-            return }
-        firebaseManager.checkFollowingsChange(userInfoDoumentID: currentUserInfoDocumentID) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let followers):
-                
-                self.currentUserFollowingList = followers
-                
-            case .failure(let error): print(error)
-            }
-        }
         
     }
     
@@ -230,14 +192,13 @@ class OthersProfileViewController: UIViewController {
                 self.userFavoriteDocumentIDs = scFavorites.map({$0.favoriteDocumentID})
                 
             case .failure(let error):
-                print("AudioPlayerVC: Failed to get favoriteDocumentID \(error)")
+                print("OtherProfileVC: Failed to get favoriteDocumentID \(error)")
                 
             }
         }
     }
     
     private func fetchDataFromFirebase() {
-        
         firebaseManager.checkPostsChange { [weak self] result in
             guard let self = self else { return }
             
@@ -257,8 +218,6 @@ class OthersProfileViewController: UIViewController {
         coverImageView.image = UIImage(named: CommonUsage.profileCover2)
         userImageView.image = UIImage(named: CommonUsage.audioImage2)
         nameLabel.text = userWillDisplay.username
-        followersNumberLabel.text = "0"
-        followingsNumberLabel.text = "0"
     }
     
     // MARK: - UI properties
@@ -303,6 +262,7 @@ class OthersProfileViewController: UIViewController {
         label.textColor = UIColor(named: CommonUsage.scWhite)
         label.font = UIFont(name: CommonUsage.fontSemibold, size: 14)
         label.textAlignment = .left
+        label.text = "0"
         return label
     }()
     
@@ -320,6 +280,7 @@ class OthersProfileViewController: UIViewController {
         label.textColor = UIColor(named: CommonUsage.scWhite)
         label.font = UIFont(name: CommonUsage.fontSemibold, size: 14)
         label.textAlignment = .left
+        label.text = "0"
         return label
     }()
     
@@ -472,7 +433,7 @@ extension OthersProfileViewController: UITableViewDataSource {
             
         case 0:
             guard let followings = othersFollowingList else {
-                print("ProfilePage cant get othersFollowingList")
+                print("OtherProfilePage cant get othersFollowingList")
                 return UITableViewCell()
             }
             

@@ -15,13 +15,9 @@ class CommentViewController: UIViewController {
     let signInManager = SignInManager.shared
     
     var currentPlayingDocumentID: String? {
-        
         didSet {
-            
             guard let currentPlayingDocumentID = currentPlayingDocumentID else { return }
-            
             checkComment(from: currentPlayingDocumentID)
-            
         }
     }
     
@@ -67,13 +63,22 @@ class CommentViewController: UIViewController {
     }
     
     @objc private func addComment() {
-        
+        addCommentToFirebase()
+    }
+    
+    @objc func dismissCommentViewController() {
+        dismiss(animated: true)
+    }
+    
+    // MARK: - method
+    
+    private func addCommentToFirebase() {
         addLottie()
         
         guard let currentPlayingDocumentID = currentPlayingDocumentID,
               commentTextView.text != "",
               let comment = commentTextView.text,
-              let currentUserInfo = signInManager.currentUserInfo else {
+              let currentUserInfo = signInManager.currentUserInfoFirebase else {
                   print("CommentVC: Add Comment Return.")
                   animationView.removeFromSuperview()
                   return }
@@ -90,12 +95,10 @@ class CommentViewController: UIViewController {
             guard let self = self else { return }
             
             self.commentTextView.text = nil
+            self.commentTextView.endEditing(true)
             self.animationView.removeFromSuperview()
         }
-    }
-    
-    @objc func dismissCommentViewController() {
-        dismiss(animated: true)
+        
     }
     
     // MARK: - UI properties
@@ -154,6 +157,7 @@ class CommentViewController: UIViewController {
         textView.delegate = self
         textView.textContainer.maximumNumberOfLines = 8
         textView.textContainer.lineBreakMode = .byWordWrapping
+        textView.addDoneOnKeyboardWithTarget(self, action: #selector(addComment))
         return textView
     }()
     
@@ -263,7 +267,7 @@ extension CommentViewController {
         view.addSubview(commentTextView)
         commentTextView.translatesAutoresizingMaskIntoConstraints = false
         emptyTextViewConstraint = commentTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8)
-
+        
         NSLayoutConstraint.activate([
             commentTextView.leadingAnchor.constraint(equalTo: currentUserImageView.trailingAnchor, constant: 8),
             emptyTextViewConstraint,
@@ -310,8 +314,6 @@ extension CommentViewController: UITextViewDelegate {
             emptyTextViewConstraint.isActive = false
             fullTextViewConstraint = commentTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40)
             fullTextViewConstraint.isActive = true
-            
-            
         }
     }
     
