@@ -23,14 +23,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // if user is logged in before
         if Auth.auth().currentUser != nil {
-            // instantiate the main tab bar controller and set it as root view controller
-            // using the storyboard identifier we set earlier
+            guard let currentUser = Auth.auth().currentUser else { return }
+            SignInManager.shared.checkUserInFirebase(userID: currentUser.uid, userProvider: currentUser.providerID, userEmail: currentUser.email, userName: currentUser.displayName)
             let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController")
             window?.rootViewController = sCTabBarController
         } else {
-            // if user isn't logged in
-            // instantiate the navigation controller and set it as root view controller
-            // using the storyboard identifier we set earlier
             let signInViewController = storyboard.instantiateViewController(identifier: "SignInViewController")
             window?.rootViewController = signInViewController
         }

@@ -132,8 +132,7 @@ class FirebaseManager {
         }
     }
     
-    // MARK: - member method
-    
+    // MARK: - temporary fake member method
     
     func checkUsers(provider: String, userID: String, completion: @escaping (Result<[SCUser], Error>) -> Void) {
         
@@ -216,6 +215,72 @@ class FirebaseManager {
             
             try document.setData(from: userInfo)
             
+        } catch {
+            print(error)
+        }
+    }
+    
+    // MARK: - real member method
+    
+    func checkUsersInFirebase(userID: String, completion: @escaping (Result<SCUser, Error>) -> Void) {
+        
+        let docRef = allUsersCollectionRef.document(userID)
+        
+        docRef.getDocument { (document, error) in
+            
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            
+            if let document = document,
+               document.exists {
+                let user = try? document.data(as: SCUser.self)
+                if let user = user {
+                    completion(Result.success(user))
+                }
+            } else {
+                print("Document does not exist")
+                completion(Result.success(SCUser(userID: "", provider: "", username: "", userEmail: "", userPic: nil, userProfileCover: nil, userInfoDoumentID: nil)))
+
+            }
+        }
+    }
+    
+    func fetchUserInfoFromFirebase(userID: String, completion: @escaping (Result<SCUser, Error>) -> Void) {
+        
+        let docRef = allUsersCollectionRef.document(userID)
+        
+        docRef.getDocument { (document, error) in
+            
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            
+            if let document = document,
+               document.exists {
+                let user = try? document.data(as: SCUser.self)
+                if let user = user {
+                    completion(Result.success(user))
+                }
+                
+            } else {
+                
+                print("Document does not exist")
+
+            }
+        }
+    }
+    
+    func uploadUserToFirebase(userInfo: SCUser) {
+        
+        let userID = userInfo.userID
+        var userInfo = userInfo
+        userInfo.userInfoDoumentID = userID
+        
+        do {
+            try allUsersCollectionRef.document(userID).setData(from: userInfo)
         } catch {
             print(error)
         }

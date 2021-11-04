@@ -118,14 +118,24 @@ class SignInHelper: NSObject {
 extension SignInHelper: ASAuthorizationControllerDelegate {
     
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        
         if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+            
             guard let nonce = currentNonce else {
                 fatalError("Invalid state: A login callback was received, but no login request was sent.")
             }
+            
             guard let appleIDToken = appleIDCredential.identityToken else {
                 print("Unable to fetch identity token")
                 return
             }
+            
+            var userName = "無名用戶"
+            if let givenName = appleIDCredential.fullName?.givenName,
+               let familyName = appleIDCredential.fullName?.familyName {
+                userName = givenName + familyName
+            }
+            
             guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
                 print("Unable to serialize token string from data: \(appleIDToken.debugDescription)")
                 return
@@ -145,16 +155,40 @@ extension SignInHelper: ASAuthorizationControllerDelegate {
                     return
                 }
                 
-                print("--------Sucessfully SignIn to firebase--------")
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                guard let tabBarController = storyboard.instantiateViewController(withIdentifier: SCTabBarController.reuseIdentifier) as? SCTabBarController else { return }
+                if let authResult = authResult {
+                    
+                    print("--------Sucessfully SignIn to firebase--------")
+
+                    if Auth.auth().currentUser?.metadata.creationDate == Auth.auth().currentUser?.metadata.lastSignInDate {
+                        // 幫他創建新帳號
+                        if let userEmail = authResult.user.email {
+                            SignInManager.shared.uploadNewUserToFirebase(userID: authResult.user.uid,
+                                                                         provider: authResult.credential?.provider ?? "dont know",
+                                                                         userEmail: userEmail,
+                                                                         userName: userName)
+
+                        }
+                        
+                    } else {
+                        //幫他下載資料
+                        SignInManager.shared.fetchUserInfoFromFirebase(userID: authResult.user.uid)
+                    }
                 
-                let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
+//                    SignInManager.shared.checkUserInFirebase(userID: authResult.user.uid,
+//                                                             userProvider: authResult.credential?.provider ?? "dont know" ,
+//                                                             userEmail: authResult.user.email ,
+//                                                             userName: userName)
+                    
+                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                    guard let tabBarController = storyboard.instantiateViewController(withIdentifier: SCTabBarController.reuseIdentifier) as? SCTabBarController else { return }
+                    
+                    let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
 
-                sceneDelegate?.changeRootViewController(tabBarController)
+                    sceneDelegate?.changeRootViewController(tabBarController)
 
-                // User is signed in to Firebase with Apple.
-                // ...
+                    
+                }
+                
             }
         }
     }
