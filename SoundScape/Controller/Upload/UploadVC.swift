@@ -270,14 +270,13 @@ class UploadVC: UIViewController {
               }
         
         var post = SCPost(documentID: "",
-                          authorID: signInmanager.currentUserInfo?.userID ?? "No signIn",
-                          authIDProvider: signInmanager.currentUserInfo?.provider ?? "No signIn",
-                          authorName: signInmanager.currentUserInfo?.username ?? "No signIn",
+                          authorID: signInmanager.currentUserInfoFirebase?.userID ?? "No signIn",
+                          authIDProvider: signInmanager.currentUserInfoFirebase?.provider ?? "No signIn",
+                          authorName: signInmanager.currentUserInfoFirebase?.username ?? "No signIn",
                           title: title,
                           content: content,
                           category: category,
                           duration: 0.0)
-        
         
         if let selectedFileDuration = selectedFileDuration {
             post.duration = selectedFileDuration

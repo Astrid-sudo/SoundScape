@@ -14,8 +14,6 @@ class FirebaseManager {
     
     static let shared = FirebaseManager()
     
-    //    weak var delegate: PostsPassableDelegate?
-    
     private var postListener: ListenerRegistration?
     
     private var favoriteListener: ListenerRegistration?
@@ -23,6 +21,12 @@ class FirebaseManager {
     private var followersListenser: ListenerRegistration?
     
     private var followingsListenser: ListenerRegistration?
+    
+    private var commentListenser: ListenerRegistration?
+    
+    private var userPicListenser: ListenerRegistration?
+    
+    private var coverPicListenser: ListenerRegistration?
     
     private let storage = Storage.storage().reference()
     
@@ -39,6 +43,9 @@ class FirebaseManager {
         favoriteListener?.remove()
         followersListenser?.remove()
         followingsListenser?.remove()
+        commentListenser?.remove()
+        userPicListenser?.remove()
+        coverPicListenser?.remove()
     }
     
     // MARK: - post method
@@ -129,8 +136,7 @@ class FirebaseManager {
         }
     }
     
-    // MARK: - member method
-    
+    // MARK: - temporary fake member method
     
     func checkUsers(provider: String, userID: String, completion: @escaping (Result<[SCUser], Error>) -> Void) {
         
@@ -213,6 +219,72 @@ class FirebaseManager {
             
             try document.setData(from: userInfo)
             
+        } catch {
+            print(error)
+        }
+    }
+    
+    // MARK: - real member method
+    
+    func checkUsersInFirebase(userID: String, completion: @escaping (Result<SCUser, Error>) -> Void) {
+        
+        let docRef = allUsersCollectionRef.document(userID)
+        
+        docRef.getDocument { (document, error) in
+            
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            
+            if let document = document,
+               document.exists {
+                let user = try? document.data(as: SCUser.self)
+                if let user = user {
+                    completion(Result.success(user))
+                }
+            } else {
+                print("Document does not exist")
+                completion(Result.success(SCUser(userID: "", provider: "", username: "", userEmail: "", userPic: nil, userProfileCover: nil, userInfoDoumentID: nil)))
+                
+            }
+        }
+    }
+    
+    func fetchUserInfoFromFirebase(userID: String, completion: @escaping (Result<SCUser, Error>) -> Void) {
+        
+        let docRef = allUsersCollectionRef.document(userID)
+        
+        docRef.getDocument { (document, error) in
+            
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            
+            if let document = document,
+               document.exists {
+                let user = try? document.data(as: SCUser.self)
+                if let user = user {
+                    completion(Result.success(user))
+                }
+                
+            } else {
+                
+                print("Document does not exist")
+                
+            }
+        }
+    }
+    
+    func uploadUserToFirebase(userInfo: SCUser) {
+        
+        let userID = userInfo.userID
+        var userInfo = userInfo
+        userInfo.userInfoDoumentID = userID
+        
+        do {
+            try allUsersCollectionRef.document(userID).setData(from: userInfo)
         } catch {
             print(error)
         }
@@ -325,7 +397,6 @@ class FirebaseManager {
                 print("Failed to fetch myFollowing subCollection collection \(error)")
                 return
             }
-            //找自己的following名單 如果沒有這個人的話，把它加入到我的following，把我加到它的follower，改變follow顏色
             
             if let snapshot = snapshot {
                 
@@ -335,8 +406,9 @@ class FirebaseManager {
                     let userInfo = userInfo
                     
                     do {
-                        try myFollowingSubCollectionRef.addDocument(from: userInfo)
-                        try othersFollowedBySubCollectionRef.addDocument(from: loggedInUserInfo)
+                        try myFollowingSubCollectionRef.document(userInfo.userID).setData(from: userInfo)
+                        try othersFollowedBySubCollectionRef.document(logginUserInfo.userID).setData(from: loggedInUserInfo)
+                        
                         followCompletion()
                         
                     } catch {
@@ -344,25 +416,22 @@ class FirebaseManager {
                     }
                     
                 } else {
-                    //如果有的話，把它從我的following移除，把我從它的follower移除，改變follow顏色
-                    //它在我collection中的documentID
                     guard let othersDocIDInMyCollec = snapshot.documents.first?.documentID else {
                         print("failed to get othersDocIDInMyCollec ref")
                         return
                     }
-                    //把它從我的collection移除
                     myFollowingSubCollectionRef.document(othersDocIDInMyCollec).delete() { [weak self] error in
                         guard let self = self else { return }
-
+                        
                         if let error = error {
                             print("Error removing favorite: \(error)")
                         } else {
                             print("Person successfully removed from loggedIn's following!")
                             unfollowCompletion()
                             self.removeFollowersDocID(userInfoDoumentID: userInfoDoumentID,
-                                                   userInfo: userInfo,
-                                                   loggedInUserInfoDocumentID: loggedInUserInfoDocumentID,
-                                                   loggedInUserInfo: loggedInUserInfo)
+                                                      userInfo: userInfo,
+                                                      loggedInUserInfoDocumentID: loggedInUserInfoDocumentID,
+                                                      loggedInUserInfo: loggedInUserInfo)
                         }
                     }
                 }
@@ -371,12 +440,12 @@ class FirebaseManager {
     }
     
     func removeFollowersDocID(userInfoDoumentID: String,
-                           userInfo: SCFollow,
-                           loggedInUserInfoDocumentID: String,
-                           loggedInUserInfo: SCFollow) {
+                              userInfo: SCFollow,
+                              loggedInUserInfoDocumentID: String,
+                              loggedInUserInfo: SCFollow) {
         
         let othersFollowedBySubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("followedBy")
-
+        
         othersFollowedBySubCollectionRef.whereField("userID", isEqualTo: loggedInUserInfo.userID).whereField("provider", isEqualTo: loggedInUserInfo.provider).getDocuments { snapshot, error in
             
             if let error = error {
@@ -390,13 +459,10 @@ class FirebaseManager {
                     print("FirebaseManager: You were no on his followedBy list")
                 } else {
                     
-                    //我在它的collection的ID
-
                     guard let meInOthersCollection = snapshot.documents.first?.documentID else {
                         print("failed to get meInOthersCollection ref")
                         return
                     }
-                    //把我從他的移除
                     othersFollowedBySubCollectionRef.document(meInOthersCollection).delete() { error in
                         if let error = error {
                             print("Error removing you from ex friend: \(error)")
@@ -456,7 +522,7 @@ class FirebaseManager {
     func checkFollowersChange(userInfoDoumentID: String, completion: @escaping (Result<[SCFollow], Error>) -> Void) {
         
         let followedBySubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("followedBy")
-
+        
         followersListenser = followedBySubCollectionRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot else { return }
             snapshot.documentChanges.forEach { documentChange in
@@ -478,7 +544,7 @@ class FirebaseManager {
     func checkFollowingsChange(userInfoDoumentID: String, completion: @escaping (Result<[SCFollow], Error>) -> Void) {
         
         let followingSubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("following")
-
+        
         followingsListenser = followingSubCollectionRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot else { return }
             snapshot.documentChanges.forEach { documentChange in
@@ -496,32 +562,167 @@ class FirebaseManager {
             }
         }
     }
+    
+    // MARK: - comment
+    
+    func addComment(to documentID: String, with comment: SCComment, completion: @escaping () -> Void) {
+        let db = Firestore.firestore()
+        
+        let commentSubCollectionRef = db.collection(CommonUsage.CollectionName.allAudioFiles).document(documentID).collection(CommonUsage.CollectionName.comments)
+        
+        let document = commentSubCollectionRef.document()
+        
+        let newComment = SCComment(commentDocumentID: document.documentID,
+                                   userID: comment.userID,
+                                   userName: comment.userName,
+                                   userImage: comment.userImage,
+                                   createdTime: Timestamp(date: Date()),
+                                   lastEditedTime: nil,
+                                   comment: comment.comment)
+        
+        do {
+            try document.setData(from: newComment)
+            completion()
+        } catch {
+            print("FirebaseManager:mfailed to add comment")
+        }
+    }
+    
+    func fetchComment(from documentID: String, completion: @escaping (Result<[SCComment], Error>) -> Void) {
+        
+        let db = Firestore.firestore()
+        
+        let commentSubCollectionRef = db.collection(CommonUsage.CollectionName.allAudioFiles).document(documentID).collection(CommonUsage.CollectionName.comments)
+        
+        commentSubCollectionRef.order(by:"createdTime").getDocuments { snapshot, error in
+            
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            
+            if let snapshot = snapshot {
+                let posts = snapshot.documents.compactMap({ snapshot in
+                    try? snapshot.data(as: SCComment.self)
+                })
+                
+                completion(Result.success(posts))
+                
+            }
+        }
+    }
+    
+    func checkCommentChange(from documentID: String, completion: @escaping (Result<[SCComment], Error>) -> Void) {
+        
+        let db = Firestore.firestore()
+        
+        let commentSubCollectionRef = db.collection(CommonUsage.CollectionName.allAudioFiles).document(documentID).collection(CommonUsage.CollectionName.comments)
+        
+        commentListenser = commentSubCollectionRef.addSnapshotListener { snapshot, error in
+            guard let snapshot = snapshot else { return }
+            snapshot.documentChanges.forEach { documentChange in
+                switch documentChange.type {
+                case .added:
+                    self.fetchComment(from: documentID, completion: completion)
+                    print("comment added")
+                case .modified:
+                    self.fetchComment(from: documentID, completion: completion)
+                    print("comment modified")
+                case .removed:
+                    self.fetchComment(from: documentID, completion: completion)
+                    print("comment removed")
+                }
+            }
+        }
+    }
+    
+    func uploadPicToFirebase(userDocumentID: String, picString:String, picType: PicType) {
+        
+        let profilePicSubCollection = allUsersCollectionRef.document(userDocumentID).collection("profilePicture")
+        let picture = SCPicture(picture: picString)
+        do {
+            try profilePicSubCollection.document(picType.rawValue).setData(from: picture)
+        } catch {
+           
+            print(error)
+        }
+    }
+    
+    func fetchUserPicFromFirebase(userID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
+        
+        let userPicDoc = allUsersCollectionRef.document(userID).collection("profilePicture").document("userPic")
+        
+        userPicDoc.getDocument { (document, error) in
+            
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            
+            if let document = document,
+               document.exists {
+                let picture = try? document.data(as: SCPicture.self)
+                if let picture = picture {
+                    completion(Result.success(picture))
+                }
+                
+            } else {
+                
+                print("Document does not exist")
+                
+            }
+        }
+    }
+    
+    func fetchCoverPicFromFirebase(userID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
+        
+        let coverPicDoc = allUsersCollectionRef.document(userID).collection("profilePicture").document("coverPic")
+        
+        coverPicDoc.getDocument { (document, error) in
+            
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            
+            if let document = document,
+               document.exists {
+                let picture = try? document.data(as: SCPicture.self)
+                if let picture = picture {
+                    completion(Result.success(picture))
+                }
+                
+            } else {
+                
+                print("Document does not exist")
+                
+            }
+        }
+    }
+    
+    func checkUserPicChange(userInfoDoumentID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
+        
+        let userPicRef = allUsersCollectionRef.document(userInfoDoumentID).collection("profilePicture").document("userPic")
 
+        userPicListenser = userPicRef.addSnapshotListener { snapshot, error in
+            guard let snapshot = snapshot,
+            snapshot.exists else { return }
+            
+            self.fetchUserPicFromFirebase(userID: userInfoDoumentID, completion: completion)
 
+        }
+    }
+    
+    func checkCoverPicChange(userInfoDoumentID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
+        
+        let coverPicRef = allUsersCollectionRef.document(userInfoDoumentID).collection("profilePicture").document("coverPic")
 
-
+        coverPicListenser = coverPicRef.addSnapshotListener { snapshot, error in
+            guard let snapshot = snapshot,
+            snapshot.exists else { return }
+            
+            self.fetchCoverPicFromFirebase(userID: userInfoDoumentID, completion: completion)
+        }
+    }
     
 }
-
-/*
- func checkPostsChange(completion: @escaping (Result<[SCPost], Error>) -> Void) {
-     
-     postListener = allAudioCollectionRef.addSnapshotListener { snapshot, error in
-         guard let snapshot = snapshot else { return }
-         snapshot.documentChanges.forEach { documentChange in
-             switch documentChange.type {
-             case .added:
-                 self.fetchPosts(completion: completion)
-                 print("added")
-             case .modified:
-                 self.fetchPosts(completion: completion)
-                 print("modified")
-             case .removed:
-                 self.fetchPosts(completion: completion)
-                 print("removed")
-             }
-         }
-     }
- }
-
- */

@@ -28,6 +28,10 @@ struct SCUser: Codable {
     var userInfoDoumentID: String?
 }
 
+struct SCPicture: Codable {
+    var picture: String
+}
+
 struct SCFollow: Codable {
     let userID: String
     let provider: String
@@ -55,13 +59,13 @@ struct SCPost: Codable, Hashable {
 }
 
 struct SCComment: Codable {
-    let documentID: String
+    let commentDocumentID: String?
     let userID: String
     let userName: String
-    let userImage: URL?
-    let createdTime: Timestamp
+    var userImage: URL?
+    var createdTime: Timestamp?
+    var lastEditedTime: Timestamp?
     var comment: String
-    var atTimeCode: String?
 }
 
 struct SCLocation: Codable {

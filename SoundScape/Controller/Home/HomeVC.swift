@@ -121,7 +121,7 @@ extension HomeVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomeTableViewHeader.reuseIdentifier) as? HomeTableViewHeader else { return UIView()}
-        
+        headerView.presentInPage = .audioCategory
         headerView.delegate = self
         headerView.config(section: section, content: AudioCategory.allCases[section].rawValue)
         return headerView
@@ -143,7 +143,7 @@ extension HomeVC: UITableViewDelegate {
 
 extension HomeVC: PressPassableDelegate {
     
-    func goCategoryPage(from section: Int) {
+    func goSectionPage(from section: Int, sectionPageType: SectionPageType) {
         
         let category = AudioCategory.allCases[section]
         

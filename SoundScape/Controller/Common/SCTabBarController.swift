@@ -23,7 +23,6 @@ class SCTabBarController: UITabBarController {
     
     var soundDetailVC: SoundDetailVC?
 
-    
     // MARK: - life cycle
     
     override func viewDidLoad() {

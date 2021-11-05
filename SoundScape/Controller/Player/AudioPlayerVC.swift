@@ -141,7 +141,7 @@ class AudioPlayerVC: UIViewController {
     
     private func fetchUserFavoriteList() {
         
-        guard let userProfileDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
+        guard let userProfileDocumentID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else {
             print("AudioPlayerVC: Cant get favorite before login")
             return
         }
@@ -198,12 +198,11 @@ class AudioPlayerVC: UIViewController {
         favoriteButton.tintColor = .red
     }
     
-    
     // MARK: - action
     
     @objc func manipulateFavorite() {
         
-        guard let userProfileDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
+        guard let userProfileDocumentID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else {
             print("Cant addToFavorite before loggin")
             return
         }
@@ -232,8 +231,6 @@ class AudioPlayerVC: UIViewController {
             baseView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             baseView.topAnchor.constraint(equalTo: view.topAnchor),
             baseView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-            //            baseView.heightAnchor.constraint(equalToConstant: 60),
-            //            baseView.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: -120)
         ])
     }
     
@@ -286,11 +283,6 @@ class AudioPlayerVC: UIViewController {
             favoriteButton.widthAnchor.constraint(equalToConstant: 30),
             favoriteButton.heightAnchor.constraint(equalToConstant: 30)
         ])
-    }
-    
-    private func setFakedata() {
-        audioTitleLabel.text = "陽明山下七股溫泉"
-        authorLabel.text = "Phillip Winter"
     }
     
     private func setFullDurationView() {
@@ -365,7 +357,6 @@ class AudioPlayerVC: UIViewController {
             soundDetailVC.view.isHidden = false
             self.view.layoutIfNeeded()
         }
-        
         
     }
     
@@ -489,8 +480,6 @@ class AudioPlayerVC: UIViewController {
     }
     
     func updateUI() {
-        //        localUpdateUI()
-        
         if remotePlayerHelper.state == .playing {
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
         } else if remotePlayerHelper.state == .paused {

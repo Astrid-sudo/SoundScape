@@ -15,6 +15,8 @@ class CategoryViewController: UIViewController {
     
     private var category: AudioCategory?
     
+    private var profileSection: ProfilePageSection?
+    
     private var data = [SCPost]()
 
     // MARK: - UI properties
@@ -32,7 +34,6 @@ class CategoryViewController: UIViewController {
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
         label.font = UIFont(name: CommonUsage.fontBungee, size: 40)
-        
         return label
     }()
     
@@ -53,7 +54,7 @@ class CategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        setViewBackgroundColor()
         setHeadView()
         setCategoryTitleLabel()
         setTableView()
@@ -67,7 +68,16 @@ class CategoryViewController: UIViewController {
         self.data = data
     }
     
+    func config(profileSection: ProfilePageSection, data: [SCPost]) {
+        self.profileSection = profileSection
+        self.data = data
+    }
+    
     // MARK: - config UI method
+    
+    private func setViewBackgroundColor() {
+        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+    }
     
     private func setHeadView() {
         view.addSubview(headView)
@@ -101,7 +111,15 @@ class CategoryViewController: UIViewController {
     }
     
     private func setHeadViewTitle() {
-        categoryTitleLabel.text = category?.rawValue
+        
+        if let category = category {
+            categoryTitleLabel.text = category.rawValue
+        }
+        
+        if let profileSection = profileSection {
+            categoryTitleLabel.text = profileSection.rawValue
+        }
+        
         headView.image = UIImage(named: CommonUsage.audioImage2)
     }
 

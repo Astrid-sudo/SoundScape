@@ -74,6 +74,9 @@
                                         <rect key="frame" x="105" y="0.0" width="67" height="31"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="text.bubble.fill" catalog="system"/>
+                                        <connections>
+                                            <action selector="presentCommentPage:" destination="BYZ-38-t0r" eventType="touchUpInside" id="KpE-s2-tJn"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v6G-CT-7ZK">
                                         <rect key="frame" x="210" y="0.0" width="67" height="31"/>
@@ -241,7 +244,22 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="J12-cr-z1K" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1395" y="2332"/>
+            <point key="canvasLocation" x="1374" y="2990"/>
+        </scene>
+        <!--Comment View Controller-->
+        <scene sceneID="B1M-AH-HnE">
+            <objects>
+                <viewController storyboardIdentifier="CommentViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="dNN-22-1ys" customClass="CommentViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="2OM-vS-2Nk">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="LgY-sW-wMH"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ogd-jb-dZI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2216" y="2314"/>
         </scene>
         <!--Test EditVC-->
         <scene sceneID="21I-gY-GuF">
@@ -395,6 +413,22 @@
             </objects>
             <point key="canvasLocation" x="2216" y="1625"/>
         </scene>
+        <!--Sign In View Controller-->
+        <scene sceneID="Ayn-me-j7W">
+            <objects>
+                <viewController storyboardIdentifier="SignInViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="gvc-Na-EwS" customClass="SignInViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="6ak-QL-E1Z">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="tyy-9C-jGe"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="i7x-4y-l1c"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ejh-d4-e2G" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-7" y="117"/>
+        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="FiX-p1-RY9">
             <objects>
@@ -415,7 +449,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KU3-59-Czb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="131.8840579710145" y="116.51785714285714"/>
+            <point key="canvasLocation" x="1042.0289855072465" y="116.51785714285714"/>
         </scene>
         <!--Search-->
         <scene sceneID="jYj-F6-wO1">
@@ -557,6 +591,21 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iQZ-hE-AYp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-275" y="2314"/>
+        </scene>
+        <!--Setting View Controller-->
+        <scene sceneID="fdz-G8-xLi">
+            <objects>
+                <viewController storyboardIdentifier="SettingViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="XDf-DY-KIj" customClass="SettingViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="wUc-CR-hPx">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="bim-8u-QI4"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="EAm-B4-Ptg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1374" y="2304"/>
         </scene>
     </scenes>
     <resources>

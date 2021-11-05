@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Photos
 
 struct UserIdentity {
     let userID: String
@@ -14,27 +15,24 @@ struct UserIdentity {
 
 enum ProfilePageSection: String, CaseIterable {
     case followingsLatest = "Followings Latest"
-    case myFavorite = "My Favorite"
-    case myAudio = "My Audio"
+    case myFavorite = "Favorite"
+    case myAudio = "Audio"
+}
+
+enum PicType: String {
+    case userPic
+    case coverPic
 }
 
 class ProfileViewController: UIViewController {
     
     // MARK: - properties
     
-//    var idWillDisplay: UserIdentity?
-//
-//    var userWillDisplay: SCUser? {
-//        didSet {
-//            setUserProfile()
-//        }
-//    }
-//
-//    var displayOthersProfile = false
-//
     let signInManager = SignInManager.shared
     
     let firebaseManager = FirebaseManager.shared
+    
+    var selectedPicButton = PicType.coverPic
     
     private var allAudioFiles = [SCPost]() {
         didSet {
@@ -51,36 +49,46 @@ class ProfileViewController: UIViewController {
     private var currentUserFollowingList: [SCFollow]? {
         didSet {
             tableView.reloadData()
+            guard let currentUserFollowingList = currentUserFollowingList else { return }
+            followingsNumberLabel.text = String(describing: currentUserFollowingList.count)
+            
         }
     }
-
+    
     private var numbersOfFollowers: Int? {
         didSet {
             guard let numbersOfFollowers = numbersOfFollowers else { return }
             followersNumberLabel.text = String(describing: numbersOfFollowers)
         }
     }
-    
-    private var numbersOfFollowings: Int? {
+
+    private var currentUserPic: String? {
         didSet {
-            guard let numbersOfFollowings = numbersOfFollowings else { return }
-            followingsNumberLabel.text = String(describing: numbersOfFollowings)
+            guard let currentUserPic = currentUserPic,
+                  let data = Data(base64Encoded: currentUserPic) else { return }
+            userImageView.image = UIImage(data: data)
+        }
+    }
+    
+    private var currentUserCover: String? {
+        didSet {
+            guard let currentUserCover = currentUserCover,
+                  let data = Data(base64Encoded: currentUserCover) else { return }
+            coverImageView.image = UIImage(data: data)
         }
     }
 
-
-    
     // MARK: - UI properties
     
     private lazy var coverImageView: UIImageView = {
         let image = UIImageView()
-        image.contentMode = .scaleToFill
+        image.contentMode = .scaleAspectFill
         return image
     }()
     
     private lazy var userImageView: UIImageView = {
         let image = UIImageView()
-        image.contentMode = .scaleToFill
+        image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
         
         return image
@@ -172,19 +180,27 @@ class ProfileViewController: UIViewController {
         let button = UIButton()
         button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
         button.setTitle(CommonUsage.Text.settings, for: .normal)
-
-        //        btn.addTarget(self, action: #selector(logOut), for: .touchUpInside)
+        button.addTarget(self, action: #selector(goSettingPage), for: .touchUpInside)
         button.backgroundColor = UIColor(named: CommonUsage.scDarkYellow)
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor(named: CommonUsage.scLightGreen)?.cgColor
         button.layer.cornerRadius = 15
-        
-//        if displayOthersProfile {
-//            button.setTitle(CommonUsage.Text.follow, for: .normal)
-//        } else {
-//            button.setTitle(CommonUsage.Text.settings, for: .normal)
-//        }
-        
+        return button
+    }()
+    
+    private lazy var changeUserPicButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.photo), for: .normal)
+        button.tintColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        button.addTarget(self, action: #selector(selectUserImage), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var changeCoverPicButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.photo), for: .normal)
+        button.tintColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        button.addTarget(self, action: #selector(selectCoverImage), for: .touchUpInside)
         return button
     }()
     
@@ -193,9 +209,9 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        tellMyProfileOrOthers()
-        fetchUserInfoFromFirebase()
+        addObserver()
         fetchDataFromFirebase()
+        setUserProfile()
         setBackgroundColor()
         setCoverImageView()
         setTableView()
@@ -205,6 +221,8 @@ class ProfileViewController: UIViewController {
         setFollowersStackView()
         setFollowingsStackView()
         setFollowButton()
+        setImageHintOnUserPic()
+        setImageHintOnUCoverPic()
     }
     
     override func viewDidLayoutSubviews() {
@@ -216,16 +234,16 @@ class ProfileViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        fetchAmountOfFollows()
-        fetchCurrentUserFollowingList()
-    }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.isNavigationBarHidden = false
+    }
+    
+    // MARK: - deinit
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - config UI method
@@ -307,66 +325,79 @@ class ProfileViewController: UIViewController {
             followButton.heightAnchor.constraint(equalTo: nameLabel.heightAnchor, multiplier: 0.75),
             followButton.widthAnchor.constraint(equalToConstant: 80)
         ])
-        
+    }
+    
+    private func setImageHintOnUserPic() {
+        view.addSubview(changeUserPicButton)
+        changeUserPicButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            changeUserPicButton.trailingAnchor.constraint(equalTo: userImageView.trailingAnchor),
+            changeUserPicButton.bottomAnchor.constraint(equalTo: userImageView.bottomAnchor),
+            changeUserPicButton.heightAnchor.constraint(equalToConstant: 40),
+            changeUserPicButton.widthAnchor.constraint(equalToConstant: 40)
+        ])
+    }
+    
+    private func setImageHintOnUCoverPic() {
+        view.addSubview(changeCoverPicButton)
+        changeCoverPicButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            changeCoverPicButton.trailingAnchor.constraint(equalTo: coverImageView.trailingAnchor, constant: -32),
+            changeCoverPicButton.bottomAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: -32),
+            changeCoverPicButton.heightAnchor.constraint(equalToConstant: 40),
+            changeCoverPicButton.widthAnchor.constraint(equalToConstant: 40)
+        ])
     }
     
     // MARK: - method
     
-//    private func tellMyProfileOrOthers() {
-//        // 從sound detail page 推過來 才需要判斷是不是自己
-//
-//        guard let idWillDisplay = idWillDisplay,
-//         let currentUserInfo =  signInManager.currentUserInfo else { return }
-//
-//        if idWillDisplay.userID == currentUserInfo.userID,
-//           idWillDisplay.userIDProvider == currentUserInfo.provider {
-//            return
-//        } else {
-//            //整套要換成這位user的 而且button 要顯示 follow
-//            displayOthersProfile = true
-//        }
-//
-//    }
-    
-    private func fetchCurrentUserFollowingList() {
-        guard let currentUserInfoDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
-            print("OthersProfileController: please logIn")
-            return }
-        firebaseManager.checkFollowersChange(userInfoDoumentID: currentUserInfoDocumentID) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let followers):
-                
-                self.currentUserFollowingList = followers
-                
-            case .failure(let error): print(error)
-            }
-        }
+    private func addObserver() {
         
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(currentFavDocIDChange),
+                                               name: .currentUserFavDocIDChange ,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(currentFollowersChange),
+                                               name: .currentUserFollowersChange ,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(currentFollowingsChange),
+                                               name: .currentUserFollowingsChange ,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(currentUserPicChange),
+                                               name: .currentUserPicChange ,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(currentUserCoverChange),
+                                               name: .currentUserCoverChange ,
+                                               object: nil)
         
     }
-
+    
+    private func fetchFollowerList() {
+        numbersOfFollowers = signInManager.currentUserFollowerList?.count
+    }
+    
+    private func fetchFollowingList() {
+        currentUserFollowingList = signInManager.currentUserFollowingList
+    }
+    
     private func fetchUserFavoriteList() {
-        
-        guard let userProfileDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
-            print("AudioPlayerVC: Cant get favorite before login")
-            return
-        }
-        firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self]
-            result in
-            
-            guard let self = self else { return }
-            
-            switch result {
-                
-            case .success(let scFavorites):
-                self.currentUserFavoriteDocumentIDs = scFavorites.map({$0.favoriteDocumentID})
-                
-            case .failure(let error):
-                print("AudioPlayerVC: Failed to get favoriteDocumentID \(error)")
-                
-            }
-        }
+        currentUserFavoriteDocumentIDs = signInManager.currentUserFavoriteDocumentIDs
+    }
+    
+    private func fetchCurrentUserPic() {
+        currentUserPic = signInManager.currentUserPic
+    }
+    
+    private func fetchCurrentCoverPic() {
+        currentUserCover = signInManager.currentUserCover
     }
     
     private func fetchDataFromFirebase() {
@@ -384,43 +415,82 @@ class ProfileViewController: UIViewController {
         }
     }
     
-    private func fetchUserInfoFromFirebase() {
-        signInManager.checkUser(completion: setUserProfile)
-    }
-    
-    private func fetchAmountOfFollows() {
-        guard let userWillDisplay = signInManager.currentUserInfo,
-              let userInfoDoumentID = userWillDisplay.userInfoDoumentID else { return }
-        firebaseManager.checkFollowersChange(userInfoDoumentID: userInfoDoumentID) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let followers):
-                
-                self.numbersOfFollowers = followers.count
-                
-            case .failure(let error): print(error)
-            }
-        }
-        
-        firebaseManager.checkFollowingsChange(userInfoDoumentID: userInfoDoumentID) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let followings):
-                self.numbersOfFollowings = followings.count
-            case .failure(let error): print(error)
-            }
-        }
-    }
-
-    
     private func setUserProfile() {
-            coverImageView.image = UIImage(named: signInManager.profileCover)
-            userImageView.image = UIImage(named: signInManager.userPic)
-            nameLabel.text = signInManager.currentUserInfo?.username
-//            followersNumberLabel.text = "2"
-//            followingsNumberLabel.text = "4"
-            fetchUserFavoriteList()
+        coverImageView.image = UIImage(named: CommonUsage.profileCover4)
+        userImageView.image = UIImage(named: CommonUsage.yeh1024)
+        nameLabel.text = signInManager.currentUserInfoFirebase?.username
+        fetchUserFavoriteList()
+        fetchFollowerList()
+        fetchFollowingList()
+        fetchCurrentUserPic()
+        fetchCurrentCoverPic()
     }
+    
+    // MARK: - image method
+    
+    private func pressSelectImage() {
+        
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        
+        picker.sourceType = .photoLibrary
+        
+        picker.allowsEditing = true
+
+        present(picker, animated: true)
+        
+    }
+    
+    private func sendPhoto(_ image: UIImage) {
+        
+        guard let userDocumentID = signInManager.currentUserInfoFirebase?.userInfoDoumentID,
+              let  compressedImage = image.jpegData(compressionQuality: 0.15) else { return }
+        let imageBase64String = compressedImage.base64EncodedString()
+        
+        firebaseManager.uploadPicToFirebase(userDocumentID: userDocumentID,
+                                            picString: imageBase64String,
+                                            picType: selectedPicButton)
+    }
+    
+    // MARK: - action
+    
+    
+    @objc func goSettingPage() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let settingViewController = storyboard.instantiateViewController(withIdentifier: String(describing: SettingViewController.self)) as? SettingViewController else { return }
+        navigationController?.pushViewController(settingViewController, animated: true)
+    }
+    
+    @objc func currentFavDocIDChange() {
+        fetchUserFavoriteList()
+    }
+    
+    @objc func currentFollowersChange() {
+        fetchFollowerList()
+    }
+    
+    @objc func currentFollowingsChange() {
+        fetchFollowingList()
+    }
+    
+    @objc func currentUserPicChange() {
+        fetchCurrentUserPic()
+    }
+    
+    @objc func currentUserCoverChange() {
+        fetchCurrentCoverPic()
+    }
+    
+    @objc func selectUserImage() {
+        pressSelectImage()
+        selectedPicButton = .userPic
+    }
+    
+    @objc func selectCoverImage() {
+        pressSelectImage()
+        selectedPicButton = .coverPic
+    }
+    
 }
 
 // MARK: - conform to UITableViewDataSource
@@ -456,7 +526,7 @@ extension ProfileViewController: UITableViewDataSource {
             }
             cell.firebaseData = myFollowingsUserFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section]
-
+            
             
         case 1:
             
@@ -478,7 +548,7 @@ extension ProfileViewController: UITableViewDataSource {
             cell.profileSection = ProfilePageSection.allCases[indexPath.section]
             
         case 2:
-            let myAudioFiles = allAudioFiles.filter({$0.authorName == signInManager.currentUserInfo?.username})
+            let myAudioFiles = allAudioFiles.filter({$0.authorName == signInManager.currentUserInfoFirebase?.username})
             cell.firebaseData = myAudioFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section]
             
@@ -505,6 +575,7 @@ extension ProfileViewController: UITableViewDelegate {
         guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomeTableViewHeader.reuseIdentifier) as? HomeTableViewHeader else { return UIView()}
         
         headerView.delegate = self
+        headerView.presentInPage = .profileSection
         headerView.config(section: section, content: ProfilePageSection.allCases[section].rawValue)
         return headerView
     }
@@ -525,34 +596,123 @@ extension ProfileViewController: UITableViewDelegate {
 
 extension ProfileViewController: PressPassableDelegate {
     
-    func goCategoryPage(from section: Int) {
+    func goSectionPage(from section: Int, sectionPageType: SectionPageType) {
         
-        let category = AudioCategory.allCases[section]
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
         
-        var data = [SCPost]()
-        
-        for file in allAudioFiles {
+        switch section {
             
-            if file.category == category.rawValue {
-                data.append(file)
+        case 0:
+            guard let followings = currentUserFollowingList else {
+                print("ProfilePage cant get followingList")
+                return
             }
+            
+            var myFollowingsUserFiles = [SCPost]()
+            for audioFile in allAudioFiles {
+                for folloing in followings {
+                    if audioFile.authorID == folloing.userID, audioFile.authIDProvider == folloing.provider {
+                        myFollowingsUserFiles.append(audioFile)
+                    }
+                }
+            }
+            
+            let section = ProfilePageSection.allCases[section]
+            categoryPage.config(profileSection: section, data: myFollowingsUserFiles)
+            
+        case 1:
+            
+            guard let currentUserFavoriteDocumentIDs = currentUserFavoriteDocumentIDs else {
+                print("ProfilePage cant get currentUserFavoriteDocumentIDs")
+                return
+            }
+            
+            var myFavoriteFiles = [SCPost]()
+            
+            for audioFile in allAudioFiles {
+                for favorite in currentUserFavoriteDocumentIDs {
+                    if audioFile.documentID == favorite {
+                        myFavoriteFiles.append(audioFile)
+                    }
+                }
+            }
+            let section = ProfilePageSection.allCases[section]
+            categoryPage.config(profileSection: section, data: myFavoriteFiles)
+            
+        case 2:
+            let myAudioFiles = allAudioFiles.filter({$0.authorName == signInManager.currentUserInfoFirebase?.username})
+            let section = ProfilePageSection.allCases[section]
+            categoryPage.config(profileSection: section, data: myAudioFiles)
+            
+        default:
+            break
         }
         
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
-        
-        categoryPage.config(category: category, data: data)
-        navigationController?.pushViewController(categoryPage, animated: true)
-        
-    }
-    
-    func goCategoryPage() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
-        
         navigationController?.pushViewController(categoryPage, animated: true)
     }
     
+}
+
+// MARK: - conform to UIImagePickerControllerDelegate & UINavigationControllerDelegate
+
+extension ProfileViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        
+        picker.dismiss(animated: true)
+        
+        // 1
+        if let asset = info[.phAsset] as? PHAsset {
+            let size = CGSize(width: 500, height: 500)
+            PHImageManager.default().requestImage(
+                for: asset,
+                   targetSize: size,
+                   contentMode: .aspectFit,
+                   options: nil
+            ) { result, _ in
+                guard let image = result else {
+                    return
+                }
+                self.sendPhoto(image)
+            }
+            
+            // 2
+        } else if let image = info[.originalImage] as? UIImage {
+            sendPhoto(image)
+        }
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
+    }
+    
+}
+
+// MARK: - UIImage extension
+
+extension UIImage {
+    var scaledToSafeUploadSize: UIImage? {
+        let maxImageSideLength: CGFloat = 480
+        
+        let largerSide: CGFloat = max(size.width, size.height)
+        let ratioScale: CGFloat = largerSide > maxImageSideLength ? largerSide / maxImageSideLength : 1
+        let newImageSize = CGSize(
+            width: size.width / ratioScale,
+            height: size.height / ratioScale)
+        
+        return image(scaledTo: newImageSize)
+    }
+    
+    func image(scaledTo size: CGSize) -> UIImage? {
+        defer {
+            UIGraphicsEndImageContext()
+        }
+        
+        UIGraphicsBeginImageContextWithOptions(size, true, 0)
+        draw(in: CGRect(origin: .zero, size: size))
+        
+        return UIGraphicsGetImageFromCurrentImageContext()
+    }
 }
 
