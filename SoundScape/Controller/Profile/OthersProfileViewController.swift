@@ -21,6 +21,8 @@ class OthersProfileViewController: UIViewController {
             fetchUserFavoriteList()
             fetchAmountOfFollows()
             manipulateFollowButton()
+            fetchUserPicFromFirebase()
+            fetchUserCoverFromFirebase()
         }
     }
     
@@ -57,6 +59,25 @@ class OthersProfileViewController: UIViewController {
         }
     }
     
+    private var otherUserPic: String? {
+        didSet {
+            guard let otherUserPic = otherUserPic,
+                  let data = Data(base64Encoded: otherUserPic) else { return }
+            userImageView.image = UIImage(data: data)
+            userImageView.contentMode = .scaleAspectFill
+        }
+    }
+    
+    private var otherUserCover: String? {
+        didSet {
+            guard let otherUserCover = otherUserCover,
+                  let data = Data(base64Encoded: otherUserCover) else { return }
+            coverImageView.image = UIImage(data: data)
+            coverImageView.contentMode = .scaleAspectFill
+        }
+    }
+    
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -76,7 +97,7 @@ class OthersProfileViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        userImageView.layer.cornerRadius = userImageView.frame.width / 2
+        userImageView.layer.cornerRadius = CommonUsage.screenHeight / 10
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -212,11 +233,35 @@ class OthersProfileViewController: UIViewController {
         }
     }
     
+    func fetchUserPicFromFirebase() {
+        guard let userID = userWillDisplay?.userInfoDoumentID else { return }
+        firebaseManager.fetchUserPicFromFirebase(userID: userID) { result in
+            switch result {
+            case .success(let picture):
+                self.otherUserPic = picture.picture
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func fetchUserCoverFromFirebase() {
+        guard let userID = userWillDisplay?.userInfoDoumentID else { return }
+        firebaseManager.fetchCoverPicFromFirebase(userID: userID) { result in
+            switch result {
+            case .success(let picture):
+                self.otherUserCover = picture.picture
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    
     private func setUserProfile() {
-        
+        coverImageView.image = UIImage(named: CommonUsage.profileCover4)
+        userImageView.image = UIImage(named: CommonUsage.yeh1024)
         guard let userWillDisplay = userWillDisplay else { return }
-        coverImageView.image = UIImage(named: CommonUsage.profileCover2)
-        userImageView.image = UIImage(named: CommonUsage.audioImage2)
         nameLabel.text = userWillDisplay.username
     }
     
@@ -232,7 +277,7 @@ class OthersProfileViewController: UIViewController {
         let image = UIImageView()
         image.contentMode = .scaleToFill
         image.clipsToBounds = true
-        
+        image.layer.cornerRadius = CommonUsage.screenHeight / 10
         return image
     }()
     
@@ -480,10 +525,8 @@ extension OthersProfileViewController: UITableViewDataSource {
             cell.category = AudioCategory.allCases[indexPath.item].rawValue
         }
         
-        //        let filteredFiles = allAudioFiles.filter({$0.category == AudioCategory.allCases[indexPath.section].rawValue})
         cell.backgroundColor = UIColor(named: CommonUsage.scBlue)
-        //        cell.firebaseData = filteredFiles
-        //        cell.category = AudioCategory.allCases[indexPath.item].rawValue
+        
         return cell
     }
     
@@ -570,16 +613,6 @@ extension OthersProfileViewController: PressPassableDelegate {
         default:
             break
         }
-        
-        //        let category = AudioCategory.allCases[section]
-        //        var data = [SCPost]()
-        //        for file in allAudioFiles {
-        //            if file.category == category.rawValue {
-        //                data.append(file)
-        //            }
-        //        }
-        
-        
         
         navigationController?.pushViewController(categoryPage, animated: true)
         

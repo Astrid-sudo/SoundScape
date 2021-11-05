@@ -716,5 +716,3 @@ extension UIImage {
     }
 }
 
-
-
