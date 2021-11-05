@@ -25,6 +25,7 @@ struct CommonUsage {
     static let profileCover3 = "profileCover3"
     static let profileCover4 = "profileCover4"
     static let profileCover5 = "profileCover5"
+    static let yeh1024 = "yeh1024"
 
     static let profilePic = "profilePic"
     static let profilePic2 = "profilePic2"
@@ -63,7 +64,7 @@ struct CommonUsage {
         static let right = "chevron.right"
         static let chevronDown = "chevron.down"
         static let paperplaneFill = "paperplane.fill"
-
+        static let photo = "photo"
     }
     
     struct Text {
@@ -81,6 +82,7 @@ struct CommonUsage {
         static let unfollow = "unfollow"
         static let comments = "Comments"
         static let addComment = "Add comment..."
+        static let appName = "SoundScape"
 
     }
     

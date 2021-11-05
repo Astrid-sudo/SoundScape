@@ -15,17 +15,45 @@ class CommentViewController: UIViewController {
     let signInManager = SignInManager.shared
     
     var currentPlayingDocumentID: String? {
-        
         didSet {
-            
             guard let currentPlayingDocumentID = currentPlayingDocumentID else { return }
-            
             checkComment(from: currentPlayingDocumentID)
-            
         }
     }
     
     var comments = [SCComment]() {
+        didSet {
+            filterOutAuthors()
+            tableView.reloadData()
+        }
+    }
+    
+    var newAuthorIDs = Set<String>() {
+        didSet {
+            for newAuthorId in newAuthorIDs {
+                firebaseManager.fetchUserPicFromFirebase(userID: newAuthorId) { [weak self] result in
+                    guard let self = self else { return }
+                    switch result {
+                    case .success(let picture):
+                        self.userPicCache[newAuthorId] = picture.picture
+                    case .failure(let error):
+                        print("Failed to fetch \(newAuthorId)'s picString \(error)")
+                    }
+                }
+            }
+        }
+    }
+    
+    var authorsIDSet = Set<String>() {
+        didSet {
+            if authorsIDSet != oldValue {
+             newAuthorIDs = authorsIDSet.subtracting(oldValue)
+            }
+        }
+    }
+    
+    // userID: picString
+    var userPicCache: [String: String] = [:] {
         didSet {
             tableView.reloadData()
         }
@@ -43,9 +71,27 @@ class CommentViewController: UIViewController {
         setTextView()
         setCommentPlaceHolder()
         addSendButton()
+        filterOutAuthors()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        currentUserImageView.layer.cornerRadius = currentUserImageView.frame.width / 2
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        guard let currentUserPic = signInManager.currentUserPic,
+              let data = Data(base64Encoded: currentUserPic) else { return }
+        currentUserImageView.image = UIImage(data: data)
     }
     
     // MARK: - method
+    
+    private func filterOutAuthors() {
+        let authors = comments.map({$0.userID})
+        authorsIDSet = Set(authors)
+    }
     
     private func checkComment(from documentID: String) {
         
@@ -67,13 +113,22 @@ class CommentViewController: UIViewController {
     }
     
     @objc private func addComment() {
-        
+        addCommentToFirebase()
+    }
+    
+    @objc func dismissCommentViewController() {
+        dismiss(animated: true)
+    }
+    
+    // MARK: - method
+    
+    private func addCommentToFirebase() {
         addLottie()
         
         guard let currentPlayingDocumentID = currentPlayingDocumentID,
               commentTextView.text != "",
               let comment = commentTextView.text,
-              let currentUserInfo = signInManager.currentUserInfo else {
+              let currentUserInfo = signInManager.currentUserInfoFirebase else {
                   print("CommentVC: Add Comment Return.")
                   animationView.removeFromSuperview()
                   return }
@@ -90,12 +145,10 @@ class CommentViewController: UIViewController {
             guard let self = self else { return }
             
             self.commentTextView.text = nil
+            self.commentTextView.endEditing(true)
             self.animationView.removeFromSuperview()
         }
-    }
-    
-    @objc func dismissCommentViewController() {
-        dismiss(animated: true)
+        
     }
     
     // MARK: - UI properties
@@ -135,9 +188,9 @@ class CommentViewController: UIViewController {
     
     lazy var currentUserImageView: UIImageView = {
         let image = UIImageView()
-        image.layer.cornerRadius = 25
         image.layer.masksToBounds = true
-        image.image = UIImage(named: CommonUsage.profilePic2)
+        image.image = UIImage(named: CommonUsage.yeh1024)
+        image.contentMode = .scaleAspectFill
         return image
     }()
     
@@ -154,6 +207,7 @@ class CommentViewController: UIViewController {
         textView.delegate = self
         textView.textContainer.maximumNumberOfLines = 8
         textView.textContainer.lineBreakMode = .byWordWrapping
+        textView.addDoneOnKeyboardWithTarget(self, action: #selector(addComment))
         return textView
     }()
     
@@ -192,7 +246,15 @@ extension CommentViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CommentTableViewCell.reuseIdentifier, for: indexPath) as? CommentTableViewCell else { return UITableViewCell()}
-        cell.configCell(comment: comments[indexPath.row])
+        let comment = comments[indexPath.row]
+        let authorID = comment.userID
+        var authorImageString: String?
+        
+        if let authorPic = userPicCache[authorID] {
+            authorImageString = authorPic
+        }
+            
+        cell.configCell(comment: comment, authorImageString: authorImageString)
         return cell
     }
     
@@ -263,7 +325,7 @@ extension CommentViewController {
         view.addSubview(commentTextView)
         commentTextView.translatesAutoresizingMaskIntoConstraints = false
         emptyTextViewConstraint = commentTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8)
-
+        
         NSLayoutConstraint.activate([
             commentTextView.leadingAnchor.constraint(equalTo: currentUserImageView.trailingAnchor, constant: 8),
             emptyTextViewConstraint,
@@ -310,8 +372,6 @@ extension CommentViewController: UITextViewDelegate {
             emptyTextViewConstraint.isActive = false
             fullTextViewConstraint = commentTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40)
             fullTextViewConstraint.isActive = true
-            
-            
         }
     }
     

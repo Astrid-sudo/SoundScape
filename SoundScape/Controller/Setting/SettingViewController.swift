@@ -10,7 +10,9 @@ import Lottie
 
 class SettingViewController: UIViewController {
 
-    var settingsOptions = ["隱私權政策", "使用說明", "關於"]
+    var settingsOptions = ["隱私權政策", "使用說明", "關於", "登出"]
+    
+    let signInHelper = SignInHelper.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,7 +35,8 @@ class SettingViewController: UIViewController {
         let table = UITableView()
         table.backgroundColor = UIColor(named: CommonUsage.scDarkGreen)
         table.dataSource = self
-        table.allowsSelection = false
+        table.delegate = self
+        table.allowsSelection = true
         table.separatorStyle = .none
         table.showsVerticalScrollIndicator = false
         table.register(SettingTableViewCell.self, forCellReuseIdentifier: SettingTableViewCell.reuseIdentifier)
@@ -67,6 +70,12 @@ class SettingViewController: UIViewController {
         view.addSubview(animationView)
         animationView.play()
     }
+    
+    private func navigateToSignInPage() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let signInViewController = storyboard.instantiateViewController(withIdentifier: String(describing: SignInViewController.self)) as? SignInViewController else { return }
+        navigationController?.pushViewController(signInViewController, animated: true)
+    }
 
 }
 
@@ -81,4 +90,19 @@ extension SettingViewController: UITableViewDataSource {
         cell.configCell(content: settingsOptions[indexPath.row])
         return cell
     }
+}
+
+extension SettingViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+       
+        if indexPath.row == 3 {
+            
+            signInHelper.signOutAuth { [weak self] in
+                guard let self = self else { return }
+                self.navigateToSignInPage()
+            }
+        }
+    }
+    
 }

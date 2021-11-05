@@ -28,7 +28,8 @@ class CommentTableViewCell: UITableViewCell {
         let image = UIImageView()
         image.layer.cornerRadius = 25
         image.layer.masksToBounds = true
-        image.image = UIImage(named: CommonUsage.profilePic2)
+        image.image = UIImage(named: CommonUsage.yeh1024)
+        image.contentMode = .scaleAspectFill
         return image
     }()
     
@@ -36,7 +37,7 @@ class CommentTableViewCell: UITableViewCell {
         let image = UIImageView()
         image.layer.cornerRadius = 25
         image.layer.masksToBounds = true
-        image.image = UIImage(named: CommonUsage.profilePic2)
+        image.image = UIImage(named: CommonUsage.yeh1024)
         return image
     }()
     
@@ -144,7 +145,7 @@ class CommentTableViewCell: UITableViewCell {
         
     }
     
-    func configCell(comment: SCComment) {
+    func configCell(comment: SCComment, authorImageString: String?) {
         
         guard let createTime = comment.createdTime?.dateValue() else { return }
         let createdTime = "\(createTime + 28800)"
@@ -153,6 +154,12 @@ class CommentTableViewCell: UITableViewCell {
         
         messageLabel.text = comment.comment
         commentInfoLabel.text = "\(commentAuthorName) at \(processedCreatedTime)"
+        
+        if let authorImageString = authorImageString {
+            if let data = Data(base64Encoded: authorImageString) {
+                leftImageView.image = UIImage(data: data)
+            }
+        }
     }
     
 }

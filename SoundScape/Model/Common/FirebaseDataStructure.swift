@@ -28,6 +28,10 @@ struct SCUser: Codable {
     var userInfoDoumentID: String?
 }
 
+struct SCPicture: Codable {
+    var picture: String
+}
+
 struct SCFollow: Codable {
     let userID: String
     let provider: String
