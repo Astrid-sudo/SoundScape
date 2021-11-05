@@ -24,6 +24,10 @@ class FirebaseManager {
     
     private var commentListenser: ListenerRegistration?
     
+    private var userPicListenser: ListenerRegistration?
+    
+    private var coverPicListenser: ListenerRegistration?
+    
     private let storage = Storage.storage().reference()
     
     private let allAudioCollectionRef = Firestore.firestore().collection(CommonUsage.CollectionName.allAudioFiles)
@@ -40,6 +44,8 @@ class FirebaseManager {
         followersListenser?.remove()
         followingsListenser?.remove()
         commentListenser?.remove()
+        userPicListenser?.remove()
+        coverPicListenser?.remove()
     }
     
     // MARK: - post method
@@ -627,6 +633,95 @@ class FirebaseManager {
                     print("comment removed")
                 }
             }
+        }
+    }
+    
+    func uploadPicToFirebase(userDocumentID: String, picString:String, picType: PicType) {
+        
+        let profilePicSubCollection = allUsersCollectionRef.document(userDocumentID).collection("profilePicture")
+        let picture = SCPicture(picture: picString)
+        do {
+            try profilePicSubCollection.document(picType.rawValue).setData(from: picture)
+        } catch {
+           
+            print(error)
+        }
+    }
+    
+    func fetchUserPicFromFirebase(userID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
+        
+        let userPicDoc = allUsersCollectionRef.document(userID).collection("profilePicture").document("userPic")
+        
+        userPicDoc.getDocument { (document, error) in
+            
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            
+            if let document = document,
+               document.exists {
+                let picture = try? document.data(as: SCPicture.self)
+                if let picture = picture {
+                    completion(Result.success(picture))
+                }
+                
+            } else {
+                
+                print("Document does not exist")
+                
+            }
+        }
+    }
+    
+    func fetchCoverPicFromFirebase(userID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
+        
+        let coverPicDoc = allUsersCollectionRef.document(userID).collection("profilePicture").document("coverPic")
+        
+        coverPicDoc.getDocument { (document, error) in
+            
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            
+            if let document = document,
+               document.exists {
+                let picture = try? document.data(as: SCPicture.self)
+                if let picture = picture {
+                    completion(Result.success(picture))
+                }
+                
+            } else {
+                
+                print("Document does not exist")
+                
+            }
+        }
+    }
+    
+    func checkUserPicChange(userInfoDoumentID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
+        
+        let userPicRef = allUsersCollectionRef.document(userInfoDoumentID).collection("profilePicture").document("userPic")
+
+        userPicListenser = userPicRef.addSnapshotListener { snapshot, error in
+            guard let snapshot = snapshot,
+            snapshot.exists else { return }
+            
+            self.fetchUserPicFromFirebase(userID: userInfoDoumentID, completion: completion)
+
+        }
+    }
+    
+    func checkCoverPicChange(userInfoDoumentID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
+        
+        let coverPicRef = allUsersCollectionRef.document(userInfoDoumentID).collection("profilePicture").document("coverPic")
+
+        coverPicListenser = coverPicRef.addSnapshotListener { snapshot, error in
+            guard let snapshot = snapshot,
+            snapshot.exists else { return }
+            
+            self.fetchCoverPicFromFirebase(userID: userInfoDoumentID, completion: completion)
         }
     }
     

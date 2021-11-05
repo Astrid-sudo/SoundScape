@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Photos
 
 struct UserIdentity {
     let userID: String
@@ -18,6 +19,11 @@ enum ProfilePageSection: String, CaseIterable {
     case myAudio = "Audio"
 }
 
+enum PicType: String {
+    case userPic
+    case coverPic
+}
+
 class ProfileViewController: UIViewController {
     
     // MARK: - properties
@@ -25,6 +31,8 @@ class ProfileViewController: UIViewController {
     let signInManager = SignInManager.shared
     
     let firebaseManager = FirebaseManager.shared
+    
+    var selectedPicButton = PicType.coverPic
     
     private var allAudioFiles = [SCPost]() {
         didSet {
@@ -53,18 +61,34 @@ class ProfileViewController: UIViewController {
             followersNumberLabel.text = String(describing: numbersOfFollowers)
         }
     }
+
+    private var currentUserPic: String? {
+        didSet {
+            guard let currentUserPic = currentUserPic,
+                  let data = Data(base64Encoded: currentUserPic) else { return }
+            userImageView.image = UIImage(data: data)
+        }
+    }
     
+    private var currentUserCover: String? {
+        didSet {
+            guard let currentUserCover = currentUserCover,
+                  let data = Data(base64Encoded: currentUserCover) else { return }
+            coverImageView.image = UIImage(data: data)
+        }
+    }
+
     // MARK: - UI properties
     
     private lazy var coverImageView: UIImageView = {
         let image = UIImageView()
-        image.contentMode = .scaleToFill
+        image.contentMode = .scaleAspectFill
         return image
     }()
     
     private lazy var userImageView: UIImageView = {
         let image = UIImageView()
-        image.contentMode = .scaleToFill
+        image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
         
         return image
@@ -164,6 +188,22 @@ class ProfileViewController: UIViewController {
         return button
     }()
     
+    private lazy var changeUserPicButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.photo), for: .normal)
+        button.tintColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        button.addTarget(self, action: #selector(selectUserImage), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var changeCoverPicButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.photo), for: .normal)
+        button.tintColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        button.addTarget(self, action: #selector(selectCoverImage), for: .touchUpInside)
+        return button
+    }()
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -171,6 +211,7 @@ class ProfileViewController: UIViewController {
         
         addObserver()
         fetchDataFromFirebase()
+        setUserProfile()
         setBackgroundColor()
         setCoverImageView()
         setTableView()
@@ -180,7 +221,8 @@ class ProfileViewController: UIViewController {
         setFollowersStackView()
         setFollowingsStackView()
         setFollowButton()
-        setUserProfile()
+        setImageHintOnUserPic()
+        setImageHintOnUCoverPic()
     }
     
     override func viewDidLayoutSubviews() {
@@ -191,9 +233,8 @@ class ProfileViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
-        
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.isNavigationBarHidden = false
@@ -284,7 +325,28 @@ class ProfileViewController: UIViewController {
             followButton.heightAnchor.constraint(equalTo: nameLabel.heightAnchor, multiplier: 0.75),
             followButton.widthAnchor.constraint(equalToConstant: 80)
         ])
-        
+    }
+    
+    private func setImageHintOnUserPic() {
+        view.addSubview(changeUserPicButton)
+        changeUserPicButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            changeUserPicButton.trailingAnchor.constraint(equalTo: userImageView.trailingAnchor),
+            changeUserPicButton.bottomAnchor.constraint(equalTo: userImageView.bottomAnchor),
+            changeUserPicButton.heightAnchor.constraint(equalToConstant: 40),
+            changeUserPicButton.widthAnchor.constraint(equalToConstant: 40)
+        ])
+    }
+    
+    private func setImageHintOnUCoverPic() {
+        view.addSubview(changeCoverPicButton)
+        changeCoverPicButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            changeCoverPicButton.trailingAnchor.constraint(equalTo: coverImageView.trailingAnchor, constant: -32),
+            changeCoverPicButton.bottomAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: -32),
+            changeCoverPicButton.heightAnchor.constraint(equalToConstant: 40),
+            changeCoverPicButton.widthAnchor.constraint(equalToConstant: 40)
+        ])
     }
     
     // MARK: - method
@@ -306,6 +368,16 @@ class ProfileViewController: UIViewController {
                                                name: .currentUserFollowingsChange ,
                                                object: nil)
         
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(currentUserPicChange),
+                                               name: .currentUserPicChange ,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(currentUserCoverChange),
+                                               name: .currentUserCoverChange ,
+                                               object: nil)
+        
     }
     
     private func fetchFollowerList() {
@@ -318,6 +390,14 @@ class ProfileViewController: UIViewController {
     
     private func fetchUserFavoriteList() {
         currentUserFavoriteDocumentIDs = signInManager.currentUserFavoriteDocumentIDs
+    }
+    
+    private func fetchCurrentUserPic() {
+        currentUserPic = signInManager.currentUserPic
+    }
+    
+    private func fetchCurrentCoverPic() {
+        currentUserCover = signInManager.currentUserCover
     }
     
     private func fetchDataFromFirebase() {
@@ -336,13 +416,43 @@ class ProfileViewController: UIViewController {
     }
     
     private func setUserProfile() {
-        coverImageView.image = UIImage(named: signInManager.profileCover)
-        userImageView.image = UIImage(named: signInManager.userPic)
+        coverImageView.image = UIImage(named: CommonUsage.profileCover4)
+        userImageView.image = UIImage(named: CommonUsage.yeh1024)
         nameLabel.text = signInManager.currentUserInfoFirebase?.username
         fetchUserFavoriteList()
         fetchFollowerList()
         fetchFollowingList()
+        fetchCurrentUserPic()
+        fetchCurrentCoverPic()
     }
+    
+    // MARK: - image method
+    
+    private func pressSelectImage() {
+        
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        
+        picker.sourceType = .photoLibrary
+        
+        picker.allowsEditing = true
+
+        present(picker, animated: true)
+        
+    }
+    
+    private func sendPhoto(_ image: UIImage) {
+        
+        guard let userDocumentID = signInManager.currentUserInfoFirebase?.userInfoDoumentID,
+              let  compressedImage = image.jpegData(compressionQuality: 0.15) else { return }
+        let imageBase64String = compressedImage.base64EncodedString()
+        
+        firebaseManager.uploadPicToFirebase(userDocumentID: userDocumentID,
+                                            picString: imageBase64String,
+                                            picType: selectedPicButton)
+    }
+    
+    // MARK: - action
     
     
     @objc func goSettingPage() {
@@ -361,6 +471,24 @@ class ProfileViewController: UIViewController {
     
     @objc func currentFollowingsChange() {
         fetchFollowingList()
+    }
+    
+    @objc func currentUserPicChange() {
+        fetchCurrentUserPic()
+    }
+    
+    @objc func currentUserCoverChange() {
+        fetchCurrentCoverPic()
+    }
+    
+    @objc func selectUserImage() {
+        pressSelectImage()
+        selectedPicButton = .userPic
+    }
+    
+    @objc func selectCoverImage() {
+        pressSelectImage()
+        selectedPicButton = .coverPic
     }
     
 }
@@ -521,31 +649,72 @@ extension ProfileViewController: PressPassableDelegate {
             break
         }
         
-        
-        //        switch sectionPageType {
-        //        case .profileSection:
-        //            let section = ProfilePageSection.allCases[section]
-        //        case .audioCategory:
-        //            let category = AudioCategory.allCases[section]
-        //            var data = [SCPost]()
-        //            for file in allAudioFiles {
-        //                if file.category == category.rawValue {
-        //                    data.append(file)
-        //                }
-        //            }
-        //            categoryPage.config(category: category, data: data)
-        //        }
-        
         navigationController?.pushViewController(categoryPage, animated: true)
-        
     }
     
-    //    func goCategoryPage() {
-    //        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    //        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
-    //
-    //        navigationController?.pushViewController(categoryPage, animated: true)
-    //    }
+}
+
+// MARK: - conform to UIImagePickerControllerDelegate & UINavigationControllerDelegate
+
+extension ProfileViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        
+        picker.dismiss(animated: true)
+        
+        // 1
+        if let asset = info[.phAsset] as? PHAsset {
+            let size = CGSize(width: 500, height: 500)
+            PHImageManager.default().requestImage(
+                for: asset,
+                   targetSize: size,
+                   contentMode: .aspectFit,
+                   options: nil
+            ) { result, _ in
+                guard let image = result else {
+                    return
+                }
+                self.sendPhoto(image)
+            }
+            
+            // 2
+        } else if let image = info[.originalImage] as? UIImage {
+            sendPhoto(image)
+        }
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
+    }
     
 }
+
+// MARK: - UIImage extension
+
+extension UIImage {
+    var scaledToSafeUploadSize: UIImage? {
+        let maxImageSideLength: CGFloat = 480
+        
+        let largerSide: CGFloat = max(size.width, size.height)
+        let ratioScale: CGFloat = largerSide > maxImageSideLength ? largerSide / maxImageSideLength : 1
+        let newImageSize = CGSize(
+            width: size.width / ratioScale,
+            height: size.height / ratioScale)
+        
+        return image(scaledTo: newImageSize)
+    }
+    
+    func image(scaledTo size: CGSize) -> UIImage? {
+        defer {
+            UIGraphicsEndImageContext()
+        }
+        
+        UIGraphicsBeginImageContextWithOptions(size, true, 0)
+        draw(in: CGRect(origin: .zero, size: size))
+        
+        return UIGraphicsGetImageFromCurrentImageContext()
+    }
+}
+
+
 

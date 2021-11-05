@@ -23,6 +23,38 @@ class CommentViewController: UIViewController {
     
     var comments = [SCComment]() {
         didSet {
+            filterOutAuthors()
+            tableView.reloadData()
+        }
+    }
+    
+    var newAuthorIDs = Set<String>() {
+        didSet {
+            for newAuthorId in newAuthorIDs {
+                firebaseManager.fetchUserPicFromFirebase(userID: newAuthorId) { [weak self] result in
+                    guard let self = self else { return }
+                    switch result {
+                    case .success(let picture):
+                        self.userPicCache[newAuthorId] = picture.picture
+                    case .failure(let error):
+                        print("Failed to fetch \(newAuthorId)'s picString \(error)")
+                    }
+                }
+            }
+        }
+    }
+    
+    var authorsIDSet = Set<String>() {
+        didSet {
+            if authorsIDSet != oldValue {
+             newAuthorIDs = authorsIDSet.subtracting(oldValue)
+            }
+        }
+    }
+    
+    // userID: picString
+    var userPicCache: [String: String] = [:] {
+        didSet {
             tableView.reloadData()
         }
     }
@@ -39,9 +71,27 @@ class CommentViewController: UIViewController {
         setTextView()
         setCommentPlaceHolder()
         addSendButton()
+        filterOutAuthors()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        currentUserImageView.layer.cornerRadius = currentUserImageView.frame.width / 2
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        guard let currentUserPic = signInManager.currentUserPic,
+              let data = Data(base64Encoded: currentUserPic) else { return }
+        currentUserImageView.image = UIImage(data: data)
     }
     
     // MARK: - method
+    
+    private func filterOutAuthors() {
+        let authors = comments.map({$0.userID})
+        authorsIDSet = Set(authors)
+    }
     
     private func checkComment(from documentID: String) {
         
@@ -138,9 +188,9 @@ class CommentViewController: UIViewController {
     
     lazy var currentUserImageView: UIImageView = {
         let image = UIImageView()
-        image.layer.cornerRadius = 25
         image.layer.masksToBounds = true
-        image.image = UIImage(named: CommonUsage.profilePic2)
+        image.image = UIImage(named: CommonUsage.yeh1024)
+        image.contentMode = .scaleAspectFill
         return image
     }()
     
@@ -196,7 +246,15 @@ extension CommentViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CommentTableViewCell.reuseIdentifier, for: indexPath) as? CommentTableViewCell else { return UITableViewCell()}
-        cell.configCell(comment: comments[indexPath.row])
+        let comment = comments[indexPath.row]
+        let authorID = comment.userID
+        var authorImageString: String?
+        
+        if let authorPic = userPicCache[authorID] {
+            authorImageString = authorPic
+        }
+            
+        cell.configCell(comment: comment, authorImageString: authorImageString)
         return cell
     }
     

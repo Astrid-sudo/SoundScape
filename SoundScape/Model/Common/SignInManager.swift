@@ -16,9 +16,13 @@ class SignInManager {
     var currentUserInfoFirebase: SCUser? {
         
         didSet {
+            fetchUserPicFromFirebase()
+            fetchCoverPicFromFirebase()
             checkUserFavoriteList()
             checkCurrentUserFollowingList()
             checkCurrentUserFollowerList()
+            checkUserPicFromFirebase()
+            checkCoverPicFromFirebase()
         }
     }
     
@@ -39,6 +43,21 @@ class SignInManager {
             NotificationCenter.default.post(name: .currentUserFollowersChange, object: nil, userInfo: nil)
         }
     }
+    
+    var currentUserPic: String? {
+        didSet {
+            NotificationCenter.default.post(name: .currentUserPicChange, object: nil, userInfo: nil)
+        }
+    }
+    
+    var currentUserCover: String? {
+        didSet {
+            NotificationCenter.default.post(name: .currentUserCoverChange, object: nil, userInfo: nil)
+        }
+    }
+
+    
+    
 
     private init() {}
     
@@ -234,7 +253,60 @@ class SignInManager {
                 
                 self.currentUserFollowerList = followers
                 
-            case .failure(let error): print(error)
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func checkUserPicFromFirebase() {
+        
+        guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
+        
+        self.firebaseManager.checkUserPicChange(userInfoDoumentID: userID) { result in
+            switch result {
+            case .success(let picture):
+                self.currentUserPic = picture.picture
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func fetchUserPicFromFirebase() {
+        guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
+        firebaseManager.fetchUserPicFromFirebase(userID: userID) { result in
+            switch result {
+            case .success(let picture):
+                self.currentUserPic = picture.picture
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func checkCoverPicFromFirebase() {
+        
+        guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
+        
+        self.firebaseManager.checkCoverPicChange(userInfoDoumentID: userID) { result in
+            switch result {
+            case .success(let picture):
+                self.currentUserCover = picture.picture
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func fetchCoverPicFromFirebase() {
+        guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
+        firebaseManager.fetchCoverPicFromFirebase(userID: userID) { result in
+            switch result {
+            case .success(let picture):
+                self.currentUserCover = picture.picture
+            case .failure(let error):
+                print(error)
             }
         }
     }
@@ -245,6 +317,6 @@ extension Notification.Name {
     static let currentUserFavDocIDChange = Notification.Name("currentUserFavDocIDChange")
     static let currentUserFollowingsChange = Notification.Name("currentUserFollowingsChange")
     static let currentUserFollowersChange = Notification.Name("currentUserFollowersChange")
-
-
+    static let currentUserPicChange = Notification.Name("currentUserPicChange")
+    static let currentUserCoverChange = Notification.Name("currentUserCoverChange")
 }
