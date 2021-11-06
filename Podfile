@@ -16,5 +16,8 @@ target 'SoundScape' do
   pod 'IQKeyboardManagerSwift'
   pod 'ModernAVPlayer'
   pod 'lottie-ios'
+  pod 'GoogleMaps'
+  pod 'GooglePlaces'
+
 
 end
