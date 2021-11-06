@@ -8,7 +8,7 @@
 import UIKit
 import Lottie
 import GoogleMaps
-
+import CoreLocation
 
 class UploadVC: UIViewController {
     
@@ -22,9 +22,28 @@ class UploadVC: UIViewController {
     
     var selectedFileDuration: Double?
     
-    var soundLocation = CLLocationCoordinate2DMake(25.034012, 121.563461)
+    var currentLocation: CLLocationCoordinate2D?
+    
+    var defaultLocation = CLLocationCoordinate2DMake(25.034012, 121.563461)
+    
+    var pinnedLocation: CLLocationCoordinate2D?
+    
+    private lazy var myLocation: CLLocationManager = {
+        let location = CLLocationManager()
+        location.delegate = self
+        location.distanceFilter = kCLLocationAccuracyNearestTenMeters
+        location.desiredAccuracy = kCLLocationAccuracyBest
+        return location
+    }()
     
     // MARK: - UI properties
+    
+    private lazy var mapMarker: GMSMarker = {
+        var marker = GMSMarker(position: currentLocation ?? defaultLocation)
+        marker.icon = GMSMarker.markerImage(with: UIColor(named: CommonUsage.scRed))
+        marker.map = mapView
+        return marker
+    }()
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -69,6 +88,7 @@ class UploadVC: UIViewController {
         textField.layer.borderWidth = 0.5
         textField.textAlignment = .left
         textField.backgroundColor = .clear
+        textField.delegate = self
         return textField
     }()
     
@@ -99,20 +119,17 @@ class UploadVC: UIViewController {
         return control
     }()
     
-//    private lazy var mapView: UIImageView = {
-//        let view = UIImageView()
-//        view.image = UIImage(named: CommonUsage.fakeMap)
-//        view.contentMode = .scaleAspectFill
-//        return view
-//    }()
-    
     private lazy var mapView: GMSMapView = {
         let mapView = GMSMapView()
-        let camera = GMSCameraPosition.camera(withLatitude: 25.034012, longitude: 121.564461, zoom: 15.0)
+        let posision = currentLocation ?? defaultLocation
+        let camera = GMSCameraPosition.camera(withLatitude: posision.latitude, longitude: posision.longitude , zoom: 15.0)
+        mapView.delegate = self
         mapView.camera = camera
+        mapView.settings.myLocationButton = true
+        mapView.isMyLocationEnabled = true
         return mapView
     }()
-
+    
     private lazy var uploadButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(named: CommonUsage.scGreen)
@@ -135,7 +152,6 @@ class UploadVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setTitleLabel()
         setTitleTextField()
         setDescriptionLabel()
@@ -146,7 +162,16 @@ class UploadVC: UIViewController {
         setMapView()
         setUploadButton()
         setViewBackgroundColor()
-        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        askUserLocation()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        myLocation.stopUpdatingLocation()
     }
     
     // MARK: - UI method
@@ -229,8 +254,7 @@ class UploadVC: UIViewController {
         NSLayoutConstraint.activate([
             mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            mapView.topAnchor.constraint(equalTo: mapLabel.bottomAnchor, constant: 16),
-            mapView.heightAnchor.constraint(equalToConstant: 50)
+            mapView.topAnchor.constraint(equalTo: mapLabel.bottomAnchor, constant: 16)
         ])
     }
     
@@ -240,8 +264,9 @@ class UploadVC: UIViewController {
         NSLayoutConstraint.activate([
             uploadButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             uploadButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            uploadButton.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 16),
-            uploadButton.heightAnchor.constraint(equalToConstant: 50)
+            uploadButton.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 8),
+            uploadButton.heightAnchor.constraint(equalToConstant: 30),
+            uploadButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -4)
         ])
     }
     
@@ -252,20 +277,45 @@ class UploadVC: UIViewController {
         animationView.play()
     }
     
-    func backToHome() {
+    private func backToHome() {
         navigationController?.popToRootViewController(animated: true)
         animationView.removeFromSuperview()
         guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
         scTabBarController.selectedIndex = 0
     }
     
-    func popFillAlert() {
+    private func popFillAlert() {
         let alert = UIAlertController(title: "請填滿所有欄位", message: "登入後即可PO聲", preferredStyle: .alert )
         let okButton = UIAlertAction(title: "是！", style: .default)
         
         alert.addAction(okButton)
         present(alert, animated: true, completion: nil)
     }
+    
+    private func askUserLocation() {
+        
+        switch CLLocationManager.authorizationStatus() {
+        case .notDetermined:
+            myLocation.requestWhenInUseAuthorization() // First time lanch app need to get authorize from user
+            fallthrough
+            
+        case .authorizedWhenInUse:
+            myLocation.startUpdatingLocation() // Start location
+            
+        case .denied:
+            let alertController = UIAlertController(title: "定位權限已關閉",
+                                                    message: "如要變更權限，請至 設定 > 隱私權 > 定位服務 開啟",
+                                                    preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+            alertController.addAction(okAction)
+            self.present(alertController, animated: true, completion: nil)
+            
+        default:
+            break
+        }
+    }
+    
+
     
     // MARK: - action
     
@@ -287,6 +337,7 @@ class UploadVC: UIViewController {
                           title: title,
                           content: content,
                           category: category,
+                          audioLocation: clLocationToGepPoint(cl: pinnedLocation ?? currentLocation),
                           duration: 0.0)
         
         if let selectedFileDuration = selectedFileDuration {
@@ -296,6 +347,55 @@ class UploadVC: UIViewController {
         if let selectedFileURL = selectedFileURL {
             firebasemanager.upload(localURL: selectedFileURL, post: post, completion: backToHome)
         }
+    }
+    
+}
+
+// MARK: - conform to CLLocationManagerDelegate
+
+extension UploadVC: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let updatedLocation: CLLocation = locations[0] as CLLocation
+        print("\(updatedLocation.coordinate.latitude)")
+        print(", \(updatedLocation.coordinate.longitude)")
+        
+        currentLocation = CLLocationCoordinate2D(latitude: updatedLocation.coordinate.latitude,
+                                                 longitude: updatedLocation.coordinate.longitude)
+        
+        guard let currentLocation = currentLocation else { return }
+        
+        mapView.camera = GMSCameraPosition.camera(withLatitude: currentLocation.latitude,
+                                                  longitude: currentLocation.longitude,
+                                                  zoom: 15)
+        
+    }
+    
+}
+
+// MARK: - conform to GMSMapViewDelegate
+
+extension UploadVC: GMSMapViewDelegate {
+    
+    func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
+        pinnedLocation = coordinate
+        mapMarker.title = titleTextField.text
+        mapMarker.position = coordinate
+        mapMarker.snippet = signInmanager.currentUserInfoFirebase?.username
+        mapMarker.map = mapView
+        mapView.selectedMarker = mapMarker
+    }
+    
+}
+
+// MARK: - conform to UITextFieldDelegate
+
+extension UploadVC: UITextFieldDelegate {
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        mapMarker.title = titleTextField.text
+        mapMarker.snippet = signInmanager.currentUserInfoFirebase?.username
+        mapView.selectedMarker = mapMarker
     }
     
 }

@@ -15,24 +15,19 @@ class FirebaseManager {
     static let shared = FirebaseManager()
     
     private var postListener: ListenerRegistration?
-    
     private var favoriteListener: ListenerRegistration?
-    
     private var followersListenser: ListenerRegistration?
-    
     private var followingsListenser: ListenerRegistration?
-    
     private var commentListenser: ListenerRegistration?
-    
     private var userPicListenser: ListenerRegistration?
-    
     private var coverPicListenser: ListenerRegistration?
+    private var locationsListenser: ListenerRegistration?
     
     private let storage = Storage.storage().reference()
     
     private let allAudioCollectionRef = Firestore.firestore().collection(CommonUsage.CollectionName.allAudioFiles)
-    
     private let allUsersCollectionRef = Firestore.firestore().collection(CommonUsage.CollectionName.allUsers)
+    private let allLocationsCollectionRef = Firestore.firestore().collection(CommonUsage.CollectionName.allLocations)
     
     // MARK: - init / deinit
     
@@ -46,6 +41,7 @@ class FirebaseManager {
         commentListenser?.remove()
         userPicListenser?.remove()
         coverPicListenser?.remove()
+        locationsListenser?.remove()
     }
     
     // MARK: - post method
@@ -104,8 +100,7 @@ class FirebaseManager {
                 print(String(describing: error))
                 return
             }
-            
-            completion()
+            //            completion()
             print("Upload audio suceeded from localUrl:\(localURL)")
             
             audioReference.downloadURL { [weak self] (url, error) in
@@ -125,6 +120,23 @@ class FirebaseManager {
                 
                 do {
                     try document.setData(from: fullPost)
+                    
+                    if let geoPoint = fullPost.audioLocation {
+                        
+                        let locationData = SCLocation(audioLocation: geoPoint,
+                                                      audioDocumentID: fullPost.documentID,
+                                                      authorID: fullPost.authorID,
+                                                      authIDProvider: fullPost.authIDProvider, locationDocumentID: fullPost.documentID)
+                        
+                        self.uploadGeoPointToAllLocations(audioDocumentID: fullPost.documentID,
+                                                          locationData: locationData,
+                                                          completion: completion)
+                    } else {
+                        
+                        completion()
+                        
+                    }
+                    
                 } catch {
                     print("Failed add data to firestire \(error)")
                 }
@@ -643,7 +655,7 @@ class FirebaseManager {
         do {
             try profilePicSubCollection.document(picType.rawValue).setData(from: picture)
         } catch {
-           
+            
             print(error)
         }
     }
@@ -703,26 +715,80 @@ class FirebaseManager {
     func checkUserPicChange(userInfoDoumentID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
         
         let userPicRef = allUsersCollectionRef.document(userInfoDoumentID).collection("profilePicture").document("userPic")
-
+        
         userPicListenser = userPicRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot,
-            snapshot.exists else { return }
+                  snapshot.exists else { return }
             
             self.fetchUserPicFromFirebase(userID: userInfoDoumentID, completion: completion)
-
+            
         }
     }
     
     func checkCoverPicChange(userInfoDoumentID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
         
         let coverPicRef = allUsersCollectionRef.document(userInfoDoumentID).collection("profilePicture").document("coverPic")
-
+        
         coverPicListenser = coverPicRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot,
-            snapshot.exists else { return }
+                  snapshot.exists else { return }
             
             self.fetchCoverPicFromFirebase(userID: userInfoDoumentID, completion: completion)
         }
     }
     
+    // MARK: - Location
+    
+    func uploadGeoPointToAllLocations(audioDocumentID: String, locationData: SCLocation, completion: () -> Void) {
+        
+        do {
+            try allLocationsCollectionRef.document(audioDocumentID).setData(from: locationData)
+            completion()
+        } catch {
+            
+            print("Failed to upload locationData to allLocations collection \(error)")
+        }
+        
+        
+    }
+    
+    func fetchLocationsFromFirebase(completion: @escaping (Result<[SCLocation], Error>) -> Void) {
+        
+        allLocationsCollectionRef.getDocuments { [weak self] snapshot, error in
+            
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            
+            if let snapshot = snapshot {
+                let locations = snapshot.documents.compactMap({ snapshot in
+                    try? snapshot.data(as: SCLocation.self)
+                })
+                
+                completion(Result.success(locations))
+            }
+        }
+    }
+    
+    func checkLocationChange(completion: @escaping (Result<[SCLocation], Error>) -> Void) {
+        locationsListenser = allLocationsCollectionRef.addSnapshotListener{ snapshot, error in
+            guard let snapshot = snapshot else { return }
+            snapshot.documentChanges.forEach { documentChange in
+                switch documentChange.type {
+                case .added:
+                    self.fetchLocationsFromFirebase(completion: completion)
+                    print("location added")
+                case .modified:
+                    self.fetchLocationsFromFirebase(completion: completion)
+                    print("location modified")
+                case .removed:
+                    self.fetchLocationsFromFirebase(completion: completion)
+                    print("location removed")
+                }
+            }
+        }
+    }
+    
 }
+

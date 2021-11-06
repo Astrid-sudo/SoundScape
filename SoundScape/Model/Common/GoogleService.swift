@@ -9,8 +9,22 @@ import Foundation
 
 struct GoogleService: Decodable {
     
+    let clientId: String
+    let reversedClientId: String
+    let apiKey: String
+    let gcmSenderId: String
+    let plistVersion: String
+    let bundleId: String
+    let projectId: String
+    let storageBucket: String
+    let isAdsEnabled: Bool
+    let isAnalyticsEnabled: Bool
+    let isAppInviteEnabled: Bool
+    let isGcmEnabled: Bool
+    let isSignInEnabled: Bool
+    let googleAppId: String
+
     enum CodingKeys: String, CodingKey {
-        
         case clientId = "CLIENT_ID"
         case reversedClientId = "REVERSED_CLIENT_ID"
         case apiKey = "API_KEY"
@@ -27,19 +41,4 @@ struct GoogleService: Decodable {
         case googleAppId = "GOOGLE_APP_ID"
     }
 
-    
-    let clientId: String
-    let reversedClientId: String
-    let apiKey: String
-    let gcmSenderId: String
-    let plistVersion: String
-    let bundleId: String
-    let projectId: String
-    let storageBucket: String
-    let isAdsEnabled: Bool
-    let isAnalyticsEnabled: Bool
-    let isAppInviteEnabled: Bool
-    let isGcmEnabled: Bool
-    let isSignInEnabled: Bool
-    let googleAppId: String
 }

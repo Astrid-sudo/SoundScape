@@ -32,7 +32,7 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>camera use</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>photo use</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>map use</string>
 </dict>
 </plist>

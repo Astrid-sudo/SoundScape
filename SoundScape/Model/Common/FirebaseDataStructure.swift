@@ -5,9 +5,10 @@
 //  Created by Astrid on 2021/10/31.
 //
 
-import Foundation
+import UIKit
 import Firebase
 import FirebaseFirestoreSwift
+import CoreLocation
 
 enum AudioCategory: String, CaseIterable {
     case nature = "Nature"
@@ -74,4 +75,11 @@ struct SCLocation: Codable {
     let authorID: String
     let authIDProvider: String
     let locationDocumentID: String
+}
+
+func clLocationToGepPoint(cl: CLLocationCoordinate2D?) -> GeoPoint? {
+    guard let cl = cl else { return nil }
+    let latitude = cl.latitude
+    let longitude = cl.longitude
+    return GeoPoint(latitude: latitude, longitude: longitude)
 }
