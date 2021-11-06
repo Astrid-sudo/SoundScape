@@ -52,6 +52,7 @@
 		569A7D7A27229EB200CEE3EA /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7927229EB200CEE3EA /* HomeTableViewCell.swift */; };
 		569A7D7C2722A03500CEE3EA /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7B2722A03500CEE3EA /* HomeCollectionViewCell.swift */; };
 		569A7D7E2722B75A00CEE3EA /* HomeTableViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7D2722B75A00CEE3EA /* HomeTableViewHeader.swift */; };
+		56C05AA927362DEB009D029C /* GoogleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C05AA827362DEB009D029C /* GoogleService.swift */; };
 		56D3F0B4272CDFFD00A3B3B3 /* Bungee-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 56D3F0B3272CDFFD00A3B3B3 /* Bungee-Regular.ttf */; };
 		56D3F0C3272D813C00A3B3B3 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D3F0C2272D813C00A3B3B3 /* ProfileViewController.swift */; };
 		56F07D35272BCA7600ABC7B9 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */; };
@@ -109,6 +110,7 @@
 		569A7D7927229EB200CEE3EA /* HomeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		569A7D7B2722A03500CEE3EA /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
 		569A7D7D2722B75A00CEE3EA /* HomeTableViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewHeader.swift; sourceTree = "<group>"; };
+		56C05AA827362DEB009D029C /* GoogleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleService.swift; sourceTree = "<group>"; };
 		56D3F0B3272CDFFD00A3B3B3 /* Bungee-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Bungee-Regular.ttf"; sourceTree = "<group>"; };
 		56D3F0C2272D813C00A3B3B3 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -358,6 +360,7 @@
 				5630FE22272E1AA2003A38FB /* FirebaseDataStructure.swift */,
 				5630FE24272E1C54003A38FB /* SignInManager.swift */,
 				567566EE273271C6007ACC61 /* SignInHelper.swift */,
+				56C05AA827362DEB009D029C /* GoogleService.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -413,6 +416,7 @@
 				5679F0F5271D084A00663001 /* Resources */,
 				5679F10E271D112900663001 /* ShellScript */,
 				514A335EAE3FE0DB3303B9A0 /* [CP] Embed Pods Frameworks */,
+				3BB5FA935A177BA83B3FF0F8 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -485,6 +489,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		3BB5FA935A177BA83B3FF0F8 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		514A335EAE3FE0DB3303B9A0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -572,6 +593,7 @@
 				56F07D35272BCA7600ABC7B9 /* SearchViewController.swift in Sources */,
 				5678FFA827243FA300E1ADD5 /* EditVC.swift in Sources */,
 				569A7D7827229AE500CEE3EA /* HomeVC.swift in Sources */,
+				56C05AA927362DEB009D029C /* GoogleService.swift in Sources */,
 				56D3F0C3272D813C00A3B3B3 /* ProfileViewController.swift in Sources */,
 				560DE8502730113600FFD240 /* CommentTableViewCell.swift in Sources */,
 				56950630271FDD08009E4C74 /* RemotePlayHelper.swift in Sources */,

@@ -7,6 +7,8 @@
 
 import UIKit
 import Lottie
+import GoogleMaps
+
 
 class UploadVC: UIViewController {
     
@@ -19,6 +21,8 @@ class UploadVC: UIViewController {
     var selectedFileURL: URL?
     
     var selectedFileDuration: Double?
+    
+    var soundLocation = CLLocationCoordinate2DMake(25.034012, 121.563461)
     
     // MARK: - UI properties
     
@@ -95,13 +99,20 @@ class UploadVC: UIViewController {
         return control
     }()
     
-    private lazy var mapView: UIImageView = {
-        let view = UIImageView()
-        view.image = UIImage(named: CommonUsage.fakeMap)
-        view.contentMode = .scaleAspectFill
-        return view
-    }()
+//    private lazy var mapView: UIImageView = {
+//        let view = UIImageView()
+//        view.image = UIImage(named: CommonUsage.fakeMap)
+//        view.contentMode = .scaleAspectFill
+//        return view
+//    }()
     
+    private lazy var mapView: GMSMapView = {
+        let mapView = GMSMapView()
+        let camera = GMSCameraPosition.camera(withLatitude: 25.034012, longitude: 121.564461, zoom: 15.0)
+        mapView.camera = camera
+        return mapView
+    }()
+
     private lazy var uploadButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(named: CommonUsage.scGreen)
