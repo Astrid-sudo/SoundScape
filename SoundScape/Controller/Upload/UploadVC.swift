@@ -14,6 +14,8 @@ class UploadVC: UIViewController {
     
     // MARK: - properties
     
+    var backFromBigMap = false
+    
     let signInmanager = SignInManager.shared
     
     let firebasemanager = FirebaseManager.shared
@@ -26,8 +28,17 @@ class UploadVC: UIViewController {
     
     var defaultLocation = CLLocationCoordinate2DMake(25.034012, 121.563461)
     
-    var pinnedLocation: CLLocationCoordinate2D?
-    
+    var pinnedLocation: CLLocationCoordinate2D? {
+        didSet {
+            guard let pinnedLocation = pinnedLocation else { return }
+            mapView.camera = GMSCameraPosition.camera(withLatitude: pinnedLocation.latitude, longitude: pinnedLocation.longitude, zoom: 15)
+            mapMarker.title = titleTextField.text
+            mapMarker.position = pinnedLocation
+            mapMarker.snippet = signInmanager.currentUserInfoFirebase?.username
+            mapMarker.map = mapView
+            mapView.selectedMarker = mapMarker
+        }
+    }
     private lazy var myLocation: CLLocationManager = {
         let location = CLLocationManager()
         location.delegate = self
@@ -121,12 +132,19 @@ class UploadVC: UIViewController {
     
     private lazy var mapView: GMSMapView = {
         let mapView = GMSMapView()
-        let posision = currentLocation ?? defaultLocation
-        let camera = GMSCameraPosition.camera(withLatitude: posision.latitude, longitude: posision.longitude , zoom: 15.0)
+        let posision = pinnedLocation ?? currentLocation ?? defaultLocation
+        let camera = GMSCameraPosition.camera(withLatitude: posision.latitude, longitude: posision.longitude, zoom: 15.0)
         mapView.delegate = self
         mapView.camera = camera
-        mapView.settings.myLocationButton = true
-        mapView.isMyLocationEnabled = true
+        
+        if backFromBigMap {
+            mapView.settings.myLocationButton = false
+            mapView.isMyLocationEnabled = false
+        } else {
+            mapView.settings.myLocationButton = true
+            mapView.isMyLocationEnabled = true
+        }
+        
         return mapView
     }()
     
@@ -148,6 +166,15 @@ class UploadVC: UIViewController {
         return animationView
     }()
     
+    private lazy var searchPlaceButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        button.setTitle(CommonUsage.Text.searchPlace, for: .normal)
+        button.setTitleColor(UIColor(named: CommonUsage.scRed), for: .normal)
+        button.addTarget(self, action: #selector(presentBigMap), for: .touchUpInside)
+        return button
+    }()
+
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -162,11 +189,21 @@ class UploadVC: UIViewController {
         setMapView()
         setUploadButton()
         setViewBackgroundColor()
+        setSearchPlaceButton()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        guard let pinnedLocation = pinnedLocation else { return }
+        mapView.camera = GMSCameraPosition.camera(withLatitude: pinnedLocation.latitude, longitude: pinnedLocation.longitude, zoom: 15)
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        guard let pinnedLocation = pinnedLocation else { return }
         askUserLocation()
+        mapView.camera = GMSCameraPosition.camera(withLatitude: pinnedLocation.latitude, longitude: pinnedLocation.longitude, zoom: 15)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -270,6 +307,15 @@ class UploadVC: UIViewController {
         ])
     }
     
+    private func setSearchPlaceButton() {
+        view.addSubview(searchPlaceButton)
+        searchPlaceButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            searchPlaceButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            searchPlaceButton.topAnchor.constraint(equalTo: categorySegmentControl.bottomAnchor, constant: 16)
+        ])
+    }
+
     // MARK: - method
     
     private func addLottie() {
@@ -347,6 +393,22 @@ class UploadVC: UIViewController {
         }
     }
     
+    @objc func presentBigMap() {
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let audioMapVC = storyboard.instantiateViewController(withIdentifier: String(describing: AudioMapViewController.self)) as? AudioMapViewController else { return }
+        
+        audioMapVC.audioMapType = .pinOnMap
+        
+        audioMapVC.audioTitle = titleTextField.text
+        
+        audioMapVC.delegate = self
+        
+        navigationController?.pushViewController(audioMapVC, animated: true)
+        
+        
+    }
+    
 }
 
 // MARK: - conform to CLLocationManagerDelegate
@@ -363,9 +425,12 @@ extension UploadVC: CLLocationManagerDelegate {
         
         guard let currentLocation = currentLocation else { return }
         
-        mapView.camera = GMSCameraPosition.camera(withLatitude: currentLocation.latitude,
-                                                  longitude: currentLocation.longitude,
-                                                  zoom: 15)
+        if backFromBigMap == false {
+            mapView.camera = GMSCameraPosition.camera(withLatitude: currentLocation.latitude,
+                                                      longitude: currentLocation.longitude,
+                                                      zoom: 15)
+        }
+        
         
     }
     
@@ -377,11 +442,11 @@ extension UploadVC: GMSMapViewDelegate {
     
     func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
         pinnedLocation = coordinate
-        mapMarker.title = titleTextField.text
-        mapMarker.position = coordinate
-        mapMarker.snippet = signInmanager.currentUserInfoFirebase?.username
-        mapMarker.map = mapView
-        mapView.selectedMarker = mapMarker
+//        mapMarker.title = titleTextField.text
+//        mapMarker.position = coordinate
+//        mapMarker.snippet = signInmanager.currentUserInfoFirebase?.username
+//        mapMarker.map = mapView
+//        mapView.selectedMarker = mapMarker
     }
     
 }
@@ -394,6 +459,16 @@ extension UploadVC: UITextFieldDelegate {
         mapMarker.title = titleTextField.text
         mapMarker.snippet = signInmanager.currentUserInfoFirebase?.username
         mapView.selectedMarker = mapMarker
+    }
+    
+}
+
+extension UploadVC: LocationCoordinatePassableDelegate {
+   
+    func displayPinOnSmallMap(locationFromBigMap: CLLocationCoordinate2D?) {
+        pinnedLocation = locationFromBigMap
+        mapView.isMyLocationEnabled = false
+        backFromBigMap = true
     }
     
 }
