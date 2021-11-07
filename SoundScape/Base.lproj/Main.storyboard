@@ -203,9 +203,9 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TON-vn-iif">
-                                <rect key="frame" x="181" y="792" width="52.5" height="31"/>
+                                <rect key="frame" x="172" y="128" width="70" height="31"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Map"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Record"/>
                                 <connections>
                                     <action selector="presentMap:" destination="aSM-Zi-js2" eventType="touchUpInside" id="s0b-lg-s3c"/>
                                 </connections>
@@ -217,7 +217,7 @@
                             <constraint firstItem="TON-vn-iif" firstAttribute="centerX" secondItem="ViH-y6-qpk" secondAttribute="centerX" id="BAd-LX-G3J"/>
                             <constraint firstItem="XXH-tT-t64" firstAttribute="bottom" secondItem="Er3-Hh-z9E" secondAttribute="bottom" constant="50" id="Hyc-Yt-hKz"/>
                             <constraint firstItem="Er3-Hh-z9E" firstAttribute="centerX" secondItem="ViH-y6-qpk" secondAttribute="centerX" id="IgZ-ve-zD9"/>
-                            <constraint firstItem="TON-vn-iif" firstAttribute="bottom" secondItem="XXH-tT-t64" secondAttribute="bottom" constant="10" id="luH-xr-3bI"/>
+                            <constraint firstItem="TON-vn-iif" firstAttribute="top" secondItem="XXH-tT-t64" secondAttribute="top" constant="40" id="b63-Yl-oFP"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="30w-yN-vPv"/>
@@ -266,10 +266,11 @@
                         <viewLayoutGuide key="safeArea" id="h4E-dJ-SjN"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
+                    <navigationItem key="navigationItem" id="55E-HS-ERS"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Mg4-LR-L3S" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2216" y="2990"/>
+            <point key="canvasLocation" x="2216" y="1625"/>
         </scene>
         <!--Comment View Controller-->
         <scene sceneID="B1M-AH-HnE">
@@ -436,7 +437,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BZL-v6-Mc4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2216" y="1625"/>
+            <point key="canvasLocation" x="506" y="3652"/>
         </scene>
         <!--Sign In View Controller-->
         <scene sceneID="Ayn-me-j7W">
@@ -552,11 +553,11 @@
             </objects>
             <point key="canvasLocation" x="1398.5507246376812" y="877.90178571428567"/>
         </scene>
-        <!--Record-->
+        <!--SoundScape-->
         <scene sceneID="52y-LZ-PDx">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="pXR-Ln-skx" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Record" image="mic.fill" catalog="system" id="AWA-pu-dNE"/>
+                    <tabBarItem key="tabBarItem" title="SoundScape" image="map" catalog="system" id="AWA-pu-dNE"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="M4d-ew-SnX">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -564,7 +565,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="oqK-vV-JW6" kind="relationship" relationship="rootViewController" id="TOG-zu-mVt"/>
+                        <segue destination="6gp-95-FmU" kind="relationship" relationship="rootViewController" id="d0n-44-dmY"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1XF-CE-FCm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -639,8 +640,8 @@
         <image name="heart.fill" catalog="system" width="128" height="109"/>
         <image name="house.fill" catalog="system" width="128" height="106"/>
         <image name="magnifyingglass" catalog="system" width="128" height="115"/>
+        <image name="map" catalog="system" width="128" height="110"/>
         <image name="mappin.and.ellipse" catalog="system" width="118" height="128"/>
-        <image name="mic.fill" catalog="system" width="108" height="128"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
         <image name="play.fill" catalog="system" width="116" height="128"/>
         <image name="repeat" catalog="system" width="128" height="98"/>

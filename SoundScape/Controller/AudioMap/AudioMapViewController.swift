@@ -51,7 +51,6 @@ class AudioMapViewController: UIViewController {
                     }
                 }
             }
-            
         }
     }
     
@@ -116,7 +115,7 @@ class AudioMapViewController: UIViewController {
     private lazy var mapView: GMSMapView = {
         let mapView = GMSMapView()
         let posision = currentLocation ?? defaultLocation
-        let camera = GMSCameraPosition.camera(withLatitude: posision.latitude, longitude: posision.longitude , zoom: 15.0)
+        let camera = GMSCameraPosition.camera(withLatitude: posision.latitude, longitude: posision.longitude, zoom: 15.0)
         mapView.delegate = self
         mapView.camera = camera
         mapView.settings.myLocationButton = true
