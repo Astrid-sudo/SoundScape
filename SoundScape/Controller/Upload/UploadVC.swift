@@ -315,8 +315,6 @@ class UploadVC: UIViewController {
         }
     }
     
-
-    
     // MARK: - action
     
     @objc func upload() {

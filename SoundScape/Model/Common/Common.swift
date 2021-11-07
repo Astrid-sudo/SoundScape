@@ -65,6 +65,7 @@ struct CommonUsage {
         static let chevronDown = "chevron.down"
         static let paperplaneFill = "paperplane.fill"
         static let photo = "photo"
+        static let map = "map"
     }
     
     struct Text {

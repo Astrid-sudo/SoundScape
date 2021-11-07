@@ -41,8 +41,9 @@ class CreateAudioVC: UIViewController {
     @IBAction func presentMap(_ sender: UIButton) {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let audioMapVC = storyboard.instantiateViewController(withIdentifier: String(describing: AudioMapViewController.self)) as? AudioMapViewController else { return }
-        present(audioMapVC, animated: true, completion: nil)
+        guard let recordVC = storyboard.instantiateViewController(withIdentifier: String(describing: RecordVC.self)) as? RecordVC else { return }
+        
+        navigationController?.pushViewController(recordVC, animated: true)
         
     }
     
