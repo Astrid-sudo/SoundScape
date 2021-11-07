@@ -8,6 +8,7 @@
 import UIKit
 import GoogleMaps
 import CoreLocation
+import MapKit
 
 class AudioMapViewController: UIViewController {
     
@@ -21,9 +22,26 @@ class AudioMapViewController: UIViewController {
     
     let firebaseManager = FirebaseManager.shared
     
+    private lazy var searchCompleter: MKLocalSearchCompleter = {
+       let completer = MKLocalSearchCompleter()
+        completer.delegate = self
+        return completer
+    }()
+    
+    private var completerResults = [MKLocalSearchCompletion]()
+    
     var locationsFromFirebase: [SCLocation]? {
         didSet {
             filterOutAudioDocumentID()
+        }
+    }
+    
+    var searchedLocation: CLLocationCoordinate2D? {
+        didSet {
+            guard let searchedLocation = searchedLocation else { return }
+            mapView.camera = GMSCameraPosition.camera(withLatitude: searchedLocation.latitude, longitude: searchedLocation.longitude, zoom: 15)
+            searchResultMarker.position = searchedLocation
+            searchResultMarker.map = mapView
         }
     }
     
@@ -68,6 +86,8 @@ class AudioMapViewController: UIViewController {
         super.viewDidLoad()
         checkLocations()
         setMap()
+        addSearchBar()
+        setTableView()
     }
     
     // MARK: - method
@@ -112,6 +132,29 @@ class AudioMapViewController: UIViewController {
     
     // MARK: - UI properties
     
+    private lazy var tableView: UITableView = {
+        let table = UITableView()
+        table.dataSource = self
+        table.delegate = self
+        table.allowsSelection = true
+        table.separatorStyle = .singleLine
+        table.register(MapSearchResultTableViewCell.self, forCellReuseIdentifier: MapSearchResultTableViewCell.reuseIdentifier)
+        table.isHidden = true
+        return table
+    }()
+    
+    private lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.backgroundImage = UIImage()
+        searchBar.barTintColor = UIColor(named: CommonUsage.scLightBlue)
+        searchBar.layer.cornerRadius = 10
+        searchBar.placeholder = CommonUsage.Text.search
+        searchBar.delegate = self
+        searchBar.searchTextField.textColor = UIColor(named: CommonUsage.scBlue)
+        searchBar.showsCancelButton = true
+        return searchBar
+    }()
+
     private lazy var mapView: GMSMapView = {
         let mapView = GMSMapView()
         let posision = currentLocation ?? defaultLocation
@@ -123,11 +166,33 @@ class AudioMapViewController: UIViewController {
         return mapView
     }()
     
+    private lazy var searchResultMarker: GMSMarker = {
+        var marker = GMSMarker(position: searchedLocation ?? defaultLocation)
+        marker.icon = GMSMarker.markerImage(with: UIColor(named: CommonUsage.scLightBlue))
+        return marker
+    }()
+    
 }
 
 // MARK: - UI method
 
 extension AudioMapViewController {
+    
+    private func addSearchBar() {
+        navigationItem.titleView = searchBar
+    }
+    
+    private func setTableView() {
+        view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+        ])
+
+    }
     
     private func setMap() {
         view.addSubview(mapView)
@@ -208,4 +273,91 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
         AudioPlayerWindow.shared.show()
     }
     
+}
+
+// MARK: - conform to UISearchBarDelegate
+
+extension AudioMapViewController: UISearchBarDelegate {
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        searchCompleter.queryFragment = searchBar.text ?? ""
+
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        tableView.isHidden = false
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.endEditing(true)
+        searchBar.text = nil
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.endEditing(true)
+        tableView.isHidden = true
+    }
+    
+}
+
+// MARK: - conform to UITableViewDataSource
+
+extension AudioMapViewController: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        completerResults.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: MapSearchResultTableViewCell.reuseIdentifier, for: indexPath) as? MapSearchResultTableViewCell else { return UITableViewCell() }
+        let suggestion = completerResults[indexPath.row]
+        let title = suggestion.title
+        let subTitle = suggestion.subtitle
+        cell.configCell(title: title, subTitle: subTitle)
+        return cell
+    }
+    
+}
+
+// MARK: - conform to UITableViewDelegate
+
+extension AudioMapViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let suggestion = completerResults[indexPath.row]
+        let address = suggestion.subtitle.isEmpty ? suggestion.title : suggestion.subtitle
+        
+        LocationService.getCoordinate(addressString: address) { [weak self] (coordinate, error) in
+            
+            guard let self = self else { return }
+
+          if let error = error {
+            print("fetching coordinate error: \(error.localizedDescription)")
+          } else {
+            print("coordinate is \(coordinate)")
+              self.searchedLocation = coordinate
+          }
+        }
+        
+        tableView.isHidden = true
+        searchBar.endEditing(true)
+        searchBar.text = suggestion.title
+
+      }
+    
+}
+
+// MARK: - conform to MKLocalSearchCompleterDelegate
+
+extension AudioMapViewController: MKLocalSearchCompleterDelegate {
+    
+    func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+      completerResults = completer.results
+      tableView.reloadData()
+    }
+    
+    func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
+      print("didFailWithError: \(error.localizedDescription)")
+    }
+
 }

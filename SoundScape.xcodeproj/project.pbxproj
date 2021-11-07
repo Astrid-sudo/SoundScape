@@ -57,6 +57,8 @@
 		56C05AAF2736A829009D029C /* SCMapInfoWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C05AAE2736A829009D029C /* SCMapInfoWindow.swift */; };
 		56D3F0B4272CDFFD00A3B3B3 /* Bungee-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 56D3F0B3272CDFFD00A3B3B3 /* Bungee-Regular.ttf */; };
 		56D3F0C3272D813C00A3B3B3 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D3F0C2272D813C00A3B3B3 /* ProfileViewController.swift */; };
+		56DC9ABA2737A0BD000B62C6 /* MapSearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DC9AB92737A0BD000B62C6 /* MapSearchResultTableViewCell.swift */; };
+		56DC9ABD2737A753000B62C6 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DC9ABC2737A753000B62C6 /* LocationService.swift */; };
 		56F07D35272BCA7600ABC7B9 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */; };
 		56F07D37272BCC0F00ABC7B9 /* SearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F07D36272BCC0F00ABC7B9 /* SearchTableViewCell.swift */; };
 		56F07D39272BCFB300ABC7B9 /* SearchCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F07D38272BCFB300ABC7B9 /* SearchCollectionViewCell.swift */; };
@@ -117,6 +119,8 @@
 		56C05AAE2736A829009D029C /* SCMapInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCMapInfoWindow.swift; sourceTree = "<group>"; };
 		56D3F0B3272CDFFD00A3B3B3 /* Bungee-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Bungee-Regular.ttf"; sourceTree = "<group>"; };
 		56D3F0C2272D813C00A3B3B3 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		56DC9AB92737A0BD000B62C6 /* MapSearchResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSearchResultTableViewCell.swift; sourceTree = "<group>"; };
+		56DC9ABC2737A753000B62C6 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		56F07D36272BCC0F00ABC7B9 /* SearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewCell.swift; sourceTree = "<group>"; };
 		56F07D38272BCFB300ABC7B9 /* SearchCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -172,6 +176,7 @@
 		565C9C30271EB42900189B85 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				56DC9ABB2737A735000B62C6 /* Map */,
 				56D3F0C0272D803600A3B3B3 /* Audio */,
 				56D3F0BF272D801700A3B3B3 /* Common */,
 			);
@@ -282,6 +287,7 @@
 			isa = PBXGroup;
 			children = (
 				56C05AAE2736A829009D029C /* SCMapInfoWindow.swift */,
+				56DC9AB92737A0BD000B62C6 /* MapSearchResultTableViewCell.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -406,6 +412,14 @@
 				5630FE26272EB5D7003A38FB /* OthersProfileViewController.swift */,
 			);
 			path = Profile;
+			sourceTree = "<group>";
+		};
+		56DC9ABB2737A735000B62C6 /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				56DC9ABC2737A753000B62C6 /* LocationService.swift */,
+			);
+			path = Map;
 			sourceTree = "<group>";
 		};
 		7E64B7E6DB8FC6FCC8429D99 /* Frameworks */ = {
@@ -604,6 +618,7 @@
 				56F1C849271FA8F400F64846 /* AudioRecordHelper.swift in Sources */,
 				560DE84D27300B1200FFD240 /* CommentViewController.swift in Sources */,
 				569A7D7C2722A03500CEE3EA /* HomeCollectionViewCell.swift in Sources */,
+				56DC9ABA2737A0BD000B62C6 /* MapSearchResultTableViewCell.swift in Sources */,
 				568340E1271F11AC00543677 /* UploadVC.swift in Sources */,
 				56F07D39272BCFB300ABC7B9 /* SearchCollectionViewCell.swift in Sources */,
 				564C79F8272C2056005EEA53 /* CategoryViewController.swift in Sources */,
@@ -618,6 +633,7 @@
 				569A7D7827229AE500CEE3EA /* HomeVC.swift in Sources */,
 				56C05AA927362DEB009D029C /* GoogleService.swift in Sources */,
 				56D3F0C3272D813C00A3B3B3 /* ProfileViewController.swift in Sources */,
+				56DC9ABD2737A753000B62C6 /* LocationService.swift in Sources */,
 				560DE8502730113600FFD240 /* CommentTableViewCell.swift in Sources */,
 				56950630271FDD08009E4C74 /* RemotePlayHelper.swift in Sources */,
 				565C9C29271E6AFE00189B85 /* AudioPlayerWindow.swift in Sources */,
