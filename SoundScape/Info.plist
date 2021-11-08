@@ -30,9 +30,5 @@
 			</array>
 		</dict>
 	</dict>
-	<key>NSCameraUsageDescription</key>
-	<string>camera use</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>map use</string>
 </dict>
 </plist>
