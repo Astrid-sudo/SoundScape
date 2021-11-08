@@ -10,9 +10,26 @@ import GoogleMaps
 import CoreLocation
 import MapKit
 
+protocol LocationCoordinatePassableDelegate: AnyObject {
+    func displayPinOnSmallMap(locationFromBigMap: CLLocationCoordinate2D?)
+}
+
+enum AudioMapType {
+    case pinOnMap
+    case browseMap
+}
+
 class AudioMapViewController: UIViewController {
     
     // MARK: - properties
+    
+    let signInmanager = SignInManager.shared
+    
+    var audioMapType = AudioMapType.browseMap
+    
+    var pinnedLocation: CLLocationCoordinate2D?
+    
+    var audioTitle: String?
     
     let remotePlayHelper = RemotePlayHelper.shared
     
@@ -21,6 +38,8 @@ class AudioMapViewController: UIViewController {
     var scInfoWindow = SCMapInfoWindow()
     
     let firebaseManager = FirebaseManager.shared
+    
+    weak var delegate: LocationCoordinatePassableDelegate?
     
     private lazy var searchCompleter: MKLocalSearchCompleter = {
        let completer = MKLocalSearchCompleter()
@@ -84,11 +103,33 @@ class AudioMapViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        checkLocations()
-        setMap()
-        addSearchBar()
-        setTableView()
+
+        switch audioMapType {
+        case .pinOnMap:
+            setMap()
+            addSearchBar()
+            setTableView()
+        case .browseMap:
+            checkLocations()
+            setMap()
+            addSearchBar()
+            setTableView()
+        }
+        
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if audioMapType == .pinOnMap {
+            tabBarController?.tabBar.isHidden = true
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
+    }
+    
     
     // MARK: - method
     
@@ -172,6 +213,13 @@ class AudioMapViewController: UIViewController {
         return marker
     }()
     
+    private lazy var pinMarker: GMSMarker = {
+        var marker = GMSMarker(position: currentLocation ?? defaultLocation)
+        marker.icon = GMSMarker.markerImage(with: UIColor(named: CommonUsage.scRed))
+        marker.map = mapView
+        return marker
+    }()
+
 }
 
 // MARK: - UI method
@@ -212,24 +260,39 @@ extension AudioMapViewController {
 extension AudioMapViewController: GMSMapViewDelegate {
     
     func mapView(_ mapView: GMSMapView, markerInfoWindow marker: GMSMarker) -> UIView? {
-        return UIView()
+        
+        switch audioMapType {
+        case .pinOnMap:
+            return nil
+        case .browseMap:
+            return UIView()
+        }
+        
     }
     
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
-        let location = CLLocationCoordinate2D(latitude: marker.position.latitude, longitude: marker.position.longitude)
         
-        guard let post = marker.userData as? SCPost else { return false }
-        let audioAuthorName = post.authorName
-        let audioTitle = post.title
-        scInfoWindow.setMapMarkerIcon(title: audioTitle, authorName: audioAuthorName)
+        switch audioMapType {
         
-        tappedMarker = marker
-        scInfoWindow.center = mapView.projection.point(for: location)
-        scInfoWindow.center.y -= 20
-        scInfoWindow.delegate = self
+        case .pinOnMap:
+           
+            return true
         
-        self.view.addSubview(scInfoWindow)
-        return false
+        case .browseMap:
+            
+            let location = CLLocationCoordinate2D(latitude: marker.position.latitude, longitude: marker.position.longitude)
+            guard let post = marker.userData as? SCPost else { return false }
+            let audioAuthorName = post.authorName
+            let audioTitle = post.title
+            scInfoWindow.setMapMarkerIcon(title: audioTitle, authorName: audioAuthorName)
+            tappedMarker = marker
+            scInfoWindow.center = mapView.projection.point(for: location)
+            scInfoWindow.center.y -= 20
+            scInfoWindow.delegate = self
+            self.view.addSubview(scInfoWindow)
+            return false
+        }
+        
     }
     
     func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
@@ -240,7 +303,23 @@ extension AudioMapViewController: GMSMapViewDelegate {
     }
 
     func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
-        scInfoWindow.removeFromSuperview()
+        
+        switch audioMapType {
+            
+        case .pinOnMap:
+            
+            pinnedLocation = coordinate
+            pinMarker.title = audioTitle
+            pinMarker.position = coordinate
+            pinMarker.snippet = signInmanager.currentUserInfoFirebase?.username
+            pinMarker.map = mapView
+            mapView.selectedMarker = pinMarker
+            delegate?.displayPinOnSmallMap(locationFromBigMap: pinnedLocation)
+        
+        case .browseMap:
+            
+            scInfoWindow.removeFromSuperview()
+        }
     }
 
 }
@@ -286,6 +365,7 @@ extension AudioMapViewController: UISearchBarDelegate {
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         tableView.isHidden = false
+        scInfoWindow.removeFromSuperview()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {

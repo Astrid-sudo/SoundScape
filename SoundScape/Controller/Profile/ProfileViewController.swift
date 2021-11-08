@@ -454,7 +454,6 @@ class ProfileViewController: UIViewController {
     
     // MARK: - action
     
-    
     @objc func goSettingPage() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let settingViewController = storyboard.instantiateViewController(withIdentifier: String(describing: SettingViewController.self)) as? SettingViewController else { return }
