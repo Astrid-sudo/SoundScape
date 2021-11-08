@@ -12,8 +12,12 @@ target 'SoundScape' do
   pod 'FirebaseFirestoreSwift'
   pod 'Firebase/Storage'
   pod 'Firebase/Database'
+  pod 'Firebase/Auth'
   pod 'IQKeyboardManagerSwift'
   pod 'ModernAVPlayer'
   pod 'lottie-ios'
+  pod 'GoogleMaps'
+  pod 'GooglePlaces'
+
 
 end

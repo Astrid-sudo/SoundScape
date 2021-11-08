@@ -44,6 +44,8 @@ class SoundDetailVC: UIViewController {
     
     var authorIdentity: UserIdentity?
     
+    var nowPlayingDocumentID: String?
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -60,6 +62,14 @@ class SoundDetailVC: UIViewController {
     }
     
     // MARK: - action
+    
+    
+    @IBAction func presentCommentPage(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let commentViewController = storyboard.instantiateViewController(withIdentifier: String(describing: CommentViewController.self)) as? CommentViewController else { return }
+        commentViewController.currentPlayingDocumentID = nowPlayingDocumentID
+        present(commentViewController, animated: true)
+    }
     
     
     @IBAction func goAuthorProfile(_ sender: UIButton) {
@@ -81,7 +91,7 @@ class SoundDetailVC: UIViewController {
         
         guard let leave = delegate?.leaveDetailPage else { return }
         timer?.invalidate()
-        AudioPlayerWindow.shared.window?.frame = CGRect(x: 0, y: CommonUsage.screenHeight - 140,
+        AudioPlayerWindow.shared.window?.frame = CGRect(x: 0, y: CommonUsage.screenHeight - 110,
                                                             width: CommonUsage.screenWidth, height: 60)
         AudioPlayerWindow.shared.window?.rootViewController?.view.isHidden = false
         leave()
@@ -91,7 +101,7 @@ class SoundDetailVC: UIViewController {
     @IBAction func leaveDetailPage(_ sender: UIButton) {
         guard let leave = delegate?.leaveDetailPage else { return }
         timer?.invalidate()
-        AudioPlayerWindow.shared.window?.frame = CGRect(x: 0, y: CommonUsage.screenHeight - 140,
+        AudioPlayerWindow.shared.window?.frame = CGRect(x: 0, y: CommonUsage.screenHeight - 110,
                                                             width: CommonUsage.screenWidth, height: 60)
         
         AudioPlayerWindow.shared.window?.rootViewController?.view.isHidden = false
@@ -209,6 +219,8 @@ class SoundDetailVC: UIViewController {
         authorButton.setTitle(nowPlayingInfo.author, for: .normal)
         contentTextView.text = nowPlayingInfo.content
         authorIdentity = UserIdentity(userID: nowPlayingInfo.authorUserID, userIDProvider: nowPlayingInfo.authorAccountProvider)
+        nowPlayingDocumentID = nowPlayingInfo.documentID
+        
     }
     
     private func updateWaveformImages(localURL: URL) {

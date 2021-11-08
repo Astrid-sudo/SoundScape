@@ -74,6 +74,9 @@
                                         <rect key="frame" x="105" y="0.0" width="67" height="31"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="text.bubble.fill" catalog="system"/>
+                                        <connections>
+                                            <action selector="presentCommentPage:" destination="BYZ-38-t0r" eventType="touchUpInside" id="KpE-s2-tJn"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v6G-CT-7ZK">
                                         <rect key="frame" x="210" y="0.0" width="67" height="31"/>
@@ -199,12 +202,22 @@
                                     <action selector="selectFile:" destination="aSM-Zi-js2" eventType="touchUpInside" id="0AL-Sh-4vR"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TON-vn-iif">
+                                <rect key="frame" x="172" y="128" width="70" height="31"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Record"/>
+                                <connections>
+                                    <action selector="presentMap:" destination="aSM-Zi-js2" eventType="touchUpInside" id="s0b-lg-s3c"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="XXH-tT-t64"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="TON-vn-iif" firstAttribute="centerX" secondItem="ViH-y6-qpk" secondAttribute="centerX" id="BAd-LX-G3J"/>
                             <constraint firstItem="XXH-tT-t64" firstAttribute="bottom" secondItem="Er3-Hh-z9E" secondAttribute="bottom" constant="50" id="Hyc-Yt-hKz"/>
                             <constraint firstItem="Er3-Hh-z9E" firstAttribute="centerX" secondItem="ViH-y6-qpk" secondAttribute="centerX" id="IgZ-ve-zD9"/>
+                            <constraint firstItem="TON-vn-iif" firstAttribute="top" secondItem="XXH-tT-t64" secondAttribute="top" constant="40" id="b63-Yl-oFP"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="30w-yN-vPv"/>
@@ -241,7 +254,38 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="J12-cr-z1K" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1395" y="2332"/>
+            <point key="canvasLocation" x="1374" y="2990"/>
+        </scene>
+        <!--Audio Map View Controller-->
+        <scene sceneID="GKG-zu-p8o">
+            <objects>
+                <viewController storyboardIdentifier="AudioMapViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="6gp-95-FmU" customClass="AudioMapViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="rTG-ce-8CY">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="h4E-dJ-SjN"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="55E-HS-ERS"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Mg4-LR-L3S" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2216" y="1625"/>
+        </scene>
+        <!--Comment View Controller-->
+        <scene sceneID="B1M-AH-HnE">
+            <objects>
+                <viewController storyboardIdentifier="CommentViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="dNN-22-1ys" customClass="CommentViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="2OM-vS-2Nk">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="LgY-sW-wMH"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ogd-jb-dZI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2216" y="2314"/>
         </scene>
         <!--Test EditVC-->
         <scene sceneID="21I-gY-GuF">
@@ -393,7 +437,23 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BZL-v6-Mc4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2216" y="1625"/>
+            <point key="canvasLocation" x="506" y="3652"/>
+        </scene>
+        <!--Sign In View Controller-->
+        <scene sceneID="Ayn-me-j7W">
+            <objects>
+                <viewController storyboardIdentifier="SignInViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="gvc-Na-EwS" customClass="SignInViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="6ak-QL-E1Z">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="tyy-9C-jGe"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="i7x-4y-l1c"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ejh-d4-e2G" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-7" y="117"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="FiX-p1-RY9">
@@ -415,7 +475,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KU3-59-Czb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="131.8840579710145" y="116.51785714285714"/>
+            <point key="canvasLocation" x="1042.0289855072465" y="116.51785714285714"/>
         </scene>
         <!--Search-->
         <scene sceneID="jYj-F6-wO1">
@@ -493,11 +553,11 @@
             </objects>
             <point key="canvasLocation" x="1398.5507246376812" y="877.90178571428567"/>
         </scene>
-        <!--Record-->
+        <!--SoundScape-->
         <scene sceneID="52y-LZ-PDx">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="pXR-Ln-skx" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Record" image="mic.fill" catalog="system" id="AWA-pu-dNE"/>
+                    <tabBarItem key="tabBarItem" title="SoundScape" image="map" catalog="system" id="AWA-pu-dNE"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="M4d-ew-SnX">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -505,7 +565,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="oqK-vV-JW6" kind="relationship" relationship="rootViewController" id="TOG-zu-mVt"/>
+                        <segue destination="6gp-95-FmU" kind="relationship" relationship="rootViewController" id="d0n-44-dmY"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1XF-CE-FCm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -558,6 +618,21 @@
             </objects>
             <point key="canvasLocation" x="-275" y="2314"/>
         </scene>
+        <!--Setting View Controller-->
+        <scene sceneID="fdz-G8-xLi">
+            <objects>
+                <viewController storyboardIdentifier="SettingViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="XDf-DY-KIj" customClass="SettingViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="wUc-CR-hPx">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="bim-8u-QI4"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="EAm-B4-Ptg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1374" y="2304"/>
+        </scene>
     </scenes>
     <resources>
         <image name="arrow.up.heart.fill" catalog="system" width="128" height="109"/>
@@ -565,8 +640,8 @@
         <image name="heart.fill" catalog="system" width="128" height="109"/>
         <image name="house.fill" catalog="system" width="128" height="106"/>
         <image name="magnifyingglass" catalog="system" width="128" height="115"/>
+        <image name="map" catalog="system" width="128" height="110"/>
         <image name="mappin.and.ellipse" catalog="system" width="118" height="128"/>
-        <image name="mic.fill" catalog="system" width="108" height="128"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
         <image name="play.fill" catalog="system" width="116" height="128"/>
         <image name="repeat" catalog="system" width="128" height="98"/>

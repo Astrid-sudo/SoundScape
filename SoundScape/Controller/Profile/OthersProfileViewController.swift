@@ -20,6 +20,9 @@ class OthersProfileViewController: UIViewController {
             setUserProfile()
             fetchUserFavoriteList()
             fetchAmountOfFollows()
+            manipulateFollowButton()
+            fetchUserPicFromFirebase()
+            fetchUserCoverFromFirebase()
         }
     }
     
@@ -56,10 +59,21 @@ class OthersProfileViewController: UIViewController {
         }
     }
     
-    //current signin 的
-    private var currentUserFollowingList: [SCFollow]? {
+    private var otherUserPic: String? {
         didSet {
-            manipulateFollowButton()
+            guard let otherUserPic = otherUserPic,
+                  let data = Data(base64Encoded: otherUserPic) else { return }
+            userImageView.image = UIImage(data: data)
+            userImageView.contentMode = .scaleAspectFill
+        }
+    }
+    
+    private var otherUserCover: String? {
+        didSet {
+            guard let otherUserCover = otherUserCover,
+                  let data = Data(base64Encoded: otherUserCover) else { return }
+            coverImageView.image = UIImage(data: data)
+            coverImageView.contentMode = .scaleAspectFill
         }
     }
     
@@ -68,8 +82,6 @@ class OthersProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        fetchCurrentUserFollowingList()
         fetchUserInfo()
         fetchDataFromFirebase()
         setBackgroundColor()
@@ -85,13 +97,12 @@ class OthersProfileViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        userImageView.layer.cornerRadius = userImageView.frame.width / 2
+        userImageView.layer.cornerRadius = CommonUsage.screenHeight / 10
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
-        manipulateFollowButton()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -104,7 +115,7 @@ class OthersProfileViewController: UIViewController {
     @objc func manipulateFollow() {
         guard let userWillDisplay = userWillDisplay,
               let userInfoDoumentID = userWillDisplay.userInfoDoumentID,
-              let loggedInUserInfo = signInManager.currentUserInfo,
+              let loggedInUserInfo = signInManager.currentUserInfoFirebase,
               let loggedInUserInfoDocumentID = loggedInUserInfo.userInfoDoumentID else { return }
         
         firebaseManager.manipulateFollow(userInfoDoumentID: userInfoDoumentID,
@@ -119,20 +130,9 @@ class OthersProfileViewController: UIViewController {
     // MARK: - method
     
     private func manipulateFollowButton() {
-        
-        guard let currentUserFollowingList = currentUserFollowingList,
-              let userWillDisplay = userWillDisplay else { return }
-        
-        var alreadyFollowed = [SCFollow]()
-        
-        for following in currentUserFollowingList {
-            if following.userID == userWillDisplay.userID,
-               following.provider == userWillDisplay.provider {
-                alreadyFollowed.append(following)
-            }
-        }
-        
-        if alreadyFollowed.count != 0 {
+        guard let otherUserID = userWillDisplay?.userID,
+              let currentUserFollowingsID = signInManager.currentUserFollowingList?.map({$0.userID}) else { return }
+        if currentUserFollowingsID.contains(otherUserID) {
             makeButtonFollowed()
         }
     }
@@ -146,23 +146,6 @@ class OthersProfileViewController: UIViewController {
     private func makeButtonUnFollow() {
         followButton.setTitle(CommonUsage.Text.follow, for: .normal)
         followButton.backgroundColor = UIColor(named: CommonUsage.scYellow)
-        
-    }
-    
-    private func fetchCurrentUserFollowingList() {
-        guard let currentUserInfoDocumentID = signInManager.currentUserInfo?.userInfoDoumentID else {
-            print("OthersProfileController: please logIn")
-            return }
-        firebaseManager.checkFollowingsChange(userInfoDoumentID: currentUserInfoDocumentID) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let followers):
-                
-                self.currentUserFollowingList = followers
-                
-            case .failure(let error): print(error)
-            }
-        }
         
     }
     
@@ -230,14 +213,13 @@ class OthersProfileViewController: UIViewController {
                 self.userFavoriteDocumentIDs = scFavorites.map({$0.favoriteDocumentID})
                 
             case .failure(let error):
-                print("AudioPlayerVC: Failed to get favoriteDocumentID \(error)")
+                print("OtherProfileVC: Failed to get favoriteDocumentID \(error)")
                 
             }
         }
     }
     
     private func fetchDataFromFirebase() {
-        
         firebaseManager.checkPostsChange { [weak self] result in
             guard let self = self else { return }
             
@@ -251,14 +233,36 @@ class OthersProfileViewController: UIViewController {
         }
     }
     
+    func fetchUserPicFromFirebase() {
+        guard let userID = userWillDisplay?.userInfoDoumentID else { return }
+        firebaseManager.fetchUserPicFromFirebase(userID: userID) { result in
+            switch result {
+            case .success(let picture):
+                self.otherUserPic = picture.picture
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func fetchUserCoverFromFirebase() {
+        guard let userID = userWillDisplay?.userInfoDoumentID else { return }
+        firebaseManager.fetchCoverPicFromFirebase(userID: userID) { result in
+            switch result {
+            case .success(let picture):
+                self.otherUserCover = picture.picture
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    
     private func setUserProfile() {
-        
+        coverImageView.image = UIImage(named: CommonUsage.profileCover4)
+        userImageView.image = UIImage(named: CommonUsage.yeh1024)
         guard let userWillDisplay = userWillDisplay else { return }
-        coverImageView.image = UIImage(named: CommonUsage.profileCover2)
-        userImageView.image = UIImage(named: CommonUsage.audioImage2)
         nameLabel.text = userWillDisplay.username
-        followersNumberLabel.text = "0"
-        followingsNumberLabel.text = "0"
     }
     
     // MARK: - UI properties
@@ -273,7 +277,7 @@ class OthersProfileViewController: UIViewController {
         let image = UIImageView()
         image.contentMode = .scaleToFill
         image.clipsToBounds = true
-        
+        image.layer.cornerRadius = CommonUsage.screenHeight / 10
         return image
     }()
     
@@ -303,6 +307,7 @@ class OthersProfileViewController: UIViewController {
         label.textColor = UIColor(named: CommonUsage.scWhite)
         label.font = UIFont(name: CommonUsage.fontSemibold, size: 14)
         label.textAlignment = .left
+        label.text = "0"
         return label
     }()
     
@@ -320,6 +325,7 @@ class OthersProfileViewController: UIViewController {
         label.textColor = UIColor(named: CommonUsage.scWhite)
         label.font = UIFont(name: CommonUsage.fontSemibold, size: 14)
         label.textAlignment = .left
+        label.text = "0"
         return label
     }()
     
@@ -472,7 +478,7 @@ extension OthersProfileViewController: UITableViewDataSource {
             
         case 0:
             guard let followings = othersFollowingList else {
-                print("ProfilePage cant get othersFollowingList")
+                print("OtherProfilePage cant get othersFollowingList")
                 return UITableViewCell()
             }
             
@@ -519,10 +525,8 @@ extension OthersProfileViewController: UITableViewDataSource {
             cell.category = AudioCategory.allCases[indexPath.item].rawValue
         }
         
-        //        let filteredFiles = allAudioFiles.filter({$0.category == AudioCategory.allCases[indexPath.section].rawValue})
         cell.backgroundColor = UIColor(named: CommonUsage.scBlue)
-        //        cell.firebaseData = filteredFiles
-        //        cell.category = AudioCategory.allCases[indexPath.item].rawValue
+        
         return cell
     }
     
@@ -534,7 +538,7 @@ extension OthersProfileViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomeTableViewHeader.reuseIdentifier) as? HomeTableViewHeader else { return UIView()}
-        
+        headerView.presentInPage = .profileSection
         headerView.delegate = self
         headerView.config(section: section, content: ProfilePageSection.allCases[section].rawValue)
         return headerView
@@ -556,24 +560,60 @@ extension OthersProfileViewController: UITableViewDelegate {
 
 extension OthersProfileViewController: PressPassableDelegate {
     
-    func goCategoryPage(from section: Int) {
-        
-        let category = AudioCategory.allCases[section]
-        
-        var data = [SCPost]()
-        
-        for file in allAudioFiles {
-            
-            if file.category == category.rawValue {
-                data.append(file)
-            }
-        }
-        
+    func goSectionPage(from section: Int, sectionPageType: SectionPageType) {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
         
-        categoryPage.config(category: category, data: data)
+        switch section {
+            
+        case 0:
+            guard let followings = othersFollowingList else {
+                print("OtherProfilePage cant get othersFollowingList")
+                return
+            }
+            
+            var myFollowingsUserFiles = [SCPost]()
+            for audioFile in allAudioFiles {
+                for folloing in followings {
+                    if audioFile.authorID == folloing.userID, audioFile.authIDProvider == folloing.provider {
+                        myFollowingsUserFiles.append(audioFile)
+                    }
+                }
+            }
+            let section = ProfilePageSection.allCases[section]
+            categoryPage.config(profileSection: section, data: myFollowingsUserFiles)
+            
+        case 1:
+            
+            guard let userFavoriteDocumentIDs = userFavoriteDocumentIDs else {
+                print("ProfilePage cant get userFavoriteDocumentIDs")
+                return
+            }
+            
+            var myFavoriteFiles = [SCPost]()
+            
+            for audioFile in allAudioFiles {
+                for favorite in userFavoriteDocumentIDs {
+                    if audioFile.documentID == favorite {
+                        myFavoriteFiles.append(audioFile)
+                    }
+                }
+            }
+            let section = ProfilePageSection.allCases[section]
+            categoryPage.config(profileSection: section, data: myFavoriteFiles)
+            
+        case 2:
+            guard let userWillDisplay = userWillDisplay else { break }
+            
+            let myAudioFiles = allAudioFiles.filter({$0.authorName == userWillDisplay.username})
+            let section = ProfilePageSection.allCases[section]
+            categoryPage.config(profileSection: section, data: myAudioFiles)
+            
+        default:
+            break
+        }
+        
         navigationController?.pushViewController(categoryPage, animated: true)
         
     }

@@ -5,9 +5,10 @@
 //  Created by Astrid on 2021/10/31.
 //
 
-import Foundation
+import UIKit
 import Firebase
 import FirebaseFirestoreSwift
+import CoreLocation
 
 enum AudioCategory: String, CaseIterable {
     case nature = "Nature"
@@ -26,6 +27,10 @@ struct SCUser: Codable {
     let userPic: URL?
     let userProfileCover: URL?
     var userInfoDoumentID: String?
+}
+
+struct SCPicture: Codable {
+    var picture: String
 }
 
 struct SCFollow: Codable {
@@ -55,13 +60,13 @@ struct SCPost: Codable, Hashable {
 }
 
 struct SCComment: Codable {
-    let documentID: String
+    let commentDocumentID: String?
     let userID: String
     let userName: String
-    let userImage: URL?
-    let createdTime: Timestamp
+    var userImage: URL?
+    var createdTime: Timestamp?
+    var lastEditedTime: Timestamp?
     var comment: String
-    var atTimeCode: String?
 }
 
 struct SCLocation: Codable {
@@ -70,4 +75,11 @@ struct SCLocation: Codable {
     let authorID: String
     let authIDProvider: String
     let locationDocumentID: String
+}
+
+func clLocationToGepPoint(cl: CLLocationCoordinate2D?) -> GeoPoint? {
+    guard let cl = cl else { return nil }
+    let latitude = cl.latitude
+    let longitude = cl.longitude
+    return GeoPoint(latitude: latitude, longitude: longitude)
 }
