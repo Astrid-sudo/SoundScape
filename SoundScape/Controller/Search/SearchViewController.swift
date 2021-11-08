@@ -62,7 +62,6 @@ class SearchViewController: UIViewController {
         animationView.play()
     }
 
-    
     private func fetchDataFromFirebase() {
         
         firebaseManager.checkPostsChange { [weak self] result in

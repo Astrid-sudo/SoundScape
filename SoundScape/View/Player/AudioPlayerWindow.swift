@@ -29,7 +29,7 @@ class AudioPlayerWindow {
     // MARK: - init
     
     private init() {
-        window = UIWindow(frame: CGRect(x: 0, y: CommonUsage.screenHeight - 140,
+        window = UIWindow(frame: CGRect(x: 0, y: CommonUsage.screenHeight - 110,
                                         width: CommonUsage.screenWidth, height: 60))
         guard let scene = UIApplication.shared
                 .connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene else { return }
