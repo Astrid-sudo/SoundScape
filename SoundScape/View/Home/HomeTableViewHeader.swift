@@ -29,7 +29,7 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
     private lazy var categoryLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 32)
+        label.font = UIFont(name: CommonUsage.fontSemibold, size: 18)
         label.textAlignment = .left
         return label
     }()
@@ -42,7 +42,7 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
     }()
     
     private lazy var backgroundButton: UIButton = {
-       let button = UIButton()
+        let button = UIButton()
         button.addTarget(self, action: #selector(pressBackgroundButton), for: .touchUpInside)
         return button
     }()
@@ -66,7 +66,7 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
     @objc func pressBackgroundButton() {
         
         guard let section = section,
-        let presentInPage = presentInPage else { return }
+              let presentInPage = presentInPage else { return }
         
         delegate?.goSectionPage(from: section, sectionPageType: presentInPage)
     }
@@ -83,7 +83,7 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
         ])
         
     }
-
+    
     private func setButton() {
         contentView.addSubview(goToCategoryButt)
         goToCategoryButt.translatesAutoresizingMaskIntoConstraints = false
@@ -102,7 +102,7 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
             backgroundButton.heightAnchor.constraint(equalTo: contentView.heightAnchor),
             backgroundButton.widthAnchor.constraint(equalTo: contentView.widthAnchor)
         ])
-
+        
     }
     
     func config(section: Int, content: String) {
