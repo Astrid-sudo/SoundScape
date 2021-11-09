@@ -25,6 +25,11 @@ class SoundDetailVC: UIViewController {
     @IBOutlet weak var titleLabel: UILabel!
     
     @IBOutlet weak var contentTextView: UITextView!
+    
+    private lazy var backgroundImageView: UIImageView = {
+       let imageView = UIImageView()
+        return imageView
+    }()
    
     // MARK: - properties
     
@@ -50,9 +55,11 @@ class SoundDetailVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+//        setBackgroundImage()
         addObserver()
         setAudioHelper()
+        waveformView.isHidden = true
+        waveformProgressView.isHidden = true
     }
     
     // MARK: - deinit
@@ -63,7 +70,6 @@ class SoundDetailVC: UIViewController {
     
     // MARK: - action
     
-    
     @IBAction func presentCommentPage(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let commentViewController = storyboard.instantiateViewController(withIdentifier: String(describing: CommentViewController.self)) as? CommentViewController else { return }
@@ -71,11 +77,9 @@ class SoundDetailVC: UIViewController {
         present(commentViewController, animated: true)
     }
     
-    
     @IBAction func goAuthorProfile(_ sender: UIButton) {
         
         guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
-        
         
         scTabBarController.selectedIndex = 0
 
@@ -216,6 +220,7 @@ class SoundDetailVC: UIViewController {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
         titleLabel.text = nowPlayingInfo.title
 //        authorLabel.text = nowPlayingInfo.author
+        backgroundImageView.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
         authorButton.setTitle(nowPlayingInfo.author, for: .normal)
         contentTextView.text = nowPlayingInfo.content
         authorIdentity = UserIdentity(userID: nowPlayingInfo.authorUserID, userIDProvider: nowPlayingInfo.authorAccountProvider)
@@ -311,6 +316,22 @@ class SoundDetailVC: UIViewController {
             
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
         }
+    }
+    
+}
+
+extension SoundDetailVC {
+    
+    private func setBackgroundImage() {
+        view.addSubview(backgroundImageView)
+        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
     }
     
 }

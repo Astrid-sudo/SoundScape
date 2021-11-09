@@ -88,8 +88,8 @@ class HomeCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    func setCell(image: URL?, audioTitle: String, author: String) {
-        audioImage.image = UIImage(named: CommonUsage.audioImage)
+    func setCell(imageNumber: Int, audioTitle: String, author: String) {
+        audioImage.image = CommonUsage.audioImages[imageNumber]
         audioTitleLabel.text = audioTitle
         authorNameLabel.text = author
     }

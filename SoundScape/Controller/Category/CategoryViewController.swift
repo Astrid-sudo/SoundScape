@@ -137,7 +137,7 @@ extension CategoryViewController: UITableViewDataSource {
         guard let cell =
                 tableView.dequeueReusableCell(withIdentifier: CategoryTableViewCell.reuseIdentifier) as? CategoryTableViewCell else { return UITableViewCell()}
         let data = data[indexPath.row]
-        cell.setContent(title: data.title, author: data.authorName)
+        cell.setContent(title: data.title, author: data.authorName, audioImageNumber: data.imageNumber)
         cell.selectionStyle = .none
         return cell
     }
@@ -156,10 +156,20 @@ extension CategoryViewController: UITableViewDelegate {
         let duration = data[indexPath.item].duration
         let documentID = data[indexPath.item].documentID
         let authorUserID = data[indexPath.item].authorID
+        let audioImageNumber = data[indexPath.item].imageNumber
         let authorAccountProvider = data[indexPath.item].authIDProvider
 
         remotePlayHelper.url = data[indexPath.item].audioURL
-        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration, documentID:documentID, authorUserID: authorUserID, authorAccountProvider:authorAccountProvider)
+        
+        remotePlayHelper.setPlayInfo(title: title,
+                                     author: author,
+                                     content: content,
+                                     duration: duration,
+                                     documentID: documentID,
+                                     authorUserID: authorUserID,
+                                     audioImageNumber: audioImageNumber,
+                                     authorAccountProvider:authorAccountProvider)
+        
         AudioPlayerWindow.shared.show()
 
     }

@@ -51,7 +51,7 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
         
-        tintColor = UIColor(named: CommonUsage.scDarkGreen)
+        tintColor = UIColor(named: CommonUsage.scBlue)
         setLabel()
         setButton()
         setBackgroundButton()

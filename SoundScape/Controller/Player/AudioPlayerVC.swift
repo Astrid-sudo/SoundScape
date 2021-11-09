@@ -366,6 +366,7 @@ class AudioPlayerVC: UIViewController {
         audioTitleLabel.text = nowPlayingInfo.title
         authorLabel.text = nowPlayingInfo.author
         nowPlayDocumentID = nowPlayingInfo.documentID
+        audioImage.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
         manipulateFavoriteImage()
         
     }

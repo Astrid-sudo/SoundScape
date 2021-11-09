@@ -529,7 +529,8 @@ class UploadVC: UIViewController {
         
         guard let title = titleTextField.text,
               let content = descriptionTextView.text,
-              let item = selectedCategoryIndex?.item else {
+              let item = selectedCategoryIndex?.item,
+        let audioImageNumber = selectedImageIndex?.item else {
                   popFillAlert()
                   return
               }
@@ -538,10 +539,12 @@ class UploadVC: UIViewController {
                           authorID: signInmanager.currentUserInfoFirebase?.userID ?? "No signIn",
                           authIDProvider: signInmanager.currentUserInfoFirebase?.provider ?? "No signIn",
                           authorName: signInmanager.currentUserInfoFirebase?.username ?? "No signIn",
-                          title: title,
-                          content: content,
+                          title: title, content: content,
+                          createdTime: nil, lastEditedTime: nil,
+                          audioURL: nil,
+                          imageNumber: audioImageNumber,
                           category: AudioCategory.allCases[item].rawValue,
-                          audioLocation: clLocationToGepPoint(cl: pinnedLocation ?? currentLocation),
+                          audioLocation: clLocationToGepPoint(cl: pinnedLocation),
                           duration: 0.0)
         
         if let selectedFileDuration = selectedFileDuration {

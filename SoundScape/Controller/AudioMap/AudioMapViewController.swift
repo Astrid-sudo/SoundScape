@@ -133,7 +133,7 @@ class AudioMapViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        tabBarController?.tabBar.isHidden = true
+        tabBarController?.tabBar.isHidden = false
     }
     
     // MARK: - method
@@ -343,6 +343,7 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
         let content = post.content
         let duration = post.duration
         let authorUserID = post.authorID
+        let audioImageNumber = post.imageNumber
         let authorAccountProvider = post.authIDProvider
 
         remotePlayHelper.url = url
@@ -352,6 +353,7 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
                                      duration: duration,
                                      documentID: documentID,
                                      authorUserID: authorUserID,
+                                     audioImageNumber: audioImageNumber,
                                      authorAccountProvider: authorAccountProvider)
         
         AudioPlayerWindow.shared.show()
@@ -365,7 +367,6 @@ extension AudioMapViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         searchCompleter.queryFragment = searchBar.text ?? ""
-
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
