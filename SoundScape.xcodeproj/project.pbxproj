@@ -34,6 +34,7 @@
 		567566EF273271C6007ACC61 /* SignInHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567566EE273271C6007ACC61 /* SignInHelper.swift */; };
 		5678FFA6272418B500E1ADD5 /* TestEditVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5678FFA5272418B500E1ADD5 /* TestEditVC.swift */; };
 		5678FFA827243FA300E1ADD5 /* EditVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5678FFA727243FA300E1ADD5 /* EditVC.swift */; };
+		5679328F273B61290074D15A /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679328E273B61290074D15A /* PrivacyPolicyViewController.swift */; };
 		5679F0FB271D084A00663001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FA271D084A00663001 /* AppDelegate.swift */; };
 		5679F0FD271D084A00663001 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FC271D084A00663001 /* SceneDelegate.swift */; };
 		5679F0FF271D084A00663001 /* SoundDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FE271D084A00663001 /* SoundDetailVC.swift */; };
@@ -94,6 +95,7 @@
 		567566EE273271C6007ACC61 /* SignInHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInHelper.swift; sourceTree = "<group>"; };
 		5678FFA5272418B500E1ADD5 /* TestEditVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEditVC.swift; sourceTree = "<group>"; };
 		5678FFA727243FA300E1ADD5 /* EditVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditVC.swift; sourceTree = "<group>"; };
+		5679328E273B61290074D15A /* PrivacyPolicyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyViewController.swift; sourceTree = "<group>"; };
 		5679F0F7271D084A00663001 /* SoundScape.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoundScape.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5679F0FA271D084A00663001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5679F0FC271D084A00663001 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -410,6 +412,7 @@
 			children = (
 				56D3F0C2272D813C00A3B3B3 /* ProfileViewController.swift */,
 				5630FE26272EB5D7003A38FB /* OthersProfileViewController.swift */,
+				5679328E273B61290074D15A /* PrivacyPolicyViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -629,6 +632,7 @@
 				5630FE25272E1C54003A38FB /* SignInManager.swift in Sources */,
 				5679F115271D641B00663001 /* AudioPlayHelper.swift in Sources */,
 				56F07D35272BCA7600ABC7B9 /* SearchViewController.swift in Sources */,
+				5679328F273B61290074D15A /* PrivacyPolicyViewController.swift in Sources */,
 				5678FFA827243FA300E1ADD5 /* EditVC.swift in Sources */,
 				569A7D7827229AE500CEE3EA /* HomeVC.swift in Sources */,
 				56C05AA927362DEB009D029C /* GoogleService.swift in Sources */,

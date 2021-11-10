@@ -28,6 +28,8 @@ struct CommonUsage {
                                           UIImage(named: CommonUsage.untitledArtwork)
     ]
     
+    static let privacyPolicyURL = "https://www.privacypolicies.com/live/11ed0980-697c-4f2e-9e23-412af25966c4"
+    
     static let fontBungee = "Bungee-Regular"
     static let font = "PingFang TC"
     static let fontSemibold = "PingFangTC-Semibold"
