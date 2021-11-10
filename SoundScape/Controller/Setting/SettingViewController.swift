@@ -10,7 +10,7 @@ import Lottie
 
 class SettingViewController: UIViewController {
 
-    var settingsOptions = ["隱私權政策", "使用說明", "關於", "登出"]
+    var settingsOptions = ["Privacy Policy", "Delete Account", "About", "Log Out"]
     
     let signInHelper = SignInHelper.shared
     
@@ -112,6 +112,16 @@ extension SettingViewController: UITableViewDelegate {
             navigationController?.pushViewController(privacyPolicyVC, animated: true)
             
         }
+        
+        if indexPath.row == 1 {
+            let alert = UIAlertController(title: "Please contact us to delete your account.", message: "astridtingan@gmail.com", preferredStyle: .alert )
+            let okButton = UIAlertAction(title: "ok", style: .default)
+            
+            alert.addAction(okButton)
+            present(alert, animated: true, completion: nil)
+
+        }
+        
     }
     
 }

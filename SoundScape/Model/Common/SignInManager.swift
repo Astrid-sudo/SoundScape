@@ -23,6 +23,7 @@ class SignInManager {
             checkCurrentUserFollowerList()
             checkUserPicFromFirebase()
             checkCoverPicFromFirebase()
+            checkBlackListFromFirebase()
         }
     }
     
@@ -55,26 +56,14 @@ class SignInManager {
             NotificationCenter.default.post(name: .currentUserCoverChange, object: nil, userInfo: nil)
         }
     }
-
     
-    
+    var currentUserBlacklist: [SCBlockUser]? {
+        didSet {
+            NotificationCenter.default.post(name: .currentUserBlacklistChange, object: nil, userInfo: nil)
+        }
+    }
 
     private init() {}
-    
-    // MARK: - user 1
-    
-    //    var currentUserID = "yaheyyodude"
-    //
-    //    var provider = "Appple"
-    //
-    //    var userName = "厘題恩"
-    //
-    //    var userEmail = "yaheyyodude@gmail.com"
-    //
-    //    var userPic = CommonUsage.profilePic
-    //
-    //    var profileCover = CommonUsage.profileCover
-    
     
     // MARK: - user 2
     
@@ -89,49 +78,6 @@ class SignInManager {
     var userPic = CommonUsage.profilePic2
     
     var profileCover = CommonUsage.profileCover2
-    
-    // MARK: - user 3
-    
-    //                var currentUserID = "tinganl.1216"
-    //
-    //                var provider = "Google"
-    //
-    //                var userName = "林庭安"
-    //
-    //                var userEmail = "tinganl.1216@gmail.com"
-    //
-    //                var userPic = CommonUsage.profilePic3
-    //
-    //                var profileCover = CommonUsage.profileCover3
-    
-    // MARK: - user 4
-    
-    //        var currentUserID = "ta811216"
-    //
-    //        var provider = "Google"
-    //
-    //        var userName = "安安"
-    //
-    //        var userEmail = "tina811216@gmail.com"
-    //
-    //        var userPic = CommonUsage.profilePic4
-    //
-    //        var profileCover = CommonUsage.profileCover4
-    //
-    // MARK: - user 5
-    
-    //    var currentUserID = "water"
-    //
-    //    var provider = "Google"
-    //
-    //    var userName = "A水"
-    //
-    //    var userEmail = "water@gmail.com"
-    //
-    //    var userPic = CommonUsage.profilePic5
-    //
-    //    var profileCover = CommonUsage.profileCover5
-    
     
     // MARK: - real user method
     
@@ -310,6 +256,18 @@ class SignInManager {
             }
         }
     }
+    
+    func checkBlackListFromFirebase() {
+        guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
+        firebaseManager.checkBlackListChange(userInfoDoumentID: userID) { result in
+            switch result {
+            case .success(let users):
+                self.currentUserBlacklist = users
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
 
 }
 
@@ -319,4 +277,5 @@ extension Notification.Name {
     static let currentUserFollowersChange = Notification.Name("currentUserFollowersChange")
     static let currentUserPicChange = Notification.Name("currentUserPicChange")
     static let currentUserCoverChange = Notification.Name("currentUserCoverChange")
+    static let currentUserBlacklistChange = Notification.Name("currentUserBlacklistChange")
 }

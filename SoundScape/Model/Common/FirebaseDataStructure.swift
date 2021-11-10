@@ -33,6 +33,10 @@ struct SCPicture: Codable {
     var picture: String
 }
 
+struct SCBlockUser: Codable {
+    let userID: String
+}
+
 struct SCFollow: Codable {
     let userID: String
     let provider: String

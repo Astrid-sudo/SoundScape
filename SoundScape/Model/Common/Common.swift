@@ -98,6 +98,7 @@ struct CommonUsage {
         static let photo = "photo"
         static let map = "map"
         static let headphonesCircleFill = "headphones.circle.fill"
+        static let ellipsis = "ellipsis"
     }
     
     struct Text {
@@ -118,6 +119,8 @@ struct CommonUsage {
         static let appName = "SoundScape"
         static let searchPlace = "Search Place"
         static let audioImage = "Pick a cover"
+        static let logInNotice = "By using SoundScape you agree to accept our"
+        static let privacyPolicy = "Privacy Policy"
     }
     
     struct CollectionName {

@@ -36,7 +36,7 @@ class AudioPlayerWindow {
         guard let window = window else { return }
         window.windowScene = scene
 
-        window.windowLevel = .alert
+        window.windowLevel = .statusBar - 1
         window.rootViewController = vc
         window.isHidden = true
         window.makeKeyAndVisible()

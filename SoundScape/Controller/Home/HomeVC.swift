@@ -19,6 +19,23 @@ class HomeVC: UIViewController {
         }
     }
     
+    var currentUserBlacklist: [SCBlockUser]? {
+        didSet {
+            guard let currentUserBlacklist = currentUserBlacklist else { return }
+            var blockedIDs = currentUserBlacklist.map({$0.userID})
+            
+            var shouldDisplayPosts = [SCPost]()
+            
+            for id in blockedIDs {
+                let shouldDisplayPost = allAudioFiles.filter({$0.authorID != id })
+                shouldDisplayPosts.append(contentsOf: shouldDisplayPost)
+            }
+           
+            allAudioFiles = shouldDisplayPosts
+            
+        }
+    }
+
     // MARK: - UI properties
     
     private lazy var tableView: UITableView = {
@@ -39,6 +56,7 @@ class HomeVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        addObserver()
         fetchDataFromFirebase()
         setTableView()
         setViewBackgroundcolor()
@@ -53,6 +71,10 @@ class HomeVC: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.isNavigationBarHidden = false
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - config UI method
@@ -73,6 +95,19 @@ class HomeVC: UIViewController {
     }
     
     // MARK: - method
+    
+    private func addObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(currentUserBlacklistChange),
+                                               name: .currentUserBlacklistChange ,
+                                               object: nil)
+
+    }
+    
+    @objc func currentUserBlacklistChange() {
+        currentUserBlacklist = SignInManager.shared.currentUserBlacklist
+    }
+
     
     private func fetchDataFromFirebase() {
         

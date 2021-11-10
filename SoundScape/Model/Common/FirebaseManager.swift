@@ -8,6 +8,8 @@
 import Foundation
 import Firebase
 
+// swiftlint:disable file_length
+
 class FirebaseManager {
     
     // MARK: - properties
@@ -22,6 +24,7 @@ class FirebaseManager {
     private var userPicListenser: ListenerRegistration?
     private var coverPicListenser: ListenerRegistration?
     private var locationsListenser: ListenerRegistration?
+    private var blackListListenser: ListenerRegistration?
     
     private let storage = Storage.storage().reference()
     
@@ -790,5 +793,71 @@ class FirebaseManager {
         }
     }
     
+    // MARK: - Black List
+    
+    func addToBlackList(loggedInUserInfoDocumentID: String, toBeBlockedID: String) {
+        
+        let myBlackListSubCollectionRef = allUsersCollectionRef.document(loggedInUserInfoDocumentID).collection("blackList")
+        
+        let user = SCBlockUser(userID: toBeBlockedID)
+        
+        do {
+            
+            try myBlackListSubCollectionRef.document(toBeBlockedID).setData(from: user)
+
+        } catch {
+            
+            print("Failed to add black list")
+        }
+    }
+    
+    func fetchUserBlackList(userProfileDocumentID: String, completion: @escaping
+                               (Result<[SCBlockUser], Error>) -> Void)  {
+        
+        let myBlackListSubCollectionRef = allUsersCollectionRef.document(userProfileDocumentID).collection("blackList")
+
+        myBlackListSubCollectionRef.getDocuments { [weak self] snapshot, error in
+            
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            
+            if let snapshot = snapshot {
+                let users = snapshot.documents.compactMap({ snapshot in
+                    try? snapshot.data(as: SCBlockUser.self)
+                })
+                
+                completion(Result.success(users))
+                
+            }
+        }
+    }
+    
+    func checkBlackListChange(userInfoDoumentID: String, completion: @escaping (Result<[SCBlockUser], Error>) -> Void) {
+        
+        let myBlackListSubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("blackList")
+
+        blackListListenser = myBlackListSubCollectionRef.addSnapshotListener { snapshot, error in
+            guard let snapshot = snapshot else { return }
+            snapshot.documentChanges.forEach { documentChange in
+                switch documentChange.type {
+                case .added:
+                    self.fetchUserBlackList(userProfileDocumentID: userInfoDoumentID, completion: completion)
+                    print("Blocked users added")
+                case .modified:
+                    self.fetchUserBlackList(userProfileDocumentID: userInfoDoumentID, completion: completion)
+                    print("Blocked users modified")
+                case .removed:
+                    self.fetchUserBlackList(userProfileDocumentID: userInfoDoumentID, completion: completion)
+                    print("Blocked users removed")
+                }
+            }
+        }
+    }
+
+
+    
 }
 
+// swiftlint:enable file_length

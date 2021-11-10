@@ -47,7 +47,7 @@ class CommentViewController: UIViewController {
     var authorsIDSet = Set<String>() {
         didSet {
             if authorsIDSet != oldValue {
-             newAuthorIDs = authorsIDSet.subtracting(oldValue)
+                newAuthorIDs = authorsIDSet.subtracting(oldValue)
             }
         }
     }
@@ -148,6 +148,34 @@ class CommentViewController: UIViewController {
             self.commentTextView.endEditing(true)
             self.animationView.removeFromSuperview()
         }
+        
+    }
+    
+    private func blockThisUser(toBeBlockedID: String) {
+        
+        guard let currentUserDocID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else { return }
+        
+        firebaseManager.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
+                                       toBeBlockedID: toBeBlockedID)
+    }
+    
+    private func popBlockAlert(toBeBlockedID: String) {
+        
+        let alert = UIAlertController(title: "Are you sure?",
+                                      message: "You can't see this user's comments, audio posts and profile page after blocking.",
+                                      preferredStyle: .alert )
+       
+        let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
+            guard let self = self else { return }
+            self.blockThisUser(toBeBlockedID: toBeBlockedID)
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        
+        present(alert, animated: true, completion: nil)
         
     }
     
@@ -253,7 +281,7 @@ extension CommentViewController: UITableViewDataSource {
         if let authorPic = userPicCache[authorID] {
             authorImageString = authorPic
         }
-            
+        
         cell.configCell(comment: comment, authorImageString: authorImageString)
         return cell
     }
@@ -271,6 +299,37 @@ extension CommentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         UITableView.automaticDimension
     }
+    
+    func tableView(_ tableView: UITableView,
+                   contextMenuConfigurationForRowAt indexPath: IndexPath,
+                   point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        let comment = comments[indexPath.row]
+        let authorID = comment.userID
+        
+        if authorID != signInManager.currentUserInfoFirebase?.userID {
+            
+            let index = indexPath.row
+            let identifier = "\(index)" as NSString
+            
+            return UIContextMenuConfiguration(
+                identifier: identifier, previewProvider: nil) { _ in
+                    // 3
+                    let blockAction = UIAction(title: "Block this user",
+                                               image: nil) { _ in
+                        self.popBlockAlert(toBeBlockedID: authorID)
+                    }
+                    return UIMenu(title: "",
+                                  image: nil,
+                                  children: [blockAction])
+                }
+        } else {
+            
+            return nil
+            
+        }
+    }
+    
 }
 
 // MARK: - UI method

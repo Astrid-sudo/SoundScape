@@ -22,6 +22,24 @@ class SearchViewController: UIViewController {
     
     private var allAudioFiles = [SCPost]()
     
+    var currentUserBlacklist: [SCBlockUser]? {
+        didSet {
+            guard let currentUserBlacklist = currentUserBlacklist else { return }
+            var blockedIDs = currentUserBlacklist.map({$0.userID})
+            
+            var shouldDisplayPosts = [SCPost]()
+            
+            for id in blockedIDs {
+                let shouldDisplayPost = allAudioFiles.filter({$0.authorID != id })
+                shouldDisplayPosts.append(contentsOf: shouldDisplayPost)
+            }
+           
+            allAudioFiles = shouldDisplayPosts
+            
+        }
+    }
+
+    
     private var resultAudioFiles = [SCPost]() {
         didSet {
             
@@ -39,6 +57,7 @@ class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        addObserver()
         fetchDataFromFirebase()
         setViewBackgroundColor()
         setSearchBar()
@@ -52,10 +71,25 @@ class SearchViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         animationView.play()
-
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - method
+    
+    private func addObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(currentUserBlacklistChange),
+                                               name: .currentUserBlacklistChange ,
+                                               object: nil)
+
+    }
+    
+    @objc func currentUserBlacklistChange() {
+        currentUserBlacklist = SignInManager.shared.currentUserBlacklist
+    }
     
     private func addLottie() {
         view.addSubview(animationView)
