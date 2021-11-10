@@ -67,7 +67,7 @@ class HomeTableViewCell: UITableViewCell {
             collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             collectionView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            collectionView.heightAnchor.constraint(equalToConstant: 250),
+            collectionView.heightAnchor.constraint(equalToConstant: 168),
             collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
         
@@ -93,8 +93,10 @@ extension HomeTableViewCell: UICollectionViewDataSource {
         
         // swiftlint:enable line_length
         
-        cell.setCell(image: nil,
-                     audioTitle: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName)
+        cell.setCell(imageNumber: firebaseData[indexPath.item].imageNumber , audioTitle: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName)
+        
+//        cell.setCell(image: nil,
+//                     audioTitle: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName)
         
         return cell
     }
@@ -114,6 +116,7 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         let duration = firebaseData[indexPath.item].duration
         let documentID = firebaseData[indexPath.item].documentID
         let authorUserID = firebaseData[indexPath.item].authorID
+        let audioImageNumber = firebaseData[indexPath.item].imageNumber
         let authorAccountProvider = firebaseData[indexPath.item].authIDProvider
         
         //         Must set url first, then set playInfo.
@@ -123,9 +126,17 @@ extension HomeTableViewCell: UICollectionViewDelegate {
                                      author: author,
                                      content: content,
                                      duration: duration,
-                                     documentID:documentID,
+                                     documentID: documentID,
                                      authorUserID: authorUserID,
-                                     authorAccountProvider:authorAccountProvider)
+                                     audioImageNumber: audioImageNumber,
+                                     authorAccountProvider: authorAccountProvider)
+        
+//        remotePlayHelper.setPlayInfo(title: title,
+//                                     author: author,
+//                                     content: content,
+//                                     duration: duration,
+//                                     documentID: documentID, authorUserID: authorUserID,, audioImageNumber: audioImageNumber
+//                                     authorAccountProvider: authorAccountProvider)
         
         AudioPlayerWindow.shared.show()
     }

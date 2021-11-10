@@ -18,7 +18,7 @@ class CategoryTableViewCell: UITableViewCell {
     lazy var titlelabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.font, size: 20)
+        label.font = UIFont(name: CommonUsage.fontSemibold, size: 20)
         label.textAlignment = .right
         return label
     }()
@@ -35,6 +35,8 @@ class CategoryTableViewCell: UITableViewCell {
         let image = UIImageView()
         image.layer.cornerRadius = 40
         image.layer.masksToBounds = true
+        image.contentMode = .scaleAspectFill
+        image.alpha = 0.4
         return image
     }()
     
@@ -86,11 +88,10 @@ class CategoryTableViewCell: UITableViewCell {
         ])
     }
     
-    func setContent(title: String, author: String) {
+    func setContent(title: String, author: String, audioImageNumber: Int) {
         titlelabel.text = title
         authorLabel.text = author
-        theImageView.image = UIImage(named: CommonUsage.audioImage)
+        theImageView.image = CommonUsage.audioImages[audioImageNumber]
     }
     
 }
-

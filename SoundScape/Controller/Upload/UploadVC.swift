@@ -39,6 +39,7 @@ class UploadVC: UIViewController {
             mapView.selectedMarker = mapMarker
         }
     }
+    
     private lazy var myLocation: CLLocationManager = {
         let location = CLLocationManager()
         location.delegate = self
@@ -47,7 +48,49 @@ class UploadVC: UIViewController {
         return location
     }()
     
+    private var selectedCategoryIndex: IndexPath? {
+        didSet {
+            
+            if let oldValue = oldValue {
+                if let cell = collectionView.cellForItem(at: oldValue) as? SearchCollectionViewCell {
+                    cell.setLabelColorGreen()
+                }
+            }
+            
+            guard let selectedCategoryIndex = selectedCategoryIndex,
+                  let cell = collectionView.cellForItem(at: selectedCategoryIndex) as? SearchCollectionViewCell else { return }
+            cell.setLabelColorRed()
+        }
+    }
+    
+    private var selectedImageIndex: IndexPath? {
+        didSet {
+            
+            if let oldValue = oldValue {
+                if let cell = audioImageCollectionView.cellForItem(at: oldValue) as? HomeCollectionViewCell {
+                    cell.removeImageBorder()
+                }
+            }
+            
+            guard let index = selectedImageIndex,
+                  let cell = audioImageCollectionView.cellForItem(at: index) as? HomeCollectionViewCell else { return }
+            cell.setImageBorder()
+        }
+    }
+    
     // MARK: - UI properties
+    
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.isScrollEnabled = true
+        scrollView.isDirectionalLockEnabled = true
+        scrollView.showsVerticalScrollIndicator = true
+        scrollView.zoomScale = 1.0
+        scrollView.minimumZoomScale = 1.0
+        scrollView.maximumZoomScale = 1.0
+        scrollView.contentSize = CGSize(width: CommonUsage.screenWidth, height: CommonUsage.screenHeight * 1.5)
+        return scrollView
+    }()
     
     private lazy var mapMarker: GMSMarker = {
         var marker = GMSMarker(position: currentLocation ?? defaultLocation)
@@ -92,11 +135,22 @@ class UploadVC: UIViewController {
         return label
     }()
     
+    private  lazy var audioImageLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor.white
+        label.font = UIFont(name: CommonUsage.font, size: 15)
+        label.textAlignment = .left
+        label.text = CommonUsage.Text.audioImage
+        return label
+    }()
+    
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
         textField.borderStyle = .roundedRect
         textField.textColor = .white
-        textField.layer.borderWidth = 0.5
+        textField.layer.borderWidth = 1.0
+        textField.layer.borderColor = UIColor.white.cgColor
+        textField.layer.cornerRadius = 10
         textField.textAlignment = .left
         textField.backgroundColor = .clear
         textField.delegate = self
@@ -106,7 +160,8 @@ class UploadVC: UIViewController {
     private lazy var descriptionTextView: UITextView = {
         let textView = UITextView()
         textView.layer.borderWidth = 1
-        textView.layer.borderColor = UIColor.black.cgColor
+        textView.layer.borderColor = UIColor.white.cgColor
+        textView.layer.cornerRadius = 10
         textView.textColor = .white
         textView.font = UIFont(name: CommonUsage.font, size: 15)
         textView.textAlignment = .left
@@ -127,7 +182,13 @@ class UploadVC: UIViewController {
         )
         control.tintColor = UIColor.black
         control.selectedSegmentIndex = 0
+        control.isHidden = true
         return control
+    }()
+    
+    private lazy var viewUndermap: UIView = {
+        let view = UIView()
+        return view
     }()
     
     private lazy var mapView: GMSMapView = {
@@ -136,7 +197,7 @@ class UploadVC: UIViewController {
         let camera = GMSCameraPosition.camera(withLatitude: posision.latitude, longitude: posision.longitude, zoom: 15.0)
         mapView.delegate = self
         mapView.camera = camera
-        
+        mapView.layer.cornerRadius = 10
         if backFromBigMap {
             mapView.settings.myLocationButton = false
             mapView.isMyLocationEnabled = false
@@ -154,6 +215,7 @@ class UploadVC: UIViewController {
         button.setTitle(CommonUsage.Text.upload, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(upload), for: .touchUpInside)
+        button.layer.cornerRadius = 10
         return button
     }()
     
@@ -170,22 +232,67 @@ class UploadVC: UIViewController {
         let button = UIButton()
         button.backgroundColor = UIColor(named: CommonUsage.scSuperLightBlue)
         button.setTitle(CommonUsage.Text.searchPlace, for: .normal)
+        button.titleLabel?.font = UIFont(name: CommonUsage.font, size: 14)
         button.setTitleColor(UIColor(named: CommonUsage.scRed), for: .normal)
         button.addTarget(self, action: #selector(presentBigMap), for: .touchUpInside)
+        button.layer.cornerRadius = 10
         return button
     }()
-
+    
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.itemSize = CGSize(width: 100, height: 30)
+        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 8
+        
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .white
+        collectionView.bounces = false
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.allowsMultipleSelection = false
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.backgroundColor = .clear
+        collectionView.register(SearchCollectionViewCell.self,
+                                forCellWithReuseIdentifier: SearchCollectionViewCell.reuseIdentifier)
+        return collectionView
+    }()
+    
+    private lazy var audioImageCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.itemSize = CGSize(width: 150, height: 150)
+        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 10
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        collectionView.bounces = true
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.allowsMultipleSelection = false
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.register(HomeCollectionViewCell.self,
+                                forCellWithReuseIdentifier: HomeCollectionViewCell.reuseIdentifier)
+        return collectionView
+    }()
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setScrollView()
         setTitleLabel()
         setTitleTextField()
         setDescriptionLabel()
         setDescriptionTextView()
         setCategoryLabel()
         setCategorySegmentControl()
+        setCategoryCollectionView()
+        setAudioImageLabel()
+        setImageCollectionView()
         setMapLabel()
+        setViewUnderMap()
         setMapView()
         setUploadButton()
         setViewBackgroundColor()
@@ -196,7 +303,7 @@ class UploadVC: UIViewController {
         super.viewWillAppear(animated)
         guard let pinnedLocation = pinnedLocation else { return }
         mapView.camera = GMSCameraPosition.camera(withLatitude: pinnedLocation.latitude, longitude: pinnedLocation.longitude, zoom: 15)
-
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -217,27 +324,38 @@ class UploadVC: UIViewController {
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
     }
     
+    private func setScrollView() {
+        view.addSubview(scrollView)
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8)
+        ])
+    }
+    
     private func setTitleLabel() {
-        view.addSubview(titleLabel)
+        scrollView.addSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+            titleLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
+            titleLabel.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 8),
         ])
     }
     
     private func setTitleTextField() {
-        view.addSubview(titleTextField)
+        scrollView.addSubview(titleTextField)
         titleTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            titleTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            titleTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            titleTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8)
+            titleTextField.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
+            titleTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
+            titleTextField.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32)
         ])
     }
     
     private func setDescriptionLabel() {
-        view.addSubview(descriptionLabel)
+        scrollView.addSubview(descriptionLabel)
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -246,21 +364,20 @@ class UploadVC: UIViewController {
     }
     
     private func setDescriptionTextView() {
-        view.addSubview(descriptionTextView)
+        scrollView.addSubview(descriptionTextView)
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            descriptionTextView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
             descriptionTextView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 16),
-            descriptionTextView.heightAnchor.constraint(equalToConstant: 50)
+            descriptionTextView.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32)
         ])
     }
     
     private func setCategoryLabel() {
-        view.addSubview(categoryLabel)
+        scrollView.addSubview(categoryLabel)
         categoryLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            categoryLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            categoryLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
             categoryLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 16)
         ])
     }
@@ -269,53 +386,96 @@ class UploadVC: UIViewController {
         view.addSubview(categorySegmentControl)
         categorySegmentControl.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            categorySegmentControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            categorySegmentControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            categorySegmentControl.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
+            categorySegmentControl.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -16),
             categorySegmentControl.topAnchor.constraint(equalTo: categoryLabel.bottomAnchor, constant: 16),
             categorySegmentControl.heightAnchor.constraint(equalToConstant: 15)
         ])
     }
     
+    private func setCategoryCollectionView() {
+        scrollView.addSubview(collectionView)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            collectionView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            collectionView.topAnchor.constraint(equalTo: categoryLabel.bottomAnchor, constant: 16),
+            collectionView.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    private func setAudioImageLabel() {
+        scrollView.addSubview(audioImageLabel)
+        audioImageLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            audioImageLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
+            audioImageLabel.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 16)
+        ])
+    }
+    
+    private func setImageCollectionView() {
+        scrollView.addSubview(audioImageCollectionView)
+        audioImageCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            audioImageCollectionView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            audioImageCollectionView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            audioImageCollectionView.topAnchor.constraint(equalTo: audioImageLabel.bottomAnchor, constant: 8),
+            audioImageCollectionView.heightAnchor.constraint(equalToConstant: 150)
+        ])
+    }
+    
     private func setMapLabel() {
-        view.addSubview(mapLabel)
+        scrollView.addSubview(mapLabel)
         mapLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            mapLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            mapLabel.topAnchor.constraint(equalTo: categorySegmentControl.bottomAnchor, constant: 16)
+            mapLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
+            mapLabel.topAnchor.constraint(equalTo: audioImageCollectionView.bottomAnchor, constant: 8)
+        ])
+    }
+    
+    private func setViewUnderMap() {
+        scrollView.addSubview(viewUndermap)
+        viewUndermap.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            viewUndermap.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
+            viewUndermap.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -16),
+            viewUndermap.topAnchor.constraint(equalTo: mapLabel.bottomAnchor, constant: 16),
+            viewUndermap.heightAnchor.constraint(equalToConstant: 180)
         ])
     }
     
     private func setMapView() {
-        view.addSubview(mapView)
+        viewUndermap.addSubview(mapView)
         mapView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            mapView.topAnchor.constraint(equalTo: mapLabel.bottomAnchor, constant: 16)
+            mapView.leadingAnchor.constraint(equalTo: viewUndermap.leadingAnchor),
+            mapView.trailingAnchor.constraint(equalTo: viewUndermap.trailingAnchor),
+            mapView.topAnchor.constraint(equalTo: viewUndermap.topAnchor),
+            mapView.bottomAnchor.constraint(equalTo: viewUndermap.bottomAnchor)
         ])
     }
     
     private func setUploadButton() {
-        view.addSubview(uploadButton)
+        scrollView.addSubview(uploadButton)
         uploadButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            uploadButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            uploadButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            uploadButton.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 8),
-            uploadButton.heightAnchor.constraint(equalToConstant: 30),
-            uploadButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -4)
+            uploadButton.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
+            uploadButton.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -16),
+            uploadButton.topAnchor.constraint(equalTo: viewUndermap.bottomAnchor, constant: 8),
+            uploadButton.heightAnchor.constraint(equalToConstant: 50),
+            uploadButton.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -4)
         ])
     }
     
     private func setSearchPlaceButton() {
-        view.addSubview(searchPlaceButton)
+        scrollView.addSubview(searchPlaceButton)
         searchPlaceButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            searchPlaceButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            searchPlaceButton.topAnchor.constraint(equalTo: categorySegmentControl.bottomAnchor, constant: 16)
+            searchPlaceButton.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -16),
+            searchPlaceButton.centerYAnchor.constraint(equalTo: mapLabel.centerYAnchor)
         ])
     }
-
+    
     // MARK: - method
     
     private func addLottie() {
@@ -369,7 +529,8 @@ class UploadVC: UIViewController {
         
         guard let title = titleTextField.text,
               let content = descriptionTextView.text,
-              let category = categorySegmentControl.titleForSegment(at: categorySegmentControl.selectedSegmentIndex) else {
+              let item = selectedCategoryIndex?.item,
+        let audioImageNumber = selectedImageIndex?.item else {
                   popFillAlert()
                   return
               }
@@ -378,10 +539,12 @@ class UploadVC: UIViewController {
                           authorID: signInmanager.currentUserInfoFirebase?.userID ?? "No signIn",
                           authIDProvider: signInmanager.currentUserInfoFirebase?.provider ?? "No signIn",
                           authorName: signInmanager.currentUserInfoFirebase?.username ?? "No signIn",
-                          title: title,
-                          content: content,
-                          category: category,
-                          audioLocation: clLocationToGepPoint(cl: pinnedLocation ?? currentLocation),
+                          title: title, content: content,
+                          createdTime: nil, lastEditedTime: nil,
+                          audioURL: nil,
+                          imageNumber: audioImageNumber,
+                          category: AudioCategory.allCases[item].rawValue,
+                          audioLocation: clLocationToGepPoint(cl: pinnedLocation),
                           duration: 0.0)
         
         if let selectedFileDuration = selectedFileDuration {
@@ -406,7 +569,6 @@ class UploadVC: UIViewController {
         
         navigationController?.pushViewController(audioMapVC, animated: true)
         
-        
     }
     
 }
@@ -430,8 +592,6 @@ extension UploadVC: CLLocationManagerDelegate {
                                                       longitude: currentLocation.longitude,
                                                       zoom: 15)
         }
-        
-        
     }
     
 }
@@ -442,11 +602,6 @@ extension UploadVC: GMSMapViewDelegate {
     
     func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
         pinnedLocation = coordinate
-//        mapMarker.title = titleTextField.text
-//        mapMarker.position = coordinate
-//        mapMarker.snippet = signInmanager.currentUserInfoFirebase?.username
-//        mapMarker.map = mapView
-//        mapView.selectedMarker = mapMarker
     }
     
 }
@@ -463,12 +618,101 @@ extension UploadVC: UITextFieldDelegate {
     
 }
 
+// MARK: - conform to LocationCoordinatePassableDelegate
+
 extension UploadVC: LocationCoordinatePassableDelegate {
-   
+    
     func displayPinOnSmallMap(locationFromBigMap: CLLocationCoordinate2D?) {
         pinnedLocation = locationFromBigMap
         mapView.isMyLocationEnabled = false
         backFromBigMap = true
+    }
+    
+}
+
+// MARK: - conform to UICollectionViewDataSource
+
+extension UploadVC: UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        if collectionView == self.collectionView {
+            return  AudioCategory.allCases.count
+        }
+        
+        if collectionView == audioImageCollectionView {
+            return CommonUsage.audioImages.count
+        }
+        
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        if collectionView == self.collectionView {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchCollectionViewCell.reuseIdentifier,
+                                                                for: indexPath) as? SearchCollectionViewCell else { return UICollectionViewCell()}
+            cell.setContent(content: AudioCategory.allCases[indexPath.item].rawValue)
+            if indexPath == selectedCategoryIndex {
+                cell.setLabelColorRed()
+            } else {
+                cell.setLabelColorGreen()
+            }
+            return cell
+        }
+        
+        if collectionView == audioImageCollectionView {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeCollectionViewCell.reuseIdentifier,
+                                                                for: indexPath) as? HomeCollectionViewCell else { return UICollectionViewCell() }
+            cell.setCellImage(image: CommonUsage.audioImages[indexPath.item])
+            
+            if indexPath == selectedImageIndex {
+                cell.setImageBorder()
+            } else {
+                cell.removeImageBorder()
+            }
+            
+            return cell
+        }
+        
+        return UICollectionViewCell()
+    }
+    
+}
+
+// MARK: - conform to UICollectionViewDelegate
+
+extension UploadVC: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        if collectionView == self.collectionView {
+            
+            if let selectedCategoryIndex = selectedCategoryIndex {
+                collectionView.deselectItem(at: selectedCategoryIndex, animated: true)
+            }
+            selectedCategoryIndex = indexPath
+        }
+        
+        if collectionView == audioImageCollectionView {
+            guard let cell = collectionView.cellForItem(at: indexPath) as? HomeCollectionViewCell else { return }
+            selectedImageIndex = indexPath
+        }
+        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        
+        if collectionView == self.collectionView {
+            guard let cell = collectionView.cellForItem(at: indexPath) as? SearchCollectionViewCell else { return }
+            cell.setLabelColorGreen()
+        }
+        
+        if collectionView == audioImageCollectionView {
+            guard let cell = collectionView.cellForItem(at: indexPath) as? HomeCollectionViewCell else { return }
+            cell.removeImageBorder()
+        }
     }
     
 }

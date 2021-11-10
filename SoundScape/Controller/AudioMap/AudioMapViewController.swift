@@ -125,11 +125,16 @@ class AudioMapViewController: UIViewController {
         }
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        scInfoWindow.layer.cornerRadius = 10
+        scInfoWindow.clipsToBounds = true
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
     }
-    
     
     // MARK: - method
     
@@ -286,8 +291,8 @@ extension AudioMapViewController: GMSMapViewDelegate {
             let audioTitle = post.title
             scInfoWindow.setMapMarkerIcon(title: audioTitle, authorName: audioAuthorName)
             tappedMarker = marker
-            scInfoWindow.center = mapView.projection.point(for: location)
-            scInfoWindow.center.y -= 20
+//            scInfoWindow.center = mapView.projection.point(for: location)
+//            scInfoWindow.center.y += 100
             scInfoWindow.delegate = self
             self.view.addSubview(scInfoWindow)
             return false
@@ -338,6 +343,7 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
         let content = post.content
         let duration = post.duration
         let authorUserID = post.authorID
+        let audioImageNumber = post.imageNumber
         let authorAccountProvider = post.authIDProvider
 
         remotePlayHelper.url = url
@@ -347,6 +353,7 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
                                      duration: duration,
                                      documentID: documentID,
                                      authorUserID: authorUserID,
+                                     audioImageNumber: audioImageNumber,
                                      authorAccountProvider: authorAccountProvider)
         
         AudioPlayerWindow.shared.show()
@@ -360,7 +367,6 @@ extension AudioMapViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         searchCompleter.queryFragment = searchBar.text ?? ""
-
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {

@@ -10,7 +10,7 @@ import UIKit
 class HomeVC: UIViewController {
     
     // MARK: - properties
-
+    
     let firebaseManager = FirebaseManager.shared
     
     var allAudioFiles = [SCPost]() {
@@ -87,7 +87,7 @@ class HomeVC: UIViewController {
                 print(error)
             }
         }
-
+        
     }
 }
 
@@ -104,7 +104,8 @@ extension HomeVC: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell else { return UITableViewCell()
+        }
         
         let filteredFiles = allAudioFiles.filter({$0.category == AudioCategory.allCases[indexPath.section].rawValue})
         cell.backgroundColor = .clear
@@ -161,7 +162,6 @@ extension HomeVC: PressPassableDelegate {
         
         categoryPage.config(category: category, data: data)
         navigationController?.pushViewController(categoryPage, animated: true)
-
     }
     
     func goCategoryPage() {

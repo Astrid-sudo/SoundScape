@@ -19,8 +19,10 @@ class SearchCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.textColor = UIColor(named: CommonUsage.scYellow)
         label.backgroundColor = UIColor(named: CommonUsage.scLightGreen)
-        label.layer.cornerRadius = 10
+        label.layer.cornerRadius = 20
         label.textAlignment = .center
+        label.clipsToBounds = true
+        label.layer.masksToBounds = true
         return label
     }()
     
@@ -48,7 +50,6 @@ class SearchCollectionViewCell: UICollectionViewCell {
             textLabel.widthAnchor.constraint(equalToConstant: 90),
             textLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
-
     }
     
     func setContent(content: String) {

@@ -16,6 +16,7 @@ struct PlayInfo {
     let duration: Double
     let documentID: String
     let authorUserID: String
+    let audioImageNumber: Int
     let authorAccountProvider: String
 }
 
@@ -140,8 +141,16 @@ class RemotePlayHelper {
         self.metadata = matadata
     }
     
-    func setPlayInfo(title: String, author: String, content: String, duration: Double, documentID: String,  authorUserID: String, authorAccountProvider: String) {
-        currentPlayInfo = PlayInfo(title: title, author: author, content: content, duration: duration, documentID: documentID, authorUserID: authorUserID, authorAccountProvider: authorAccountProvider)
+    func setPlayInfo(title: String, author: String, content: String, duration: Double, documentID: String,  authorUserID: String,audioImageNumber: Int, authorAccountProvider: String) {
+        
+        currentPlayInfo = PlayInfo(title: title,
+                                   author: author,
+                                   content: content,
+                                   duration: duration,
+                                   documentID: documentID,
+                                   authorUserID: authorUserID,
+                                   audioImageNumber: audioImageNumber,
+                                   authorAccountProvider: authorAccountProvider)
     }
     
 }

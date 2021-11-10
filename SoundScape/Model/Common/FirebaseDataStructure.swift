@@ -51,9 +51,9 @@ struct SCPost: Codable, Hashable {
     var content: String
     var createdTime: Timestamp?
     var lastEditedTime: Timestamp?
-    var imageURL: URL?
+//    var imageURL: URL?
     var audioURL: URL?
-    //    var audioBase64: String?
+    var imageNumber: Int
     var category: String
     var audioLocation: GeoPoint?
     var duration: Double

@@ -17,7 +17,7 @@ class SCMapInfoWindow: UIView {
     
     private lazy var button: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .red
+        button.backgroundColor = .clear
         button.addTarget(self, action: #selector(goSoundDetailPage), for: .touchUpInside)
         return button
     }()
@@ -40,11 +40,20 @@ class SCMapInfoWindow: UIView {
         return label
     }()
     
+    private lazy var headphoneImageView: UIImageView = {
+        let imageView = UIImageView()
+        let image = UIImage(systemName: CommonUsage.SFSymbol.headphonesCircleFill)
+        imageView.image = image
+        return imageView
+    }()
+    
     // MARK: - init
     
     init() {
-        super.init(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        super.init(frame: CGRect(x: 0, y: 0, width: 180, height: 50))
         self.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        self.layer.cornerRadius = 10
+        setHeadphoneImageView()
         setButton()
         setTitleLabel()
         setAuthorNamelabel()
@@ -62,6 +71,17 @@ class SCMapInfoWindow: UIView {
     
     // MARK: - UI method
     
+    private func setHeadphoneImageView() {
+        self.addSubview(headphoneImageView)
+        headphoneImageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            headphoneImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 4),
+            headphoneImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 4),
+            headphoneImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4),
+            headphoneImageView.widthAnchor.constraint(equalTo: headphoneImageView.heightAnchor)
+        ])
+    }
+    
     private func setButton() {
         self.addSubview(button)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -77,9 +97,9 @@ class SCMapInfoWindow: UIView {
         self.addSubview(titlelabel)
         titlelabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            titlelabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            titlelabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
-            titlelabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 8)
+            titlelabel.leadingAnchor.constraint(equalTo: headphoneImageView.trailingAnchor, constant: 4),
+//            titlelabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            titlelabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 4)
         ])
     }
     
@@ -87,9 +107,10 @@ class SCMapInfoWindow: UIView {
         self.addSubview(authorNamelabel)
         authorNamelabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            authorNamelabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            authorNamelabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
-            authorNamelabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8)
+            authorNamelabel.topAnchor.constraint(equalTo: titlelabel.bottomAnchor, constant: 4),
+            authorNamelabel.leadingAnchor.constraint(equalTo: headphoneImageView.trailingAnchor, constant: 4),
+//            authorNamelabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            authorNamelabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4)
         ])
     }
     
