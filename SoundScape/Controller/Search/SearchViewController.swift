@@ -20,25 +20,7 @@ class SearchViewController: UIViewController {
     
     private var keyWord: String?
     
-    private var allAudioFiles = [SCPost]()
-    
-    var currentUserBlacklist: [SCBlockUser]? {
-        didSet {
-            guard let currentUserBlacklist = currentUserBlacklist else { return }
-            var blockedIDs = currentUserBlacklist.map({$0.userID})
-            
-            var shouldDisplayPosts = [SCPost]()
-            
-            for id in blockedIDs {
-                let shouldDisplayPost = allAudioFiles.filter({$0.authorID != id })
-                shouldDisplayPosts.append(contentsOf: shouldDisplayPost)
-            }
-           
-            allAudioFiles = shouldDisplayPosts
-            
-        }
-    }
-
+    private var audioFiles = [SCPost]()
     
     private var resultAudioFiles = [SCPost]() {
         didSet {
@@ -81,42 +63,30 @@ class SearchViewController: UIViewController {
     
     private func addObserver() {
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(currentUserBlacklistChange),
-                                               name: .currentUserBlacklistChange ,
+                                               selector: #selector(updateAllAudioFile),
+                                               name: .allAudioPostChange ,
                                                object: nil)
+    }
+    
+    @objc func updateAllAudioFile() {
+        fetchDataFromFirebase()
+    }
 
-    }
-    
-    @objc func currentUserBlacklistChange() {
-        currentUserBlacklist = SignInManager.shared.currentUserBlacklist
-    }
-    
     private func addLottie() {
         view.addSubview(animationView)
         animationView.play()
     }
 
     private func fetchDataFromFirebase() {
-        
-        firebaseManager.checkPostsChange { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .success(let posts):
-                self.allAudioFiles = posts
-                
-            case.failure(let error):
-                print(error)
-            }
-        }
+        audioFiles = AudioPostManager.shared.filteredAudioFiles
     }
     
     private func search() {
         
         guard let keyword = self.keyWord else { return }
-        let titleResult = allAudioFiles.filter({$0.title.lowercased().contains(keyword.lowercased())})
-        let authorResult = allAudioFiles.filter({$0.authorName.lowercased().contains(keyword.lowercased())})
-        let contentResult = allAudioFiles.filter({$0.content.lowercased().contains(keyword.lowercased())})
+        let titleResult = audioFiles.filter({$0.title.lowercased().contains(keyword.lowercased())})
+        let authorResult = audioFiles.filter({$0.authorName.lowercased().contains(keyword.lowercased())})
+        let contentResult = audioFiles.filter({$0.content.lowercased().contains(keyword.lowercased())})
         let allResult = titleResult + authorResult + contentResult
         let resultSet = Set(allResult)
         let resultArray = Array(resultSet)
@@ -330,7 +300,8 @@ extension SearchViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.reuseIdentifier, for: indexPath) as? SearchTableViewCell else { return UITableViewCell()}
         let data = resultAudioFiles[indexPath.row]
-        cell.setContent(title: data.title, author: data.authorName)
+        cell.selectionStyle = .none
+        cell.setContent(title: data.title, author: data.authorName, imageNumber: data.imageNumber)
         return cell
     }
     

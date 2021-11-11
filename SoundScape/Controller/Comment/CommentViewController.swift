@@ -24,6 +24,12 @@ class CommentViewController: UIViewController {
     var comments = [SCComment]() {
         didSet {
             filterOutAuthors()
+            filterComment()
+        }
+    }
+    
+    var commentsWillDisplay = [SCComment]() {
+        didSet {
             tableView.reloadData()
         }
     }
@@ -59,10 +65,18 @@ class CommentViewController: UIViewController {
         }
     }
     
+    var currentUserBlacklist: [SCBlockUser]? {
+        didSet {
+            filterComment()
+        }
+    }
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        addObserver()
+        fetchBlacklist()
         setViewbackgroundColor()
         setCommentTitleLabel()
         setDismissButton()
@@ -86,11 +100,50 @@ class CommentViewController: UIViewController {
         currentUserImageView.image = UIImage(data: data)
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     // MARK: - method
+    
+    private func addObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(currentUserBlacklistChange),
+                                               name: .currentUserBlacklistChange ,
+                                               object: nil)
+        
+    }
+    
+    @objc func currentUserBlacklistChange() {
+        fetchBlacklist()
+    }
+    
+    private func fetchBlacklist() {
+        currentUserBlacklist = signInManager.currentUserBlacklist
+    }
     
     private func filterOutAuthors() {
         let authors = comments.map({$0.userID})
         authorsIDSet = Set(authors)
+    }
+    
+    private func filterComment() {
+        if let currentUserBlacklist = currentUserBlacklist {
+            
+            let blockedIDs = currentUserBlacklist.map({$0.userID})
+            var shouldDisplayComments = [SCComment]()
+            
+            for id in blockedIDs {
+                let shouldDisplayComment = comments.filter({$0.userID != id })
+                shouldDisplayComments.append(contentsOf: shouldDisplayComment)
+            }
+            
+            commentsWillDisplay = shouldDisplayComments
+            
+        } else {
+            
+            commentsWillDisplay = comments
+        }
     }
     
     private func checkComment(from documentID: String) {
@@ -106,10 +159,8 @@ class CommentViewController: UIViewController {
                 
             case .failure(let error):
                 print("Failed to fetch comments \(error)")
-                
             }
         }
-        
     }
     
     @objc private func addComment() {
@@ -148,7 +199,6 @@ class CommentViewController: UIViewController {
             self.commentTextView.endEditing(true)
             self.animationView.removeFromSuperview()
         }
-        
     }
     
     private func blockThisUser(toBeBlockedID: String) {
@@ -156,7 +206,7 @@ class CommentViewController: UIViewController {
         guard let currentUserDocID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else { return }
         
         firebaseManager.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
-                                       toBeBlockedID: toBeBlockedID)
+                                       toBeBlockedID: toBeBlockedID, completion: nil)
     }
     
     private func popBlockAlert(toBeBlockedID: String) {
@@ -164,7 +214,7 @@ class CommentViewController: UIViewController {
         let alert = UIAlertController(title: "Are you sure?",
                                       message: "You can't see this user's comments, audio posts and profile page after blocking.",
                                       preferredStyle: .alert )
-       
+        
         let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
             guard let self = self else { return }
             self.blockThisUser(toBeBlockedID: toBeBlockedID)
@@ -176,7 +226,6 @@ class CommentViewController: UIViewController {
         alert.addAction(okButton)
         
         present(alert, animated: true, completion: nil)
-        
     }
     
     // MARK: - UI properties
@@ -269,12 +318,12 @@ class CommentViewController: UIViewController {
 extension CommentViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        comments.count
+        commentsWillDisplay.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CommentTableViewCell.reuseIdentifier, for: indexPath) as? CommentTableViewCell else { return UITableViewCell()}
-        let comment = comments[indexPath.row]
+        let comment = commentsWillDisplay[indexPath.row]
         let authorID = comment.userID
         var authorImageString: String?
         
@@ -304,7 +353,7 @@ extension CommentViewController: UITableViewDelegate {
                    contextMenuConfigurationForRowAt indexPath: IndexPath,
                    point: CGPoint) -> UIContextMenuConfiguration? {
         
-        let comment = comments[indexPath.row]
+        let comment = commentsWillDisplay[indexPath.row]
         let authorID = comment.userID
         
         if authorID != signInManager.currentUserInfoFirebase?.userID {
@@ -323,6 +372,7 @@ extension CommentViewController: UITableViewDelegate {
                                   image: nil,
                                   children: [blockAction])
                 }
+            
         } else {
             
             return nil

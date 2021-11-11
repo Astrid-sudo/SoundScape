@@ -13,29 +13,12 @@ class HomeVC: UIViewController {
     
     let firebaseManager = FirebaseManager.shared
     
-    var allAudioFiles = [SCPost]() {
+    var audioFiles = [SCPost]() {
         didSet {
             tableView.reloadData()
         }
     }
     
-    var currentUserBlacklist: [SCBlockUser]? {
-        didSet {
-            guard let currentUserBlacklist = currentUserBlacklist else { return }
-            var blockedIDs = currentUserBlacklist.map({$0.userID})
-            
-            var shouldDisplayPosts = [SCPost]()
-            
-            for id in blockedIDs {
-                let shouldDisplayPost = allAudioFiles.filter({$0.authorID != id })
-                shouldDisplayPosts.append(contentsOf: shouldDisplayPost)
-            }
-           
-            allAudioFiles = shouldDisplayPosts
-            
-        }
-    }
-
     // MARK: - UI properties
     
     private lazy var tableView: UITableView = {
@@ -55,12 +38,10 @@ class HomeVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         addObserver()
-        fetchDataFromFirebase()
+        fetchAllAudioFile()
         setTableView()
         setViewBackgroundcolor()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -98,32 +79,19 @@ class HomeVC: UIViewController {
     
     private func addObserver() {
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(currentUserBlacklistChange),
-                                               name: .currentUserBlacklistChange ,
+                                               selector: #selector(updateAllAudioFile),
+                                               name: .allAudioPostChange ,
                                                object: nil)
-
     }
     
-    @objc func currentUserBlacklistChange() {
-        currentUserBlacklist = SignInManager.shared.currentUserBlacklist
+    @objc func updateAllAudioFile() {
+        fetchAllAudioFile()
     }
-
     
-    private func fetchDataFromFirebase() {
-        
-        firebaseManager.checkPostsChange { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .success(let posts):
-                self.allAudioFiles = posts
-                
-            case.failure(let error):
-                print(error)
-            }
-        }
-        
+    private func fetchAllAudioFile() {
+        audioFiles = AudioPostManager.shared.filteredAudioFiles
     }
+    
 }
 
 // MARK: - conform to UITableViewDataSource
@@ -142,7 +110,7 @@ extension HomeVC: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell else { return UITableViewCell()
         }
         
-        let filteredFiles = allAudioFiles.filter({$0.category == AudioCategory.allCases[indexPath.section].rawValue})
+        let filteredFiles = audioFiles.filter({$0.category == AudioCategory.allCases[indexPath.section].rawValue})
         cell.backgroundColor = .clear
         cell.firebaseData = filteredFiles
         cell.category = AudioCategory.allCases[indexPath.item].rawValue
@@ -185,7 +153,7 @@ extension HomeVC: PressPassableDelegate {
         
         var data = [SCPost]()
         
-        for file in allAudioFiles {
+        for file in audioFiles {
             
             if file.category == category.rawValue {
                 data.append(file)

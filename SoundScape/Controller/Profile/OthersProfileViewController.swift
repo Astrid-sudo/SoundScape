@@ -53,6 +53,7 @@ class OthersProfileViewController: UIViewController {
             followingsNumberLabel.text = String(describing: numbersOfFollowings)
         }
     }
+    
     private var othersFollowingList: [SCFollow]? {
         didSet {
             tableView.reloadData()
@@ -81,6 +82,7 @@ class OthersProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        addObserver()
         fetchUserInfo()
         fetchDataFromFirebase()
         setBackgroundColor()
@@ -110,6 +112,10 @@ class OthersProfileViewController: UIViewController {
         navigationController?.isNavigationBarHidden = false
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     // MARK: - Action
     
     @objc func manipulateFollow() {
@@ -129,6 +135,15 @@ class OthersProfileViewController: UIViewController {
     
     // MARK: - method
     
+    private func addObserver() {
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateAllAudioFile),
+                                               name: .allAudioPostChange ,
+                                               object: nil)
+
+    }
+
     private func manipulateFollowButton() {
         guard let otherUserID = userWillDisplay?.userID,
               let currentUserFollowingsID = signInManager.currentUserFollowingList?.map({$0.userID}) else { return }
@@ -200,6 +215,7 @@ class OthersProfileViewController: UIViewController {
             print("OtherProfileVC: Cant get favorite")
             return
         }
+        
         firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self]
             
             result in
@@ -218,18 +234,12 @@ class OthersProfileViewController: UIViewController {
         }
     }
     
+    @objc func updateAllAudioFile() {
+        fetchDataFromFirebase()
+    }
+    
     private func fetchDataFromFirebase() {
-        firebaseManager.checkPostsChange { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .success(let posts):
-                self.allAudioFiles = posts
-                
-            case.failure(let error):
-                print(error)
-            }
-        }
+        allAudioFiles = AudioPostManager.shared.filteredAudioFiles
     }
     
     func fetchUserPicFromFirebase() {
@@ -283,15 +293,20 @@ class OthersProfileViewController: UIViewController {
         present(alert, animated: true, completion: nil)
         
     }
-
     
+    private func backToHome() {
+        navigationController?.popToRootViewController(animated: true)
+        guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
+        scTabBarController.selectedIndex = 0
+    }
+
     private func blockUser() {
         
         guard let currentUserDocID = signInManager.currentUserInfoFirebase?.userInfoDoumentID,
               let  blockUser = userWillDisplay else { return }
         
         firebaseManager.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
-                                       toBeBlockedID: blockUser.userID)
+                                       toBeBlockedID: blockUser.userID, completion: backToHome)
     }
     
     @objc func popMoreMessageAlert() {
@@ -422,8 +437,6 @@ class OthersProfileViewController: UIViewController {
         button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
         button.addTarget(self, action: #selector(manipulateFollow), for: .touchUpInside)
         button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
-//        button.layer.borderWidth = 1
-//        button.layer.borderColor = UIColor(named: CommonUsage.scLightGreen)?.cgColor
         button.layer.cornerRadius = 15
         button.setTitle(CommonUsage.Text.follow, for: .normal)
         return button
@@ -526,6 +539,7 @@ class OthersProfileViewController: UIViewController {
             followButton.widthAnchor.constraint(equalToConstant: 80)
         ])
     }
+    
 }
 
 // MARK: - conform to UITableViewDataSource

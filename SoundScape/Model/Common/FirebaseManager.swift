@@ -795,7 +795,7 @@ class FirebaseManager {
     
     // MARK: - Black List
     
-    func addToBlackList(loggedInUserInfoDocumentID: String, toBeBlockedID: String) {
+    func addToBlackList(loggedInUserInfoDocumentID: String, toBeBlockedID: String, completion: (() -> Void)?) {
         
         let myBlackListSubCollectionRef = allUsersCollectionRef.document(loggedInUserInfoDocumentID).collection("blackList")
         
@@ -804,6 +804,8 @@ class FirebaseManager {
         do {
             
             try myBlackListSubCollectionRef.document(toBeBlockedID).setData(from: user)
+            
+            completion?()
 
         } catch {
             
