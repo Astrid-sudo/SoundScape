@@ -10,7 +10,7 @@ import Lottie
 
 class SettingViewController: UIViewController {
 
-    var settingsOptions = ["隱私權政策", "使用說明", "關於", "登出"]
+    var settingsOptions = ["Privacy Policy", "Delete Account", "About", "Log Out"]
     
     let signInHelper = SignInHelper.shared
     
@@ -87,6 +87,7 @@ extension SettingViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: SettingTableViewCell.reuseIdentifier, for: indexPath) as? SettingTableViewCell else { return UITableViewCell() }
+        cell.selectionStyle = .none
         cell.configCell(content: settingsOptions[indexPath.row])
         return cell
     }
@@ -97,12 +98,30 @@ extension SettingViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
        
         if indexPath.row == 3 {
-            
             signInHelper.signOutAuth { [weak self] in
                 guard let self = self else { return }
                 self.navigateToSignInPage()
             }
         }
+        
+        if indexPath.row == 0 {
+            
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            guard let privacyPolicyVC = storyboard.instantiateViewController(withIdentifier: String(describing: PrivacyPolicyViewController.self)) as? PrivacyPolicyViewController else { return }
+            
+            navigationController?.pushViewController(privacyPolicyVC, animated: true)
+            
+        }
+        
+        if indexPath.row == 1 {
+            let alert = UIAlertController(title: "Please contact us to delete your account.", message: "astridtingan@gmail.com", preferredStyle: .alert )
+            let okButton = UIAlertAction(title: "ok", style: .default)
+            
+            alert.addAction(okButton)
+            present(alert, animated: true, completion: nil)
+
+        }
+        
     }
     
 }

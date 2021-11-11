@@ -18,6 +18,8 @@ class SignInViewController: UIViewController {
         setBackgroundColor()
         setAppImageView()
         setAppNamelabel()
+        setNoticeLabel()
+        setViewPolicyButton()
         setLogInWithAppeButton()
     }
     
@@ -25,6 +27,7 @@ class SignInViewController: UIViewController {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = true
         self.navigationItem.setHidesBackButton(true, animated: true)
+        navigationController?.navigationBar.isHidden = true
     }
     
     // MARK: - action
@@ -52,6 +55,32 @@ class SignInViewController: UIViewController {
         label.text = CommonUsage.Text.appName
         return label
     }()
+    
+    private lazy var noticeLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textAlignment = .center
+        label.font = UIFont(name: CommonUsage.fontSemibold, size: 12)
+        label.text = CommonUsage.Text.logInNotice
+        return label
+    }()
+    
+    private lazy var viewPolicyButton: UIButton = {
+        let button = UIButton()
+        button.setTitle(CommonUsage.Text.privacyPolicy, for: .normal)
+        button.setTitleColor(.systemBlue, for: .normal)
+        button.addTarget(self, action: #selector(presentPolicy), for: .touchUpInside)
+        return button
+    }()
+    
+    // MARK: - action
+    
+    @objc func presentPolicy() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let policyVc = storyboard.instantiateViewController(withIdentifier: String(describing: PrivacyPolicyViewController.self)) as? PrivacyPolicyViewController else { return }
+        
+        present(policyVc, animated: true, completion: nil)
+    }
     
 }
 
@@ -83,16 +112,35 @@ extension SignInViewController {
         ])
     }
     
+    private func setNoticeLabel() {
+        view.addSubview(noticeLabel)
+        noticeLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            noticeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            noticeLabel.topAnchor.constraint(equalTo: appNamelabel.bottomAnchor, constant: 16)
+        ])
+    }
+    
+    private func setViewPolicyButton() {
+        view.addSubview(viewPolicyButton)
+        viewPolicyButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            viewPolicyButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            viewPolicyButton.topAnchor.constraint(equalTo: noticeLabel.bottomAnchor, constant: 4)
+        ])
+    }
+    
     private func setLogInWithAppeButton() {
         let logInWithAppeButton = signInHelper.logInWithAppeButton
         view.addSubview(logInWithAppeButton)
         logInWithAppeButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             logInWithAppeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            logInWithAppeButton.topAnchor.constraint(equalTo: appNamelabel.bottomAnchor, constant: 32),
+            logInWithAppeButton.topAnchor.constraint(equalTo: viewPolicyButton.bottomAnchor, constant: 32),
             logInWithAppeButton.widthAnchor.constraint(equalToConstant: 200),
             logInWithAppeButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
+    
 
 }

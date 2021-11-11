@@ -378,6 +378,14 @@ class ProfileViewController: UIViewController {
                                                name: .currentUserCoverChange ,
                                                object: nil)
         
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateAllAudioFile),
+                                               name: .allAudioPostChange ,
+                                               object: nil)
+    }
+    
+    @objc func updateAllAudioFile() {
+        fetchDataFromFirebase()
     }
     
     private func fetchFollowerList() {
@@ -401,18 +409,7 @@ class ProfileViewController: UIViewController {
     }
     
     private func fetchDataFromFirebase() {
-        
-        firebaseManager.checkPostsChange { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .success(let posts):
-                self.allAudioFiles = posts
-                
-            case.failure(let error):
-                print(error)
-            }
-        }
+        allAudioFiles = AudioPostManager.shared.filteredAudioFiles
     }
     
     private func setUserProfile() {
@@ -557,10 +554,7 @@ extension ProfileViewController: UITableViewDataSource {
             cell.category = AudioCategory.allCases[indexPath.item].rawValue
         }
         
-        //        let filteredFiles = allAudioFiles.filter({$0.category == AudioCategory.allCases[indexPath.section].rawValue})
         cell.backgroundColor = .clear
-        //        cell.firebaseData = filteredFiles
-        //        cell.category = AudioCategory.allCases[indexPath.item].rawValue
         return cell
     }
     

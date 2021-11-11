@@ -43,11 +43,11 @@ class SearchTableViewCell: UITableViewCell {
         button.setImage(UIImage(systemName: CommonUsage.SFSymbol.heart), for: .normal)
         button.tintColor = .red
         //      button.addTarget(self, action: #selector(), for: .touchUpInside)
+        button.isHidden = true
         return button
     }()
     
-    
-    //MARK:- init
+    // MARK: - init
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -81,7 +81,7 @@ class SearchTableViewCell: UITableViewCell {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: theImageView.trailingAnchor, constant: 8),
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10)
         ])
     }
     
@@ -91,7 +91,7 @@ class SearchTableViewCell: UITableViewCell {
         NSLayoutConstraint.activate([
             authorLabel.leadingAnchor.constraint(equalTo: theImageView.trailingAnchor, constant: 8),
             authorLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
-            authorLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
+            authorLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4)
         ])
     }
     
@@ -104,12 +104,10 @@ class SearchTableViewCell: UITableViewCell {
         ])
     }
     
-    func setContent(title: String, author: String) {
+    func setContent(title: String, author: String, imageNumber: Int) {
         titleLabel.text = title
         authorLabel.text = author
-        theImageView.image = UIImage(named: CommonUsage.audioImage)
+        theImageView.image = CommonUsage.audioImages[imageNumber]
     }
     
 }
-
-

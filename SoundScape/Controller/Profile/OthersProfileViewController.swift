@@ -53,6 +53,7 @@ class OthersProfileViewController: UIViewController {
             followingsNumberLabel.text = String(describing: numbersOfFollowings)
         }
     }
+    
     private var othersFollowingList: [SCFollow]? {
         didSet {
             tableView.reloadData()
@@ -77,21 +78,22 @@ class OthersProfileViewController: UIViewController {
         }
     }
     
-    
     // MARK: - life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        addObserver()
         fetchUserInfo()
         fetchDataFromFirebase()
         setBackgroundColor()
         setCoverImageView()
-        setTableView()
         setUserImageView()
         setNameLabel()
         setSocialStackView()
+        setTableView()
         setFollowersStackView()
         setFollowingsStackView()
+        setMoreButton()
         setFollowButton()
     }
     
@@ -108,6 +110,10 @@ class OthersProfileViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.isNavigationBarHidden = false
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - Action
@@ -129,6 +135,15 @@ class OthersProfileViewController: UIViewController {
     
     // MARK: - method
     
+    private func addObserver() {
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateAllAudioFile),
+                                               name: .allAudioPostChange ,
+                                               object: nil)
+
+    }
+
     private func manipulateFollowButton() {
         guard let otherUserID = userWillDisplay?.userID,
               let currentUserFollowingsID = signInManager.currentUserFollowingList?.map({$0.userID}) else { return }
@@ -139,14 +154,13 @@ class OthersProfileViewController: UIViewController {
     
     private func makeButtonFollowed() {
         followButton.setTitle(CommonUsage.Text.unfollow, for: .normal)
-        followButton.backgroundColor = UIColor(named: CommonUsage.scOrange)
+        followButton.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         view.layoutIfNeeded()
     }
     
     private func makeButtonUnFollow() {
         followButton.setTitle(CommonUsage.Text.follow, for: .normal)
-        followButton.backgroundColor = UIColor(named: CommonUsage.scYellow)
-        
+        followButton.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
     }
     
     private func fetchAmountOfFollows() {
@@ -201,6 +215,7 @@ class OthersProfileViewController: UIViewController {
             print("OtherProfileVC: Cant get favorite")
             return
         }
+        
         firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self]
             
             result in
@@ -219,18 +234,12 @@ class OthersProfileViewController: UIViewController {
         }
     }
     
+    @objc func updateAllAudioFile() {
+        fetchDataFromFirebase()
+    }
+    
     private func fetchDataFromFirebase() {
-        firebaseManager.checkPostsChange { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .success(let posts):
-                self.allAudioFiles = posts
-                
-            case.failure(let error):
-                print(error)
-            }
-        }
+        allAudioFiles = AudioPostManager.shared.filteredAudioFiles
     }
     
     func fetchUserPicFromFirebase() {
@@ -257,7 +266,6 @@ class OthersProfileViewController: UIViewController {
         }
     }
     
-    
     private func setUserProfile() {
         coverImageView.image = UIImage(named: CommonUsage.profileCover4)
         userImageView.image = UIImage(named: CommonUsage.yeh1024)
@@ -265,11 +273,68 @@ class OthersProfileViewController: UIViewController {
         nameLabel.text = userWillDisplay.username
     }
     
+    private func popBlockAlert() {
+        guard let userID = userWillDisplay?.userInfoDoumentID else { return }
+
+        let alert = UIAlertController(title: "Are you sure?",
+                                      message: "You can't see this user's comments, audio posts and profile page after blocking.",
+                                      preferredStyle: .alert )
+       
+        let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
+            guard let self = self else { return }
+            self.blockUser()
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        
+        present(alert, animated: true, completion: nil)
+        
+    }
+    
+    private func backToHome() {
+        navigationController?.popToRootViewController(animated: true)
+        guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
+        scTabBarController.selectedIndex = 0
+    }
+
+    private func blockUser() {
+        
+        guard let currentUserDocID = signInManager.currentUserInfoFirebase?.userInfoDoumentID,
+              let  blockUser = userWillDisplay else { return }
+        
+        firebaseManager.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
+                                       toBeBlockedID: blockUser.userID, completion: backToHome)
+    }
+    
+    @objc func popMoreMessageAlert() {
+        
+        let controller = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+           let action = UIAlertAction(title: "Block this user", style: .default) { [weak self] _ in
+               guard let self = self else { return }
+               self.popBlockAlert()
+           }
+        
+        let blankAction = UIAlertAction(title: "", style: .default) { action in
+     }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        controller.addAction(action)
+        controller.addAction(blankAction)
+        controller.addAction(cancelAction)
+        
+        guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
+        scTabBarController.present(controller, animated: true, completion: nil)
+    }
+    
     // MARK: - UI properties
     
     private lazy var coverImageView: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
+        image.clipsToBounds = true
         return image
     }()
     
@@ -278,6 +343,8 @@ class OthersProfileViewController: UIViewController {
         image.contentMode = .scaleToFill
         image.clipsToBounds = true
         image.layer.cornerRadius = CommonUsage.screenHeight / 10
+        image.layer.borderWidth = 3
+        image.layer.borderColor = UIColor(named: CommonUsage.scBlue)?.cgColor
         return image
     }()
     
@@ -369,14 +436,20 @@ class OthersProfileViewController: UIViewController {
         let button = UIButton()
         button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
         button.addTarget(self, action: #selector(manipulateFollow), for: .touchUpInside)
-        button.backgroundColor = UIColor(named: CommonUsage.scYellow)
-        button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor(named: CommonUsage.scLightGreen)?.cgColor
+        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         button.layer.cornerRadius = 15
         button.setTitle(CommonUsage.Text.follow, for: .normal)
         return button
     }()
     
+    private lazy var moreButton: UIButton = {
+        let button = UIButton()
+        button.addTarget(self, action: #selector(popMoreMessageAlert), for: .touchUpInside)
+        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.ellipsis), for: .normal)
+        button.tintColor = .white
+        return button
+    }()
+
     // MARK: - config UI method
     
     private func setBackgroundColor() {
@@ -391,17 +464,6 @@ class OthersProfileViewController: UIViewController {
             coverImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             coverImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             coverImageView.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight / 4)
-        ])
-    }
-    
-    private func setTableView() {
-        view.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.topAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: CommonUsage.screenHeight / 8),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
     
@@ -421,7 +483,7 @@ class OthersProfileViewController: UIViewController {
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             nameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            nameLabel.topAnchor.constraint(equalTo: userImageView.bottomAnchor, constant: 4)
+            nameLabel.topAnchor.constraint(equalTo: userImageView.bottomAnchor)
         ])
     }
     
@@ -447,11 +509,31 @@ class OthersProfileViewController: UIViewController {
         followingsStackView.addArrangedSubview(followingsTitleLabel)
     }
     
+    private func setTableView() {
+        view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.topAnchor.constraint(equalTo: socialStackView.bottomAnchor, constant: 4),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+    }
+    
+    private func setMoreButton() {
+        view.addSubview(moreButton)
+        moreButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            moreButton.centerYAnchor.constraint(equalTo: socialStackView.centerYAnchor),
+            moreButton.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor, constant: 16)
+        ])
+    }
+    
     private func setFollowButton() {
         view.addSubview(followButton)
         followButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            followButton.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor, constant: 16),
+            followButton.leadingAnchor.constraint(equalTo: moreButton.trailingAnchor, constant: 16),
             followButton.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
             followButton.heightAnchor.constraint(equalTo: nameLabel.heightAnchor, multiplier: 0.75),
             followButton.widthAnchor.constraint(equalToConstant: 80)
@@ -459,6 +541,8 @@ class OthersProfileViewController: UIViewController {
     }
     
 }
+
+// MARK: - conform to UITableViewDataSource
 
 extension OthersProfileViewController: UITableViewDataSource {
     
@@ -557,6 +641,8 @@ extension OthersProfileViewController: UITableViewDelegate {
     }
     
 }
+
+// MARK: - conform to PressPassableDelegate
 
 extension OthersProfileViewController: PressPassableDelegate {
     

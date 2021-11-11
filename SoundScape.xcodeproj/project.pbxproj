@@ -34,6 +34,7 @@
 		567566EF273271C6007ACC61 /* SignInHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567566EE273271C6007ACC61 /* SignInHelper.swift */; };
 		5678FFA6272418B500E1ADD5 /* TestEditVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5678FFA5272418B500E1ADD5 /* TestEditVC.swift */; };
 		5678FFA827243FA300E1ADD5 /* EditVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5678FFA727243FA300E1ADD5 /* EditVC.swift */; };
+		5679328F273B61290074D15A /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679328E273B61290074D15A /* PrivacyPolicyViewController.swift */; };
 		5679F0FB271D084A00663001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FA271D084A00663001 /* AppDelegate.swift */; };
 		5679F0FD271D084A00663001 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FC271D084A00663001 /* SceneDelegate.swift */; };
 		5679F0FF271D084A00663001 /* SoundDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5679F0FE271D084A00663001 /* SoundDetailVC.swift */; };
@@ -52,6 +53,7 @@
 		569A7D7A27229EB200CEE3EA /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7927229EB200CEE3EA /* HomeTableViewCell.swift */; };
 		569A7D7C2722A03500CEE3EA /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7B2722A03500CEE3EA /* HomeCollectionViewCell.swift */; };
 		569A7D7E2722B75A00CEE3EA /* HomeTableViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7D2722B75A00CEE3EA /* HomeTableViewHeader.swift */; };
+		56A1EA27273CA6E0009AF843 /* AudioPostManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A1EA26273CA6E0009AF843 /* AudioPostManager.swift */; };
 		56C05AA927362DEB009D029C /* GoogleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C05AA827362DEB009D029C /* GoogleService.swift */; };
 		56C05AAC2736665A009D029C /* AudioMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C05AAB2736665A009D029C /* AudioMapViewController.swift */; };
 		56C05AAF2736A829009D029C /* SCMapInfoWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C05AAE2736A829009D029C /* SCMapInfoWindow.swift */; };
@@ -94,6 +96,7 @@
 		567566EE273271C6007ACC61 /* SignInHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInHelper.swift; sourceTree = "<group>"; };
 		5678FFA5272418B500E1ADD5 /* TestEditVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEditVC.swift; sourceTree = "<group>"; };
 		5678FFA727243FA300E1ADD5 /* EditVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditVC.swift; sourceTree = "<group>"; };
+		5679328E273B61290074D15A /* PrivacyPolicyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyViewController.swift; sourceTree = "<group>"; };
 		5679F0F7271D084A00663001 /* SoundScape.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoundScape.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5679F0FA271D084A00663001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5679F0FC271D084A00663001 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -114,6 +117,7 @@
 		569A7D7927229EB200CEE3EA /* HomeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		569A7D7B2722A03500CEE3EA /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
 		569A7D7D2722B75A00CEE3EA /* HomeTableViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewHeader.swift; sourceTree = "<group>"; };
+		56A1EA26273CA6E0009AF843 /* AudioPostManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPostManager.swift; sourceTree = "<group>"; };
 		56C05AA827362DEB009D029C /* GoogleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleService.swift; sourceTree = "<group>"; };
 		56C05AAB2736665A009D029C /* AudioMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMapViewController.swift; sourceTree = "<group>"; };
 		56C05AAE2736A829009D029C /* SCMapInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCMapInfoWindow.swift; sourceTree = "<group>"; };
@@ -389,6 +393,7 @@
 				5630FE24272E1C54003A38FB /* SignInManager.swift */,
 				567566EE273271C6007ACC61 /* SignInHelper.swift */,
 				56C05AA827362DEB009D029C /* GoogleService.swift */,
+				56A1EA26273CA6E0009AF843 /* AudioPostManager.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -410,6 +415,7 @@
 			children = (
 				56D3F0C2272D813C00A3B3B3 /* ProfileViewController.swift */,
 				5630FE26272EB5D7003A38FB /* OthersProfileViewController.swift */,
+				5679328E273B61290074D15A /* PrivacyPolicyViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -629,6 +635,7 @@
 				5630FE25272E1C54003A38FB /* SignInManager.swift in Sources */,
 				5679F115271D641B00663001 /* AudioPlayHelper.swift in Sources */,
 				56F07D35272BCA7600ABC7B9 /* SearchViewController.swift in Sources */,
+				5679328F273B61290074D15A /* PrivacyPolicyViewController.swift in Sources */,
 				5678FFA827243FA300E1ADD5 /* EditVC.swift in Sources */,
 				569A7D7827229AE500CEE3EA /* HomeVC.swift in Sources */,
 				56C05AA927362DEB009D029C /* GoogleService.swift in Sources */,
@@ -640,6 +647,7 @@
 				568340DF271F113F00543677 /* CreateAudioVC.swift in Sources */,
 				5679F0FD271D084A00663001 /* SceneDelegate.swift in Sources */,
 				5630FE27272EB5D7003A38FB /* OthersProfileViewController.swift in Sources */,
+				56A1EA27273CA6E0009AF843 /* AudioPostManager.swift in Sources */,
 				569A7D7A27229EB200CEE3EA /* HomeTableViewCell.swift in Sources */,
 				56F07D37272BCC0F00ABC7B9 /* SearchTableViewCell.swift in Sources */,
 				567566EC27323AAD007ACC61 /* SignInViewController.swift in Sources */,
