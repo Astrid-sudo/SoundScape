@@ -27,7 +27,7 @@ class CreateAudioVC: UIViewController {
     
     @IBAction func selectFile(_ sender: Any) {
         if #available(iOS 14.0, *) {
-            let controller = UIDocumentPickerViewController(forOpeningContentTypes: [.audio], asCopy: true)
+            let controller = UIDocumentPickerViewController(forOpeningContentTypes: [.mpeg4Audio], asCopy: true)
             
             controller.delegate = self
             present(controller, animated: true, completion: nil)
@@ -46,7 +46,6 @@ class CreateAudioVC: UIViewController {
         navigationController?.pushViewController(recordVC, animated: true)
         
     }
-    
     
     // MARK: - method
     

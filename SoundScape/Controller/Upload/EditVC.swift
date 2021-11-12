@@ -21,7 +21,7 @@ class EditVC: UIViewController {
     }
     
     var trimHeadTime: Double {
-        guard let originDuraion = originDuraion else { return 0.0}
+        guard let originDuraion = originDuraion else { return 0.0 }
         return (trimHeadViewX - 21) / (CommonUsage.screenWidth - 32) * originDuraion
     }
     
@@ -39,7 +39,7 @@ class EditVC: UIViewController {
         didSet {
             guard let originDuraion = originDuraion else { return }
             durationLabel.text = String(describing: originDuraion)
-            if originDuraion <= 120 {
+            if originDuraion <= 90 {
                 goUploadPageButton.isHidden = false
             } else {
                 goUploadPageButton.isHidden = true
@@ -94,6 +94,7 @@ class EditVC: UIViewController {
         addObserver()
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
         setGoUploadPageButton()
+        setAudioLengthNotice()
         setLowCutButton()
         setWaveformImageView()
         setTrimButton()
@@ -182,6 +183,16 @@ class EditVC: UIViewController {
     @objc func trim() {
         
         EditAudioManager.shared.trimAudio(from: trimHeadTime, to: trimTailTime)
+        
+        trimHeadView.frame = CGRect(x: slider.center.x - slider.frame.width / 2 - 2,
+                                    y: slider.center.y - 55,
+                                    width: 60,
+                                    height: 110)
+        
+        trimTailView.frame = CGRect(x: CommonUsage.screenWidth - 75,
+                                    y: slider.center.y - 55,
+                                    width: 60,
+                                    height: 110)
     }
 
     @objc func changeButtImage() {
@@ -190,14 +201,14 @@ class EditVC: UIViewController {
             || remotePlayerHelper.state == .buffering
             || remotePlayerHelper.state == .paused
             || remotePlayerHelper.state == .loaded {
-            let config = UIImage.SymbolConfiguration(pointSize: 50)
+            let config = UIImage.SymbolConfiguration(pointSize: 20)
             let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
 
             playButton.setImage(bigImage, for: .normal)
         }
         
         if remotePlayerHelper.state == .playing {
-            let config = UIImage.SymbolConfiguration(pointSize: 50)
+            let config = UIImage.SymbolConfiguration(pointSize: 20)
             let bigImage = UIImage(systemName: CommonUsage.SFSymbol.pause, withConfiguration: config)
             playButton.setImage(bigImage, for: .normal)
         }
@@ -253,33 +264,33 @@ class EditVC: UIViewController {
     
     @objc func manipulatePlayer() {
         
-        EditAudioManager.shared.manipulatePlay()
+//        EditAudioManager.shared.manipulatePlay()
         
-//        if remotePlayerHelper.state == .playing {
-//            remotePlayerHelper.pause()
-//        } else if remotePlayerHelper.state == .paused
-//                    || remotePlayerHelper.state == .loaded
-//                    || remotePlayerHelper.state == .buffering
-//                    || remotePlayerHelper.state == .stopped {
-//            remotePlayerHelper.play()
-//        }
-        
-    }
-    
-    @objc func highPass() {
-        EditAudioManager.shared.manipulateHighPass()
-        
-        if EditAudioManager.shared.highPassOn {
-           
-            lowCutButton.backgroundColor = UIColor(named: CommonUsage.scOrange)
-       
-        } else {
-            
-            lowCutButton.backgroundColor = UIColor(named: CommonUsage.scYellow)
-
+        if remotePlayerHelper.state == .playing {
+            remotePlayerHelper.pause()
+        } else if remotePlayerHelper.state == .paused
+                    || remotePlayerHelper.state == .loaded
+                    || remotePlayerHelper.state == .buffering
+                    || remotePlayerHelper.state == .stopped {
+            remotePlayerHelper.play()
         }
         
     }
+    
+//    @objc func highPass() {
+//        EditAudioManager.shared.manipulateHighPass()
+//
+//        if EditAudioManager.shared.highPassOn {
+//
+//            lowCutButton.backgroundColor = UIColor(named: CommonUsage.scOrange)
+//
+//        } else {
+//
+//            lowCutButton.backgroundColor = UIColor(named: CommonUsage.scYellow)
+//
+//        }
+//
+//    }
     
     @objc func scrubToTime() {
         remotePlayerHelper.seek(position: Double(slider.value))
@@ -288,7 +299,7 @@ class EditVC: UIViewController {
     @objc func handleHeadPanGesture(pan: UIPanGestureRecognizer) {
         
         let translation = pan.translation(in: view)
-        print("*****translation \(translation)******************")
+        print("*****head translation \(translation)******************")
         guard let trimHeadView = pan.view else {
             return
         }
@@ -324,7 +335,7 @@ class EditVC: UIViewController {
     
     @objc func handleTailPanGesture(pan: UIPanGestureRecognizer) {
         let translation = pan.translation(in: view)
-        print("*****translation \(translation)******************")
+        print("*****tail translation \(translation)******************")
         guard let trimTailView = pan.view else {
             return
         }
@@ -363,8 +374,8 @@ class EditVC: UIViewController {
         let button = UIButton()
         button.setTitle("Go upload", for: .normal)
         button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
-        button.backgroundColor = UIColor(named: CommonUsage.scRed)
-        button.layer.cornerRadius = 15
+        button.backgroundColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(goUpload), for: .touchUpInside)
         return button
     }()
@@ -379,8 +390,9 @@ Cut
         button.titleLabel?.numberOfLines = 0
         //        button.titleLabel?.font = UIFont(name: CommonUsage.font, size: 8)
         button.backgroundColor = UIColor(named: CommonUsage.scYellow)
-              button.addTarget(self, action: #selector(highPass), for: .touchUpInside)
+//              button.addTarget(self, action: #selector(highPass), for: .touchUpInside)
         button.layer.cornerRadius = 30
+        button.isHidden = true
         return button
     }()
     
@@ -393,13 +405,12 @@ Cut
         button.backgroundColor = UIColor(named: CommonUsage.scYellow)
         button.addTarget(self, action: #selector(trim), for: .touchUpInside)
         button.layer.cornerRadius = 15
-        
         return button
     }()
     
     private lazy var playButton: UIButton = {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 50)
+        let config = UIImage.SymbolConfiguration(pointSize: 20)
         let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
         button.setImage(bigImage, for: .normal)
         button.tintColor = .white
@@ -411,7 +422,7 @@ Cut
         let label = UILabel()
         label.textColor = .white
         label.textAlignment = .center
-        label.font = UIFont(name: CommonUsage.font, size: 40)
+        label.font = UIFont(name: CommonUsage.font, size: 30)
         label.text = "00:0.0"
         return label
     }()
@@ -433,6 +444,16 @@ Cut
         return label
     }()
     
+    private lazy var noticeLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.textAlignment = .left
+        label.numberOfLines = 0
+        label.font = UIFont(name: CommonUsage.font, size: 14)
+        label.text = CommonUsage.Text.audioLengthNotice
+        return label
+    }()
+    
     private let waveformImageDrawer = WaveformImageDrawer()
     
     private lazy var slider: UISlider = {
@@ -442,10 +463,10 @@ Cut
         slider.maximumTrackTintColor = .clear
         slider.minimumTrackTintColor = .clear
         
-        let verticalLine = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 100))
+        let verticalLine = UIView(frame: CGRect(x: 0, y: 0, width: 3, height: 80))
         let verticalLineImage = verticalLine.snapshot()
-        guard let verticalLineImage = verticalLineImage else { return UISlider() }
-        let colorImage = verticalLineImage.withTintColor(.green, renderingMode: .automatic)
+        guard let verticalLineImage = verticalLineImage else { return UISlider()}
+        let colorImage = verticalLineImage.withTintColor(.systemBlue, renderingMode: .automatic)
         slider.setThumbImage(colorImage, for: .normal)
         
         slider.minimumValue = 0
@@ -464,7 +485,8 @@ Cut
     
     private lazy var trimHeadView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 0, green: 0, blue: 100, alpha: 0.01)
+        view.backgroundColor = .clear
+//        view.backgroundColor = UIColor(red: 0, green: 0, blue: 100, alpha: 0.01)
         let trimHeadPanReconizer = UIPanGestureRecognizer(target: self, action: #selector(handleHeadPanGesture))
         view.addGestureRecognizer(trimHeadPanReconizer)
         return view
@@ -472,8 +494,8 @@ Cut
     
     private lazy var trimTailView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 139, green: 0, blue: 0, alpha: 0.01)
-        
+//        view.backgroundColor = UIColor(red: 139, green: 0, blue: 0, alpha: 0.01)
+        view.backgroundColor = .clear
         let trimTailPanReconizer = UIPanGestureRecognizer(target: self, action: #selector(handleTailPanGesture))
         view.addGestureRecognizer(trimTailPanReconizer)
         return view
@@ -481,13 +503,13 @@ Cut
     
     private lazy var trimHeadPreciseView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemBlue
+        view.backgroundColor = UIColor(named: CommonUsage.scSuperLightBlue)
         return view
     }()
     
     private lazy var trimTailPreciseView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemIndigo
+        view.backgroundColor = UIColor(named: CommonUsage.scSuperLightBlue)
         return view
     }()
     
@@ -515,6 +537,16 @@ Cut
         ])
     }
     
+    private func setAudioLengthNotice() {
+        view.addSubview(noticeLabel)
+        noticeLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            noticeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            noticeLabel.topAnchor.constraint(equalTo: goUploadPageButton.bottomAnchor, constant: 16),
+            noticeLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
+    }
+    
     private func setWaveformImageView() {
         view.addSubview(waveformImageView)
         waveformImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -532,9 +564,8 @@ Cut
         NSLayoutConstraint.activate([
             trimButton.topAnchor.constraint(equalTo: waveformImageView.bottomAnchor, constant: 24),
             trimButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            trimButton.heightAnchor.constraint(equalToConstant: 40),
+            trimButton.heightAnchor.constraint(equalToConstant: 30),
             trimButton.widthAnchor.constraint(equalToConstant: 100)
-            
         ])
     }
     
@@ -543,7 +574,9 @@ Cut
         playButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             playButton.topAnchor.constraint(equalTo: trimButton.bottomAnchor, constant: 8),
-            playButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            playButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            playButton.widthAnchor.constraint(equalToConstant: 50),
+            playButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
@@ -587,24 +620,19 @@ Cut
     private func setTrimHeadView() {
         
         view.addSubview(trimHeadView)
-        
-        trimHeadView.frame = CGRect(x: slider.center.x - slider.frame.width / 2 - 2,
-                                    y: slider.center.y - 100,
+        trimHeadView.frame = CGRect(x: slider.center.x - slider.frame.width / 2 - 3,
+                                    y: slider.center.y - 55,
                                     width: 60,
-                                    height: 200)
-        view.layoutIfNeeded()
+                                    height: 110)
     }
     
     private func setTrimTailView() {
+        
         view.addSubview(trimTailView)
-        
         trimTailView.frame = CGRect(x: CommonUsage.screenWidth - 75,
-                                    y: slider.center.y - 100,
+                                    y: slider.center.y - 55,
                                     width: 60,
-                                    height: 200)
-        
-        view.layoutIfNeeded()
-        
+                                    height: 110)
     }
     
     private func setTrimHeadPreciseView() {
@@ -613,7 +641,7 @@ Cut
         trimHeadPreciseView.frame = CGRect(x: 0,
                                            y: 0,
                                            width: 3,
-                                           height: 200)
+                                           height: 110)
         
     }
     
@@ -624,7 +652,7 @@ Cut
         trimTailPreciseView.frame = CGRect(x: trimTailView.frame.width,
                                            y: 0,
                                            width: 3,
-                                           height: 200)
+                                           height: 110)
         view.layoutIfNeeded()
     }
     
@@ -635,4 +663,5 @@ extension EditVC: EditAudioManagerDelegate {
     func didExport(to url: URL) {
         selectedFileURL = url
     }
+    
 }
