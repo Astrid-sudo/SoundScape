@@ -42,7 +42,7 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     
     weak var delegate: PlayRecoredStateChangableDelegate?
     
-    var timer: Timer?
+    var displayLink: CADisplayLink?
     
     // MARK: - init
     
@@ -110,11 +110,9 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         audioRecorder?.prepareToRecord()
         audioRecorder?.record()
         isRecording = true
-        timer = Timer.scheduledTimer(timeInterval: 0.001,
-                                     target: self,
-                                     selector: #selector(updateTimeAndPower),
-                                     userInfo: nil,
-                                     repeats: true)
+        displayLink = CADisplayLink(target: self, selector: #selector(updateTimeAndPower))
+        displayLink?.add(to: RunLoop.main, forMode: .common)
+
 
     }
     
@@ -123,8 +121,8 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         isRecording = false
         settingAudioSession(toMode: .play)
         
-        if let timer = timer {
-            timer.invalidate()
+        if let displayLink = displayLink {
+            displayLink.invalidate()
         }
         
         return url

@@ -22,13 +22,13 @@ class AudioPlayHelper: NSObject {
     //
     //    var timeObserverToken: Any?
     
-    var timer: Timer?
+    var displayLink: CADisplayLink?
     
     var isPlaying = false {
         
         didSet {
             if isPlaying == false {
-                timer?.invalidate()
+                displayLink?.invalidate()
             }
         }
     }
@@ -94,13 +94,9 @@ class AudioPlayHelper: NSObject {
         audioPlayer.play()
         isPlaying = true
         
-        timer = Timer.scheduledTimer(timeInterval: 0.5,
-                                     target: self,
-                                     selector: #selector(postNotification),
-                                     userInfo: nil,
-                                     repeats: true)
-        
-        
+        displayLink = CADisplayLink(target: self, selector: #selector(postNotification))
+        displayLink?.add(to: RunLoop.main, forMode: .common)
+
         //        avPlayer?.play()
         //        addPeriodicTimeObserver()
     }
