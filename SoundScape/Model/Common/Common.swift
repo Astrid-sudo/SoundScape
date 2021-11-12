@@ -121,6 +121,7 @@ struct CommonUsage {
         static let audioImage = "Pick a cover"
         static let logInNotice = "By using SoundScape you agree to accept our"
         static let privacyPolicy = "Privacy Policy"
+        static let audioLengthNotice = "Only support upload audio file under 90 seconds."
     }
     
     struct CollectionName {

@@ -39,7 +39,7 @@ class SoundDetailVC: UIViewController {
     
     var audioHelper = AudioPlayHelper.shared
     
-    var timer: Timer?
+    var displayLink: CADisplayLink?
     
     var fileNameCount = 0
     
@@ -94,7 +94,7 @@ class SoundDetailVC: UIViewController {
         homeVC.navigationController?.pushViewController(othersProfileViewController, animated: true)
         
         guard let leave = delegate?.leaveDetailPage else { return }
-        timer?.invalidate()
+        displayLink?.invalidate()
         AudioPlayerWindow.shared.window?.frame = CGRect(x: 0, y: CommonUsage.screenHeight - 110,
                                                             width: CommonUsage.screenWidth, height: 60)
         AudioPlayerWindow.shared.window?.rootViewController?.view.isHidden = false
@@ -104,7 +104,7 @@ class SoundDetailVC: UIViewController {
     
     @IBAction func leaveDetailPage(_ sender: UIButton) {
         guard let leave = delegate?.leaveDetailPage else { return }
-        timer?.invalidate()
+        displayLink?.invalidate()
         AudioPlayerWindow.shared.window?.frame = CGRect(x: 0, y: CommonUsage.screenHeight - 110,
                                                             width: CommonUsage.screenWidth, height: 60)
         
@@ -302,12 +302,9 @@ class SoundDetailVC: UIViewController {
     
     func updateUI() {
         
-        timer = Timer.scheduledTimer(timeInterval: 0.1,
-                                     target: self,
-                                     selector: #selector(updatePlaybackTime),
-                                     userInfo: nil,
-                                     repeats: true)
-        
+        displayLink = CADisplayLink(target: self, selector: #selector(updatePlaybackTime))
+        displayLink?.add(to: RunLoop.main, forMode: .common)
+
         if audioHelper.isPlaying == true {
             
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)

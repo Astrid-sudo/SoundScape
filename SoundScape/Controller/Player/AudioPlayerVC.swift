@@ -17,7 +17,7 @@ class AudioPlayerVC: UIViewController {
     
     weak var delegate: DetailPageShowableDelegate?
     
-    var timer: Timer?
+    var displayLink: CADisplayLink?
     
     let audioHelper = AudioPlayHelper.shared
     
@@ -430,17 +430,16 @@ class AudioPlayerVC: UIViewController {
         if audioHelper.isPlaying == true {
             self.audioHelper.pause()
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-            if let timer = timer {
-                timer.invalidate()
+            
+            if let displayLink = displayLink {
+                displayLink.invalidate()
             }
+            
         } else {
             audioHelper.play()
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-            timer = Timer.scheduledTimer(timeInterval: 0.1,
-                                         target: self,
-                                         selector: #selector(updatePlaybackTime),
-                                         userInfo: nil,
-                                         repeats: true)
+            displayLink = CADisplayLink(target: self, selector: #selector(updatePlaybackTime))
+            displayLink?.add(to: RunLoop.main, forMode: .common)
         }
         
     }
@@ -452,11 +451,9 @@ class AudioPlayerVC: UIViewController {
     }
     
     func localUpdateUI() {
-        timer = Timer.scheduledTimer(timeInterval: 0.1,
-                                     target: self,
-                                     selector: #selector(updatePlaybackTime),
-                                     userInfo: nil,
-                                     repeats: true)
+        
+        displayLink = CADisplayLink(target: self, selector: #selector(updatePlaybackTime))
+        displayLink?.add(to: RunLoop.main, forMode: .common)
         
         if audioHelper.isPlaying == true {
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)

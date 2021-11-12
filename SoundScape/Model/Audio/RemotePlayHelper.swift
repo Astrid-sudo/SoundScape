@@ -117,7 +117,6 @@ class RemotePlayHelper {
     
     func limitCurrentTime(head: Double, tail: Double) {
         
-        
         if player.currentTime < head {
             if player.state == .playing {
                 pause()
@@ -214,6 +213,4 @@ extension Notification.Name {
     static let didStateChange = Notification.Name("didStateChange")
     static let remoteURLDidSelect = Notification.Name("remoteURLDidSelect")
     static let didItemDurationChange = Notification.Name("didItemDurationChange")
-    
-    
 }
