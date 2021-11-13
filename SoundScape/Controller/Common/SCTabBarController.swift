@@ -15,8 +15,6 @@ class SCTabBarController: UITabBarController {
     
     static let reuseIdentifier = String(describing: SCTabBarController.self)
     
-//    let audioPlayerWindow = AudioPlayerWindow()
-    
     private var dontShowDetailConstraint = NSLayoutConstraint()
     
     private var showDetailConstraint = NSLayoutConstraint()
@@ -27,12 +25,38 @@ class SCTabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = .orange
+        self.delegate = self
+        tabBar.barTintColor = UIColor(named: CommonUsage.scBlue)
+        tabBar.tintColor = UIColor(named: CommonUsage.scWhite)
     }
     
     // MARK: - method
     
+    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+      
+        if item.tag == 2 && RemotePlayHelper.shared.state == .playing {
+            popStopPlayingAlert()
+     }
+    }
+    
+    private func popStopPlayingAlert() {
+
+        let alert = UIAlertController(title: "Audio will stop playing.",
+                                      message: "Navigate to upload flow will stop the audio you are listening. Do you still like to proceed?",
+                                      preferredStyle: .alert )
+       
+        let okButton = UIAlertAction(title: "Go upload", style: .default) {[weak self] _ in
+            guard let self = self else { return }
+            self.selectedIndex = 2
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(okButton)
+        alert.addAction(cancelButton)
+        
+        present(alert, animated: true, completion: nil)
+    }
     
     private func addDetailPage() {
         
@@ -60,6 +84,30 @@ class SCTabBarController: UITabBarController {
     }
 
 }
+
+// MARK: - conform to UITabBarControllerDelegate
+
+extension SCTabBarController: UITabBarControllerDelegate {
+
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+
+      guard let viewControllers = self.viewControllers else { return true }
+
+      if viewController == viewControllers[2] {
+
+          if RemotePlayHelper.shared.state != .playing {
+          return true
+
+        } else {
+          return false
+        }
+      }
+
+      return true
+    }
+}
+
+// MARK: - conform to DetailPageShowableDelegate
 
 extension SCTabBarController: DetailPageShowableDelegate {
     

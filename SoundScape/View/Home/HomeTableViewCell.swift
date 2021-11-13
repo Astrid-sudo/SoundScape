@@ -33,7 +33,7 @@ class HomeTableViewCell: UITableViewCell {
         layout.scrollDirection = .horizontal
         layout.itemSize = CGSize(width: 150, height: 150)
         layout.minimumInteritemSpacing = 0
-        layout.minimumLineSpacing = 10
+        layout.minimumLineSpacing = 0
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = UIColor(named: CommonUsage.scBlue)
@@ -67,8 +67,7 @@ class HomeTableViewCell: UITableViewCell {
             collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             collectionView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            collectionView.heightAnchor.constraint(equalToConstant: 168),
-            collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            collectionView.heightAnchor.constraint(equalToConstant: 168)
         ])
         
         collectionView.register(HomeCollectionViewCell.self,
@@ -93,7 +92,7 @@ extension HomeTableViewCell: UICollectionViewDataSource {
         
         // swiftlint:enable line_length
         
-        cell.setCell(imageNumber: firebaseData[indexPath.item].imageNumber , audioTitle: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName)
+        cell.setCell(imageNumber: firebaseData[indexPath.item].imageNumber, audioTitle: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName)
         
 //        cell.setCell(image: nil,
 //                     audioTitle: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName)
@@ -110,6 +109,8 @@ extension HomeTableViewCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("\(category),didSelect \(indexPath), url: \(firebaseData[indexPath.item].audioURL)")
         
+        AudioPlayerWindow.shared.show()
+
         let title = firebaseData[indexPath.item].title
         let author = firebaseData[indexPath.item].authorName
         let content = firebaseData[indexPath.item].content
@@ -138,7 +139,6 @@ extension HomeTableViewCell: UICollectionViewDelegate {
 //                                     documentID: documentID, authorUserID: authorUserID,, audioImageNumber: audioImageNumber
 //                                     authorAccountProvider: authorAccountProvider)
         
-        AudioPlayerWindow.shared.show()
     }
     
 }

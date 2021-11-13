@@ -103,7 +103,11 @@ class EditVC: UIViewController {
         setDurationTitleLabel()
         setDurationLabel()
         setSlider()
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        AudioPlayerWindow.shared.window?.isHidden = true
     }
     
     override func viewDidLayoutSubviews() {

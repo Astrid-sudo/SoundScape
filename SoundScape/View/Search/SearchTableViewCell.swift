@@ -35,6 +35,7 @@ class SearchTableViewCell: UITableViewCell {
         let image = UIImageView()
         image.layer.cornerRadius = 10
         image.layer.masksToBounds = true
+        image.contentMode = .scaleAspectFill
         return image
     }()
     
@@ -42,7 +43,6 @@ class SearchTableViewCell: UITableViewCell {
         let button = UIButton()
         button.setImage(UIImage(systemName: CommonUsage.SFSymbol.heart), for: .normal)
         button.tintColor = .red
-        //      button.addTarget(self, action: #selector(), for: .touchUpInside)
         button.isHidden = true
         return button
     }()
@@ -70,7 +70,6 @@ class SearchTableViewCell: UITableViewCell {
         NSLayoutConstraint.activate([
             theImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             theImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            theImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             theImageView.heightAnchor.constraint(equalToConstant: 60),
             theImageView.widthAnchor.constraint(equalTo: theImageView.heightAnchor)
         ])
@@ -90,8 +89,7 @@ class SearchTableViewCell: UITableViewCell {
         authorLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             authorLabel.leadingAnchor.constraint(equalTo: theImageView.trailingAnchor, constant: 8),
-            authorLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
-            authorLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4)
+            authorLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4)
         ])
     }
     

@@ -488,7 +488,7 @@
         <scene sceneID="jYj-F6-wO1">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="tDT-kx-dbn" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Search" image="magnifyingglass" catalog="system" id="5Ev-Yt-RNR"/>
+                    <tabBarItem key="tabBarItem" tag="1" title="Search" image="magnifyingglass" catalog="system" id="5Ev-Yt-RNR"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="hus-ab-oXb">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -526,7 +526,7 @@
         <scene sceneID="CcT-Kj-Yd2">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Z6U-sV-Qee" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Upload" image="arrow.up.heart.fill" catalog="system" id="0F7-bP-h7s"/>
+                    <tabBarItem key="tabBarItem" tag="2" title="Upload" image="arrow.up.heart.fill" catalog="system" id="0F7-bP-h7s"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Vai-3E-kQV">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -545,7 +545,7 @@
         <scene sceneID="Oaj-il-eDD">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="dTq-Ql-oJi" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Profile" image="person.fill" catalog="system" id="fqd-zo-ILa"/>
+                    <tabBarItem key="tabBarItem" tag="3" title="Profile" image="person.fill" catalog="system" id="fqd-zo-ILa"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Ebg-HY-bzZ">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -564,7 +564,7 @@
         <scene sceneID="52y-LZ-PDx">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="pXR-Ln-skx" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="SoundScape" image="map" catalog="system" id="AWA-pu-dNE"/>
+                    <tabBarItem key="tabBarItem" tag="4" title="SoundScape" image="map" catalog="system" id="AWA-pu-dNE"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="M4d-ew-SnX">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>

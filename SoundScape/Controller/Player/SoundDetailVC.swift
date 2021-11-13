@@ -95,9 +95,10 @@ class SoundDetailVC: UIViewController {
         
         guard let leave = delegate?.leaveDetailPage else { return }
         displayLink?.invalidate()
-        AudioPlayerWindow.shared.window?.frame = CGRect(x: 0, y: CommonUsage.screenHeight - 110,
-                                                            width: CommonUsage.screenWidth, height: 60)
-        AudioPlayerWindow.shared.window?.rootViewController?.view.isHidden = false
+        
+        AudioPlayerWindow.shared.makeSmallFrame()
+        AudioPlayerWindow.shared.showVC()
+        
         leave()
 
     }
@@ -105,10 +106,9 @@ class SoundDetailVC: UIViewController {
     @IBAction func leaveDetailPage(_ sender: UIButton) {
         guard let leave = delegate?.leaveDetailPage else { return }
         displayLink?.invalidate()
-        AudioPlayerWindow.shared.window?.frame = CGRect(x: 0, y: CommonUsage.screenHeight - 110,
-                                                            width: CommonUsage.screenWidth, height: 60)
-        
-        AudioPlayerWindow.shared.window?.rootViewController?.view.isHidden = false
+        AudioPlayerWindow.shared.makeSmallFrame()
+        AudioPlayerWindow.shared.showVC()
+
         leave()
     }
     

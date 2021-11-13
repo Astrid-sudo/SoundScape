@@ -383,6 +383,8 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
     
     func pushSoundDetailPage() {
         
+        AudioPlayerWindow.shared.show()
+        
         guard let post = tappedMarker.userData as? SCPost else { return }
         let documentID = post.documentID
         let url = post.audioURL
@@ -404,7 +406,6 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
                                      audioImageNumber: audioImageNumber,
                                      authorAccountProvider: authorAccountProvider)
         
-        AudioPlayerWindow.shared.show()
     }
     
 }
