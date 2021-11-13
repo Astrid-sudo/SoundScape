@@ -40,19 +40,22 @@ class SCMapInfoWindow: UIView {
         return label
     }()
     
-    private lazy var headphoneImageView: UIImageView = {
+    private lazy var audioImage: UIImageView = {
         let imageView = UIImageView()
-        let image = UIImage(systemName: CommonUsage.SFSymbol.headphonesCircleFill)
-        imageView.image = image
+        imageView.layer.cornerRadius = 10
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
         return imageView
     }()
     
     // MARK: - init
     
     init() {
-        super.init(frame: CGRect(x: 0, y: 0, width: 180, height: 50))
-        self.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        super.init(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth - 100, height: 50))
+        self.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         self.layer.cornerRadius = 10
+        self.layer.borderWidth = 0.5
+        self.layer.borderColor = UIColor(named: CommonUsage.scGray)?.cgColor
         setHeadphoneImageView()
         setButton()
         setTitleLabel()
@@ -72,13 +75,13 @@ class SCMapInfoWindow: UIView {
     // MARK: - UI method
     
     private func setHeadphoneImageView() {
-        self.addSubview(headphoneImageView)
-        headphoneImageView.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(audioImage)
+        audioImage.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            headphoneImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 4),
-            headphoneImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 4),
-            headphoneImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4),
-            headphoneImageView.widthAnchor.constraint(equalTo: headphoneImageView.heightAnchor)
+            audioImage.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 4),
+            audioImage.topAnchor.constraint(equalTo: self.topAnchor, constant: 4),
+            audioImage.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4),
+            audioImage.widthAnchor.constraint(equalTo: audioImage.heightAnchor)
         ])
     }
     
@@ -97,8 +100,7 @@ class SCMapInfoWindow: UIView {
         self.addSubview(titlelabel)
         titlelabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            titlelabel.leadingAnchor.constraint(equalTo: headphoneImageView.trailingAnchor, constant: 4),
-//            titlelabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            titlelabel.leadingAnchor.constraint(equalTo: audioImage.trailingAnchor, constant: 4),
             titlelabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 4)
         ])
     }
@@ -108,17 +110,17 @@ class SCMapInfoWindow: UIView {
         authorNamelabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             authorNamelabel.topAnchor.constraint(equalTo: titlelabel.bottomAnchor, constant: 4),
-            authorNamelabel.leadingAnchor.constraint(equalTo: headphoneImageView.trailingAnchor, constant: 4),
-//            authorNamelabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            authorNamelabel.leadingAnchor.constraint(equalTo: audioImage.trailingAnchor, constant: 4),
             authorNamelabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4)
         ])
     }
     
     // MARK: - method
     
-    func setMapMarkerIcon(title: String?, authorName: String?) {
+    func setMapMarkerIcon(title: String?, authorName: String?, audioImageNumber: Int) {
         titlelabel.text = title
         authorNamelabel.text = authorName
+        audioImage.image = CommonUsage.audioImages[audioImageNumber]
     }
     
 }

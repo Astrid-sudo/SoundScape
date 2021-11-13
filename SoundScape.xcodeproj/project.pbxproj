@@ -49,6 +49,7 @@
 		568340DF271F113F00543677 /* CreateAudioVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568340DE271F113F00543677 /* CreateAudioVC.swift */; };
 		568340E1271F11AC00543677 /* UploadVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568340E0271F11AC00543677 /* UploadVC.swift */; };
 		56950630271FDD08009E4C74 /* RemotePlayHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */; };
+		5698830C27400089008BF438 /* style.json in Resources */ = {isa = PBXBuildFile; fileRef = 5698830B27400089008BF438 /* style.json */; };
 		569A7D7827229AE500CEE3EA /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7727229AE500CEE3EA /* HomeVC.swift */; };
 		569A7D7A27229EB200CEE3EA /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7927229EB200CEE3EA /* HomeTableViewCell.swift */; };
 		569A7D7C2722A03500CEE3EA /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7B2722A03500CEE3EA /* HomeCollectionViewCell.swift */; };
@@ -113,6 +114,7 @@
 		568340DE271F113F00543677 /* CreateAudioVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAudioVC.swift; sourceTree = "<group>"; };
 		568340E0271F11AC00543677 /* UploadVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadVC.swift; sourceTree = "<group>"; };
 		5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemotePlayHelper.swift; sourceTree = "<group>"; };
+		5698830B27400089008BF438 /* style.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = style.json; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.json; };
 		569A7D7727229AE500CEE3EA /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
 		569A7D7927229EB200CEE3EA /* HomeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		569A7D7B2722A03500CEE3EA /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -258,6 +260,7 @@
 				5679F100271D084A00663001 /* Main.storyboard */,
 				5679F103271D084B00663001 /* Assets.xcassets */,
 				5679F105271D084B00663001 /* LaunchScreen.storyboard */,
+				5698830B27400089008BF438 /* style.json */,
 				565ABC002721529600D4596E /* GoogleService-Info.plist */,
 				5679F108271D084B00663001 /* Info.plist */,
 			);
@@ -515,6 +518,7 @@
 			files = (
 				5679F112271D582700663001 /* example_sound_2.m4a in Resources */,
 				5679F117271D6B2500663001 /* example_sound.wav in Resources */,
+				5698830C27400089008BF438 /* style.json in Resources */,
 				5679F107271D084B00663001 /* LaunchScreen.storyboard in Resources */,
 				565BD479272FE0DB00143108 /* lf30_editor_r2yecdir.json in Resources */,
 				5630FE2B272F049F003A38FB /* 74194-sleepy-sleep.json in Resources */,
