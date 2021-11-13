@@ -127,6 +127,7 @@ struct CommonUsage {
         static let privacyPolicy = "Privacy Policy"
         static let audioLengthNotice = "Only support upload audio file under 90 seconds."
         static let noResultTitle =  "No result."
+        static let searchHintLabel = "Search by title, author, or content."
     }
     
     struct CollectionName {

@@ -208,7 +208,7 @@ class SearchViewController: UIViewController {
     
     private lazy var hintLabel: UILabel = {
         let label = UILabel()
-        label.text = "Search for title, content, author."
+        label.text = CommonUsage.Text.searchHintLabel
         label.textColor = UIColor(named: CommonUsage.scGray)
         label.font = UIFont(name: CommonUsage.font, size: 12)
         return label
