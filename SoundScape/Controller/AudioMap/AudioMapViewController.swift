@@ -107,6 +107,10 @@ class AudioMapViewController: UIViewController {
         }
     }
     
+    override var prefersStatusBarHidden: Bool {
+        true
+    }
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -127,7 +131,7 @@ class AudioMapViewController: UIViewController {
         }
         
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if audioMapType == .pinOnMap {
@@ -231,6 +235,7 @@ class AudioMapViewController: UIViewController {
         let table = UITableView()
         table.dataSource = self
         table.delegate = self
+        table.backgroundColor = UIColor(named: CommonUsage.scBlue)
         table.allowsSelection = true
         table.separatorStyle = .singleLine
         table.register(MapSearchResultTableViewCell.self, forCellReuseIdentifier: MapSearchResultTableViewCell.reuseIdentifier)
@@ -241,12 +246,12 @@ class AudioMapViewController: UIViewController {
     private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.backgroundImage = UIImage()
-        searchBar.barTintColor = UIColor(named: CommonUsage.scLightBlue)
-        searchBar.layer.cornerRadius = 10
+        searchBar.barTintColor = UIColor(named: CommonUsage.scWhite)
         searchBar.placeholder = CommonUsage.Text.search
         searchBar.delegate = self
-        searchBar.searchTextField.textColor = UIColor(named: CommonUsage.scBlue)
+        searchBar.searchTextField.textColor = UIColor(named: CommonUsage.scWhite)
         searchBar.showsCancelButton = true
+        searchBar.tintColor = UIColor(named: CommonUsage.scWhite)
         return searchBar
     }()
     
@@ -258,6 +263,17 @@ class AudioMapViewController: UIViewController {
         mapView.camera = camera
         mapView.settings.myLocationButton = true
         mapView.isMyLocationEnabled = true
+        mapView.padding = UIEdgeInsets(top: 0, left: 0, bottom: 65.adjusted, right: 0)
+        do {
+          if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
+            mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
+          } else {
+            NSLog("Unable to find style.json")
+          }
+        } catch {
+          NSLog("One or more of the map styles failed to load. \(error)")
+        }
+
         return mapView
     }()
     
@@ -282,6 +298,8 @@ extension AudioMapViewController {
     
     private func addSearchBar() {
         navigationItem.titleView = searchBar
+        navigationItem.titleView?.tintColor = UIColor(named: CommonUsage.scWhite)
+        navigationItem.titleView?.backgroundColor = UIColor(named: CommonUsage.scBlue)
     }
     
     private func setTableView() {
@@ -337,10 +355,9 @@ extension AudioMapViewController: GMSMapViewDelegate {
             guard let post = marker.userData as? SCPost else { return false }
             let audioAuthorName = post.authorName
             let audioTitle = post.title
-            scInfoWindow.setMapMarkerIcon(title: audioTitle, authorName: audioAuthorName)
+            let audioImageNumber = post.imageNumber
+            scInfoWindow.setMapMarkerIcon(title: audioTitle, authorName: audioAuthorName, audioImageNumber: audioImageNumber)
             tappedMarker = marker
-            //            scInfoWindow.center = mapView.projection.point(for: location)
-            //            scInfoWindow.center.y += 100
             scInfoWindow.delegate = self
             self.view.addSubview(scInfoWindow)
             return false

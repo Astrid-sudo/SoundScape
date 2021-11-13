@@ -44,7 +44,6 @@ class SCTabBarController: UITabBarController {
         let alert = UIAlertController(title: "Audio will stop playing.",
                                       message: "Navigate to upload flow will stop the audio you are listening. Do you still like to proceed?",
                                       preferredStyle: .alert )
-       
         let okButton = UIAlertAction(title: "Go upload", style: .default) {[weak self] _ in
             guard let self = self else { return }
             self.selectedIndex = 2
@@ -90,7 +89,6 @@ class SCTabBarController: UITabBarController {
 extension SCTabBarController: UITabBarControllerDelegate {
 
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-
       guard let viewControllers = self.viewControllers else { return true }
 
       if viewController == viewControllers[2] {
