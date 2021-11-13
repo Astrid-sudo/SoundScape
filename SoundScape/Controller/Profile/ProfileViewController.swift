@@ -14,7 +14,7 @@ struct UserIdentity {
 }
 
 enum ProfilePageSection: String, CaseIterable {
-    case followingsLatest = "Followings Latest"
+    case followingsLatest = "Followings"
     case myFavorite = "Favorite"
     case myAudio = "Audio"
 }
@@ -582,10 +582,22 @@ extension ProfileViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        UITableView.automaticDimension
+        
+        if indexPath == IndexPath(row: 0, section: 2) {
+           
+            return 230
+       
+        } else {
+           
+            return 168
+
+        }
+
     }
     
 }
+
+// MARK: - conform to ProfileViewController
 
 extension ProfileViewController: PressPassableDelegate {
     

@@ -21,6 +21,10 @@ class CreateAudioVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         addLottie()
+        AudioPlayerWindow.shared.window?.isHidden = true
+        if RemotePlayHelper.shared.state == .playing {
+            RemotePlayHelper.shared.pause()
+        }
     }
     
     // MARK: - action

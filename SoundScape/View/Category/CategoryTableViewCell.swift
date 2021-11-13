@@ -33,7 +33,7 @@ class CategoryTableViewCell: UITableViewCell {
 
     lazy var theImageView: UIImageView = {
         let image = UIImageView()
-        image.layer.cornerRadius = 40
+        image.layer.cornerRadius = 10
         image.layer.masksToBounds = true
         image.contentMode = .scaleAspectFill
         image.alpha = 0.4
@@ -60,11 +60,11 @@ class CategoryTableViewCell: UITableViewCell {
         contentView.addSubview(theImageView)
         theImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            theImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 32),
-            theImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -32),
+            theImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            theImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             theImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            theImageView.heightAnchor.constraint(equalToConstant: 100),
-            theImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
+            theImageView.heightAnchor.constraint(equalToConstant: 80),
+//            theImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
         ])
     }
     
@@ -73,8 +73,8 @@ class CategoryTableViewCell: UITableViewCell {
         titlelabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             titlelabel.trailingAnchor.constraint(equalTo: theImageView.trailingAnchor, constant: -20),
-            titlelabel.topAnchor.constraint(equalTo: theImageView.topAnchor, constant: 20),
-            titlelabel.heightAnchor.constraint(equalToConstant: 30)
+            titlelabel.topAnchor.constraint(equalTo: theImageView.topAnchor, constant: 16),
+//            titlelabel.heightAnchor.constraint(equalToConstant: 30)
         ])
     }
     
@@ -83,8 +83,8 @@ class CategoryTableViewCell: UITableViewCell {
         authorLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             authorLabel.trailingAnchor.constraint(equalTo: theImageView.trailingAnchor, constant: -20),
-            authorLabel.topAnchor.constraint(equalTo: titlelabel.bottomAnchor, constant: 10),
-            authorLabel.heightAnchor.constraint(equalToConstant: 30)
+            authorLabel.topAnchor.constraint(equalTo: titlelabel.bottomAnchor, constant: 8),
+//            authorLabel.heightAnchor.constraint(equalToConstant: 30)
         ])
     }
     

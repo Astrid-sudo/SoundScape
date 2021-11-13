@@ -188,7 +188,6 @@ class RecordVC: UIViewController {
             audioRecordHelper.stopRecording()
             playbackButton.isHidden = false
             stopButton.isHidden = false
-            
         }
     }
     

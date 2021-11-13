@@ -637,7 +637,16 @@ extension OthersProfileViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        UITableView.automaticDimension
+       
+        if indexPath == IndexPath(row: 0, section: 2) {
+           
+            return 230
+       
+        } else {
+           
+            return 168
+
+        }
     }
     
 }

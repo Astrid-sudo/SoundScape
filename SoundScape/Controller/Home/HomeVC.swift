@@ -38,20 +38,11 @@ class HomeVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setNavigationBar()
         addObserver()
         fetchAllAudioFile()
         setTableView()
         setViewBackgroundcolor()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.isNavigationBarHidden = true
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.isNavigationBarHidden = false
     }
     
     deinit {
@@ -63,6 +54,17 @@ class HomeVC: UIViewController {
     private func setViewBackgroundcolor() {
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
     }
+    
+    private func setNavigationBar() {
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for:UIBarMetrics.default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationItem.title = CommonUsage.Text.appName
+        navigationController?.navigationBar.barTintColor = UIColor(named: CommonUsage.scBlue)
+        let font = UIFont(name: CommonUsage.fontBungee, size: 28)
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: font,
+                                                                   NSAttributedString.Key.foregroundColor: UIColor(named: CommonUsage.scWhite)]
+    }
+    
     
     private func setTableView() {
         view.addSubview(tableView)
@@ -140,7 +142,18 @@ extension HomeVC: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        UITableView.automaticDimension
+        
+        if indexPath == IndexPath(row: 0, section: 5) {
+            
+            return 230
+            
+        } else {
+            
+            return 168
+            
+            
+        }
+        
     }
     
 }

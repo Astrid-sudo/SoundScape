@@ -12,6 +12,10 @@ struct CommonUsage {
     
     static let screenWidth = UIScreen.main.bounds.width
     static let screenHeight = UIScreen.main.bounds.height
+    static let base: CGFloat = 375
+    static var ratio: CGFloat {
+        return screenWidth / base
+    }
     
     static var audioImages: [UIImage?] = [UIImage(named: CommonUsage.animalDog),
                                           UIImage(named: CommonUsage.animalCat),
@@ -122,6 +126,7 @@ struct CommonUsage {
         static let logInNotice = "By using SoundScape you agree to accept our"
         static let privacyPolicy = "Privacy Policy"
         static let audioLengthNotice = "Only support upload audio file under 90 seconds."
+        static let noResultTitle =  "No result."
     }
     
     struct CollectionName {
@@ -167,3 +172,27 @@ extension UIImageView {
         addSubview(blurEffectView)
     }
 }
+
+extension CGFloat {
+    
+    var adjusted: CGFloat {
+        
+        return self * CommonUsage.ratio
+    }
+}
+
+extension Double {
+    
+    var adjusted: CGFloat {
+        
+        return CGFloat(self) * CommonUsage.ratio
+    }
+}
+extension Int {
+    
+    var adjusted: CGFloat {
+        
+        return CGFloat(self) * CommonUsage.ratio
+    }
+}
+
