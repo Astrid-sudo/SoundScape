@@ -27,8 +27,8 @@ class SCTabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = .orange
+        tabBar.barTintColor = UIColor(named: CommonUsage.scBlue)
+        tabBar.tintColor = UIColor(named: CommonUsage.scWhite)
     }
     
     // MARK: - method
