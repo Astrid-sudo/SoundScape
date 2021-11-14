@@ -17,7 +17,7 @@ class AudioPlayerVC: UIViewController {
     
     weak var delegate: DetailPageShowableDelegate?
     
-    var timer: Timer?
+    var displayLink: CADisplayLink?
     
     let audioHelper = AudioPlayHelper.shared
     
@@ -29,8 +29,10 @@ class AudioPlayerVC: UIViewController {
     
     private var showDetailConstraint = NSLayoutConstraint()
     
-    var soundDetailVC: SoundDetailVC?
+    var soundDetailVC: ProSoundDetailViewController?
     
+//    var soundDetailVC: soundDetailVC?
+
     var nowPlayDocumentID: String?
     
     var currentUserFavoriteDocumentIDs: [String]?
@@ -39,7 +41,7 @@ class AudioPlayerVC: UIViewController {
     
     lazy var baseView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: CommonUsage.scGreen)
+        view.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         return view
     }()
     
@@ -71,7 +73,7 @@ class AudioPlayerVC: UIViewController {
     private lazy var favoriteButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: CommonUsage.SFSymbol.heartEmpty), for: .normal)
-        button.tintColor = .red
+        button.tintColor = UIColor(named: CommonUsage.scYellow)
         button.addTarget(self, action: #selector(manipulateFavorite), for: .touchUpInside)
         return button
     }()
@@ -92,7 +94,7 @@ class AudioPlayerVC: UIViewController {
     
     private lazy var progressView: UIView = {
         let view = UIView()
-        view.backgroundColor = .orange
+        view.backgroundColor = UIColor(named: CommonUsage.scOrange)
         return view
     }()
     
@@ -101,6 +103,13 @@ class AudioPlayerVC: UIViewController {
         button.backgroundColor = .clear
         button.addTarget(self, action: #selector(presentDetail), for: .touchUpInside)
         return button
+    }()
+    
+    private lazy var indicatorView: UIActivityIndicatorView = {
+        let view = UIActivityIndicatorView(style: .medium )
+        view.color = UIColor(named: CommonUsage.scWhite)
+        view.isHidden = true
+        return view
     }()
     
     // MARK: - life cycle
@@ -116,6 +125,7 @@ class AudioPlayerVC: UIViewController {
         setAudioTitle()
         setAuthorLabel()
         setPlayButton()
+        setIndicatorView()
         setFavoriteButton()
         setFullDurationView()
         setProgressView()
@@ -166,7 +176,7 @@ class AudioPlayerVC: UIViewController {
     private func addDetailPage() {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "SoundDetailVC") as? SoundDetailVC else { return }
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "ProSoundDetailViewController") as? ProSoundDetailViewController else { return }
         
         self.soundDetailVC = vc
         guard let soundDetailVC = soundDetailVC else { return }
@@ -190,12 +200,13 @@ class AudioPlayerVC: UIViewController {
     
     private func fillFavoriteButton() {
         favoriteButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.heart), for: .normal)
-        favoriteButton.tintColor = .red
+        favoriteButton.tintColor = UIColor(named: CommonUsage.scYellow)
+        
     }
     
     private func emptyFavoriteButton() {
         favoriteButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.heartEmpty), for: .normal)
-        favoriteButton.tintColor = .red
+        favoriteButton.tintColor = UIColor(named: CommonUsage.scYellow)
     }
     
     // MARK: - action
@@ -239,9 +250,10 @@ class AudioPlayerVC: UIViewController {
         audioImage.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             audioImage.leadingAnchor.constraint(equalTo: baseView.leadingAnchor, constant: 8),
-            audioImage.topAnchor.constraint(equalTo: baseView.topAnchor, constant: 4),
-            audioImage.widthAnchor.constraint(equalToConstant: 40),
-            audioImage.heightAnchor.constraint(equalToConstant: 40)
+            //            audioImage.topAnchor.constraint(equalTo: baseView.topAnchor, constant: 4),
+            audioImage.centerYAnchor.constraint(equalTo: baseView.centerYAnchor, constant: -5),
+            audioImage.widthAnchor.constraint(equalToConstant: 40.adjusted),
+            audioImage.heightAnchor.constraint(equalToConstant: 40.adjusted)
         ])
     }
     
@@ -250,7 +262,8 @@ class AudioPlayerVC: UIViewController {
         audioTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             audioTitleLabel.leadingAnchor.constraint(equalTo: audioImage.trailingAnchor, constant: 20),
-            audioTitleLabel.topAnchor.constraint(equalTo: baseView.topAnchor, constant: 4)
+            //            audioTitleLabel.topAnchor.constraint(equalTo: baseView.topAnchor, constant: 4)
+            audioTitleLabel.bottomAnchor.constraint(equalTo: audioImage.centerYAnchor)
         ])
     }
     
@@ -259,7 +272,8 @@ class AudioPlayerVC: UIViewController {
         authorLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             authorLabel.leadingAnchor.constraint(equalTo: audioImage.trailingAnchor, constant: 20),
-            authorLabel.topAnchor.constraint(equalTo: audioTitleLabel.bottomAnchor, constant: 4)
+//            authorLabel.topAnchor.constraint(equalTo: audioTitleLabel.bottomAnchor, constant: 4)
+            authorLabel.topAnchor.constraint(equalTo: audioImage.centerYAnchor)
         ])
     }
     
@@ -273,6 +287,18 @@ class AudioPlayerVC: UIViewController {
             playButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
+    
+    private func setIndicatorView() {
+        baseView.addSubview(indicatorView)
+        indicatorView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            indicatorView.trailingAnchor.constraint(equalTo: baseView.trailingAnchor, constant: -16),
+            indicatorView.centerYAnchor.constraint(equalTo: audioImage.centerYAnchor),
+            indicatorView.widthAnchor.constraint(equalToConstant: 50),
+            indicatorView.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+
     
     private func setFavoriteButton() {
         baseView.addSubview(favoriteButton)
@@ -349,7 +375,7 @@ class AudioPlayerVC: UIViewController {
         
         guard let soundDetailVC = soundDetailVC else { return }
         soundDetailVC.view.alpha = 1
-
+        
         dontShowDetailConstraint.isActive = false
         showDetailConstraint.isActive = true
         
@@ -366,6 +392,7 @@ class AudioPlayerVC: UIViewController {
         audioTitleLabel.text = nowPlayingInfo.title
         authorLabel.text = nowPlayingInfo.author
         nowPlayDocumentID = nowPlayingInfo.documentID
+        audioImage.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
         manipulateFavoriteImage()
         
     }
@@ -412,15 +439,35 @@ class AudioPlayerVC: UIViewController {
     
     @objc func changeButtImage() {
         
-        if remotePlayerHelper.state == .stopped
-            || remotePlayerHelper.state == .buffering
+        if remotePlayerHelper.state == .buffering
+            || remotePlayerHelper.state == .stopped
             || remotePlayerHelper.state == .paused
             || remotePlayerHelper.state == .loaded {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+            DispatchQueue.main.async {
+                self.indicatorView.stopAnimating()
+                self.indicatorView.isHidden = true
+                self.playButton.isHidden = false
+                self.playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+            }
         }
         
         if remotePlayerHelper.state == .playing {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
+            DispatchQueue.main.async {
+                self.indicatorView.stopAnimating()
+                self.indicatorView.isHidden = true
+                self.playButton.isHidden = false
+                self.playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
+            }
+        }
+        
+        if remotePlayerHelper.state == .loading
+            || remotePlayerHelper.state == .initialization
+            || remotePlayerHelper.state == .waitingForNetwork {
+            DispatchQueue.main.async {
+                self.playButton.isHidden = true
+                self.indicatorView.startAnimating()
+                self.indicatorView.isHidden = false
+            }
         }
         
     }
@@ -429,17 +476,16 @@ class AudioPlayerVC: UIViewController {
         if audioHelper.isPlaying == true {
             self.audioHelper.pause()
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-            if let timer = timer {
-                timer.invalidate()
+            
+            if let displayLink = displayLink {
+                displayLink.invalidate()
             }
+            
         } else {
             audioHelper.play()
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-            timer = Timer.scheduledTimer(timeInterval: 0.1,
-                                         target: self,
-                                         selector: #selector(updatePlaybackTime),
-                                         userInfo: nil,
-                                         repeats: true)
+            displayLink = CADisplayLink(target: self, selector: #selector(updatePlaybackTime))
+            displayLink?.add(to: RunLoop.main, forMode: .common)
         }
         
     }
@@ -451,11 +497,9 @@ class AudioPlayerVC: UIViewController {
     }
     
     func localUpdateUI() {
-        timer = Timer.scheduledTimer(timeInterval: 0.1,
-                                     target: self,
-                                     selector: #selector(updatePlaybackTime),
-                                     userInfo: nil,
-                                     repeats: true)
+        
+        displayLink = CADisplayLink(target: self, selector: #selector(updatePlaybackTime))
+        displayLink?.add(to: RunLoop.main, forMode: .common)
         
         if audioHelper.isPlaying == true {
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
@@ -495,7 +539,7 @@ extension AudioPlayerVC: DetailPageShowableDelegate {
         
         guard let soundDetailVC = soundDetailVC else { return }
         soundDetailVC.view.alpha = 1
-
+        
         dontShowDetailConstraint.isActive = false
         showDetailConstraint.isActive = true
         

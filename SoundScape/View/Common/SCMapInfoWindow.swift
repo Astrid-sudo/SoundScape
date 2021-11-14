@@ -17,7 +17,7 @@ class SCMapInfoWindow: UIView {
     
     private lazy var button: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .red
+        button.backgroundColor = .clear
         button.addTarget(self, action: #selector(goSoundDetailPage), for: .touchUpInside)
         return button
     }()
@@ -40,11 +40,23 @@ class SCMapInfoWindow: UIView {
         return label
     }()
     
+    private lazy var audioImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.layer.cornerRadius = 10
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        return imageView
+    }()
+    
     // MARK: - init
     
     init() {
-        super.init(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
-        self.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        super.init(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth - 100, height: 50))
+        self.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        self.layer.cornerRadius = 10
+        self.layer.borderWidth = 0.5
+        self.layer.borderColor = UIColor(named: CommonUsage.scGray)?.cgColor
+        setHeadphoneImageView()
         setButton()
         setTitleLabel()
         setAuthorNamelabel()
@@ -62,6 +74,17 @@ class SCMapInfoWindow: UIView {
     
     // MARK: - UI method
     
+    private func setHeadphoneImageView() {
+        self.addSubview(audioImage)
+        audioImage.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            audioImage.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 4),
+            audioImage.topAnchor.constraint(equalTo: self.topAnchor, constant: 4),
+            audioImage.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4),
+            audioImage.widthAnchor.constraint(equalTo: audioImage.heightAnchor)
+        ])
+    }
+    
     private func setButton() {
         self.addSubview(button)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -77,9 +100,8 @@ class SCMapInfoWindow: UIView {
         self.addSubview(titlelabel)
         titlelabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            titlelabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            titlelabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
-            titlelabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 8)
+            titlelabel.leadingAnchor.constraint(equalTo: audioImage.trailingAnchor, constant: 4),
+            titlelabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 4)
         ])
     }
     
@@ -87,17 +109,18 @@ class SCMapInfoWindow: UIView {
         self.addSubview(authorNamelabel)
         authorNamelabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            authorNamelabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            authorNamelabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
-            authorNamelabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8)
+            authorNamelabel.topAnchor.constraint(equalTo: titlelabel.bottomAnchor, constant: 4),
+            authorNamelabel.leadingAnchor.constraint(equalTo: audioImage.trailingAnchor, constant: 4),
+            authorNamelabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4)
         ])
     }
     
     // MARK: - method
     
-    func setMapMarkerIcon(title: String?, authorName: String?) {
+    func setMapMarkerIcon(title: String?, authorName: String?, audioImageNumber: Int) {
         titlelabel.text = title
         authorNamelabel.text = authorName
+        audioImage.image = CommonUsage.audioImages[audioImageNumber]
     }
     
 }

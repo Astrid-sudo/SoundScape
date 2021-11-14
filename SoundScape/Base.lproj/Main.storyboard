@@ -7,6 +7,7 @@
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="UIMenu" message="Requires Xcode 11 or later." minToolsVersion="11.0" requiredIntegratedClassName="UICommandDiff"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -65,26 +66,21 @@
                                 <rect key="frame" x="16" y="815" width="382" height="31"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JBD-jo-CAf">
-                                        <rect key="frame" x="0.0" y="0.0" width="67" height="31"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="102" height="31"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" title="Button" image="heart.fill" catalog="system"/>
                                         <buttonConfiguration key="configuration" style="plain" image="heart.fill" catalog="system"/>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MwK-6J-d2D">
-                                        <rect key="frame" x="105" y="0.0" width="67" height="31"/>
+                                        <rect key="frame" x="140" y="0.0" width="102" height="31"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="text.bubble.fill" catalog="system"/>
                                         <connections>
                                             <action selector="presentCommentPage:" destination="BYZ-38-t0r" eventType="touchUpInside" id="KpE-s2-tJn"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v6G-CT-7ZK">
-                                        <rect key="frame" x="210" y="0.0" width="67" height="31"/>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" image="repeat" catalog="system"/>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vyv-Vm-GpB">
-                                        <rect key="frame" x="315" y="0.0" width="67" height="31"/>
+                                        <rect key="frame" x="280" y="0.0" width="102" height="31"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="mappin.and.ellipse" catalog="system"/>
                                     </button>
@@ -193,32 +189,8 @@
                     <view key="view" contentMode="scaleToFill" id="ViH-y6-qpk">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Er3-Hh-z9E">
-                                <rect key="frame" x="161.5" y="732" width="91" height="31"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Select File"/>
-                                <connections>
-                                    <action selector="selectFile:" destination="aSM-Zi-js2" eventType="touchUpInside" id="0AL-Sh-4vR"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TON-vn-iif">
-                                <rect key="frame" x="172" y="128" width="70" height="31"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Record"/>
-                                <connections>
-                                    <action selector="presentMap:" destination="aSM-Zi-js2" eventType="touchUpInside" id="s0b-lg-s3c"/>
-                                </connections>
-                            </button>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="XXH-tT-t64"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="TON-vn-iif" firstAttribute="centerX" secondItem="ViH-y6-qpk" secondAttribute="centerX" id="BAd-LX-G3J"/>
-                            <constraint firstItem="XXH-tT-t64" firstAttribute="bottom" secondItem="Er3-Hh-z9E" secondAttribute="bottom" constant="50" id="Hyc-Yt-hKz"/>
-                            <constraint firstItem="Er3-Hh-z9E" firstAttribute="centerX" secondItem="ViH-y6-qpk" secondAttribute="centerX" id="IgZ-ve-zD9"/>
-                            <constraint firstItem="TON-vn-iif" firstAttribute="top" secondItem="XXH-tT-t64" secondAttribute="top" constant="40" id="b63-Yl-oFP"/>
-                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="30w-yN-vPv"/>
                 </viewController>
@@ -270,7 +242,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Mg4-LR-L3S" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2216" y="1625"/>
+            <point key="canvasLocation" x="1399" y="1625"/>
         </scene>
         <!--Comment View Controller-->
         <scene sceneID="B1M-AH-HnE">
@@ -377,6 +349,17 @@
                                     <action selector="playTrimmedAudio" destination="ng3-eR-Xx5" eventType="touchUpInside" id="98q-Yh-xxh"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" showsMenuAsPrimaryAction="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Pc-BB-sfO">
+                                <rect key="frame" x="176" y="696" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <menu key="menu" id="nTC-E3-Iat">
+                                    <children>
+                                        <command title="Item 1" id="QTY-CU-zpL"/>
+                                        <command title="Item 2" id="Qtz-TP-kl0"/>
+                                    </children>
+                                </menu>
+                                <state key="normal" title="Button"/>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="DYi-bc-hVf"/>
                         <color key="backgroundColor" systemColor="systemBrownColor"/>
@@ -421,7 +404,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rnZ-gj-N3W" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1399" y="1625"/>
+            <point key="canvasLocation" x="2216" y="1637"/>
         </scene>
         <!--RecordVC-->
         <scene sceneID="KCO-hM-psp">
@@ -481,7 +464,7 @@
         <scene sceneID="jYj-F6-wO1">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="tDT-kx-dbn" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Search" image="magnifyingglass" catalog="system" id="5Ev-Yt-RNR"/>
+                    <tabBarItem key="tabBarItem" tag="1" title="Search" image="magnifyingglass" catalog="system" id="5Ev-Yt-RNR"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="hus-ab-oXb">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -519,7 +502,7 @@
         <scene sceneID="CcT-Kj-Yd2">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Z6U-sV-Qee" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Upload" image="arrow.up.heart.fill" catalog="system" id="0F7-bP-h7s"/>
+                    <tabBarItem key="tabBarItem" tag="2" title="Upload" image="arrow.up.heart.fill" catalog="system" id="0F7-bP-h7s"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Vai-3E-kQV">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -534,11 +517,11 @@
             </objects>
             <point key="canvasLocation" x="505.79710144927537" y="877.90178571428567"/>
         </scene>
-        <!--Profile-->
+        <!--SoundScape-->
         <scene sceneID="Oaj-il-eDD">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="dTq-Ql-oJi" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Profile" image="person.fill" catalog="system" id="fqd-zo-ILa"/>
+                    <tabBarItem key="tabBarItem" tag="3" title="SoundScape" image="map" catalog="system" id="fqd-zo-ILa"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Ebg-HY-bzZ">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -546,18 +529,18 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="sU8-ob-dcH" kind="relationship" relationship="rootViewController" id="wmD-Jf-Spb"/>
+                        <segue destination="6gp-95-FmU" kind="relationship" relationship="rootViewController" id="7py-q4-xvO"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="p22-2d-vZF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1398.5507246376812" y="877.90178571428567"/>
         </scene>
-        <!--SoundScape-->
+        <!--Profile-->
         <scene sceneID="52y-LZ-PDx">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="pXR-Ln-skx" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="SoundScape" image="map" catalog="system" id="AWA-pu-dNE"/>
+                    <tabBarItem key="tabBarItem" tag="4" title="Profile" image="person.fill" catalog="system" id="AWA-pu-dNE"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="M4d-ew-SnX">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -565,7 +548,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="6gp-95-FmU" kind="relationship" relationship="rootViewController" id="d0n-44-dmY"/>
+                        <segue destination="sU8-ob-dcH" kind="relationship" relationship="rootViewController" id="m6W-5M-VGZ"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1XF-CE-FCm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -633,6 +616,36 @@
             </objects>
             <point key="canvasLocation" x="1374" y="2304"/>
         </scene>
+        <!--Privacy Policy View Controller-->
+        <scene sceneID="wuQ-jx-Kc1">
+            <objects>
+                <viewController storyboardIdentifier="PrivacyPolicyViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="SlB-5F-4Oq" customClass="PrivacyPolicyViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="AxZ-dV-E4O">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="eMg-1T-Crg"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4E3-kC-hoP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3535" y="2314"/>
+        </scene>
+        <!--Pro Sound Detail View Controller-->
+        <scene sceneID="jid-As-RoD">
+            <objects>
+                <viewController storyboardIdentifier="ProSoundDetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="DwO-QL-2Oe" customClass="ProSoundDetailViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="vsC-AB-Tkb">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="aNz-bK-ql3"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PBK-h8-CJr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4361" y="878"/>
+        </scene>
     </scenes>
     <resources>
         <image name="arrow.up.heart.fill" catalog="system" width="128" height="109"/>
@@ -644,7 +657,6 @@
         <image name="mappin.and.ellipse" catalog="system" width="118" height="128"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
         <image name="play.fill" catalog="system" width="116" height="128"/>
-        <image name="repeat" catalog="system" width="128" height="98"/>
         <image name="text.bubble.fill" catalog="system" width="128" height="110"/>
         <image name="ticket" catalog="system" width="128" height="84"/>
         <namedColor name="scLightBlue">

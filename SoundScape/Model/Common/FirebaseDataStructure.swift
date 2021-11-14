@@ -33,6 +33,10 @@ struct SCPicture: Codable {
     var picture: String
 }
 
+struct SCBlockUser: Codable {
+    let userID: String
+}
+
 struct SCFollow: Codable {
     let userID: String
     let provider: String
@@ -51,9 +55,8 @@ struct SCPost: Codable, Hashable {
     var content: String
     var createdTime: Timestamp?
     var lastEditedTime: Timestamp?
-    var imageURL: URL?
     var audioURL: URL?
-    //    var audioBase64: String?
+    var imageNumber: Int
     var category: String
     var audioLocation: GeoPoint?
     var duration: Double

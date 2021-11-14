@@ -20,10 +20,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let _ = (scene as? UIWindowScene) else { return }
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        
+        let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController")
+//        window?.rootViewController = sCTabBarController
+
         // if user is logged in before
         if let current = Auth.auth().currentUser {
-            
+
             SignInManager.shared.fetchUserInfoFromFirebase(userID: current.uid)
             let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController")
             window?.rootViewController = sCTabBarController

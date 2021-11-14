@@ -10,10 +10,10 @@ import UIKit
 class HomeVC: UIViewController {
     
     // MARK: - properties
-
+    
     let firebaseManager = FirebaseManager.shared
     
-    var allAudioFiles = [SCPost]() {
+    var audioFiles = [SCPost]() {
         didSet {
             tableView.reloadData()
         }
@@ -38,27 +38,31 @@ class HomeVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        fetchDataFromFirebase()
+        setNavigationBar()
+        addObserver()
+        fetchAllAudioFile()
         setTableView()
         setViewBackgroundcolor()
-        
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.isNavigationBarHidden = true
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.isNavigationBarHidden = false
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - config UI method
     
     private func setViewBackgroundcolor() {
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+    }
+    
+    private func setNavigationBar() {
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for:UIBarMetrics.default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationItem.title = CommonUsage.Text.appName
+        navigationController?.navigationBar.barTintColor = UIColor(named: CommonUsage.scBlue)
+        let font = UIFont(name: CommonUsage.fontBungee, size: 28)
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: font,
+                                                                   NSAttributedString.Key.foregroundColor: UIColor(named: CommonUsage.scWhite)]
     }
     
     private func setTableView() {
@@ -74,21 +78,21 @@ class HomeVC: UIViewController {
     
     // MARK: - method
     
-    private func fetchDataFromFirebase() {
-        
-        firebaseManager.checkPostsChange { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .success(let posts):
-                self.allAudioFiles = posts
-                
-            case.failure(let error):
-                print(error)
-            }
-        }
-
+    private func addObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateAllAudioFile),
+                                               name: .allAudioPostChange ,
+                                               object: nil)
     }
+    
+    @objc func updateAllAudioFile() {
+        fetchAllAudioFile()
+    }
+    
+    private func fetchAllAudioFile() {
+        audioFiles = AudioPostManager.shared.filteredAudioFiles
+    }
+    
 }
 
 // MARK: - conform to UITableViewDataSource
@@ -104,9 +108,10 @@ extension HomeVC: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell else { return UITableViewCell()
+        }
         
-        let filteredFiles = allAudioFiles.filter({$0.category == AudioCategory.allCases[indexPath.section].rawValue})
+        let filteredFiles = audioFiles.filter({$0.category == AudioCategory.allCases[indexPath.section].rawValue})
         cell.backgroundColor = .clear
         cell.firebaseData = filteredFiles
         cell.category = AudioCategory.allCases[indexPath.item].rawValue
@@ -136,7 +141,18 @@ extension HomeVC: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        UITableView.automaticDimension
+        
+        if indexPath == IndexPath(row: 0, section: 5) {
+            
+            return 230
+            
+        } else {
+            
+            return 168
+            
+            
+        }
+        
     }
     
 }
@@ -149,7 +165,7 @@ extension HomeVC: PressPassableDelegate {
         
         var data = [SCPost]()
         
-        for file in allAudioFiles {
+        for file in audioFiles {
             
             if file.category == category.rawValue {
                 data.append(file)
@@ -161,7 +177,6 @@ extension HomeVC: PressPassableDelegate {
         
         categoryPage.config(category: category, data: data)
         navigationController?.pushViewController(categoryPage, animated: true)
-
     }
     
     func goCategoryPage() {

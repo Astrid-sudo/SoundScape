@@ -21,15 +21,14 @@ class RecordVC: UIViewController {
     private lazy var goEditButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 30)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.edit, withConfiguration: config)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.trim, withConfiguration: config)
         button.setImage(bigImage, for: .normal)
-        button.tintColor = .red
+        button.tintColor = UIColor(named: CommonUsage.scYellow)
         button.addTarget(self, action: #selector(pushToNext), for: .touchUpInside)
         return button
     }()
     
     private lazy var waveformLiveView: WaveformLiveView = {
-        
         let waveformLiveView = WaveformLiveView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: 100))
         return waveformLiveView
     }()
@@ -79,7 +78,7 @@ class RecordVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        setNavigationBar()
         setGoEditButton()
         setWaveformLiveView()
         setRecordTimeLabel()
@@ -117,6 +116,14 @@ class RecordVC: UIViewController {
     }
 
     // MARK: - UI method
+    
+    private func setNavigationBar() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
+        navigationItem.title = CommonUsage.Text.record
+    }
+
     
     private func setGoEditButton() {
         view.addSubview(goEditButton)
@@ -176,6 +183,10 @@ class RecordVC: UIViewController {
     
     // MARK: - action
     
+    @objc func backToLastPage() {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
     @objc func manipulaterecord() {
         
         toggleRecordButtonImage()
@@ -188,7 +199,6 @@ class RecordVC: UIViewController {
             audioRecordHelper.stopRecording()
             playbackButton.isHidden = false
             stopButton.isHidden = false
-            
         }
     }
     

@@ -17,10 +17,12 @@ class SearchCollectionViewCell: UICollectionViewCell {
     
     private lazy var textLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scYellow)
-        label.backgroundColor = UIColor(named: CommonUsage.scLightGreen)
-        label.layer.cornerRadius = 10
+        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        label.layer.cornerRadius = 20
         label.textAlignment = .center
+        label.clipsToBounds = true
+        label.layer.masksToBounds = true
         return label
     }()
     
@@ -42,13 +44,10 @@ class SearchCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(textLabel)
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            textLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            textLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             textLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            textLabel.widthAnchor.constraint(equalToConstant: 90),
-            textLabel.heightAnchor.constraint(equalToConstant: 50)
+            textLabel.widthAnchor.constraint(equalToConstant: 95),
+            textLabel.heightAnchor.constraint(equalToConstant: 41)
         ])
-
     }
     
     func setContent(content: String) {
@@ -57,11 +56,11 @@ class SearchCollectionViewCell: UICollectionViewCell {
     }
     
     func setLabelColorRed() {
-        textLabel.backgroundColor = UIColor(named: CommonUsage.scRed)
+        textLabel.backgroundColor = UIColor(named: CommonUsage.scSuperLightBlue)
     }
     
     func setLabelColorGreen() {
-        textLabel.backgroundColor = UIColor(named: CommonUsage.scLightGreen)
+        textLabel.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
     }
 
 }

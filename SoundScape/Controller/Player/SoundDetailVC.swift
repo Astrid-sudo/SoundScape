@@ -18,13 +18,61 @@ class SoundDetailVC: UIViewController {
     
     @IBOutlet weak var playButton: UIButton!
     
+    private lazy var playButtonC: UIButton = {
+        let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 20)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
+        button.setImage(bigImage, for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(manipulatePlayer), for: .touchUpInside)
+        return button
+    }()
+    
     @IBOutlet weak var authorButton: UIButton!
+    
+    private lazy var authorButtonC: UIButton = {
+        let button = UIButton()
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(goAuthorPage), for: .touchUpInside)
+        return button
+    }()
+
     
     @IBOutlet weak var authorLabel: UILabel!
     
     @IBOutlet weak var titleLabel: UILabel!
     
+    private lazy var titleLabelc: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textAlignment = .left
+        return label
+    }()
+
+    
     @IBOutlet weak var contentTextView: UITextView!
+    
+    private lazy var contentTextViewc: UITextView = {
+        let textView = UITextView()
+        textView.textColor = .white
+        textView.font = UIFont(name: CommonUsage.font, size: 15)
+        textView.textAlignment = .left
+        textView.isEditable = false
+        textView.isSelectable = false
+        textView.isScrollEnabled = true
+        textView.backgroundColor = .clear
+//        textView.layer.cornerRadius = 10
+//        textView.delegate = self
+        textView.textContainer.maximumNumberOfLines = 8
+        textView.textContainer.lineBreakMode = .byWordWrapping
+        return textView
+    }()
+
+    
+    private lazy var backgroundImageView: UIImageView = {
+       let imageView = UIImageView()
+        return imageView
+    }()
    
     // MARK: - properties
     
@@ -34,7 +82,7 @@ class SoundDetailVC: UIViewController {
     
     var audioHelper = AudioPlayHelper.shared
     
-    var timer: Timer?
+    var displayLink: CADisplayLink?
     
     var fileNameCount = 0
     
@@ -50,9 +98,11 @@ class SoundDetailVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+//        setBackgroundImage()
         addObserver()
         setAudioHelper()
+        waveformView.isHidden = true
+        waveformProgressView.isHidden = true
     }
     
     // MARK: - deinit
@@ -63,7 +113,6 @@ class SoundDetailVC: UIViewController {
     
     // MARK: - action
     
-    
     @IBAction func presentCommentPage(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let commentViewController = storyboard.instantiateViewController(withIdentifier: String(describing: CommentViewController.self)) as? CommentViewController else { return }
@@ -71,11 +120,9 @@ class SoundDetailVC: UIViewController {
         present(commentViewController, animated: true)
     }
     
-    
     @IBAction func goAuthorProfile(_ sender: UIButton) {
         
         guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
-        
         
         scTabBarController.selectedIndex = 0
 
@@ -90,21 +137,47 @@ class SoundDetailVC: UIViewController {
         homeVC.navigationController?.pushViewController(othersProfileViewController, animated: true)
         
         guard let leave = delegate?.leaveDetailPage else { return }
-        timer?.invalidate()
-        AudioPlayerWindow.shared.window?.frame = CGRect(x: 0, y: CommonUsage.screenHeight - 110,
-                                                            width: CommonUsage.screenWidth, height: 60)
-        AudioPlayerWindow.shared.window?.rootViewController?.view.isHidden = false
+        displayLink?.invalidate()
+        
+        AudioPlayerWindow.shared.makeSmallFrame()
+        AudioPlayerWindow.shared.showVC()
+        
+        leave()
+
+    }
+    
+    @objc func goAuthorPage() {
+        
+        guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
+        
+        scTabBarController.selectedIndex = 0
+
+        guard let homeVC = scTabBarController.viewControllers?[0].children[0] as? HomeVC else { return }
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let othersProfileViewController = storyboard.instantiateViewController(withIdentifier: String(describing: OthersProfileViewController.self)) as? OthersProfileViewController,
+        let authorIdentity = self.authorIdentity  else { return }
+        
+        othersProfileViewController.idWillDisplay = authorIdentity
+        
+        homeVC.navigationController?.pushViewController(othersProfileViewController, animated: true)
+        
+        guard let leave = delegate?.leaveDetailPage else { return }
+        displayLink?.invalidate()
+        
+        AudioPlayerWindow.shared.makeSmallFrame()
+        AudioPlayerWindow.shared.showVC()
+        
         leave()
 
     }
     
     @IBAction func leaveDetailPage(_ sender: UIButton) {
         guard let leave = delegate?.leaveDetailPage else { return }
-        timer?.invalidate()
-        AudioPlayerWindow.shared.window?.frame = CGRect(x: 0, y: CommonUsage.screenHeight - 110,
-                                                            width: CommonUsage.screenWidth, height: 60)
-        
-        AudioPlayerWindow.shared.window?.rootViewController?.view.isHidden = false
+        displayLink?.invalidate()
+        AudioPlayerWindow.shared.makeSmallFrame()
+        AudioPlayerWindow.shared.showVC()
+
         leave()
     }
     
@@ -122,6 +195,24 @@ class SoundDetailVC: UIViewController {
         }
         
     }
+    
+    @objc func manipulatePlayer() {
+        
+        if remotePlayerHelper.state == .playing {
+            remotePlayerHelper.pause()
+            playButtonC.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+        } else if remotePlayerHelper.state == .paused
+                    || remotePlayerHelper.state == .loaded
+                    || remotePlayerHelper.state == .buffering
+                    || remotePlayerHelper.state == .stopped {
+            remotePlayerHelper.play()
+            playButtonC.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
+        }
+        
+    }
+
+    
+    
     
     // MARK: - method
     
@@ -215,8 +306,12 @@ class SoundDetailVC: UIViewController {
     @objc func updatePlayInfo(notification: Notification) {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
         titleLabel.text = nowPlayingInfo.title
+        titleLabelc.text = nowPlayingInfo.title
+
 //        authorLabel.text = nowPlayingInfo.author
+        backgroundImageView.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
         authorButton.setTitle(nowPlayingInfo.author, for: .normal)
+        authorButtonC.setTitle(nowPlayingInfo.author, for: .normal)
         contentTextView.text = nowPlayingInfo.content
         authorIdentity = UserIdentity(userID: nowPlayingInfo.authorUserID, userIDProvider: nowPlayingInfo.authorAccountProvider)
         nowPlayingDocumentID = nowPlayingInfo.documentID
@@ -297,12 +392,9 @@ class SoundDetailVC: UIViewController {
     
     func updateUI() {
         
-        timer = Timer.scheduledTimer(timeInterval: 0.1,
-                                     target: self,
-                                     selector: #selector(updatePlaybackTime),
-                                     userInfo: nil,
-                                     repeats: true)
-        
+        displayLink = CADisplayLink(target: self, selector: #selector(updatePlaybackTime))
+        displayLink?.add(to: RunLoop.main, forMode: .common)
+
         if audioHelper.isPlaying == true {
             
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
@@ -311,6 +403,22 @@ class SoundDetailVC: UIViewController {
             
             playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
         }
+    }
+    
+}
+
+extension SoundDetailVC {
+    
+    private func setBackgroundImage() {
+        view.addSubview(backgroundImageView)
+        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
     }
     
 }

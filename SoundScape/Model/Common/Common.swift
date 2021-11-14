@@ -12,11 +12,32 @@ struct CommonUsage {
     
     static let screenWidth = UIScreen.main.bounds.width
     static let screenHeight = UIScreen.main.bounds.height
+    static let base: CGFloat = 375
+    static var ratio: CGFloat {
+        return screenWidth / base
+    }
+    
+    static var audioImages: [UIImage?] = [UIImage(named: CommonUsage.animalDog),
+                                          UIImage(named: CommonUsage.animalCat),
+                                          UIImage(named: CommonUsage.animalCatPaw),
+                                          UIImage(named: CommonUsage.animalDuck),
+                                          UIImage(named: CommonUsage.city),
+                                          UIImage(named: CommonUsage.meaningfulCake),
+                                          UIImage(named: CommonUsage.meaningfulFlower),
+                                          UIImage(named: CommonUsage.meaningfulWine),
+                                          UIImage(named: CommonUsage.natureMountain),
+                                          UIImage(named: CommonUsage.natureOcean),
+                                          UIImage(named: CommonUsage.natureRiver),
+                                          UIImage(named: CommonUsage.uniqueRice),
+                                          UIImage(named: CommonUsage.untitledArtwork)
+    ]
+    
+    static let privacyPolicyURL = "https://www.privacypolicies.com/live/11ed0980-697c-4f2e-9e23-412af25966c4"
     
     static let fontBungee = "Bungee-Regular"
     static let font = "PingFang TC"
     static let fontSemibold = "PingFangTC-Semibold"
-
+    
     static let fakeMap = "fakeMap"
     static let audioImage = "audioImage"
     static let audioImage2 = "audioImage2"
@@ -26,13 +47,27 @@ struct CommonUsage {
     static let profileCover4 = "profileCover4"
     static let profileCover5 = "profileCover5"
     static let yeh1024 = "yeh1024"
-
+    
+    static let animalDog = "Animal_Dog"
+    static let animalCat = "Animal_Cat"
+    static let animalCatPaw = "Animal_CatPaw"
+    static let animalDuck = "Animal_Duck"
+    static let city = "City"
+    static let meaningfulCake = "Meaningful_cake"
+    static let meaningfulFlower = "Meaningful_Flower"
+    static let meaningfulWine = "Meaningful_Wine"
+    static let natureMountain = "Nature_Mountain"
+    static let natureOcean = "Nature_Ocean"
+    static let natureRiver = "Nature_River"
+    static let uniqueRice = "Unique_Rice"
+    static let untitledArtwork = "Untitled_Artwork 4"
+    
     static let profilePic = "profilePic"
     static let profilePic2 = "profilePic2"
     static let profilePic3 = "profilePic3"
     static let profilePic4 = "profilePic4"
     static let profilePic5 = "profilePic5"
-
+    
     static let line = "line"
     
     static let scDarkGreen = "scDarkGreen"
@@ -63,9 +98,14 @@ struct CommonUsage {
         static let heartEmpty = "heart"
         static let right = "chevron.right"
         static let chevronDown = "chevron.down"
+        static let back = "chevron.backward"
         static let paperplaneFill = "paperplane.fill"
         static let photo = "photo"
         static let map = "map"
+        static let headphonesCircleFill = "headphones.circle.fill"
+        static let ellipsis = "ellipsis"
+        static let comment = "text.bubble.fill"
+        static let trim = "timeline.selection"
     }
     
     struct Text {
@@ -85,6 +125,17 @@ struct CommonUsage {
         static let addComment = "Add comment..."
         static let appName = "SoundScape"
         static let searchPlace = "Search Place"
+        static let audioImage = "Pick a cover"
+        static let logInNotice = "By using SoundScape you agree to accept our"
+        static let privacyPolicy = "Privacy Policy"
+        static let audioLengthNotice = "Only support upload audio file under 90 seconds."
+        static let noResultTitle =  "No result."
+        static let searchHintLabel = "Search by title, author, or content."
+        static let block = "block"
+        static let myProfile = "My Profile"
+        static let record = "Record"
+        static let selectFile = "Select File"
+        static let trim = "Trim"
 
     }
     
@@ -131,3 +182,27 @@ extension UIImageView {
         addSubview(blurEffectView)
     }
 }
+
+extension CGFloat {
+    
+    var adjusted: CGFloat {
+        
+        return self * CommonUsage.ratio
+    }
+}
+
+extension Double {
+    
+    var adjusted: CGFloat {
+        
+        return CGFloat(self) * CommonUsage.ratio
+    }
+}
+extension Int {
+    
+    var adjusted: CGFloat {
+        
+        return CGFloat(self) * CommonUsage.ratio
+    }
+}
+

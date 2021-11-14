@@ -20,15 +20,17 @@ class SearchViewController: UIViewController {
     
     private var keyWord: String?
     
-    private var allAudioFiles = [SCPost]()
+    private var audioFiles = [SCPost]()
     
     private var resultAudioFiles = [SCPost]() {
         didSet {
             
             if resultAudioFiles.count == 0 {
-                addLottie()
+                noResultImage.isHidden = false
+                noResultLabel.isHidden = false
             } else {
-                animationView.removeFromSuperview()
+                noResultImage.isHidden = true
+                noResultLabel.isHidden = true
             }
 
             tableView.reloadData()
@@ -38,51 +40,56 @@ class SearchViewController: UIViewController {
     // MARK: - life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        addObserver()
         fetchDataFromFirebase()
         setViewBackgroundColor()
         setSearchBar()
+        setHintLabel()
         setCategoryTitleLabel()
         setCollectionView()
         setSearchResultTitleLabel()
         setTableView()
-        addLottie()
+        setNoResultImage()
+        setNoResultLabel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        animationView.play()
-
+        navigationController?.navigationBar.isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.navigationBar.isHidden = false
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - method
     
-    private func addLottie() {
-        view.addSubview(animationView)
-        animationView.play()
+    private func addObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateAllAudioFile),
+                                               name: .allAudioPostChange ,
+                                               object: nil)
+    }
+    
+    @objc func updateAllAudioFile() {
+        fetchDataFromFirebase()
     }
 
     private func fetchDataFromFirebase() {
-        
-        firebaseManager.checkPostsChange { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .success(let posts):
-                self.allAudioFiles = posts
-                
-            case.failure(let error):
-                print(error)
-            }
-        }
+        audioFiles = AudioPostManager.shared.filteredAudioFiles
     }
     
     private func search() {
         
         guard let keyword = self.keyWord else { return }
-        let titleResult = allAudioFiles.filter({$0.title.lowercased().contains(keyword.lowercased())})
-        let authorResult = allAudioFiles.filter({$0.authorName.lowercased().contains(keyword.lowercased())})
-        let contentResult = allAudioFiles.filter({$0.content.lowercased().contains(keyword.lowercased())})
+        let titleResult = audioFiles.filter({$0.title.lowercased().contains(keyword.lowercased())})
+        let authorResult = audioFiles.filter({$0.authorName.lowercased().contains(keyword.lowercased())})
+        let contentResult = audioFiles.filter({$0.content.lowercased().contains(keyword.lowercased())})
         let allResult = titleResult + authorResult + contentResult
         let resultSet = Set(allResult)
         let resultArray = Array(resultSet)
@@ -134,7 +141,7 @@ class SearchViewController: UIViewController {
     private lazy var categoryTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.font, size: 18)
+        label.font = UIFont(name: CommonUsage.fontSemibold, size: 18)
         label.textAlignment = .left
         label.text = CommonUsage.Text.category
         return label
@@ -143,7 +150,7 @@ class SearchViewController: UIViewController {
     private lazy var searchResultTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.font, size: 18)
+        label.font = UIFont(name: CommonUsage.fontSemibold, size: 18)
         label.textAlignment = .left
         label.text = CommonUsage.Text.searchResult
         return label
@@ -152,7 +159,7 @@ class SearchViewController: UIViewController {
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 90, height: 44)
+        layout.itemSize = CGSize(width: 95, height: 30)
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 8
         
@@ -183,6 +190,30 @@ class SearchViewController: UIViewController {
         return table
     }()
     
+    private lazy var noResultImage: UIImageView = {
+       let imageView = UIImageView()
+        imageView.image = CommonUsage.audioImages[4]
+        imageView.contentMode = .scaleAspectFit
+        imageView.layer.cornerRadius = 10
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+    
+    private lazy var noResultLabel: UILabel = {
+        let label = UILabel()
+        label.text = CommonUsage.Text.noResultTitle
+        label.textColor = UIColor(named: CommonUsage.scWhite)
+        return label
+    }()
+    
+    private lazy var hintLabel: UILabel = {
+        let label = UILabel()
+        label.text = CommonUsage.Text.searchHintLabel
+        label.textColor = UIColor(named: CommonUsage.scGray)
+        label.font = UIFont(name: CommonUsage.font, size: 12)
+        return label
+    }()
+
     // MARK: - UI method
     
     private func setViewBackgroundColor() {
@@ -199,12 +230,21 @@ class SearchViewController: UIViewController {
         ])
     }
     
+    private func setHintLabel() {
+        view.addSubview(hintLabel)
+        hintLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            hintLabel.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
+            hintLabel.leadingAnchor.constraint(equalTo: searchBar.leadingAnchor)
+        ])
+    }
+    
     private func setCategoryTitleLabel() {
         view.addSubview(categoryTitleLabel)
         categoryTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             categoryTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            categoryTitleLabel.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 8)
+            categoryTitleLabel.topAnchor.constraint(equalTo: hintLabel.bottomAnchor, constant: 4)
         ])
     }
     
@@ -215,7 +255,7 @@ class SearchViewController: UIViewController {
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             collectionView.topAnchor.constraint(equalTo: categoryTitleLabel.bottomAnchor, constant: 4),
-            collectionView.heightAnchor.constraint(equalToConstant: 44)
+            collectionView.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
@@ -239,6 +279,28 @@ class SearchViewController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 30)
         ])
     }
+    
+    private func setNoResultImage() {
+        view.addSubview(noResultImage)
+        noResultImage.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            noResultImage.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
+            noResultImage.centerYAnchor.constraint(equalTo: tableView.centerYAnchor, constant: -40),
+            noResultImage.widthAnchor.constraint(equalToConstant: 150),
+            noResultImage.heightAnchor.constraint(equalTo: noResultImage.widthAnchor)
+        ])
+    }
+    
+    private func setNoResultLabel() {
+        view.addSubview(noResultLabel)
+        noResultLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            noResultLabel.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
+            noResultLabel.topAnchor.constraint(equalTo: noResultImage.bottomAnchor, constant: 8)
+        ])
+    }
+    
+
     
 }
 
@@ -296,7 +358,8 @@ extension SearchViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.reuseIdentifier, for: indexPath) as? SearchTableViewCell else { return UITableViewCell()}
         let data = resultAudioFiles[indexPath.row]
-        cell.setContent(title: data.title, author: data.authorName)
+        cell.selectionStyle = .none
+        cell.setContent(title: data.title, author: data.authorName, imageNumber: data.imageNumber)
         return cell
     }
     
@@ -311,10 +374,22 @@ extension SearchViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        UITableView.automaticDimension
+
+        if indexPath == IndexPath(row: resultAudioFiles.count - 1, section: 0) {
+           
+            return 140
+        
+        } else {
+           
+            return 70
+        
+        }
+        
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        AudioPlayerWindow.shared.show()
         
         let title = resultAudioFiles[indexPath.item].title
         let author = resultAudioFiles[indexPath.item].authorName
@@ -322,13 +397,19 @@ extension SearchViewController: UITableViewDelegate {
         let duration = resultAudioFiles[indexPath.item].duration
         let documentID =  resultAudioFiles[indexPath.item].documentID
         let authorUserID = resultAudioFiles[indexPath.item].authorID
+        let audioImageNumber = resultAudioFiles[indexPath.item].imageNumber
         let authorAccountProvider = resultAudioFiles[indexPath.item].authIDProvider
 
-
         remotePlayHelper.url = resultAudioFiles[indexPath.item].audioURL
-        remotePlayHelper.setPlayInfo(title: title, author: author, content: content, duration: duration, documentID:documentID, authorUserID: authorUserID, authorAccountProvider:authorAccountProvider)
-        AudioPlayerWindow.shared.show()
-
+        remotePlayHelper.setPlayInfo(title: title,
+                                     author: author,
+                                     content: content,
+                                     duration: duration,
+                                     documentID: documentID,
+                                     authorUserID: authorUserID,
+                                     audioImageNumber: audioImageNumber,
+                                     authorAccountProvider: authorAccountProvider)
+       
     }
     
 }

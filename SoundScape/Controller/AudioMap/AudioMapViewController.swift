@@ -42,7 +42,7 @@ class AudioMapViewController: UIViewController {
     weak var delegate: LocationCoordinatePassableDelegate?
     
     private lazy var searchCompleter: MKLocalSearchCompleter = {
-       let completer = MKLocalSearchCompleter()
+        let completer = MKLocalSearchCompleter()
         completer.delegate = self
         return completer
     }()
@@ -70,6 +70,13 @@ class AudioMapViewController: UIViewController {
     
     var audioPostCache: [String: SCPost] = [:]
     
+    var currentUserBlacklist: [SCBlockUser]? {
+        didSet {
+            mapView.clear()
+            makeMarker()
+        }
+    }
+    
     var newAudioDocumentIDs = Set<String>() {
         didSet {
             for documentID in newAudioDocumentIDs {
@@ -82,6 +89,7 @@ class AudioMapViewController: UIViewController {
                     case .success(let posts):
                         let audioPost = posts.filter({$0.documentID == documentID}).first
                         self.audioPostCache[documentID] = audioPost
+                        
                         self.makeMarker()
                     case .failure(let error):
                         print("Cant fetch new SCPost \(error)")
@@ -99,17 +107,25 @@ class AudioMapViewController: UIViewController {
         }
     }
     
+    override var prefersStatusBarHidden: Bool {
+        true
+    }
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        setNavigationBar()
+        
         switch audioMapType {
         case .pinOnMap:
             setMap()
             addSearchBar()
             setTableView()
         case .browseMap:
+            addObserver()
+            fetchBlacklist()
             checkLocations()
             setMap()
             addSearchBar()
@@ -117,7 +133,7 @@ class AudioMapViewController: UIViewController {
         }
         
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if audioMapType == .pinOnMap {
@@ -125,13 +141,41 @@ class AudioMapViewController: UIViewController {
         }
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        scInfoWindow.layer.cornerRadius = 10
+        scInfoWindow.clipsToBounds = true
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
     // MARK: - method
+    
+    private func addObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(currentUserBlacklistChange),
+                                               name: .currentUserBlacklistChange ,
+                                               object: nil)
+    }
+    
+    @objc func currentUserBlacklistChange() {
+        fetchBlacklist()
+    }
+    
+    @objc func backToLastPage() {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    private func fetchBlacklist() {
+        currentUserBlacklist = SignInManager.shared.currentUserBlacklist
+    }
     
     private func checkLocations() {
         
@@ -158,14 +202,34 @@ class AudioMapViewController: UIViewController {
     
     private func makeMarker() {
         
-        for newAudioDocumentID in newAudioDocumentIDs {
+        if let currentUserBlacklist = currentUserBlacklist {
+            for newAudioDocumentID in newAudioDocumentIDs {
+                for blockedUser in currentUserBlacklist {
+                    
+                    if let post = audioPostCache[newAudioDocumentID] {
+                        
+                        if post.authorID != blockedUser.userID {
+                            if let audioLocation = post.audioLocation {
+                                let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: audioLocation.latitude, longitude: audioLocation.longitude))
+                                marker.userData = post
+                                marker.map = mapView
+                            }
+                        }
+                    }
+                }
+            }
             
-            if let post = audioPostCache[newAudioDocumentID] {
+        } else {
+            
+            for newAudioDocumentID in newAudioDocumentIDs {
                 
-                if let audioLocation = post.audioLocation {
-                    let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: audioLocation.latitude, longitude: audioLocation.longitude))
-                    marker.userData = post
-                    marker.map = mapView
+                if let post = audioPostCache[newAudioDocumentID] {
+                    
+                    if let audioLocation = post.audioLocation {
+                        let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: audioLocation.latitude, longitude: audioLocation.longitude))
+                        marker.userData = post
+                        marker.map = mapView
+                    }
                 }
             }
         }
@@ -177,6 +241,7 @@ class AudioMapViewController: UIViewController {
         let table = UITableView()
         table.dataSource = self
         table.delegate = self
+        table.backgroundColor = UIColor(named: CommonUsage.scBlue)
         table.allowsSelection = true
         table.separatorStyle = .singleLine
         table.register(MapSearchResultTableViewCell.self, forCellReuseIdentifier: MapSearchResultTableViewCell.reuseIdentifier)
@@ -187,15 +252,15 @@ class AudioMapViewController: UIViewController {
     private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.backgroundImage = UIImage()
-        searchBar.barTintColor = UIColor(named: CommonUsage.scLightBlue)
-        searchBar.layer.cornerRadius = 10
+        searchBar.barTintColor = UIColor(named: CommonUsage.scWhite)
         searchBar.placeholder = CommonUsage.Text.search
         searchBar.delegate = self
-        searchBar.searchTextField.textColor = UIColor(named: CommonUsage.scBlue)
+        searchBar.searchTextField.textColor = UIColor(named: CommonUsage.scWhite)
         searchBar.showsCancelButton = true
+        searchBar.tintColor = UIColor(named: CommonUsage.scWhite)
         return searchBar
     }()
-
+    
     private lazy var mapView: GMSMapView = {
         let mapView = GMSMapView()
         let posision = currentLocation ?? defaultLocation
@@ -204,6 +269,17 @@ class AudioMapViewController: UIViewController {
         mapView.camera = camera
         mapView.settings.myLocationButton = true
         mapView.isMyLocationEnabled = true
+        mapView.padding = UIEdgeInsets(top: 0, left: 0, bottom: 65.adjusted, right: 0)
+        do {
+          if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
+            mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
+          } else {
+            NSLog("Unable to find style.json")
+          }
+        } catch {
+          NSLog("One or more of the map styles failed to load. \(error)")
+        }
+
         return mapView
     }()
     
@@ -219,15 +295,25 @@ class AudioMapViewController: UIViewController {
         marker.map = mapView
         return marker
     }()
-
+    
 }
 
 // MARK: - UI method
 
 extension AudioMapViewController {
     
+    private func setNavigationBar() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
+//        navigationItem.title = CommonUsage.Text.upload
+    }
+
+    
     private func addSearchBar() {
         navigationItem.titleView = searchBar
+        navigationItem.titleView?.tintColor = UIColor(named: CommonUsage.scWhite)
+        navigationItem.titleView?.backgroundColor = UIColor(named: CommonUsage.scBlue)
     }
     
     private func setTableView() {
@@ -239,7 +325,6 @@ extension AudioMapViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
         ])
-
     }
     
     private func setMap() {
@@ -273,21 +358,20 @@ extension AudioMapViewController: GMSMapViewDelegate {
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         
         switch audioMapType {
-        
+            
         case .pinOnMap:
-           
+            
             return true
-        
+            
         case .browseMap:
             
             let location = CLLocationCoordinate2D(latitude: marker.position.latitude, longitude: marker.position.longitude)
             guard let post = marker.userData as? SCPost else { return false }
             let audioAuthorName = post.authorName
             let audioTitle = post.title
-            scInfoWindow.setMapMarkerIcon(title: audioTitle, authorName: audioAuthorName)
+            let audioImageNumber = post.imageNumber
+            scInfoWindow.setMapMarkerIcon(title: audioTitle, authorName: audioAuthorName, audioImageNumber: audioImageNumber)
             tappedMarker = marker
-            scInfoWindow.center = mapView.projection.point(for: location)
-            scInfoWindow.center.y -= 20
             scInfoWindow.delegate = self
             self.view.addSubview(scInfoWindow)
             return false
@@ -297,11 +381,11 @@ extension AudioMapViewController: GMSMapViewDelegate {
     
     func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
         guard let post = tappedMarker.userData as? SCPost,
-        let audioLocation = post.audioLocation else { return }
+              let audioLocation = post.audioLocation else { return }
         let location = CLLocationCoordinate2D(latitude: audioLocation.latitude, longitude: audioLocation.longitude )
         scInfoWindow.center = mapView.projection.point(for: location)
     }
-
+    
     func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
         
         switch audioMapType {
@@ -315,13 +399,13 @@ extension AudioMapViewController: GMSMapViewDelegate {
             pinMarker.map = mapView
             mapView.selectedMarker = pinMarker
             delegate?.displayPinOnSmallMap(locationFromBigMap: pinnedLocation)
-        
+            
         case .browseMap:
             
             scInfoWindow.removeFromSuperview()
         }
     }
-
+    
 }
 
 // MARK: - conform to ButtonTappedPassableDelegate
@@ -329,6 +413,8 @@ extension AudioMapViewController: GMSMapViewDelegate {
 extension AudioMapViewController: ButtonTappedPassableDelegate {
     
     func pushSoundDetailPage() {
+        
+        AudioPlayerWindow.shared.show()
         
         guard let post = tappedMarker.userData as? SCPost else { return }
         let documentID = post.documentID
@@ -338,8 +424,9 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
         let content = post.content
         let duration = post.duration
         let authorUserID = post.authorID
+        let audioImageNumber = post.imageNumber
         let authorAccountProvider = post.authIDProvider
-
+        
         remotePlayHelper.url = url
         remotePlayHelper.setPlayInfo(title: title,
                                      author: author,
@@ -347,9 +434,9 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
                                      duration: duration,
                                      documentID: documentID,
                                      authorUserID: authorUserID,
+                                     audioImageNumber: audioImageNumber,
                                      authorAccountProvider: authorAccountProvider)
         
-        AudioPlayerWindow.shared.show()
     }
     
 }
@@ -360,7 +447,6 @@ extension AudioMapViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         searchCompleter.queryFragment = searchBar.text ?? ""
-
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
@@ -410,20 +496,20 @@ extension AudioMapViewController: UITableViewDelegate {
         LocationService.getCoordinate(addressString: address) { [weak self] (coordinate, error) in
             
             guard let self = self else { return }
-
-          if let error = error {
-            print("fetching coordinate error: \(error.localizedDescription)")
-          } else {
-            print("coordinate is \(coordinate)")
-              self.searchedLocation = coordinate
-          }
+            
+            if let error = error {
+                print("fetching coordinate error: \(error.localizedDescription)")
+            } else {
+                print("coordinate is \(coordinate)")
+                self.searchedLocation = coordinate
+            }
         }
         
         tableView.isHidden = true
         searchBar.endEditing(true)
         searchBar.text = suggestion.title
-
-      }
+        
+    }
     
 }
 
@@ -432,12 +518,12 @@ extension AudioMapViewController: UITableViewDelegate {
 extension AudioMapViewController: MKLocalSearchCompleterDelegate {
     
     func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
-      completerResults = completer.results
-      tableView.reloadData()
+        completerResults = completer.results
+        tableView.reloadData()
     }
     
     func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
-      print("didFailWithError: \(error.localizedDescription)")
+        print("didFailWithError: \(error.localizedDescription)")
     }
-
+    
 }

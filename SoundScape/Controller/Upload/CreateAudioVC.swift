@@ -11,23 +11,59 @@ import Lottie
 
 class CreateAudioVC: UIViewController {
     
+    let animationView = AnimationView(name: "lf30_editor_nhixegma")
+    
+    private lazy var recordButton: UIButton = {
+        let button = UIButton()
+        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.addTarget(self, action: #selector(goRecordPage), for: .touchUpInside)
+        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        button.layer.cornerRadius = 15
+        button.setTitle(CommonUsage.Text.record, for: .normal)
+        return button
+    }()
+    
+    private lazy var selectFileButton: UIButton = {
+        let button = UIButton()
+        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.addTarget(self, action: #selector(selectDocument), for: .touchUpInside)
+        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        button.layer.cornerRadius = 15
+        button.setTitle(CommonUsage.Text.selectFile, for: .normal)
+        return button
+    }()
+
     // MARK: - life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        setNavigationBar()
+        addLottie()
+        setSelectFileButton()
+        setRecordButton()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        addLottie()
+        animationView.play()
+
+        AudioPlayerWindow.shared.window?.isHidden = true
+        if RemotePlayHelper.shared.state == .playing {
+            RemotePlayHelper.shared.pause()
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        animationView.stop()
     }
     
     // MARK: - action
     
-    @IBAction func selectFile(_ sender: Any) {
+    @objc func selectDocument() {
         if #available(iOS 14.0, *) {
-            let controller = UIDocumentPickerViewController(forOpeningContentTypes: [.audio], asCopy: true)
+            let controller = UIDocumentPickerViewController(forOpeningContentTypes: [.mpeg4Audio], asCopy: true)
             
             controller.delegate = self
             present(controller, animated: true, completion: nil)
@@ -38,7 +74,7 @@ class CreateAudioVC: UIViewController {
         
     }
     
-    @IBAction func presentMap(_ sender: UIButton) {
+    @objc func goRecordPage() {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let recordVC = storyboard.instantiateViewController(withIdentifier: String(describing: RecordVC.self)) as? RecordVC else { return }
@@ -47,22 +83,52 @@ class CreateAudioVC: UIViewController {
         
     }
     
-    
     // MARK: - method
     
+    private func setNavigationBar() {
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationItem.title = CommonUsage.Text.upload
+        navigationController?.navigationBar.barTintColor = UIColor(named: CommonUsage.scBlue)
+        let font = UIFont(name: CommonUsage.fontBungee, size: 28)
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: font,
+                                                                   NSAttributedString.Key.foregroundColor: UIColor(named: CommonUsage.scWhite)]
+    }
+
     private func addLottie() {
-        let animationView = AnimationView(name: "77378-sunset")
-        animationView.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
-        animationView.center = self.view.center
+        animationView.frame = CGRect(x: 0, y: 100, width: CommonUsage.screenWidth, height: 200)
         animationView.contentMode = .scaleAspectFill
         animationView.loopMode = .loop
-        
         view.addSubview(animationView)
-        animationView.play()
-        
     }
     
+    private func setSelectFileButton() {
+        view.addSubview(selectFileButton)
+        selectFileButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            selectFileButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 48),
+            selectFileButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -48),
+            selectFileButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -32),
+            selectFileButton.heightAnchor.constraint(equalToConstant: 48)
+        ])
+    }
+
+    
+    private func setRecordButton() {
+        view.addSubview(recordButton)
+        recordButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            recordButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 48),
+            recordButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -48),
+            recordButton.bottomAnchor.constraint(equalTo: selectFileButton.topAnchor, constant: -16),
+            recordButton.heightAnchor.constraint(equalToConstant: 48)
+        ])
+    }
+    
+    
 }
+
+// MARK: - conform to UIDocumentPickerDelegate
 
 extension CreateAudioVC: UIDocumentPickerDelegate {
     

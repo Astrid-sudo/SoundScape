@@ -18,7 +18,7 @@ class MapSearchResultTableViewCell: UITableViewCell {
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.textColor = UIColor(named: CommonUsage.scBlue)
+        label.textColor = UIColor(named: CommonUsage.scGray)
         label.numberOfLines = 0
         return label
     }()
@@ -26,7 +26,7 @@ class MapSearchResultTableViewCell: UITableViewCell {
     lazy var subTitleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.textColor = UIColor(named: CommonUsage.scBlue)
+        label.textColor = UIColor(named: CommonUsage.scGray)
         label.numberOfLines = 0
         return label
     }()
@@ -35,6 +35,7 @@ class MapSearchResultTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setBackgroundcolor()
         setTitleLabel()
         setSubTitleLabel()
     }
@@ -44,6 +45,13 @@ class MapSearchResultTableViewCell: UITableViewCell {
     }
     
     // MARK: - config UI method
+    
+    private func setBackgroundcolor() {
+        backgroundColor = UIColor(named: CommonUsage.scBlue)
+        let bgColorView = UIView()
+        bgColorView.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        selectedBackgroundView = bgColorView
+    }
     
     private func setTitleLabel() {
         contentView.addSubview(titleLabel)
@@ -66,11 +74,9 @@ class MapSearchResultTableViewCell: UITableViewCell {
         ])
     }
 
-    
     func configCell(title: String?, subTitle: String?) {
         titleLabel.text = title
         subTitleLabel.text = subTitle
     }
     
 }
-

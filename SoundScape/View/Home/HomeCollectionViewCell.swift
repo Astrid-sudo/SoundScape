@@ -11,18 +11,21 @@ class HomeCollectionViewCell: UICollectionViewCell {
     
     static let reuseIdentifier = String(describing: HomeCollectionViewCell.self)
     
-    //MARK: - UI properties
+    // MARK: - UI properties
     
     private lazy var audioImage: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
+        image.layer.cornerRadius = 10
+        image.mask?.clipsToBounds = true
+        image.clipsToBounds = true
         return image
     }()
     
     private lazy var audioTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.font = UIFont(name: CommonUsage.font, size: 14)
         return label
     }()
@@ -30,12 +33,12 @@ class HomeCollectionViewCell: UICollectionViewCell {
     private lazy var authorNameLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.font = UIFont(name: CommonUsage.font, size: 12)
         return label
     }()
     
-    //MARK: - init
+    // MARK: - init
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -48,17 +51,16 @@ class HomeCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    //MARK: - configUI method
+    // MARK: - configUI method
     
     private func setAudioImage() {
         contentView.addSubview(audioImage)
         audioImage.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            audioImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            audioImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            audioImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            audioImage.heightAnchor.constraint(equalToConstant: 60),
-            audioImage.widthAnchor.constraint(equalToConstant: 60)
+            audioImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
+            audioImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
+            audioImage.topAnchor.constraint(equalTo: contentView.topAnchor),
+            audioImage.heightAnchor.constraint(equalTo: audioImage.widthAnchor)
         ])
     }
     
@@ -66,10 +68,10 @@ class HomeCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(audioTitleLabel)
         audioTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            audioTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            audioTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            audioTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
+            audioTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
             audioTitleLabel.heightAnchor.constraint(equalToConstant: 20),
-            audioTitleLabel.topAnchor.constraint(equalTo: audioImage.bottomAnchor, constant: 5)
+            audioTitleLabel.topAnchor.constraint(equalTo: audioImage.bottomAnchor, constant: 4)
         ])
     }
     
@@ -77,18 +79,34 @@ class HomeCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(authorNameLabel)
         authorNameLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            authorNameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            authorNameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            authorNameLabel.topAnchor.constraint(equalTo: audioTitleLabel.bottomAnchor, constant: 8),
+            authorNameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
+            authorNameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
+            authorNameLabel.topAnchor.constraint(equalTo: audioTitleLabel.bottomAnchor),
             authorNameLabel.heightAnchor.constraint(equalToConstant: 20),
-            authorNameLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 8)
+            authorNameLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4)
         ])
     }
     
-    func setCell(image: URL?, audioTitle: String, author: String) {
-        audioImage.image = UIImage(named: CommonUsage.audioImage)
+    func setCell(imageNumber: Int, audioTitle: String, author: String) {
+        audioImage.image = CommonUsage.audioImages[imageNumber]
         audioTitleLabel.text = audioTitle
         authorNameLabel.text = author
     }
-
+    
+    func setCellImage(image: UIImage?) {
+        audioImage.image = image
+        audioTitleLabel.removeFromSuperview()
+        authorNameLabel.removeFromSuperview()
+    }
+    
+    func setImageBorder() {
+        audioImage.layer.borderWidth = 5
+        audioImage.layer.borderColor = UIColor(named: CommonUsage.scRed)?.cgColor
+    }
+    
+    func removeImageBorder() {
+        audioImage.layer.borderWidth = 0
+        audioImage.layer.borderColor = UIColor.clear.cgColor
+    }
+    
 }

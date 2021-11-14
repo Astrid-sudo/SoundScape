@@ -16,6 +16,7 @@ struct PlayInfo {
     let duration: Double
     let documentID: String
     let authorUserID: String
+    let audioImageNumber: Int
     let authorAccountProvider: String
 }
 
@@ -116,7 +117,6 @@ class RemotePlayHelper {
     
     func limitCurrentTime(head: Double, tail: Double) {
         
-        
         if player.currentTime < head {
             if player.state == .playing {
                 pause()
@@ -140,8 +140,16 @@ class RemotePlayHelper {
         self.metadata = matadata
     }
     
-    func setPlayInfo(title: String, author: String, content: String, duration: Double, documentID: String,  authorUserID: String, authorAccountProvider: String) {
-        currentPlayInfo = PlayInfo(title: title, author: author, content: content, duration: duration, documentID: documentID, authorUserID: authorUserID, authorAccountProvider: authorAccountProvider)
+    func setPlayInfo(title: String, author: String, content: String, duration: Double, documentID: String,  authorUserID: String,audioImageNumber: Int, authorAccountProvider: String) {
+        
+        currentPlayInfo = PlayInfo(title: title,
+                                   author: author,
+                                   content: content,
+                                   duration: duration,
+                                   documentID: documentID,
+                                   authorUserID: authorUserID,
+                                   audioImageNumber: audioImageNumber,
+                                   authorAccountProvider: authorAccountProvider)
     }
     
 }
@@ -162,7 +170,7 @@ extension RemotePlayHelper: ModernAVPlayerDelegate {
     func modernAVPlayer(_ player: ModernAVPlayer, didCurrentTimeChange currentTime: Double) {
         print("Message from RemotePlayHelper: didCurrentTimeChange_ \(currentTime)")
         
-        // play audio from firebase (SoundDetailVC and AudioPlayerVC will get this Notification)
+        // play audio from firebase (SoundDetailVC(ProSoundDetailViewController) and AudioPlayerVC will get this Notification)
         if let currentPlayInfo = currentPlayInfo {
             
             let playProgress = PlayProgress(currentTime: currentTime, duration: currentPlayInfo.duration)
@@ -205,6 +213,4 @@ extension Notification.Name {
     static let didStateChange = Notification.Name("didStateChange")
     static let remoteURLDidSelect = Notification.Name("remoteURLDidSelect")
     static let didItemDurationChange = Notification.Name("didItemDurationChange")
-    
-    
 }

@@ -52,7 +52,7 @@ class CommentTableViewCell: UITableViewCell {
     
     private lazy var messageLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scLightBlue)
+        label.textColor = UIColor(named: CommonUsage.scWhite)
         label.layer.cornerRadius = 10
         label.numberOfLines = 0
         label.textAlignment = .left
@@ -64,7 +64,7 @@ class CommentTableViewCell: UITableViewCell {
     
     private lazy var commentInfoLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scDarkGreen)
+        label.textColor = UIColor(named: CommonUsage.scWhite)
         label.layer.cornerRadius = 10
         label.textAlignment = .left
         label.font = UIFont(name: CommonUsage.font, size: 12)
@@ -74,7 +74,7 @@ class CommentTableViewCell: UITableViewCell {
     
     private lazy var backgroundGrayView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: CommonUsage.scGray)
+        view.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         view.layer.cornerRadius = 10.0
         return view
     }()
@@ -83,7 +83,7 @@ class CommentTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = UIColor(named: CommonUsage.scRed)
+        backgroundColor = UIColor(named: CommonUsage.scBlue)
         setImagesConstraint()
         setCommentStackView()
         pinBackground(backgroundGrayView, to: commentStackView)
