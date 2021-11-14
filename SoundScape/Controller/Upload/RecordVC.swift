@@ -29,7 +29,6 @@ class RecordVC: UIViewController {
     }()
     
     private lazy var waveformLiveView: WaveformLiveView = {
-        
         let waveformLiveView = WaveformLiveView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: 100))
         return waveformLiveView
     }()

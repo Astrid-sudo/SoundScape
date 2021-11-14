@@ -104,6 +104,7 @@ struct CommonUsage {
         static let map = "map"
         static let headphonesCircleFill = "headphones.circle.fill"
         static let ellipsis = "ellipsis"
+        static let comment = "text.bubble.fill"
     }
     
     struct Text {

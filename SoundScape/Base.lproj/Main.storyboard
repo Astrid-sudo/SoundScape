@@ -655,6 +655,21 @@
             </objects>
             <point key="canvasLocation" x="3535" y="2314"/>
         </scene>
+        <!--Pro Sound Detail View Controller-->
+        <scene sceneID="jid-As-RoD">
+            <objects>
+                <viewController storyboardIdentifier="ProSoundDetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="DwO-QL-2Oe" customClass="ProSoundDetailViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="vsC-AB-Tkb">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="aNz-bK-ql3"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PBK-h8-CJr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4361" y="878"/>
+        </scene>
     </scenes>
     <resources>
         <image name="arrow.up.heart.fill" catalog="system" width="128" height="109"/>
