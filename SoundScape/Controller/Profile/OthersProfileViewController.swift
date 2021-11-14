@@ -13,24 +13,6 @@ enum ProfilePageType {
     case loggInUser
 }
 
-/*
- struct UserIdentity {
-     let userID: String
-     let userIDProvider: String
- }
-
- enum ProfilePageSection: String, CaseIterable {
-     case followingsLatest = "Followings"
-     case myFavorite = "Favorite"
-     case myAudio = "Audio"
- }
-
- enum PicType: String {
-     case userPic
-     case coverPic
- }
- */
-
 class OthersProfileViewController: UIViewController {
     
     // MARK: - properties
