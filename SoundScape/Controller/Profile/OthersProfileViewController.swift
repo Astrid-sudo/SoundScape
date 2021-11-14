@@ -17,6 +17,7 @@ class OthersProfileViewController: UIViewController {
     
     var userWillDisplay: SCUser? {
         didSet {
+            setNavigationBar()
             setUserProfile()
             fetchUserFavoriteList()
             fetchAmountOfFollows()
@@ -93,23 +94,11 @@ class OthersProfileViewController: UIViewController {
         setTableView()
         setFollowersStackView()
         setFollowingsStackView()
-        setMoreButton()
-        setFollowButton()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         userImageView.layer.cornerRadius = CommonUsage.screenHeight / 10
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.isNavigationBarHidden = true
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.isNavigationBarHidden = false
     }
     
     deinit {
@@ -126,12 +115,19 @@ class OthersProfileViewController: UIViewController {
         
         firebaseManager.manipulateFollow(userInfoDoumentID: userInfoDoumentID,
                                          userInfo: SCFollow(userID: userWillDisplay.userID,
-                                                            provider: userWillDisplay.provider), loggedInUserInfoDocumentID: loggedInUserInfoDocumentID,
+                                                            provider: userWillDisplay.provider),
+                                         loggedInUserInfoDocumentID: loggedInUserInfoDocumentID,
                                          loggedInUserInfo: SCFollow(userID: loggedInUserInfo.userID,
                                                                     provider: loggedInUserInfo.provider),
                                          followCompletion: makeButtonFollowed,
                                          unfollowCompletion: makeButtonUnFollow)
+        
     }
+    
+    @objc func backToLastPage() {
+        self.navigationController?.popViewController(animated: true)
+    }
+
     
     // MARK: - method
     
@@ -273,7 +269,7 @@ class OthersProfileViewController: UIViewController {
         nameLabel.text = userWillDisplay.username
     }
     
-    private func popBlockAlert() {
+    @objc func popBlockAlert() {
         guard let userID = userWillDisplay?.userInfoDoumentID else { return }
 
         let alert = UIAlertController(title: "Are you sure?",
@@ -307,26 +303,6 @@ class OthersProfileViewController: UIViewController {
         
         firebaseManager.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
                                        toBeBlockedID: blockUser.userID, completion: backToHome)
-    }
-    
-    @objc func popMoreMessageAlert() {
-        
-        let controller = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-           let action = UIAlertAction(title: "Block this user", style: .default) { [weak self] _ in
-               guard let self = self else { return }
-               self.popBlockAlert()
-           }
-        
-        let blankAction = UIAlertAction(title: "", style: .default) { action in
-     }
-
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        controller.addAction(action)
-        controller.addAction(blankAction)
-        controller.addAction(cancelAction)
-        
-        guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
-        scTabBarController.present(controller, animated: true, completion: nil)
     }
     
     // MARK: - UI properties
@@ -442,11 +418,13 @@ class OthersProfileViewController: UIViewController {
         return button
     }()
     
-    private lazy var moreButton: UIButton = {
+    private lazy var blockButton: UIButton = {
         let button = UIButton()
-        button.addTarget(self, action: #selector(popMoreMessageAlert), for: .touchUpInside)
-        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.ellipsis), for: .normal)
-        button.tintColor = .white
+        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.addTarget(self, action: #selector(popBlockAlert), for: .touchUpInside)
+        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        button.layer.cornerRadius = 15
+        button.setTitle(CommonUsage.Text.block, for: .normal)
         return button
     }()
 
@@ -456,6 +434,16 @@ class OthersProfileViewController: UIViewController {
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
     }
     
+    private func setNavigationBar() {
+        guard let userWillDisplay = userWillDisplay else { return }
+        navigationItem.title = userWillDisplay.username
+        navigationController?.isNavigationBarHidden = false
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
+
+    }
+
     private func setCoverImageView() {
         view.addSubview(coverImageView)
         coverImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -491,12 +479,22 @@ class OthersProfileViewController: UIViewController {
         view.addSubview(socialStackView)
         socialStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            socialStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
-            socialStackView.trailingAnchor.constraint(equalTo: nameLabel.leadingAnchor, constant: -8),
-            socialStackView.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor)
+            socialStackView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
+            socialStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            socialStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 4),
+            socialStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -4)
         ])
+        
         socialStackView.addArrangedSubview(followersStackView)
         socialStackView.addArrangedSubview(followingsStackView)
+        socialStackView.addArrangedSubview(blockButton)
+        socialStackView.addArrangedSubview(followButton)
+        
+        NSLayoutConstraint.activate([
+            followButton.widthAnchor.constraint(equalToConstant: 110),
+            blockButton.widthAnchor.constraint(equalToConstant: 80)
+        ])
+
     }
     
     private func setFollowersStackView() {
@@ -517,26 +515,6 @@ class OthersProfileViewController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.topAnchor.constraint(equalTo: socialStackView.bottomAnchor, constant: 4),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-    }
-    
-    private func setMoreButton() {
-        view.addSubview(moreButton)
-        moreButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            moreButton.centerYAnchor.constraint(equalTo: socialStackView.centerYAnchor),
-            moreButton.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor, constant: 16)
-        ])
-    }
-    
-    private func setFollowButton() {
-        view.addSubview(followButton)
-        followButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            followButton.leadingAnchor.constraint(equalTo: moreButton.trailingAnchor, constant: 16),
-            followButton.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
-            followButton.heightAnchor.constraint(equalTo: nameLabel.heightAnchor, multiplier: 0.75),
-            followButton.widthAnchor.constraint(equalToConstant: 80)
         ])
     }
     
@@ -569,14 +547,14 @@ extension OthersProfileViewController: UITableViewDataSource {
             var myFollowingsUserFiles = [SCPost]()
             for audioFile in allAudioFiles {
                 for folloing in followings {
-                    if audioFile.authorID == folloing.userID, audioFile.authIDProvider == folloing.provider {
+                    if audioFile.authorID == folloing.userID,
+                        audioFile.authIDProvider == folloing.provider {
                         myFollowingsUserFiles.append(audioFile)
                     }
                 }
             }
             cell.firebaseData = myFollowingsUserFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section]
-            
             
             
         case 1:
