@@ -16,6 +16,7 @@ class SettingViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setNavigationBar()
         addLottie()
         setBackgroundColor()
         setTableView()
@@ -24,16 +25,19 @@ class SettingViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = true
+        AudioPlayerWindow.shared.window?.isHidden = true
+        animationView.play()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.tabBarController?.tabBar.isHidden = false
+        animationView.stop()
     }
     
     private lazy var tableView: UITableView = {
         let table = UITableView()
-        table.backgroundColor = UIColor(named: CommonUsage.scDarkGreen)
+        table.backgroundColor = UIColor(named: CommonUsage.scBlue)
         table.dataSource = self
         table.delegate = self
         table.allowsSelection = true
@@ -45,16 +49,33 @@ class SettingViewController: UIViewController {
     
     private lazy var animationView: AnimationView = {
         let animationView = AnimationView(name: "lf30_editor_xgoxkd3f")
-        animationView.frame = CGRect(x: 0, y: CommonUsage.screenHeight / 8, width: 400, height: 400)
+        animationView.frame = CGRect(x: 0, y: 80, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight / 3)
         animationView.contentMode = .scaleAspectFill
         animationView.loopMode = .loop
         return animationView
     }()
+    
+    @objc func backToLastPage() {
+        self.navigationController?.popViewController(animated: true)
+    }
 
     private func setBackgroundColor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scDarkGreen)
+        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
     }
     
+    private func setNavigationBar() {
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationItem.title = CommonUsage.Text.settings
+        navigationController?.navigationBar.barTintColor = UIColor(named: CommonUsage.scBlue)
+        let font = UIFont(name: CommonUsage.fontBungee, size: 28)
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: font,
+                                                                   NSAttributedString.Key.foregroundColor: UIColor(named: CommonUsage.scWhite)]
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
+    }
+
     private func setTableView() {
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -68,7 +89,6 @@ class SettingViewController: UIViewController {
     
     private func addLottie() {
         view.addSubview(animationView)
-        animationView.play()
     }
     
     private func navigateToSignInPage() {
