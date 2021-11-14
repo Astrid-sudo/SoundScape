@@ -98,6 +98,7 @@ struct CommonUsage {
         static let heartEmpty = "heart"
         static let right = "chevron.right"
         static let chevronDown = "chevron.down"
+        static let back = "chevron.backward"
         static let paperplaneFill = "paperplane.fill"
         static let photo = "photo"
         static let map = "map"
@@ -128,6 +129,9 @@ struct CommonUsage {
         static let audioLengthNotice = "Only support upload audio file under 90 seconds."
         static let noResultTitle =  "No result."
         static let searchHintLabel = "Search by title, author, or content."
+        static let block = "block"
+        static let myProfile = "My Profile"
+
     }
     
     struct CollectionName {

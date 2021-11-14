@@ -266,7 +266,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Mg4-LR-L3S" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2216" y="1625"/>
+            <point key="canvasLocation" x="1399" y="1625"/>
         </scene>
         <!--Comment View Controller-->
         <scene sceneID="B1M-AH-HnE">
@@ -428,7 +428,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rnZ-gj-N3W" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1399" y="1625"/>
+            <point key="canvasLocation" x="2216" y="1637"/>
         </scene>
         <!--RecordVC-->
         <scene sceneID="KCO-hM-psp">
@@ -541,11 +541,11 @@
             </objects>
             <point key="canvasLocation" x="505.79710144927537" y="877.90178571428567"/>
         </scene>
-        <!--Profile-->
+        <!--SoundScape-->
         <scene sceneID="Oaj-il-eDD">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="dTq-Ql-oJi" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" tag="3" title="Profile" image="person.fill" catalog="system" id="fqd-zo-ILa"/>
+                    <tabBarItem key="tabBarItem" tag="3" title="SoundScape" image="map" catalog="system" id="fqd-zo-ILa"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Ebg-HY-bzZ">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -553,18 +553,18 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="sU8-ob-dcH" kind="relationship" relationship="rootViewController" id="wmD-Jf-Spb"/>
+                        <segue destination="6gp-95-FmU" kind="relationship" relationship="rootViewController" id="7py-q4-xvO"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="p22-2d-vZF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1398.5507246376812" y="877.90178571428567"/>
         </scene>
-        <!--SoundScape-->
+        <!--Profile-->
         <scene sceneID="52y-LZ-PDx">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="pXR-Ln-skx" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" tag="4" title="SoundScape" image="map" catalog="system" id="AWA-pu-dNE"/>
+                    <tabBarItem key="tabBarItem" tag="4" title="Profile" image="person.fill" catalog="system" id="AWA-pu-dNE"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="M4d-ew-SnX">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -572,7 +572,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="6gp-95-FmU" kind="relationship" relationship="rootViewController" id="d0n-44-dmY"/>
+                        <segue destination="sU8-ob-dcH" kind="relationship" relationship="rootViewController" id="m6W-5M-VGZ"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1XF-CE-FCm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

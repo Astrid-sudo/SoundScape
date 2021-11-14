@@ -65,7 +65,6 @@ class HomeVC: UIViewController {
                                                                    NSAttributedString.Key.foregroundColor: UIColor(named: CommonUsage.scWhite)]
     }
     
-    
     private func setTableView() {
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
