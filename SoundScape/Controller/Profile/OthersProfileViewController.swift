@@ -18,10 +18,8 @@ class OthersProfileViewController: UIViewController {
     var userWillDisplay: SCUser? {
         didSet {
             setNavigationBar()
-            setUserProfile()
             fetchUserFavoriteList()
             fetchAmountOfFollows()
-            manipulateFollowButton()
             fetchUserPicFromFirebase()
             fetchUserCoverFromFirebase()
         }
@@ -43,15 +41,13 @@ class OthersProfileViewController: UIViewController {
     
     private var numbersOfFollowers: Int? {
         didSet {
-            guard let numbersOfFollowers = numbersOfFollowers else { return }
-            followersNumberLabel.text = String(describing: numbersOfFollowers)
+            tableView.reloadData()
         }
     }
     
     private var numbersOfFollowings: Int? {
         didSet {
-            guard let numbersOfFollowings = numbersOfFollowings else { return }
-            followingsNumberLabel.text = String(describing: numbersOfFollowings)
+            tableView.reloadData()
         }
     }
     
@@ -63,19 +59,13 @@ class OthersProfileViewController: UIViewController {
     
     private var otherUserPic: String? {
         didSet {
-            guard let otherUserPic = otherUserPic,
-                  let data = Data(base64Encoded: otherUserPic) else { return }
-            userImageView.image = UIImage(data: data)
-            userImageView.contentMode = .scaleAspectFill
+            tableView.reloadData()
         }
     }
     
     private var otherUserCover: String? {
         didSet {
-            guard let otherUserCover = otherUserCover,
-                  let data = Data(base64Encoded: otherUserCover) else { return }
-            coverImageView.image = UIImage(data: data)
-            coverImageView.contentMode = .scaleAspectFill
+            tableView.reloadData()
         }
     }
     
@@ -87,18 +77,7 @@ class OthersProfileViewController: UIViewController {
         fetchUserInfo()
         fetchDataFromFirebase()
         setBackgroundColor()
-        setCoverImageView()
-        setUserImageView()
-        setNameLabel()
-        setSocialStackView()
         setTableView()
-        setFollowersStackView()
-        setFollowingsStackView()
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        userImageView.layer.cornerRadius = CommonUsage.screenHeight / 10
     }
     
     deinit {
@@ -107,56 +86,30 @@ class OthersProfileViewController: UIViewController {
     
     // MARK: - Action
     
-    @objc func manipulateFollow() {
-        guard let userWillDisplay = userWillDisplay,
-              let userInfoDoumentID = userWillDisplay.userInfoDoumentID,
-              let loggedInUserInfo = signInManager.currentUserInfoFirebase,
-              let loggedInUserInfoDocumentID = loggedInUserInfo.userInfoDoumentID else { return }
-        
-        firebaseManager.manipulateFollow(userInfoDoumentID: userInfoDoumentID,
-                                         userInfo: SCFollow(userID: userWillDisplay.userID,
-                                                            provider: userWillDisplay.provider),
-                                         loggedInUserInfoDocumentID: loggedInUserInfoDocumentID,
-                                         loggedInUserInfo: SCFollow(userID: loggedInUserInfo.userID,
-                                                                    provider: loggedInUserInfo.provider),
-                                         followCompletion: makeButtonFollowed,
-                                         unfollowCompletion: makeButtonUnFollow)
-        
-    }
-    
     @objc func backToLastPage() {
         self.navigationController?.popViewController(animated: true)
     }
-
     
     // MARK: - method
     
     private func addObserver() {
-
+        
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateAllAudioFile),
                                                name: .allAudioPostChange ,
                                                object: nil)
-
-    }
-
-    private func manipulateFollowButton() {
-        guard let otherUserID = userWillDisplay?.userID,
-              let currentUserFollowingsID = signInManager.currentUserFollowingList?.map({$0.userID}) else { return }
-        if currentUserFollowingsID.contains(otherUserID) {
-            makeButtonFollowed()
-        }
+        
     }
     
     private func makeButtonFollowed() {
-        followButton.setTitle(CommonUsage.Text.unfollow, for: .normal)
-        followButton.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
-        view.layoutIfNeeded()
+        
+        guard let profileCell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ProfileTableViewCell else { return }
+        profileCell.makeButtonFollowed()
     }
     
     private func makeButtonUnFollow() {
-        followButton.setTitle(CommonUsage.Text.follow, for: .normal)
-        followButton.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        guard let profileCell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ProfileTableViewCell else { return }
+        profileCell.makeButtonUnFollow()
     }
     
     private func fetchAmountOfFollows() {
@@ -179,6 +132,7 @@ class OthersProfileViewController: UIViewController {
             case .success(let followings):
                 self.numbersOfFollowings = followings.count
                 self.othersFollowingList = followings
+                
             case .failure(let error): print(error)
             }
         }
@@ -192,7 +146,8 @@ class OthersProfileViewController: UIViewController {
                   return
               }
         
-        firebaseManager.fetchUser(userID: userID, userIDProvider: userIDProider) { result in
+        firebaseManager.fetchUser(userID: userID,
+                                  userIDProvider: userIDProider) { result in
             
             switch result {
                 
@@ -238,7 +193,7 @@ class OthersProfileViewController: UIViewController {
         allAudioFiles = AudioPostManager.shared.filteredAudioFiles
     }
     
-    func fetchUserPicFromFirebase() {
+    private func fetchUserPicFromFirebase() {
         guard let userID = userWillDisplay?.userInfoDoumentID else { return }
         firebaseManager.fetchUserPicFromFirebase(userID: userID) { result in
             switch result {
@@ -250,7 +205,7 @@ class OthersProfileViewController: UIViewController {
         }
     }
     
-    func fetchUserCoverFromFirebase() {
+    private func fetchUserCoverFromFirebase() {
         guard let userID = userWillDisplay?.userInfoDoumentID else { return }
         firebaseManager.fetchCoverPicFromFirebase(userID: userID) { result in
             switch result {
@@ -262,20 +217,12 @@ class OthersProfileViewController: UIViewController {
         }
     }
     
-    private func setUserProfile() {
-        coverImageView.image = UIImage(named: CommonUsage.profileCover4)
-        userImageView.image = UIImage(named: CommonUsage.yeh1024)
-        guard let userWillDisplay = userWillDisplay else { return }
-        nameLabel.text = userWillDisplay.username
-    }
-    
-    @objc func popBlockAlert() {
-        guard let userID = userWillDisplay?.userInfoDoumentID else { return }
-
+    private func popBlockAlert() {
+        
         let alert = UIAlertController(title: "Are you sure?",
                                       message: "You can't see this user's comments, audio posts and profile page after blocking.",
                                       preferredStyle: .alert )
-       
+        
         let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
             guard let self = self else { return }
             self.blockUser()
@@ -295,7 +242,7 @@ class OthersProfileViewController: UIViewController {
         guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
         scTabBarController.selectedIndex = 0
     }
-
+    
     private func blockUser() {
         
         guard let currentUserDocID = signInManager.currentUserInfoFirebase?.userInfoDoumentID,
@@ -307,23 +254,6 @@ class OthersProfileViewController: UIViewController {
     
     // MARK: - UI properties
     
-    private lazy var coverImageView: UIImageView = {
-        let image = UIImageView()
-        image.contentMode = .scaleAspectFill
-        image.clipsToBounds = true
-        return image
-    }()
-    
-    private lazy var userImageView: UIImageView = {
-        let image = UIImageView()
-        image.contentMode = .scaleToFill
-        image.clipsToBounds = true
-        image.layer.cornerRadius = CommonUsage.screenHeight / 10
-        image.layer.borderWidth = 3
-        image.layer.borderColor = UIColor(named: CommonUsage.scBlue)?.cgColor
-        return image
-    }()
-    
     private lazy var tableView: UITableView = {
         let table = UITableView()
         table.dataSource = self
@@ -333,101 +263,11 @@ class OthersProfileViewController: UIViewController {
         table.showsVerticalScrollIndicator = false
         table.backgroundColor = .clear
         table.register(HomeTableViewCell.self, forCellReuseIdentifier: HomeTableViewCell.reuseIdentifier)
+        table.register(ProfileTableViewCell.self, forCellReuseIdentifier: ProfileTableViewCell.reuseIdentifier)
         table.register(HomeTableViewHeader.self, forHeaderFooterViewReuseIdentifier: HomeTableViewHeader.reuseIdentifier)
         return table
     }()
     
-    private lazy var nameLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 24)
-        label.textAlignment = .center
-        return label
-    }()
-    
-    private lazy var followersNumberLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 14)
-        label.textAlignment = .left
-        label.text = "0"
-        return label
-    }()
-    
-    private lazy var followersTitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scGray)
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 10)
-        label.textAlignment = .left
-        label.text = CommonUsage.Text.followers
-        return label
-    }()
-    
-    private lazy var followingsNumberLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 14)
-        label.textAlignment = .left
-        label.text = "0"
-        return label
-    }()
-    
-    private lazy var followingsTitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scGray)
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 10)
-        label.textAlignment = .left
-        label.text = CommonUsage.Text.followings
-        return label
-    }()
-    
-    private lazy var followersStackView: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = 1
-        stack.alignment = .center
-        stack.distribution = .fillEqually
-        return stack
-    }()
-    
-    private lazy var followingsStackView: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = 1
-        stack.alignment = .center
-        stack.distribution = .fillEqually
-        return stack
-    }()
-    
-    private lazy var socialStackView: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .horizontal
-        stack.spacing = 4
-        stack.alignment = .center
-        stack.distribution = .fillEqually
-        return stack
-    }()
-    
-    private lazy var followButton: UIButton = {
-        let button = UIButton()
-        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
-        button.addTarget(self, action: #selector(manipulateFollow), for: .touchUpInside)
-        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
-        button.layer.cornerRadius = 15
-        button.setTitle(CommonUsage.Text.follow, for: .normal)
-        return button
-    }()
-    
-    private lazy var blockButton: UIButton = {
-        let button = UIButton()
-        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
-        button.addTarget(self, action: #selector(popBlockAlert), for: .touchUpInside)
-        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
-        button.layer.cornerRadius = 15
-        button.setTitle(CommonUsage.Text.block, for: .normal)
-        return button
-    }()
-
     // MARK: - config UI method
     
     private func setBackgroundColor() {
@@ -441,70 +281,7 @@ class OthersProfileViewController: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
-
-    }
-
-    private func setCoverImageView() {
-        view.addSubview(coverImageView)
-        coverImageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            coverImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            coverImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            coverImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            coverImageView.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight / 4)
-        ])
-    }
-    
-    private func setUserImageView() {
-        view.addSubview(userImageView)
-        userImageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            userImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            userImageView.centerYAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: -CommonUsage.screenHeight / 16),
-            userImageView.widthAnchor.constraint(equalToConstant: CommonUsage.screenHeight / 5),
-            userImageView.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight / 5)
-        ])
-    }
-    
-    private func setNameLabel() {
-        view.addSubview(nameLabel)
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            nameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            nameLabel.topAnchor.constraint(equalTo: userImageView.bottomAnchor)
-        ])
-    }
-    
-    private func setSocialStackView() {
-        view.addSubview(socialStackView)
-        socialStackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            socialStackView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
-            socialStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            socialStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 4),
-            socialStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -4)
-        ])
         
-        socialStackView.addArrangedSubview(followersStackView)
-        socialStackView.addArrangedSubview(followingsStackView)
-        socialStackView.addArrangedSubview(blockButton)
-        socialStackView.addArrangedSubview(followButton)
-        
-        NSLayoutConstraint.activate([
-            followButton.widthAnchor.constraint(equalToConstant: 110),
-            blockButton.widthAnchor.constraint(equalToConstant: 80)
-        ])
-
-    }
-    
-    private func setFollowersStackView() {
-        followersStackView.addArrangedSubview(followersNumberLabel)
-        followersStackView.addArrangedSubview(followersTitleLabel)
-    }
-    
-    private func setFollowingsStackView() {
-        followingsStackView.addArrangedSubview(followingsNumberLabel)
-        followingsStackView.addArrangedSubview(followingsTitleLabel)
     }
     
     private func setTableView() {
@@ -513,7 +290,7 @@ class OthersProfileViewController: UIViewController {
         NSLayoutConstraint.activate([
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.topAnchor.constraint(equalTo: socialStackView.bottomAnchor, constant: 4),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
@@ -525,7 +302,7 @@ class OthersProfileViewController: UIViewController {
 extension OthersProfileViewController: UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        ProfilePageSection.allCases.count
+        ProfilePageSection.allCases.count + 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -534,11 +311,28 @@ extension OthersProfileViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell,
+              let profileDataCell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.reuseIdentifier) as? ProfileTableViewCell,
               let userWillDisplay = userWillDisplay else { return UITableViewCell() }
+        
+        cell.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        profileDataCell.backgroundColor = UIColor(named: CommonUsage.scBlue)
         
         switch indexPath.section {
             
         case 0:
+            
+            profileDataCell.configcell(userData: userWillDisplay, followers: numbersOfFollowers, followings: numbersOfFollowings, userPic: otherUserPic, coverPic: otherUserCover)
+            profileDataCell.delegate = self
+            
+            if let currentUserFollowingsID = signInManager.currentUserFollowingList?.map({$0.userID}) {
+                if currentUserFollowingsID.contains(userWillDisplay.userID) {
+                    profileDataCell.makeButtonFollowed()
+                }
+            }
+            
+            return profileDataCell
+            
+        case 1:
             guard let followings = othersFollowingList else {
                 print("OtherProfilePage cant get othersFollowingList")
                 return UITableViewCell()
@@ -548,16 +342,17 @@ extension OthersProfileViewController: UITableViewDataSource {
             for audioFile in allAudioFiles {
                 for folloing in followings {
                     if audioFile.authorID == folloing.userID,
-                        audioFile.authIDProvider == folloing.provider {
+                       audioFile.authIDProvider == folloing.provider {
                         myFollowingsUserFiles.append(audioFile)
                     }
                 }
             }
             cell.firebaseData = myFollowingsUserFiles
-            cell.profileSection = ProfilePageSection.allCases[indexPath.section]
+            cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
+            return cell
             
             
-        case 1:
+        case 2:
             
             guard let userFavoriteDocumentIDs = userFavoriteDocumentIDs else {
                 print("ProfilePage cant get userFavoriteDocumentIDs")
@@ -574,22 +369,22 @@ extension OthersProfileViewController: UITableViewDataSource {
                 }
             }
             cell.firebaseData = myFavoriteFiles
-            cell.profileSection = ProfilePageSection.allCases[indexPath.section]
+            cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
+            return cell
             
-        case 2:
+        case 3:
             let myAudioFiles = allAudioFiles.filter({$0.authorName == userWillDisplay.username})
             cell.firebaseData = myAudioFiles
-            cell.profileSection = ProfilePageSection.allCases[indexPath.section]
+            cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
+            return cell
             
         default:
             let filteredFiles = allAudioFiles.filter({$0.category == AudioCategory.allCases[indexPath.section].rawValue})
             cell.firebaseData = filteredFiles
             cell.category = AudioCategory.allCases[indexPath.item].rawValue
+            return cell
+            
         }
-        
-        cell.backgroundColor = UIColor(named: CommonUsage.scBlue)
-        
-        return cell
     }
     
 }
@@ -599,15 +394,25 @@ extension OthersProfileViewController: UITableViewDataSource {
 extension OthersProfileViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomeTableViewHeader.reuseIdentifier) as? HomeTableViewHeader else { return UIView()}
-        headerView.presentInPage = .profileSection
-        headerView.delegate = self
-        headerView.config(section: section, content: ProfilePageSection.allCases[section].rawValue)
-        return headerView
+        
+        if section == 0 {
+            return nil
+        } else {
+            guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomeTableViewHeader.reuseIdentifier) as? HomeTableViewHeader else { return UIView()}
+            headerView.presentInPage = .profileSection
+            headerView.delegate = self
+            headerView.config(section: section, content: ProfilePageSection.allCases[section - 1].rawValue)
+            return headerView
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        50
+        
+        if section == 0 {
+            return 0
+        } else {
+            return 50
+        }
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -615,15 +420,19 @@ extension OthersProfileViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-       
-        if indexPath == IndexPath(row: 0, section: 2) {
-           
+        
+        if indexPath == IndexPath(row: 0, section: 3) {
+            
             return 230
-       
+            
+        } else if indexPath == IndexPath(row: 0, section: 0) {
+            
+            return 250
+            
         } else {
-           
+            
             return 168
-
+            
         }
     }
     
@@ -640,7 +449,7 @@ extension OthersProfileViewController: PressPassableDelegate {
         
         switch section {
             
-        case 0:
+        case 1:
             guard let followings = othersFollowingList else {
                 print("OtherProfilePage cant get othersFollowingList")
                 return
@@ -654,10 +463,10 @@ extension OthersProfileViewController: PressPassableDelegate {
                     }
                 }
             }
-            let section = ProfilePageSection.allCases[section]
+            let section = ProfilePageSection.allCases[section - 1]
             categoryPage.config(profileSection: section, data: myFollowingsUserFiles)
             
-        case 1:
+        case 2:
             
             guard let userFavoriteDocumentIDs = userFavoriteDocumentIDs else {
                 print("ProfilePage cant get userFavoriteDocumentIDs")
@@ -673,14 +482,14 @@ extension OthersProfileViewController: PressPassableDelegate {
                     }
                 }
             }
-            let section = ProfilePageSection.allCases[section]
+            let section = ProfilePageSection.allCases[section - 1]
             categoryPage.config(profileSection: section, data: myFavoriteFiles)
             
-        case 2:
+        case 3:
             guard let userWillDisplay = userWillDisplay else { break }
             
             let myAudioFiles = allAudioFiles.filter({$0.authorName == userWillDisplay.username})
-            let section = ProfilePageSection.allCases[section]
+            let section = ProfilePageSection.allCases[section - 1]
             categoryPage.config(profileSection: section, data: myAudioFiles)
             
         default:
@@ -688,7 +497,6 @@ extension OthersProfileViewController: PressPassableDelegate {
         }
         
         navigationController?.pushViewController(categoryPage, animated: true)
-        
     }
     
     func goCategoryPage() {
@@ -700,4 +508,29 @@ extension OthersProfileViewController: PressPassableDelegate {
     
 }
 
+// MARK: - conform to ProfileCellDelegate
 
+extension OthersProfileViewController: ProfileCellDelegate {
+    
+    func blockThisUser() {
+        popBlockAlert()
+    }
+    
+    func manipulateFollow() {
+        guard let userWillDisplay = userWillDisplay,
+              let userInfoDoumentID = userWillDisplay.userInfoDoumentID,
+              let loggedInUserInfo = signInManager.currentUserInfoFirebase,
+              let loggedInUserInfoDocumentID = loggedInUserInfo.userInfoDoumentID else { return }
+        
+        firebaseManager.manipulateFollow(userInfoDoumentID: userInfoDoumentID,
+                                         userInfo: SCFollow(userID: userWillDisplay.userID,
+                                                            provider: userWillDisplay.provider),
+                                         loggedInUserInfoDocumentID: loggedInUserInfoDocumentID,
+                                         loggedInUserInfo: SCFollow(userID: loggedInUserInfo.userID,
+                                                                    provider: loggedInUserInfo.provider),
+                                         followCompletion: makeButtonFollowed,
+                                         unfollowCompletion: makeButtonUnFollow)
+        
+    }
+    
+}

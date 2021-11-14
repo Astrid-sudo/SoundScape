@@ -48,6 +48,7 @@
 		568210C82723DAE40055642E /* RecordVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568210C72723DAE40055642E /* RecordVC.swift */; };
 		568340DF271F113F00543677 /* CreateAudioVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568340DE271F113F00543677 /* CreateAudioVC.swift */; };
 		568340E1271F11AC00543677 /* UploadVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568340E0271F11AC00543677 /* UploadVC.swift */; };
+		5683B6952740ACE9004512D4 /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5683B6942740ACE9004512D4 /* ProfileTableViewCell.swift */; };
 		56950630271FDD08009E4C74 /* RemotePlayHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */; };
 		5698830C27400089008BF438 /* style.json in Resources */ = {isa = PBXBuildFile; fileRef = 5698830B27400089008BF438 /* style.json */; };
 		569A7D7827229AE500CEE3EA /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7727229AE500CEE3EA /* HomeVC.swift */; };
@@ -113,6 +114,7 @@
 		568210C72723DAE40055642E /* RecordVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVC.swift; sourceTree = "<group>"; };
 		568340DE271F113F00543677 /* CreateAudioVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAudioVC.swift; sourceTree = "<group>"; };
 		568340E0271F11AC00543677 /* UploadVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadVC.swift; sourceTree = "<group>"; };
+		5683B6942740ACE9004512D4 /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
 		5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemotePlayHelper.swift; sourceTree = "<group>"; };
 		5698830B27400089008BF438 /* style.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = style.json; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.json; };
 		569A7D7727229AE500CEE3EA /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
@@ -217,6 +219,7 @@
 				56D3F0B7272D7F2A00A3B3B3 /* Search */,
 				56D3F0B6272D7F0F00A3B3B3 /* Home */,
 				56D3F0B5272D7EFF00A3B3B3 /* Player */,
+				5683B6942740ACE9004512D4 /* ProfileTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -618,6 +621,7 @@
 				565ABC032721595B00D4596E /* FirebaseManager.swift in Sources */,
 				565C9C2B271E6F7300189B85 /* AudioPlayerVC.swift in Sources */,
 				569A7D7E2722B75A00CEE3EA /* HomeTableViewHeader.swift in Sources */,
+				5683B6952740ACE9004512D4 /* ProfileTableViewCell.swift in Sources */,
 				565C9C2D271E79E700189B85 /* Common.swift in Sources */,
 				5630FE23272E1AA2003A38FB /* FirebaseDataStructure.swift in Sources */,
 				5655908A2731855500300AF7 /* SettingViewController.swift in Sources */,
