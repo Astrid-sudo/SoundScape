@@ -132,6 +132,9 @@ struct CommonUsage {
         static let searchHintLabel = "Search by title, author, or content."
         static let block = "block"
         static let myProfile = "My Profile"
+        static let record = "Record"
+        static let selectFile = "Select File"
+
 
     }
     
