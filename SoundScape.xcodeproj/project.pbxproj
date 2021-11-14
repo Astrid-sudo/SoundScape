@@ -49,6 +49,7 @@
 		568340DF271F113F00543677 /* CreateAudioVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568340DE271F113F00543677 /* CreateAudioVC.swift */; };
 		568340E1271F11AC00543677 /* UploadVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568340E0271F11AC00543677 /* UploadVC.swift */; };
 		5683B6952740ACE9004512D4 /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5683B6942740ACE9004512D4 /* ProfileTableViewCell.swift */; };
+		5683B6972740F843004512D4 /* ProSoundDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5683B6962740F843004512D4 /* ProSoundDetailViewController.swift */; };
 		56950630271FDD08009E4C74 /* RemotePlayHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */; };
 		5698830C27400089008BF438 /* style.json in Resources */ = {isa = PBXBuildFile; fileRef = 5698830B27400089008BF438 /* style.json */; };
 		569A7D7827229AE500CEE3EA /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7727229AE500CEE3EA /* HomeVC.swift */; };
@@ -115,6 +116,7 @@
 		568340DE271F113F00543677 /* CreateAudioVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAudioVC.swift; sourceTree = "<group>"; };
 		568340E0271F11AC00543677 /* UploadVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadVC.swift; sourceTree = "<group>"; };
 		5683B6942740ACE9004512D4 /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
+		5683B6962740F843004512D4 /* ProSoundDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProSoundDetailViewController.swift; sourceTree = "<group>"; };
 		5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemotePlayHelper.swift; sourceTree = "<group>"; };
 		5698830B27400089008BF438 /* style.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = style.json; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.json; };
 		569A7D7727229AE500CEE3EA /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
@@ -342,6 +344,7 @@
 			children = (
 				5679F0FE271D084A00663001 /* SoundDetailVC.swift */,
 				565C9C2A271E6F7300189B85 /* AudioPlayerVC.swift */,
+				5683B6962740F843004512D4 /* ProSoundDetailViewController.swift */,
 			);
 			path = Player;
 			sourceTree = "<group>";
@@ -631,6 +634,7 @@
 				568210C82723DAE40055642E /* RecordVC.swift in Sources */,
 				56F1C849271FA8F400F64846 /* AudioRecordHelper.swift in Sources */,
 				560DE84D27300B1200FFD240 /* CommentViewController.swift in Sources */,
+				5683B6972740F843004512D4 /* ProSoundDetailViewController.swift in Sources */,
 				569A7D7C2722A03500CEE3EA /* HomeCollectionViewCell.swift in Sources */,
 				56DC9ABA2737A0BD000B62C6 /* MapSearchResultTableViewCell.swift in Sources */,
 				568340E1271F11AC00543677 /* UploadVC.swift in Sources */,

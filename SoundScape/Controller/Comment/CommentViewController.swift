@@ -163,6 +163,10 @@ class CommentViewController: UIViewController {
         }
     }
     
+    @objc private func done() {
+        commentTextView.endEditing(true)
+    }
+    
     @objc private func addComment() {
         addCommentToFirebase()
     }
@@ -237,7 +241,7 @@ class CommentViewController: UIViewController {
         table.allowsSelection = false
         table.separatorStyle = .none
         table.showsVerticalScrollIndicator = false
-        table.backgroundColor = UIColor(named: CommonUsage.scRed)
+        table.backgroundColor = UIColor(named: CommonUsage.scBlue)
         table.register(CommentTableViewCell.self, forCellReuseIdentifier: CommentTableViewCell.reuseIdentifier)
         return table
     }()
@@ -284,7 +288,7 @@ class CommentViewController: UIViewController {
         textView.delegate = self
         textView.textContainer.maximumNumberOfLines = 8
         textView.textContainer.lineBreakMode = .byWordWrapping
-        textView.addDoneOnKeyboardWithTarget(self, action: #selector(addComment))
+        textView.addDoneOnKeyboardWithTarget(self, action: #selector(done))
         return textView
     }()
     
@@ -293,7 +297,7 @@ class CommentViewController: UIViewController {
         let config = UIImage.SymbolConfiguration(pointSize: 25)
         let bigImage = UIImage(systemName: CommonUsage.SFSymbol.paperplaneFill, withConfiguration: config)
         button.setImage(bigImage, for: .normal)
-        button.tintColor = UIColor(named: CommonUsage.scLightBlue)
+        button.tintColor = UIColor(named: CommonUsage.scSuperLightBlue)
         button.addTarget(self, action: #selector(addComment), for: .touchUpInside)
         button.isHidden = true
         return button
@@ -387,7 +391,7 @@ extension CommentViewController: UITableViewDelegate {
 extension CommentViewController {
     
     private func setViewbackgroundColor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        view.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
     }
     
     private func setCommentTitleLabel() {

@@ -170,7 +170,7 @@ extension RemotePlayHelper: ModernAVPlayerDelegate {
     func modernAVPlayer(_ player: ModernAVPlayer, didCurrentTimeChange currentTime: Double) {
         print("Message from RemotePlayHelper: didCurrentTimeChange_ \(currentTime)")
         
-        // play audio from firebase (SoundDetailVC and AudioPlayerVC will get this Notification)
+        // play audio from firebase (SoundDetailVC(ProSoundDetailViewController) and AudioPlayerVC will get this Notification)
         if let currentPlayInfo = currentPlayInfo {
             
             let playProgress = PlayProgress(currentTime: currentTime, duration: currentPlayInfo.duration)

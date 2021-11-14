@@ -19,8 +19,11 @@ class SCTabBarController: UITabBarController {
     
     private var showDetailConstraint = NSLayoutConstraint()
     
-    var soundDetailVC: SoundDetailVC?
+//    var soundDetailVC: SoundDetailVC?
+    
+    var soundDetailVC: ProSoundDetailViewController?
 
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -60,7 +63,10 @@ class SCTabBarController: UITabBarController {
     private func addDetailPage() {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "SoundDetailVC") as? SoundDetailVC else { return }
+//        guard let vc = storyboard.instantiateViewController(withIdentifier: "SoundDetailVC") as? SoundDetailVC else { return }
+        
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "ProSoundDetailViewController") as? ProSoundDetailViewController else { return }
+
 
         self.soundDetailVC = vc
         guard let soundDetailVC = soundDetailVC else { return }
