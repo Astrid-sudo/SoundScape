@@ -10,6 +10,8 @@ import UIKit
 protocol ProfileCellDelegate: AnyObject {
     func blockThisUser()
     func manipulateFollow()
+    func goSettingPage()
+    func pressSelectImage(selectedPicButton: PicType)
 }
 
 class ProfileTableViewCell: UITableViewCell {
@@ -19,6 +21,8 @@ class ProfileTableViewCell: UITableViewCell {
     static let reuseIdentifier = String(describing: ProfileTableViewCell.self)
     
     weak var delegate: ProfileCellDelegate?
+    
+//    var selectedPicButton = PicType.coverPic
     
     // MARK: - UI properties
     
@@ -119,6 +123,18 @@ class ProfileTableViewCell: UITableViewCell {
         button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         button.layer.cornerRadius = 15
         button.setTitle(CommonUsage.Text.follow, for: .normal)
+        button.isHidden = true
+        return button
+    }()
+    
+    private lazy var settingButton: UIButton = {
+        let button = UIButton()
+        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.addTarget(self, action: #selector(goSettingPage), for: .touchUpInside)
+        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        button.layer.cornerRadius = 15
+        button.setTitle(CommonUsage.Text.settings, for: .normal)
+        button.isHidden = true
         return button
     }()
     
@@ -129,8 +145,28 @@ class ProfileTableViewCell: UITableViewCell {
         button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         button.layer.cornerRadius = 15
         button.setTitle(CommonUsage.Text.block, for: .normal)
+        button.isHidden = true
         return button
     }()
+    
+    private lazy var changeUserPicButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.photo), for: .normal)
+        button.tintColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        button.addTarget(self, action: #selector(selectUserImage), for: .touchUpInside)
+        button.isHidden = true
+        return button
+    }()
+    
+    private lazy var changeCoverPicButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.photo), for: .normal)
+        button.tintColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        button.addTarget(self, action: #selector(selectCoverImage), for: .touchUpInside)
+        button.isHidden = true
+        return button
+    }()
+
 
     // MARK: - init
     
@@ -143,6 +179,8 @@ class ProfileTableViewCell: UITableViewCell {
         setFollowersStackView()
         setFollowersStackView()
         setFollowingsStackView()
+        setImageHintOnUserPic()
+        setImageHintOnUCoverPic()
     }
     
     required init?(coder: NSCoder) {
@@ -158,6 +196,24 @@ class ProfileTableViewCell: UITableViewCell {
     @objc func manipulateFollow() {
         delegate?.manipulateFollow()
     }
+    
+    @objc func goSettingPage() {
+        delegate?.goSettingPage()
+    }
+    
+    @objc func selectUserImage() {
+//        pressSelectImage()
+//        selectedPicButton = .userPic
+        delegate?.pressSelectImage(selectedPicButton: .userPic)
+    }
+    
+    @objc func selectCoverImage() {
+//        pressSelectImage()
+//        selectedPicButton = .coverPic
+        delegate?.pressSelectImage(selectedPicButton: .coverPic)
+
+    }
+
     
     // MARK: - config UI method
     
@@ -208,9 +264,11 @@ class ProfileTableViewCell: UITableViewCell {
         socialStackView.addArrangedSubview(followingsStackView)
         socialStackView.addArrangedSubview(blockButton)
         socialStackView.addArrangedSubview(followButton)
+        socialStackView.addArrangedSubview(settingButton)
         
         NSLayoutConstraint.activate([
             followButton.widthAnchor.constraint(equalToConstant: 110),
+            settingButton.widthAnchor.constraint(equalToConstant: 100),
             blockButton.widthAnchor.constraint(equalToConstant: 80)
         ])
 
@@ -225,6 +283,29 @@ class ProfileTableViewCell: UITableViewCell {
         followingsStackView.addArrangedSubview(followingsNumberLabel)
         followingsStackView.addArrangedSubview(followingsTitleLabel)
     }
+    
+    private func setImageHintOnUserPic() {
+        contentView.addSubview(changeUserPicButton)
+        changeUserPicButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            changeUserPicButton.trailingAnchor.constraint(equalTo: userImageView.trailingAnchor),
+            changeUserPicButton.bottomAnchor.constraint(equalTo: userImageView.bottomAnchor),
+            changeUserPicButton.heightAnchor.constraint(equalToConstant: 40),
+            changeUserPicButton.widthAnchor.constraint(equalToConstant: 40)
+        ])
+    }
+    
+    private func setImageHintOnUCoverPic() {
+        contentView.addSubview(changeCoverPicButton)
+        changeCoverPicButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            changeCoverPicButton.trailingAnchor.constraint(equalTo: coverImageView.trailingAnchor, constant: -32),
+            changeCoverPicButton.bottomAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: -32),
+            changeCoverPicButton.heightAnchor.constraint(equalToConstant: 40),
+            changeCoverPicButton.widthAnchor.constraint(equalToConstant: 40)
+        ])
+    }
+
     
     func configcell(userData: SCUser, followers: Int?, followings: Int?, userPic: String?, coverPic: String?) {
         
@@ -250,7 +331,41 @@ class ProfileTableViewCell: UITableViewCell {
             followingsNumberLabel.text = String(followings)
         }
         
+        followButton.isHidden = false
+        blockButton.isHidden = false
+
+        
     }
+    
+    func configMyProfilecell(userData: SCUser, followers: Int?, followings: Int?, userPic: String?, coverPic: String?) {
+        
+        nameLabel.text = userData.username
+        
+        if let userPic = userPic,
+            let userPicData = Data(base64Encoded: userPic) {
+            userImageView.image = UIImage(data: userPicData)
+            userImageView.contentMode = .scaleAspectFill
+        }
+        
+        if let coverPic = coverPic,
+            let coverPicData = Data(base64Encoded: coverPic) {
+            coverImageView.image = UIImage(data: coverPicData)
+            coverImageView.contentMode = .scaleAspectFill
+        }
+        
+        if let followers = followers {
+            followersNumberLabel.text = String(followers)
+        }
+        
+        if let followings = followings {
+            followingsNumberLabel.text = String(followings)
+        }
+        
+        changeUserPicButton.isHidden = false
+        changeCoverPicButton.isHidden = false
+        settingButton.isHidden = false
+    }
+
     
      func makeButtonFollowed() {
         followButton.setTitle(CommonUsage.Text.unfollow, for: .normal)

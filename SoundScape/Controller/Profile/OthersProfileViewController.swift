@@ -6,10 +6,41 @@
 //
 
 import UIKit
+import Photos
+
+enum ProfilePageType {
+    case otherUser
+    case loggInUser
+}
+
+/*
+ struct UserIdentity {
+     let userID: String
+     let userIDProvider: String
+ }
+
+ enum ProfilePageSection: String, CaseIterable {
+     case followingsLatest = "Followings"
+     case myFavorite = "Favorite"
+     case myAudio = "Audio"
+ }
+
+ enum PicType: String {
+     case userPic
+     case coverPic
+ }
+ */
 
 class OthersProfileViewController: UIViewController {
     
     // MARK: - properties
+    
+    var profilePageType = ProfilePageType.otherUser {
+        didSet {
+            setNavigationBar()
+            setTableView()
+        }
+    }
     
     let signInManager = SignInManager.shared
     
@@ -17,11 +48,13 @@ class OthersProfileViewController: UIViewController {
     
     var userWillDisplay: SCUser? {
         didSet {
-            setNavigationBar()
+            checkDisplayUser()
             fetchUserFavoriteList()
             fetchAmountOfFollows()
             fetchUserPicFromFirebase()
             fetchUserCoverFromFirebase()
+            checkUserPicFromFirebase()
+            checkUserCoverFromFirebase()
         }
     }
     
@@ -69,6 +102,8 @@ class OthersProfileViewController: UIViewController {
         }
     }
     
+    var selectedPicButton = PicType.coverPic
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -77,7 +112,6 @@ class OthersProfileViewController: UIViewController {
         fetchUserInfo()
         fetchDataFromFirebase()
         setBackgroundColor()
-        setTableView()
     }
     
     deinit {
@@ -91,6 +125,20 @@ class OthersProfileViewController: UIViewController {
     }
     
     // MARK: - method
+    
+    private func checkDisplayUser() {
+        guard let userWillDisplay = userWillDisplay,
+        let logginUser = signInManager.currentUserInfoFirebase else {
+            return
+        }
+        
+        if userWillDisplay.userID == logginUser.userID {
+            profilePageType = .loggInUser
+        } else {
+            profilePageType = .otherUser
+        }
+
+    }
     
     private func addObserver() {
         
@@ -205,6 +253,19 @@ class OthersProfileViewController: UIViewController {
         }
     }
     
+    private func checkUserPicFromFirebase() {
+        guard let userID = userWillDisplay?.userInfoDoumentID else { return }
+        firebaseManager.checkUserPicChange(userInfoDoumentID: userID) { result in
+            switch result {
+            case .success(let picture):
+                self.otherUserPic = picture.picture
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+
+    
     private func fetchUserCoverFromFirebase() {
         guard let userID = userWillDisplay?.userInfoDoumentID else { return }
         firebaseManager.fetchCoverPicFromFirebase(userID: userID) { result in
@@ -216,6 +277,19 @@ class OthersProfileViewController: UIViewController {
             }
         }
     }
+    
+    private func checkUserCoverFromFirebase() {
+        guard let userID = userWillDisplay?.userInfoDoumentID else { return }
+        firebaseManager.checkCoverPicChange(userInfoDoumentID: userID) { result in
+            switch result {
+            case .success(let picture):
+                self.otherUserCover = picture.picture
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+
     
     private func popBlockAlert() {
         
@@ -252,6 +326,35 @@ class OthersProfileViewController: UIViewController {
                                        toBeBlockedID: blockUser.userID, completion: backToHome)
     }
     
+    // MARK: - image method
+    
+    func pressSelectImage(selectedPicButton: PicType) {
+        
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        
+        picker.sourceType = .photoLibrary
+        
+        picker.allowsEditing = true
+
+        present(picker, animated: true)
+        
+        self.selectedPicButton = selectedPicButton
+        
+    }
+    
+    private func sendPhoto(_ image: UIImage) {
+        
+        guard let userDocumentID = signInManager.currentUserInfoFirebase?.userInfoDoumentID,
+              let  compressedImage = image.jpegData(compressionQuality: 0.15) else { return }
+        let imageBase64String = compressedImage.base64EncodedString()
+        
+        firebaseManager.uploadPicToFirebase(userDocumentID: userDocumentID,
+                                            picString: imageBase64String,
+                                            picType: selectedPicButton)
+    }
+
+    
     // MARK: - UI properties
     
     private lazy var tableView: UITableView = {
@@ -276,11 +379,20 @@ class OthersProfileViewController: UIViewController {
     
     private func setNavigationBar() {
         guard let userWillDisplay = userWillDisplay else { return }
-        navigationItem.title = userWillDisplay.username
         navigationController?.isNavigationBarHidden = false
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
+        
+
+        switch profilePageType {
+        case .otherUser:
+            navigationItem.title = userWillDisplay.username
+
+        case .loggInUser:
+            navigationItem.title = CommonUsage.Text.myProfile
+
+        }
         
     }
     
@@ -320,14 +432,24 @@ extension OthersProfileViewController: UITableViewDataSource {
         switch indexPath.section {
             
         case 0:
-            
-            profileDataCell.configcell(userData: userWillDisplay, followers: numbersOfFollowers, followings: numbersOfFollowings, userPic: otherUserPic, coverPic: otherUserCover)
             profileDataCell.delegate = self
+
             
-            if let currentUserFollowingsID = signInManager.currentUserFollowingList?.map({$0.userID}) {
-                if currentUserFollowingsID.contains(userWillDisplay.userID) {
-                    profileDataCell.makeButtonFollowed()
+            switch profilePageType {
+            case .loggInUser:
+                
+                profileDataCell.configMyProfilecell(userData: userWillDisplay, followers: numbersOfFollowers, followings: numbersOfFollowings, userPic: otherUserPic, coverPic: otherUserCover)
+                
+            case.otherUser:
+                
+                profileDataCell.configcell(userData: userWillDisplay, followers: numbersOfFollowers, followings: numbersOfFollowings, userPic: otherUserPic, coverPic: otherUserCover)
+                
+                if let currentUserFollowingsID = signInManager.currentUserFollowingList?.map({$0.userID}) {
+                    if currentUserFollowingsID.contains(userWillDisplay.userID) {
+                        profileDataCell.makeButtonFollowed()
+                    }
                 }
+                
             }
             
             return profileDataCell
@@ -533,4 +655,73 @@ extension OthersProfileViewController: ProfileCellDelegate {
         
     }
     
+    func goSettingPage() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let settingViewController = storyboard.instantiateViewController(withIdentifier: String(describing: SettingViewController.self)) as? SettingViewController else { return }
+        navigationController?.pushViewController(settingViewController, animated: true)
+    }
+    
 }
+
+// MARK: - conform to UIImagePickerControllerDelegate & UINavigationControllerDelegate
+
+extension OthersProfileViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        
+        picker.dismiss(animated: true)
+        
+        // 1
+        if let asset = info[.phAsset] as? PHAsset {
+            let size = CGSize(width: 500, height: 500)
+            PHImageManager.default().requestImage(
+                for: asset,
+                   targetSize: size,
+                   contentMode: .aspectFit,
+                   options: nil
+            ) { result, _ in
+                guard let image = result else {
+                    return
+                }
+                self.sendPhoto(image)
+            }
+            
+            // 2
+        } else if let image = info[.originalImage] as? UIImage {
+            sendPhoto(image)
+        }
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
+    }
+    
+}
+
+
+extension UIImage {
+    var scaledToSafeUploadSize: UIImage? {
+        let maxImageSideLength: CGFloat = 480
+        
+        let largerSide: CGFloat = max(size.width, size.height)
+        let ratioScale: CGFloat = largerSide > maxImageSideLength ? largerSide / maxImageSideLength : 1
+        let newImageSize = CGSize(
+            width: size.width / ratioScale,
+            height: size.height / ratioScale)
+        
+        return image(scaledTo: newImageSize)
+    }
+    
+    func image(scaledTo size: CGSize) -> UIImage? {
+        defer {
+            UIGraphicsEndImageContext()
+        }
+        
+        UIGraphicsBeginImageContextWithOptions(size, true, 0)
+        draw(in: CGRect(origin: .zero, size: size))
+        
+        return UIGraphicsGetImageFromCurrentImageContext()
+    }
+}
+
+

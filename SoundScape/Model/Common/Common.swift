@@ -130,6 +130,8 @@ struct CommonUsage {
         static let noResultTitle =  "No result."
         static let searchHintLabel = "Search by title, author, or content."
         static let block = "block"
+        static let myProfile = "My Profile"
+
     }
     
     struct CollectionName {
