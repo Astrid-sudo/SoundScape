@@ -105,6 +105,7 @@ struct CommonUsage {
         static let headphonesCircleFill = "headphones.circle.fill"
         static let ellipsis = "ellipsis"
         static let comment = "text.bubble.fill"
+        static let trim = "timeline.selection"
     }
     
     struct Text {
@@ -132,6 +133,9 @@ struct CommonUsage {
         static let searchHintLabel = "Search by title, author, or content."
         static let block = "block"
         static let myProfile = "My Profile"
+        static let record = "Record"
+        static let selectFile = "Select File"
+        static let trim = "Trim"
 
     }
     

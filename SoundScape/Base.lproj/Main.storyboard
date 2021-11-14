@@ -189,32 +189,8 @@
                     <view key="view" contentMode="scaleToFill" id="ViH-y6-qpk">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Er3-Hh-z9E">
-                                <rect key="frame" x="161.5" y="732" width="91" height="31"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Select File"/>
-                                <connections>
-                                    <action selector="selectFile:" destination="aSM-Zi-js2" eventType="touchUpInside" id="0AL-Sh-4vR"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TON-vn-iif">
-                                <rect key="frame" x="172" y="128" width="70" height="31"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Record"/>
-                                <connections>
-                                    <action selector="presentMap:" destination="aSM-Zi-js2" eventType="touchUpInside" id="s0b-lg-s3c"/>
-                                </connections>
-                            </button>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="XXH-tT-t64"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="TON-vn-iif" firstAttribute="centerX" secondItem="ViH-y6-qpk" secondAttribute="centerX" id="BAd-LX-G3J"/>
-                            <constraint firstItem="XXH-tT-t64" firstAttribute="bottom" secondItem="Er3-Hh-z9E" secondAttribute="bottom" constant="50" id="Hyc-Yt-hKz"/>
-                            <constraint firstItem="Er3-Hh-z9E" firstAttribute="centerX" secondItem="ViH-y6-qpk" secondAttribute="centerX" id="IgZ-ve-zD9"/>
-                            <constraint firstItem="TON-vn-iif" firstAttribute="top" secondItem="XXH-tT-t64" secondAttribute="top" constant="40" id="b63-Yl-oFP"/>
-                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="30w-yN-vPv"/>
                 </viewController>

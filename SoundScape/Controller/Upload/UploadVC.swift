@@ -102,7 +102,7 @@ class UploadVC: UIViewController {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
-        label.font = UIFont(name: CommonUsage.font, size: 15)
+        label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
         label.textAlignment = .left
         label.text = CommonUsage.Text.title
         return label
@@ -111,7 +111,7 @@ class UploadVC: UIViewController {
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
-        label.font = UIFont(name: CommonUsage.font, size: 15)
+        label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
         label.textAlignment = .left
         label.text = CommonUsage.Text.description
         return label
@@ -120,7 +120,7 @@ class UploadVC: UIViewController {
     private lazy var categoryLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
-        label.font = UIFont(name: CommonUsage.font, size: 15)
+        label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
         label.textAlignment = .left
         label.text = CommonUsage.Text.category
         return label
@@ -129,7 +129,7 @@ class UploadVC: UIViewController {
     private  lazy var mapLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
-        label.font = UIFont(name: CommonUsage.font, size: 15)
+        label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
         label.textAlignment = .left
         label.text = CommonUsage.Text.pinOnMap
         return label
@@ -138,7 +138,7 @@ class UploadVC: UIViewController {
     private  lazy var audioImageLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
-        label.font = UIFont(name: CommonUsage.font, size: 15)
+        label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
         label.textAlignment = .left
         label.text = CommonUsage.Text.audioImage
         return label
@@ -198,6 +198,16 @@ class UploadVC: UIViewController {
         mapView.delegate = self
         mapView.camera = camera
         mapView.layer.cornerRadius = 10
+        do {
+          if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
+            mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
+          } else {
+            NSLog("Unable to find style.json")
+          }
+        } catch {
+          NSLog("One or more of the map styles failed to load. \(error)")
+        }
+
         if backFromBigMap {
             mapView.settings.myLocationButton = false
             mapView.isMyLocationEnabled = false
@@ -211,7 +221,7 @@ class UploadVC: UIViewController {
     
     private lazy var uploadButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(named: CommonUsage.scGreen)
+        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         button.setTitle(CommonUsage.Text.upload, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(upload), for: .touchUpInside)
@@ -230,10 +240,10 @@ class UploadVC: UIViewController {
     
     private lazy var searchPlaceButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         button.setTitle(CommonUsage.Text.searchPlace, for: .normal)
         button.titleLabel?.font = UIFont(name: CommonUsage.font, size: 14)
-        button.setTitleColor(UIColor(named: CommonUsage.scRed), for: .normal)
+        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
         button.addTarget(self, action: #selector(presentBigMap), for: .touchUpInside)
         button.layer.cornerRadius = 10
         return button
@@ -281,6 +291,7 @@ class UploadVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setNavigationBar()
         setScrollView()
         setTitleLabel()
         setTitleTextField()
@@ -324,6 +335,13 @@ class UploadVC: UIViewController {
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
     }
     
+    private func setNavigationBar() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
+        navigationItem.title = CommonUsage.Text.upload
+    }
+    
     private func setScrollView() {
         view.addSubview(scrollView)
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -340,7 +358,7 @@ class UploadVC: UIViewController {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            titleLabel.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 8),
+            titleLabel.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 8)
         ])
     }
     
@@ -472,7 +490,8 @@ class UploadVC: UIViewController {
         searchPlaceButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             searchPlaceButton.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -16),
-            searchPlaceButton.centerYAnchor.constraint(equalTo: mapLabel.centerYAnchor)
+            searchPlaceButton.centerYAnchor.constraint(equalTo: mapLabel.centerYAnchor),
+            searchPlaceButton.widthAnchor.constraint(equalToConstant: 100)
         ])
     }
     
@@ -522,6 +541,10 @@ class UploadVC: UIViewController {
     }
     
     // MARK: - action
+    
+    @objc func backToLastPage() {
+        self.navigationController?.popViewController(animated: true)
+    }
     
     @objc func upload() {
         
