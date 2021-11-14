@@ -90,7 +90,7 @@ class EditVC: UIViewController {
         EditAudioManager.shared.delegate = self
         
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-        
+        setNavigationBar()
         addObserver()
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
         setGoUploadPageButton()
@@ -265,6 +265,10 @@ class EditVC: UIViewController {
     }
     
     // MARK: - action
+    
+    @objc func backToLastPage() {
+        self.navigationController?.popViewController(animated: true)
+    }
     
     @objc func manipulatePlayer() {
         
@@ -518,6 +522,13 @@ Cut
     }()
     
     // MARK: - config UI method
+    
+    private func setNavigationBar() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
+        navigationItem.title = CommonUsage.Text.trim
+    }
     
     private func setGoUploadPageButton() {
         view.addSubview(goUploadPageButton)

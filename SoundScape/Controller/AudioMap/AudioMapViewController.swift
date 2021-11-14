@@ -116,6 +116,8 @@ class AudioMapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setNavigationBar()
+        
         switch audioMapType {
         case .pinOnMap:
             setMap()
@@ -165,6 +167,10 @@ class AudioMapViewController: UIViewController {
     
     @objc func currentUserBlacklistChange() {
         fetchBlacklist()
+    }
+    
+    @objc func backToLastPage() {
+        self.navigationController?.popViewController(animated: true)
     }
     
     private func fetchBlacklist() {
@@ -295,6 +301,14 @@ class AudioMapViewController: UIViewController {
 // MARK: - UI method
 
 extension AudioMapViewController {
+    
+    private func setNavigationBar() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
+//        navigationItem.title = CommonUsage.Text.upload
+    }
+
     
     private func addSearchBar() {
         navigationItem.titleView = searchBar
