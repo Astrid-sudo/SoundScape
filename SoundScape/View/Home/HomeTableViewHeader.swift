@@ -77,11 +77,10 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
         contentView.addSubview(categoryLabel)
         categoryLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            categoryLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            categoryLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             categoryLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
             categoryLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4)
         ])
-        
     }
     
     private func setButton() {

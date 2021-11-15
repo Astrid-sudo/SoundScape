@@ -29,7 +29,8 @@ struct CommonUsage {
                                           UIImage(named: CommonUsage.natureOcean),
                                           UIImage(named: CommonUsage.natureRiver),
                                           UIImage(named: CommonUsage.uniqueRice),
-                                          UIImage(named: CommonUsage.untitledArtwork)
+                                          UIImage(named: CommonUsage.untitledArtwork),
+                                          UIImage(named: CommonUsage.cityCafe)
     ]
     
     static let privacyPolicyURL = "https://www.privacypolicies.com/live/11ed0980-697c-4f2e-9e23-412af25966c4"
@@ -53,6 +54,7 @@ struct CommonUsage {
     static let animalCatPaw = "Animal_CatPaw"
     static let animalDuck = "Animal_Duck"
     static let city = "City"
+    static let cityCafe = "City_Cafe"
     static let meaningfulCake = "Meaningful_cake"
     static let meaningfulFlower = "Meaningful_Flower"
     static let meaningfulWine = "Meaningful_Wine"
@@ -205,4 +207,3 @@ extension Int {
         return CGFloat(self) * CommonUsage.ratio
     }
 }
-
