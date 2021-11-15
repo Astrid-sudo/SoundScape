@@ -117,6 +117,7 @@ class AudioMapViewController: UIViewController {
         super.viewDidLoad()
         
         setNavigationBar()
+        setBackgroundcolor()
         
         switch audioMapType {
         case .pinOnMap:
@@ -157,6 +158,10 @@ class AudioMapViewController: UIViewController {
     }
     
     // MARK: - method
+    
+    private func setBackgroundcolor() {
+        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+    }
     
     private func addObserver() {
         NotificationCenter.default.addObserver(self,

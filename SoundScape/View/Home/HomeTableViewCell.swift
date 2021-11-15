@@ -92,10 +92,9 @@ extension HomeTableViewCell: UICollectionViewDataSource {
         
         // swiftlint:enable line_length
         
-        cell.setCell(imageNumber: firebaseData[indexPath.item].imageNumber, audioTitle: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName)
-        
-//        cell.setCell(image: nil,
-//                     audioTitle: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName)
+        cell.setCell(imageNumber: firebaseData[indexPath.item].imageNumber,
+                     audioTitle: firebaseData[indexPath.item].title,
+                     author: firebaseData[indexPath.item].authorName)
         
         return cell
     }
@@ -131,14 +130,19 @@ extension HomeTableViewCell: UICollectionViewDelegate {
                                      authorUserID: authorUserID,
                                      audioImageNumber: audioImageNumber,
                                      authorAccountProvider: authorAccountProvider)
-        
-//        remotePlayHelper.setPlayInfo(title: title,
-//                                     author: author,
-//                                     content: content,
-//                                     duration: duration,
-//                                     documentID: documentID, authorUserID: authorUserID,, audioImageNumber: audioImageNumber
-//                                     authorAccountProvider: authorAccountProvider)
-        
     }
     
 }
+
+// MARK: - conform to UICollectionViewDelegateFlowLayout
+
+extension HomeTableViewCell: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
+        UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+    }
+    
+}
+

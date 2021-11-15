@@ -38,8 +38,9 @@ class EditVC: UIViewController {
     var originDuraion: Double? {
         didSet {
             guard let originDuraion = originDuraion else { return }
-            durationLabel.text = String(describing: originDuraion)
-            if originDuraion <= 90 {
+            let roundedValue1 = String(format: "%.2f", originDuraion)
+            durationLabel.text = String(describing: roundedValue1)
+            if 5 <= originDuraion, originDuraion <= 60 {
                 goUploadPageButton.isHidden = false
             } else {
                 goUploadPageButton.isHidden = true
@@ -50,11 +51,9 @@ class EditVC: UIViewController {
     var trimmedDuration: Double? {
         
         didSet {
-            
             guard let trimmedDuration = trimmedDuration else { return }
-            
-            durationLabel.text = String(describing: trimmedDuration)
-            
+            let roundedValue1 = String(format: "%.2f", trimmedDuration)
+            durationLabel.text = String(describing: roundedValue1)
         }
     }
     
@@ -224,7 +223,10 @@ class EditVC: UIViewController {
         print("EditVC recieved current time \(currentTime)")
         
         DispatchQueue.main.async { [self] in
-            self.currentTimeLabel.text = String(describing: currentTime)
+            
+            let current = String(describing: currentTime).dropLast(13)
+            let roundedValue1 = String(format: "%.2f", currentTime)
+            self.currentTimeLabel.text = String(describing: roundedValue1)
             self.slider.value = Float(currentTime)
             remotePlayerHelper.limitCurrentTime(head: trimHeadTime, tail: trimTailTime)
             print("headTime: \(trimHeadTime), tailTime: \(trimTailTime), originDuration: \(originDuraion), sliderWidth: \(slider.frame.width), tailCenterX: \(trimTailViewX)")
@@ -234,7 +236,7 @@ class EditVC: UIViewController {
     private func updateWaveformImages(localURL: URL) {
         // always uses background thread rendering
         
-        let config = Waveform.Style.StripeConfig.init(color: UIColor(named: CommonUsage.scOrange) ?? .orange, width: 2, spacing: 2, lineCap: .butt)
+        let config = Waveform.Style.StripeConfig.init(color: UIColor(named: CommonUsage.scWhite) ?? .white, width: 2, spacing: 2, lineCap: .butt)
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -382,7 +384,7 @@ class EditVC: UIViewController {
         let button = UIButton()
         button.setTitle("Go upload", for: .normal)
         button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
-        button.backgroundColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(goUpload), for: .touchUpInside)
         return button
@@ -409,8 +411,8 @@ Cut
     private lazy var trimButton: UIButton = {
         let button = UIButton()
         button.setTitle("TRIM", for: .normal)
-        button.setTitleColor(UIColor(named: CommonUsage.scGreen), for: .normal)
-        button.backgroundColor = UIColor(named: CommonUsage.scYellow)
+        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         button.addTarget(self, action: #selector(trim), for: .touchUpInside)
         button.layer.cornerRadius = 15
         return button
@@ -494,7 +496,6 @@ Cut
     private lazy var trimHeadView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
-//        view.backgroundColor = UIColor(red: 0, green: 0, blue: 100, alpha: 0.01)
         let trimHeadPanReconizer = UIPanGestureRecognizer(target: self, action: #selector(handleHeadPanGesture))
         view.addGestureRecognizer(trimHeadPanReconizer)
         return view
@@ -502,7 +503,6 @@ Cut
     
     private lazy var trimTailView: UIView = {
         let view = UIView()
-//        view.backgroundColor = UIColor(red: 139, green: 0, blue: 0, alpha: 0.01)
         view.backgroundColor = .clear
         let trimTailPanReconizer = UIPanGestureRecognizer(target: self, action: #selector(handleTailPanGesture))
         view.addGestureRecognizer(trimTailPanReconizer)
@@ -600,7 +600,8 @@ Cut
         currentTimeLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             currentTimeLabel.topAnchor.constraint(equalTo: playButton.bottomAnchor, constant: 8),
-            currentTimeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            currentTimeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: (CommonUsage.screenWidth - 62) / 2 ),
+
         ])
     }
     
@@ -672,6 +673,8 @@ Cut
     }
     
 }
+
+// MARK: - conform to EditAudioManagerDelegate
 
 extension EditVC: EditAudioManagerDelegate {
     
