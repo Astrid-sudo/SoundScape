@@ -16,17 +16,12 @@ class AudioPlayHelper: NSObject {
     
     var audioPlayer: AVAudioPlayer?
     
-    //    var avPlayer: AVPlayer?
-    //
-    //    var playerItem: AVPlayerItem?
-    //
-    //    var timeObserverToken: Any?
-    
     var displayLink: CADisplayLink?
     
     var isPlaying = false {
         
         didSet {
+            NotificationCenter.default.post(name: .didItemPlayToEndTime, object: nil, userInfo: nil)
             if isPlaying == false {
                 displayLink?.invalidate()
             }
@@ -34,6 +29,7 @@ class AudioPlayHelper: NSObject {
     }
     
     var currentTime: Double {
+        
         guard let audioPlayer = audioPlayer else {
             return 0.0
         }
@@ -49,11 +45,11 @@ class AudioPlayHelper: NSObject {
     
     var url: URL? {
         didSet {
-            guard let url = url else { return }
             
-            //            avPlayer =  AVPlayer(url: url)
-            //            guard let avPlayer = avPlayer else { return }
-            //            playerItem = avPlayer.currentItem
+            stop()
+            currentPlayInfo = nil
+            
+            guard let url = url else { return }
             
             do {
                 audioPlayer = try AVAudioPlayer(contentsOf: url)
@@ -62,7 +58,21 @@ class AudioPlayHelper: NSObject {
                 print("fail to create AVAudioPlayer")
             }
             
-            //            addPeriodicTimeObserver()
+            let userInfoKey = "UserInfo"
+            let userInfo: [AnyHashable: Any] = [userInfoKey: url]
+            NotificationCenter.default.post(name: .remoteURLDidSelect, object: nil, userInfo: userInfo)
+            
+        }
+    }
+    
+    var currentPlayInfo: PlayInfo? {
+        didSet {
+            
+            guard let currentPlayInfo = currentPlayInfo else { return }
+            
+            let userInfoKey = "UserInfo"
+            let userInfo: [AnyHashable: Any] = [userInfoKey: currentPlayInfo]
+            NotificationCenter.default.post(name: .playingAudioChange, object: nil, userInfo: userInfo)
         }
     }
     
@@ -72,92 +82,100 @@ class AudioPlayHelper: NSObject {
         super.init()
     }
     
-    deinit {
-        //        removePeriodicTimeObserver()
-    }
-    
     // MARK: - method
     
     @objc func postNotification() {
-        let userInfoKey = "UserInfo"
-        let userInfo: [AnyHashable: Any] = [userInfoKey: currentTime]
-        NotificationCenter.default.post(name: .audioPlayHelperUpdateTime, object: nil, userInfo: userInfo)
+        
+        if let currentPlayInfo = currentPlayInfo {
+            
+            let playProgress = PlayProgress(currentTime: currentTime, duration: currentPlayInfo.duration)
+            let userInfoKey = "UserInfo"
+            let userInfo: [AnyHashable: Any] = [userInfoKey: playProgress]
+            
+            NotificationCenter.default.post(name: .didCurrentTimeChange, object: nil, userInfo: userInfo)
+            
+        } else { // play audio from local url (EditVC will get this Notification)
+            
+            let userInfoKey = "UserInfo"
+            let userInfo: [AnyHashable: Any] = [userInfoKey: currentTime]
+            NotificationCenter.default.post(name: .didCurrentTimeChange, object: nil, userInfo: userInfo)
+        }
+
     }
     
     func play() {
-        
         guard let audioPlayer = audioPlayer else {
             return
         }
-
-        
         audioPlayer.play()
         isPlaying = true
-        
         displayLink = CADisplayLink(target: self, selector: #selector(postNotification))
         displayLink?.add(to: RunLoop.main, forMode: .common)
-
-        //        avPlayer?.play()
-        //        addPeriodicTimeObserver()
     }
     
     func stop() {
         audioPlayer?.stop()
         isPlaying = false
         audioPlayer?.currentTime = 0
-        
     }
     
     func pause() {
-        
         guard let audioPlayer = audioPlayer else {
             return
         }
-        
         audioPlayer.pause()
         isPlaying = false
-        
-        //        avPlayer?.pause()
-        //        removePeriodicTimeObserver()
     }
     
-    //    func addPeriodicTimeObserver() {
-    //        // Notify every half second
-    //        let timeScale = CMTimeScale(NSEC_PER_SEC)
-    //        let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
-    //        guard let avPlayer = avPlayer,
-    //        let playerItem = playerItem else {
-    //            return
-    //        }
+    func seek(position: Double) {
+        audioPlayer?.currentTime = position
+    }
     
-    //        timeObserverToken = avPlayer.addPeriodicTimeObserver(forInterval: time,
-    //                                                             queue: .main) { [weak self]
-    //            time in
-    //            // update player transport UI
-    //            let currentTime = playerItem.currentTime()
-    //            let userInfoKey = "UserInfo"
-    //            let userInfo: [AnyHashable: Any] = [userInfoKey: time]
-    //            NotificationCenter.default.post(name: .audioPlayHelperUpdateTime, object: nil, userInfo: userInfo)
-    //        }
-    //    }
+    func limitCurrentTime(head: Double, tail: Double) {
+        
+        guard let audioPlayer = audioPlayer else { return }
+        
+        if audioPlayer.currentTime < head {
+            if isPlaying == true {
+                pause()
+            }
+            seek(position: head)
+        }
+        
+        if audioPlayer.currentTime > tail {
+            if isPlaying == true {
+                pause()
+            }
+            seek(position: head)
+        }
+    }
     
-    //    func removePeriodicTimeObserver() {
-    //        guard let avPlayer = avPlayer else {
-    //            return
-    //        }
-    //
-    //        if let timeObserverToken = timeObserverToken {
-    //            avPlayer.removeTimeObserver(timeObserverToken)
-    //            self.timeObserverToken = nil
-    //        }
-    //    }
+    func setPlayInfo(title: String,
+                     author: String,
+                     content: String,
+                     duration: Double,
+                     documentID: String,
+                     authorUserID: String,
+                     audioImageNumber: Int,
+                     authorAccountProvider: String) {
+        
+        currentPlayInfo = PlayInfo(title: title,
+                                   author: author,
+                                   content: content,
+                                   duration: duration,
+                                   documentID: documentID,
+                                   authorUserID: authorUserID,
+                                   audioImageNumber: audioImageNumber,
+                                   authorAccountProvider: authorAccountProvider)
+    }
+
 }
 
 extension AudioPlayHelper: AVAudioPlayerDelegate {
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        NotificationCenter.default.post(name: .audioPlayHelperDidPlayEnd, object: nil, userInfo: nil)
         isPlaying = false
+        NotificationCenter.default.post(name: .didItemPlayToEndTime, object: nil, userInfo: nil)
     }
 }
 

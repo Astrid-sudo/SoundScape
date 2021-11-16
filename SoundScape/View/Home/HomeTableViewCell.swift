@@ -109,7 +109,7 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         print("\(category),didSelect \(indexPath), url: \(firebaseData[indexPath.item].audioURL)")
         
         AudioPlayerWindow.shared.show()
-
+        
         let title = firebaseData[indexPath.item].title
         let author = firebaseData[indexPath.item].authorName
         let content = firebaseData[indexPath.item].content
@@ -119,17 +119,19 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         let audioImageNumber = firebaseData[indexPath.item].imageNumber
         let authorAccountProvider = firebaseData[indexPath.item].authIDProvider
         
-        //         Must set url first, then set playInfo.
-        //        (Because in class RemotePlayHelper, set url will make playinfo be nil.)
-        remotePlayHelper.url = firebaseData[indexPath.item].audioURL
-        remotePlayHelper.setPlayInfo(title: title,
-                                     author: author,
-                                     content: content,
-                                     duration: duration,
-                                     documentID: documentID,
-                                     authorUserID: authorUserID,
-                                     audioImageNumber: audioImageNumber,
-                                     authorAccountProvider: authorAccountProvider)
+        if let remoteURL = firebaseData[indexPath.item].audioURL {
+            RemoteAudioManager.shared.downloadRemoteURL(documentID: documentID, remoteURL: remoteURL) { localURL in
+                AudioPlayHelper.shared.url = localURL
+                AudioPlayHelper.shared.setPlayInfo(title: title,
+                                                   author: author,
+                                                   content: content,
+                                                   duration: duration,
+                                                   documentID: documentID,
+                                                   authorUserID: authorUserID,
+                                                   audioImageNumber: audioImageNumber,
+                                                   authorAccountProvider: authorAccountProvider)
+            }
+        }
     }
     
 }
