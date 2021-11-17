@@ -105,8 +105,18 @@ class ProSoundDetailViewController: UIViewController {
     private lazy var backgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(red: 24/255, green: 31/255, blue: 41/255, alpha: 0.7)
-        
         return view
+    }()
+    
+    private lazy var blockButton: UIButton = {
+        let button = UIButton()
+        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.addTarget(self, action: #selector(block), for: .touchUpInside)
+        button.backgroundColor = UIColor(named: CommonUsage.scGray)
+        button.layer.cornerRadius = 15
+        button.setTitle(CommonUsage.Text.block, for: .normal)
+        button.isHidden = true
+        return button
     }()
     
     // MARK: - properties
@@ -129,6 +139,7 @@ class ProSoundDetailViewController: UIViewController {
         didSet {
             guard let nowPlayingDocumentID = nowPlayingDocumentID else { return }
             renderWave(documentID: nowPlayingDocumentID)
+            setBlockButton()
         }
     }
     
@@ -156,6 +167,10 @@ class ProSoundDetailViewController: UIViewController {
     }
     
     // MARK: - action
+    
+    @objc func block() {
+        popBlockAlert()
+    }
     
     @objc func presentCommentPage(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -211,6 +226,71 @@ class ProSoundDetailViewController: UIViewController {
     
     // MARK: - method
     
+    private func setBlockButton() {
+        
+        if let authorID = authorIdentity?.userID,
+           authorID != SignInManager.shared.currentUserInfoFirebase?.userID {
+            
+            view.addSubview(blockButton)
+            blockButton.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                blockButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+                blockButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
+                blockButton.widthAnchor.constraint(equalToConstant: 50)
+            ])
+            blockButton.isHidden = false
+
+        } else {
+            blockButton.isHidden = true
+        }
+    }
+    
+    private func backToHome() {
+        
+        guard let leave = delegate?.leaveDetailPage else { return }
+        displayLink?.invalidate()
+        AudioPlayerWindow.shared.makeSmallFrame()
+        AudioPlayerWindow.shared.showVC()
+        leave()
+
+        navigationController?.popToRootViewController(animated: true)
+        guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
+        scTabBarController.selectedIndex = 0
+    }
+
+    
+    private func popBlockAlert() {
+        
+        let alert = UIAlertController(title: "Are you sure?",
+                                      message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
+                                      preferredStyle: .alert )
+        
+        let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
+            guard let self = self else { return }
+            self.blockUser()
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        
+        present(alert, animated: true, completion: nil)
+        
+    }
+
+    
+    private func blockUser() {
+        
+        guard let currentUserDocID = SignInManager.shared.currentUserInfoFirebase?.userInfoDoumentID,
+              let  blockUser = authorIdentity?.userID else { return }
+        
+        FirebaseManager.shared.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
+                                       toBeBlockedID: blockUser,
+                                              completion: backToHome)
+    }
+
+    
     private func setWaveformView() {
         view.addSubview(waveformView)
     }
@@ -240,41 +320,7 @@ class ProSoundDetailViewController: UIViewController {
                                                name: .didItemPlayToEndTime,
                                                object: nil)
         
-//        NotificationCenter.default.addObserver(self,
-//                                               selector: #selector(renderRemoteURLWave),
-//                                               name: .remoteURLDidSelect,
-//                                               object: nil)
     }
-    
-//    @objc func renderRemoteURLWave(notification: Notification) {
-//
-//        guard let remoteURL = notification.userInfo?["UserInfo"] as? URL else { return }
-//
-//        let task = URLSession.shared.downloadTask(with: remoteURL) { downloadedURL, urlResponse, error in
-//
-//            guard let downloadedURL = downloadedURL else { return }
-//
-//            let cachesFolderURL = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-//
-//            let audioFileURL = cachesFolderURL?.appendingPathComponent("\(remoteURL).m4a")
-//
-//            guard let localURL = audioFileURL else { return }
-//
-//            try? FileManager.default.copyItem(at: downloadedURL, to: localURL)
-//
-//            DispatchQueue.main.async {
-//
-//                self.updateWaveformImages(localURL: localURL)
-//
-//                let waveformAnalyzer = WaveformAnalyzer(audioAssetURL: localURL)
-//                waveformAnalyzer?.samples(count: 10) { samples in
-//                    print("sampled down to 10, results are \(samples ?? [])")
-//                }
-//
-//            }
-//        }
-//        task.resume()
-//    }
     
     func renderWave(documentID: String) {
         let cachesFolderURL = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
@@ -293,7 +339,6 @@ class ProSoundDetailViewController: UIViewController {
     }
     
     @objc func updatePlaybackTime(notification: Notification) {
-        //        localUpdatePlaybackTime()
         
         guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
         let currentTime = playProgress.currentTime

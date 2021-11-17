@@ -98,7 +98,6 @@ class SoundDetailVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        setBackgroundImage()
         addObserver()
         setAudioHelper()
         waveformView.isHidden = true
@@ -254,10 +253,6 @@ class SoundDetailVC: UIViewController {
 
             let cachesFolderURL = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
             
-//            self.fileNameCount += 1
-            
-//            let audioFileURL = cachesFolderURL?.appendingPathComponent("localFile\(self.fileNameCount).m4a")
-            
             let audioFileURL = cachesFolderURL?.appendingPathComponent("\(remoteURL).m4a")
             
             guard let localURL = audioFileURL else { return }
@@ -336,18 +331,6 @@ class SoundDetailVC: UIViewController {
             }
         })
 
-        
-//        waveformImageDrawer.waveformImage(fromAudioAt: localURL,
-//                                          size: waveformView.bounds.size,
-//                                          color: UIColor(named: CommonUsage.scLightGreen) ?? .green,
-//                                          style: .striped,
-//                                          position: .middle) { image in
-//            // need to jump back to main queue
-//            DispatchQueue.main.async {
-//                self.waveformView.image = image
-//            }
-//        }
-        
         let waveformProgressViewConfig = Waveform.Style.StripeConfig.init(color: UIColor(named: CommonUsage.scOrange) ?? .orange, width: 3.0, spacing: 3.5, lineCap: .butt)
 
         waveformImageDrawer.waveformImage(fromAudioAt: localURL,
@@ -361,17 +344,6 @@ class SoundDetailVC: UIViewController {
             }
         })
 
-//        waveformImageDrawer.waveformImage(fromAudioAt: localURL,
-//                                          size: waveformProgressView.bounds.size,
-//                                          color: UIColor(named: CommonUsage.scOrange) ?? .orange,
-//                                          style: .striped,
-//                                          position: .middle) { image in
-//            // need to jump back to main queue
-//            DispatchQueue.main.async {
-//
-//                self.waveformProgressView.image = image
-//            }
-//        }
     }
     
     private func updateProgressWaveform(_ progress: Double) {

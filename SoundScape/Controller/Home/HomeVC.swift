@@ -13,6 +13,8 @@ class HomeVC: UIViewController {
     
     let firebaseManager = FirebaseManager.shared
     
+    let signInManager = SignInManager.shared
+    
     var audioFiles = [SCPost]() {
         didSet {
             tableView.reloadData()
@@ -93,6 +95,18 @@ class HomeVC: UIViewController {
         audioFiles = AudioPostManager.shared.filteredAudioFiles
     }
     
+    private func blockThisUser(toBeBlockedID: String) {
+        
+        guard let currentUserDocID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else { return }
+        
+        firebaseManager.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
+                                       toBeBlockedID: toBeBlockedID, completion: nil)
+    }
+    
+    func deletePost(documentID: String) {
+        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID)
+    }
+
 }
 
 // MARK: - conform to UITableViewDataSource
@@ -112,7 +126,8 @@ extension HomeVC: UITableViewDataSource {
         }
         
         let filteredFiles = audioFiles.filter({$0.category == AudioCategory.allCases[indexPath.section].rawValue})
-        cell.backgroundColor = .clear
+        cell.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        cell.delegate = self
         cell.firebaseData = filteredFiles
         cell.category = AudioCategory.allCases[indexPath.item].rawValue
         return cell
@@ -125,7 +140,7 @@ extension HomeVC: UITableViewDataSource {
 extension HomeVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomeTableViewHeader.reuseIdentifier) as? HomeTableViewHeader else { return UIView()}
+        guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomeTableViewHeader.reuseIdentifier) as? HomeTableViewHeader else { return UIView() }
         headerView.presentInPage = .audioCategory
         headerView.delegate = self
         headerView.config(section: section, content: AudioCategory.allCases[section].rawValue)
@@ -157,6 +172,8 @@ extension HomeVC: UITableViewDelegate {
     
 }
 
+// MARK: - conform to PressPassableDelegate
+
 extension HomeVC: PressPassableDelegate {
     
     func goSectionPage(from section: Int, sectionPageType: SectionPageType) {
@@ -175,7 +192,7 @@ extension HomeVC: PressPassableDelegate {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
         
-        categoryPage.config(category: category, data: data)
+        categoryPage.config(category: category)
         navigationController?.pushViewController(categoryPage, animated: true)
     }
     
@@ -184,6 +201,50 @@ extension HomeVC: PressPassableDelegate {
         guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
         
         navigationController?.pushViewController(categoryPage, animated: true)
+    }
+    
+}
+
+// MARK: - conform to AlertPresentableDelegate
+
+extension HomeVC: AlertPresentableDelegate {
+    
+    func popBlockAlert(toBeBlockedID: String) {
+       
+       let alert = UIAlertController(title: "Are you sure?",
+                                     message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
+                                     preferredStyle: .alert )
+       
+       let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
+           guard let self = self else { return }
+           self.blockThisUser(toBeBlockedID: toBeBlockedID)
+       }
+       
+       let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+       
+       alert.addAction(cancelButton)
+       alert.addAction(okButton)
+       
+       present(alert, animated: true, completion: nil)
+   }
+
+    func popDeletePostAlert(documentID: String) {
+        
+        let alert = UIAlertController(title: "Are you sure to delete this audio?",
+                                      message: nil ,
+                                      preferredStyle: .alert )
+        
+        let okButton = UIAlertAction(title: "Delete", style: .destructive) {[weak self] _ in
+            guard let self = self else { return }
+            self.deletePost(documentID: documentID)
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        
+        present(alert, animated: true, completion: nil)
     }
     
 }

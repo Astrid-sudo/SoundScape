@@ -138,6 +138,7 @@ struct CommonUsage {
         static let record = "Record"
         static let selectFile = "Select File"
         static let trim = "Trim"
+        static let deleteAudioMessage = "Long press on image to delete the audio."
 
     }
     

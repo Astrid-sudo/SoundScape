@@ -202,14 +202,10 @@ class ProfileTableViewCell: UITableViewCell {
     }
     
     @objc func selectUserImage() {
-//        pressSelectImage()
-//        selectedPicButton = .userPic
         delegate?.pressSelectImage(selectedPicButton: .userPic)
     }
     
     @objc func selectCoverImage() {
-//        pressSelectImage()
-//        selectedPicButton = .coverPic
         delegate?.pressSelectImage(selectedPicButton: .coverPic)
 
     }
