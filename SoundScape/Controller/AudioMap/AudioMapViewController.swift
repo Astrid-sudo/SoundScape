@@ -116,11 +116,11 @@ class AudioMapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setNavigationBar()
         setBackgroundcolor()
         
         switch audioMapType {
         case .pinOnMap:
+            setNavigationBar()
             setMap()
             addSearchBar()
             setTableView()
