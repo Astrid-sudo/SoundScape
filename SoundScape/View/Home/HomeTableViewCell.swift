@@ -7,16 +7,13 @@
 
 import UIKit
 
-protocol AlertPresentableDelegate: AnyObject {
-    func popBlockAlert(toBeBlockedID: String)
-    func popDeletePostAlert(documentID: String)
-}
-
 class HomeTableViewCell: UITableViewCell {
     
     // MARK: - properties
     
     static let reuseIdentifier = String(describing: HomeTableViewCell.self)
+    
+    let remotePlayHelper = RemotePlayHelper.shared
     
     var firebaseData = [SCPost]() {
         
@@ -28,12 +25,6 @@ class HomeTableViewCell: UITableViewCell {
     var category = ""
     
     var profileSection: ProfilePageSection?
-    
-    let firebaseManager = FirebaseManager.shared
-    
-    let signInManager = SignInManager.shared
-    
-    weak var delegate: AlertPresentableDelegate?
     
     // MARK: - UI properties
     
@@ -65,16 +56,6 @@ class HomeTableViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - method
-    
-    private func popBlockAlert(toBeBlockedID: String) {
-        delegate?.popBlockAlert(toBeBlockedID: toBeBlockedID)
-    }
-    
-    func popDeletePostAlert(documentID: String) {
-        delegate?.popDeletePostAlert(documentID: documentID)
     }
     
     // MARK: - config UI method
@@ -150,48 +131,6 @@ extension HomeTableViewCell: UICollectionViewDelegate {
                                                    audioImageNumber: audioImageNumber,
                                                    authorAccountProvider: authorAccountProvider)
             }
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView,
-                        contextMenuConfigurationForItemAt indexPath: IndexPath,
-                        point: CGPoint) -> UIContextMenuConfiguration? {
-        
-        let index = indexPath.row
-        let identifier = "\(index)" as NSString
-        let post = firebaseData[index]
-        let authorID = post.authorID
-        
-        
-        if authorID != signInManager.currentUserInfoFirebase?.userID {
-            //封鎖作者
-            return UIContextMenuConfiguration(
-                identifier: identifier, previewProvider: nil) { _ in
-                    // 3
-                    let blockAction = UIAction(title: "Block this user",
-                                               image: nil) { _ in
-                        self.popBlockAlert(toBeBlockedID: authorID)
-                    }
-                    return UIMenu(title: "",
-                                  image: nil,
-                                  children: [blockAction])
-                }
-            
-        } else {
-            //            刪除post
-            let audioDocumentID = post.documentID
-            
-            return UIContextMenuConfiguration(
-                identifier: identifier, previewProvider: nil) { _ in
-                    // 3
-                    let deleteAction = UIAction(title: "Delete this post",
-                                                image: nil) { _ in
-                        self.popDeletePostAlert(documentID: audioDocumentID)
-                    }
-                    return UIMenu(title: "",
-                                  image: nil,
-                                  children: [deleteAction])
-                }
         }
     }
     

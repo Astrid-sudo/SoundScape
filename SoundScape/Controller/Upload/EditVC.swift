@@ -204,21 +204,16 @@ class EditVC: UIViewController {
             || remotePlayerHelper.state == .buffering
             || remotePlayerHelper.state == .paused
             || remotePlayerHelper.state == .loaded {
-            
-            DispatchQueue.main.async {
-                let config = UIImage.SymbolConfiguration(pointSize: 20)
-                let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
-                self.playButton.setImage(bigImage, for: .normal)
-            }
+            let config = UIImage.SymbolConfiguration(pointSize: 20)
+            let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
+
+            playButton.setImage(bigImage, for: .normal)
         }
         
         if remotePlayerHelper.state == .playing {
-            
-            DispatchQueue.main.async {
-                let config = UIImage.SymbolConfiguration(pointSize: 20)
-                let bigImage = UIImage(systemName: CommonUsage.SFSymbol.pause, withConfiguration: config)
-                self.playButton.setImage(bigImage, for: .normal)
-            }
+            let config = UIImage.SymbolConfiguration(pointSize: 20)
+            let bigImage = UIImage(systemName: CommonUsage.SFSymbol.pause, withConfiguration: config)
+            playButton.setImage(bigImage, for: .normal)
         }
         
     }

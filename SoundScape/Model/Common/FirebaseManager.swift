@@ -95,8 +95,7 @@ class FirebaseManager {
         
         let metadata = StorageMetadata()
         metadata.contentType = "audio/m4a"
-        let audioString =  NSUUID().uuidString
-        let audioName = audioString + ".m4a"
+        let audioName = NSUUID().uuidString + ".m4a"
         
         let audioReference = storage.child("\(audioName)")
         let uploadTask = audioReference.putFile(from: localURL, metadata: nil) { metadata, error in
@@ -104,6 +103,7 @@ class FirebaseManager {
                 print(String(describing: error))
                 return
             }
+            //            completion()
             print("Upload audio suceeded from localUrl:\(localURL)")
             
             audioReference.downloadURL { [weak self] (url, error) in
@@ -115,12 +115,11 @@ class FirebaseManager {
                     return
                 }
                 
-                let document = self.allAudioCollectionRef.document(audioString)
+                let document = self.allAudioCollectionRef.document()
                 
                 fullPost.audioURL = url
                 fullPost.createdTime = Timestamp(date: Date())
-                fullPost.documentID = audioString
-                
+                fullPost.documentID = document.documentID
                 
                 do {
                     try document.setData(from: fullPost)
@@ -150,47 +149,6 @@ class FirebaseManager {
         uploadTask.observe(.progress) { snapshot in
             print("Audio upload progress \(String(describing: snapshot.progress))")
         }
-    }
-    
-    func deletePostInAllAudio(documentID: String) {
-        allAudioCollectionRef.document(documentID).delete() { error in
-            
-            if let error = error {
-                print("Error remove post in AllAudioCollection \(documentID), error: \(error)")
-            } else {
-                print("\(documentID) in AllAudioCollection successfully removed.")
-                self.deletePostInAllLocation(documentID: documentID)
-            }
-        }
-    }
-    
-   private func deletePostInAllLocation(documentID: String) {
-        
-        allLocationsCollectionRef.document(documentID).delete() { error in
-            
-            if let error = error {
-                print("Error remove post \(documentID), error: \(error)")
-            } else {
-                print("\(documentID) in AllLocationCollection successfully removed.")
-                self.deleteAudioInStorage(documentID: documentID)
-                
-            }
-        }
-    }
-    
-    private func deleteAudioInStorage(documentID: String) {
-        
-        let audioName = documentID + ".m4a"
-        let audioReference = storage.child("\(audioName)")
-        
-        audioReference.delete { error in
-            if let error = error {
-                print("Error remove audio \(audioReference), error: \(error)")
-            } else {
-                print("\(audioReference) in Storage successfully removed.")
-            }
-        }
-        
     }
     
     // MARK: - temporary fake member method
@@ -622,19 +580,6 @@ class FirebaseManager {
     
     // MARK: - comment
     
-    func deleteComment(audioDocumentID: String, commentDocumentID: String) {
-        let db = Firestore.firestore()
-        let commentRef = db.collection(CommonUsage.CollectionName.allAudioFiles).document(audioDocumentID).collection(CommonUsage.CollectionName.comments).document(commentDocumentID)
-        
-        commentRef.delete { error in
-            if let error = error {
-                print("Failed to delete comment \(commentRef), error: \(error)")
-            } else {
-                print("Succeffully delete comment \(commentRef)")
-            }
-        }
-    }
-    
     func addComment(to documentID: String, with comment: SCComment, completion: @escaping () -> Void) {
         let db = Firestore.firestore()
         
@@ -861,7 +806,7 @@ class FirebaseManager {
             try myBlackListSubCollectionRef.document(toBeBlockedID).setData(from: user)
             
             completion?()
-            
+
         } catch {
             
             print("Failed to add black list")
@@ -869,10 +814,10 @@ class FirebaseManager {
     }
     
     func fetchUserBlackList(userProfileDocumentID: String, completion: @escaping
-                            (Result<[SCBlockUser], Error>) -> Void)  {
+                               (Result<[SCBlockUser], Error>) -> Void)  {
         
         let myBlackListSubCollectionRef = allUsersCollectionRef.document(userProfileDocumentID).collection("blackList")
-        
+
         myBlackListSubCollectionRef.getDocuments { [weak self] snapshot, error in
             
             if let error = error {
@@ -894,7 +839,7 @@ class FirebaseManager {
     func checkBlackListChange(userInfoDoumentID: String, completion: @escaping (Result<[SCBlockUser], Error>) -> Void) {
         
         let myBlackListSubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("blackList")
-        
+
         blackListListenser = myBlackListSubCollectionRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot else { return }
             snapshot.documentChanges.forEach { documentChange in
@@ -912,8 +857,8 @@ class FirebaseManager {
             }
         }
     }
-    
-    
+
+
     
 }
 

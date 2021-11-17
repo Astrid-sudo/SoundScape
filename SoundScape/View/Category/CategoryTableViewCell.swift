@@ -44,7 +44,7 @@ class CategoryTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = UIColor(named: CommonUsage.scBlue)
+        backgroundColor = .clear
         setImageView()
         setTitlelabel()
         setAuthorLabel()
@@ -63,7 +63,8 @@ class CategoryTableViewCell: UITableViewCell {
             theImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             theImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             theImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            theImageView.heightAnchor.constraint(equalToConstant: 80)
+            theImageView.heightAnchor.constraint(equalToConstant: 80),
+//            theImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
         ])
     }
     
@@ -72,7 +73,8 @@ class CategoryTableViewCell: UITableViewCell {
         titlelabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             titlelabel.trailingAnchor.constraint(equalTo: theImageView.trailingAnchor, constant: -20),
-            titlelabel.topAnchor.constraint(equalTo: theImageView.topAnchor, constant: 16)
+            titlelabel.topAnchor.constraint(equalTo: theImageView.topAnchor, constant: 16),
+//            titlelabel.heightAnchor.constraint(equalToConstant: 30)
         ])
     }
     
@@ -81,7 +83,8 @@ class CategoryTableViewCell: UITableViewCell {
         authorLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             authorLabel.trailingAnchor.constraint(equalTo: theImageView.trailingAnchor, constant: -20),
-            authorLabel.topAnchor.constraint(equalTo: titlelabel.bottomAnchor, constant: 8)
+            authorLabel.topAnchor.constraint(equalTo: titlelabel.bottomAnchor, constant: 8),
+//            authorLabel.heightAnchor.constraint(equalToConstant: 30)
         ])
     }
     

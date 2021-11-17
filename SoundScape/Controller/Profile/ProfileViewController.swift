@@ -417,20 +417,49 @@ extension ProfileViewController: PressPassableDelegate {
         switch section {
             
         case 1:
-           
+            guard let followings = currentUserFollowingList else {
+                print("ProfilePage cant get followingList")
+                return
+            }
+            
+            var myFollowingsUserFiles = [SCPost]()
+            for audioFile in allAudioFiles {
+                for folloing in followings {
+                    if audioFile.authorID == folloing.userID,
+                        audioFile.authIDProvider == folloing.provider {
+                        myFollowingsUserFiles.append(audioFile)
+                    }
+                }
+            }
+            
             let section = ProfilePageSection.allCases[section - 1]
-            categoryPage.config(profileSection: section)
+            categoryPage.config(profileSection: section, data: myFollowingsUserFiles)
             
         case 2:
             
+            guard let currentUserFavoriteDocumentIDs = currentUserFavoriteDocumentIDs else {
+                print("ProfilePage cant get currentUserFavoriteDocumentIDs")
+                return
+            }
+            
+            var myFavoriteFiles = [SCPost]()
+            
+            for audioFile in allAudioFiles {
+                for favorite in currentUserFavoriteDocumentIDs {
+                    if audioFile.documentID == favorite {
+                        myFavoriteFiles.append(audioFile)
+                    }
+                }
+            }
+            
             let section = ProfilePageSection.allCases[section - 1]
-            categoryPage.config(profileSection: section)
+            categoryPage.config(profileSection: section, data: myFavoriteFiles)
             
         case 3:
-            
+            let myAudioFiles = allAudioFiles.filter({$0.authorName == signInManager.currentUserInfoFirebase?.username})
             let section = ProfilePageSection.allCases[section - 1]
-            categoryPage.config(profileSection: section)
-
+            categoryPage.config(profileSection: section, data: myAudioFiles)
+            
         default:
             break
         }
