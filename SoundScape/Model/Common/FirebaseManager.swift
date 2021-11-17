@@ -622,6 +622,19 @@ class FirebaseManager {
     
     // MARK: - comment
     
+    func deleteComment(audioDocumentID: String, commentDocumentID: String) {
+        let db = Firestore.firestore()
+        let commentRef = db.collection(CommonUsage.CollectionName.allAudioFiles).document(audioDocumentID).collection(CommonUsage.CollectionName.comments).document(commentDocumentID)
+        
+        commentRef.delete { error in
+            if let error = error {
+                print("Failed to delete comment \(commentRef), error: \(error)")
+            } else {
+                print("Succeffully delete comment \(commentRef)")
+            }
+        }
+    }
+    
     func addComment(to documentID: String, with comment: SCComment, completion: @escaping () -> Void) {
         let db = Firestore.firestore()
         

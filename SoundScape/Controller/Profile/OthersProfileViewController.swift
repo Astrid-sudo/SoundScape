@@ -247,7 +247,6 @@ class OthersProfileViewController: UIViewController {
         }
     }
 
-    
     private func fetchUserCoverFromFirebase() {
         guard let userID = userWillDisplay?.userInfoDoumentID else { return }
         firebaseManager.fetchCoverPicFromFirebase(userID: userID) { result in
@@ -272,11 +271,10 @@ class OthersProfileViewController: UIViewController {
         }
     }
 
-    
     private func popBlockAlert() {
         
         let alert = UIAlertController(title: "Are you sure?",
-                                      message: "You can't see this user's comments, audio posts and profile page after blocking.",
+                                      message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
                                       preferredStyle: .alert )
         
         let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
@@ -549,53 +547,26 @@ extension OthersProfileViewController: PressPassableDelegate {
     func goSectionPage(from section: Int, sectionPageType: SectionPageType) {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
+        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController,
+        let displayUserID = userWillDisplay?.userID else { return }
         
         switch section {
             
         case 1:
-            guard let followings = othersFollowingList else {
-                print("OtherProfilePage cant get othersFollowingList")
-                return
-            }
             
-            var myFollowingsUserFiles = [SCPost]()
-            for audioFile in allAudioFiles {
-                for folloing in followings {
-                    if audioFile.authorID == folloing.userID, audioFile.authIDProvider == folloing.provider {
-                        myFollowingsUserFiles.append(audioFile)
-                    }
-                }
-            }
             let section = ProfilePageSection.allCases[section - 1]
-            categoryPage.config(profileSection: section, data: myFollowingsUserFiles)
-            
+            categoryPage.config(profileSection: section, displayUserID: displayUserID)
+
         case 2:
             
-            guard let userFavoriteDocumentIDs = userFavoriteDocumentIDs else {
-                print("ProfilePage cant get userFavoriteDocumentIDs")
-                return
-            }
-            
-            var myFavoriteFiles = [SCPost]()
-            
-            for audioFile in allAudioFiles {
-                for favorite in userFavoriteDocumentIDs {
-                    if audioFile.documentID == favorite {
-                        myFavoriteFiles.append(audioFile)
-                    }
-                }
-            }
             let section = ProfilePageSection.allCases[section - 1]
-            categoryPage.config(profileSection: section, data: myFavoriteFiles)
-            
+            categoryPage.config(profileSection: section, displayUserID: displayUserID)
+
         case 3:
-            guard let userWillDisplay = userWillDisplay else { break }
             
-            let myAudioFiles = allAudioFiles.filter({$0.authorName == userWillDisplay.username})
             let section = ProfilePageSection.allCases[section - 1]
-            categoryPage.config(profileSection: section, data: myAudioFiles)
-            
+            categoryPage.config(profileSection: section, displayUserID: displayUserID)
+
         default:
             break
         }
@@ -634,7 +605,6 @@ extension OthersProfileViewController: ProfileCellDelegate {
                                                                     provider: loggedInUserInfo.provider),
                                          followCompletion: makeButtonFollowed,
                                          unfollowCompletion: makeButtonUnFollow)
-        
     }
     
     func goSettingPage() {
@@ -679,7 +649,6 @@ extension OthersProfileViewController: UIImagePickerControllerDelegate & UINavig
     }
     
 }
-
 
 extension UIImage {
     var scaledToSafeUploadSize: UIImage? {
