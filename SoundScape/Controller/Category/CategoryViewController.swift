@@ -17,7 +17,16 @@ class CategoryViewController: UIViewController {
     
     private var profileSection: ProfilePageSection?
     
-    private var data = [SCPost]()
+    private var data = [SCPost]() {
+        didSet {
+            if profileSection == .myAudio,
+                data.indices.contains(0),
+               data[0].authorID == SignInManager.shared.currentUserInfoFirebase?.userID {
+                setDeleteHintLabel()
+            }
+        }
+
+    }
     
     // MARK: - UI properties
     
@@ -36,10 +45,19 @@ class CategoryViewController: UIViewController {
         label.adjustsFontSizeToFitWidth = true
         label.font = UIFont(name: CommonUsage.fontBungee, size: 40)
         label.numberOfLines = 0
-        
         return label
     }()
     
+    private lazy var deleteHintLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textAlignment = .left
+        label.adjustsFontSizeToFitWidth = true
+        label.numberOfLines = 0
+        label.text = CommonUsage.Text.deleteAudioMessage
+        return label
+    }()
+
     private lazy var tableView: UITableView = {
         let table = UITableView()
         table.dataSource = self
@@ -92,6 +110,29 @@ class CategoryViewController: UIViewController {
         self.data = data
     }
     
+    func popDeletePostAlert(documentID: String) {
+        
+        let alert = UIAlertController(title: "Are you sure to delete this audio?",
+                                      message: nil ,
+                                      preferredStyle: .alert )
+        
+        let okButton = UIAlertAction(title: "Delete", style: .destructive) {[weak self] _ in
+            guard let self = self else { return }
+            self.deletePost(documentID: documentID)
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func deletePost(documentID: String) {
+        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID)
+    }
+    
     // MARK: - config UI method
     
     private func setViewBackgroundColor() {
@@ -106,6 +147,15 @@ class CategoryViewController: UIViewController {
             headView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             headView.topAnchor.constraint(equalTo: view.topAnchor),
             headView.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight / 3.5)
+        ])
+    }
+    
+    private func setDeleteHintLabel() {
+        view.addSubview(deleteHintLabel)
+        deleteHintLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            deleteHintLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            deleteHintLabel.bottomAnchor.constraint(equalTo: headView.bottomAnchor, constant: -16),
         ])
     }
     
@@ -242,5 +292,34 @@ extension CategoryViewController: UITableViewDelegate {
             return 100
         }
     }
+    
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        if profileSection == .myAudio,
+            data[0].authorID == SignInManager.shared.currentUserInfoFirebase?.userID {
+//            而且是自己的話
+            let row = indexPath.row
+            let identifier = "\(row)" as NSString
+            
+            return UIContextMenuConfiguration(
+                identifier: identifier, previewProvider: nil) { _ in
+                    // 3
+                    let deleteAction = UIAction(title: "Delete this audio",
+                                               image: nil) { [weak self] _ in
+                        guard let self = self else { return }
+                        self.popDeletePostAlert(documentID: self.data[row].documentID)
+                    }
+                    return UIMenu(title: "",
+                                  image: nil,
+                                  children: [deleteAction])
+                }
+            
+        } else {
+            return nil
+        }
+        
+    }
+    
+
     
 }
