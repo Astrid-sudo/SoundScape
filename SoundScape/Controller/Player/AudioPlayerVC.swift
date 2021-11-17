@@ -347,13 +347,11 @@ class AudioPlayerVC: UIViewController {
     // MARK: - action
     
     @objc func manipulatePlayer() {
-        if remotePlayerHelper.state == .playing {
-            remotePlayerHelper.pause()
-        } else if remotePlayerHelper.state == .paused
-                    || remotePlayerHelper.state == .loaded
-                    || remotePlayerHelper.state == .buffering
-                    || remotePlayerHelper.state == .stopped {
-            remotePlayerHelper.play()
+        
+        if AudioPlayHelper.shared.isPlaying {
+            AudioPlayHelper.shared.pause()
+        } else {
+            AudioPlayHelper.shared.play()
         }
     }
     
@@ -389,11 +387,14 @@ class AudioPlayerVC: UIViewController {
     @objc func updatePlayInfo(notification: Notification) {
         
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
-        audioTitleLabel.text = nowPlayingInfo.title
-        authorLabel.text = nowPlayingInfo.author
-        nowPlayDocumentID = nowPlayingInfo.documentID
-        audioImage.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
-        manipulateFavoriteImage()
+        
+        DispatchQueue.main.async {
+            self.audioTitleLabel.text = nowPlayingInfo.title
+            self.authorLabel.text = nowPlayingInfo.author
+            self.nowPlayDocumentID = nowPlayingInfo.documentID
+            self.audioImage.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
+            self.manipulateFavoriteImage()
+        }
         
     }
     
@@ -439,34 +440,17 @@ class AudioPlayerVC: UIViewController {
     
     @objc func changeButtImage() {
         
-        if remotePlayerHelper.state == .buffering
-            || remotePlayerHelper.state == .stopped
-            || remotePlayerHelper.state == .paused
-            || remotePlayerHelper.state == .loaded {
+        if AudioPlayHelper.shared.isPlaying {
             DispatchQueue.main.async {
-                self.indicatorView.stopAnimating()
-                self.indicatorView.isHidden = true
-                self.playButton.isHidden = false
-                self.playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-            }
-        }
-        
-        if remotePlayerHelper.state == .playing {
-            DispatchQueue.main.async {
-                self.indicatorView.stopAnimating()
-                self.indicatorView.isHidden = true
                 self.playButton.isHidden = false
                 self.playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
             }
         }
         
-        if remotePlayerHelper.state == .loading
-            || remotePlayerHelper.state == .initialization
-            || remotePlayerHelper.state == .waitingForNetwork {
+        if !AudioPlayHelper.shared.isPlaying {
             DispatchQueue.main.async {
-                self.playButton.isHidden = true
-                self.indicatorView.startAnimating()
-                self.indicatorView.isHidden = false
+                self.playButton.isHidden = false
+                self.playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
             }
         }
         

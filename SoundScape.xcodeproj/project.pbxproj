@@ -63,6 +63,7 @@
 		56C05AAF2736A829009D029C /* SCMapInfoWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C05AAE2736A829009D029C /* SCMapInfoWindow.swift */; };
 		56D3F0B4272CDFFD00A3B3B3 /* Bungee-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 56D3F0B3272CDFFD00A3B3B3 /* Bungee-Regular.ttf */; };
 		56D3F0C3272D813C00A3B3B3 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D3F0C2272D813C00A3B3B3 /* ProfileViewController.swift */; };
+		56D4C96427437C4C00C57235 /* RemoteAudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D4C96327437C4B00C57235 /* RemoteAudioManager.swift */; };
 		56DC9ABA2737A0BD000B62C6 /* MapSearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DC9AB92737A0BD000B62C6 /* MapSearchResultTableViewCell.swift */; };
 		56DC9ABD2737A753000B62C6 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DC9ABC2737A753000B62C6 /* LocationService.swift */; };
 		56F07D35272BCA7600ABC7B9 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */; };
@@ -131,6 +132,7 @@
 		56C05AAE2736A829009D029C /* SCMapInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCMapInfoWindow.swift; sourceTree = "<group>"; };
 		56D3F0B3272CDFFD00A3B3B3 /* Bungee-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Bungee-Regular.ttf"; sourceTree = "<group>"; };
 		56D3F0C2272D813C00A3B3B3 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		56D4C96327437C4B00C57235 /* RemoteAudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteAudioManager.swift; sourceTree = "<group>"; };
 		56DC9AB92737A0BD000B62C6 /* MapSearchResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSearchResultTableViewCell.swift; sourceTree = "<group>"; };
 		56DC9ABC2737A753000B62C6 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -418,6 +420,7 @@
 				5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */,
 				56201C962721D21F0080A7C7 /* SCRemotePlayerConfig.swift */,
 				563396C4272596A600882711 /* EditAudioManager.swift */,
+				56D4C96327437C4B00C57235 /* RemoteAudioManager.swift */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -639,6 +642,7 @@
 				56F1C849271FA8F400F64846 /* AudioRecordHelper.swift in Sources */,
 				560DE84D27300B1200FFD240 /* CommentViewController.swift in Sources */,
 				5683B6972740F843004512D4 /* ProSoundDetailViewController.swift in Sources */,
+				56D4C96427437C4C00C57235 /* RemoteAudioManager.swift in Sources */,
 				569A7D7C2722A03500CEE3EA /* HomeCollectionViewCell.swift in Sources */,
 				56DC9ABA2737A0BD000B62C6 /* MapSearchResultTableViewCell.swift in Sources */,
 				568340E1271F11AC00543677 /* UploadVC.swift in Sources */,

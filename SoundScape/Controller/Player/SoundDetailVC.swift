@@ -254,9 +254,11 @@ class SoundDetailVC: UIViewController {
 
             let cachesFolderURL = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
             
-            self.fileNameCount += 1
+//            self.fileNameCount += 1
             
-            let audioFileURL = cachesFolderURL?.appendingPathComponent("localFile\(self.fileNameCount).m4a")
+//            let audioFileURL = cachesFolderURL?.appendingPathComponent("localFile\(self.fileNameCount).m4a")
+            
+            let audioFileURL = cachesFolderURL?.appendingPathComponent("\(remoteURL).m4a")
             
             guard let localURL = audioFileURL else { return }
             

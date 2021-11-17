@@ -24,7 +24,6 @@ class CategoryViewController: UIViewController {
     private lazy var headView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        //        imageView.applyBlurEffect()
         imageView.layer.cornerRadius = 10
         imageView.clipsToBounds = true
         return imageView
@@ -128,7 +127,6 @@ class CategoryViewController: UIViewController {
         ])
     }
 
-    
     private func setTableView() {
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -176,8 +174,6 @@ class CategoryViewController: UIViewController {
             headView.image = CommonUsage.audioImages[12]
         }
         
-        
-        
     }
     
 }
@@ -218,17 +214,20 @@ extension CategoryViewController: UITableViewDelegate {
         let audioImageNumber = data[indexPath.item].imageNumber
         let authorAccountProvider = data[indexPath.item].authIDProvider
         
-        remotePlayHelper.url = data[indexPath.item].audioURL
-        
-        remotePlayHelper.setPlayInfo(title: title,
-                                     author: author,
-                                     content: content,
-                                     duration: duration,
-                                     documentID: documentID,
-                                     authorUserID: authorUserID,
-                                     audioImageNumber: audioImageNumber,
-                                     authorAccountProvider: authorAccountProvider)
-        
+        if let remoteURL = data[indexPath.item].audioURL {
+            RemoteAudioManager.shared.downloadRemoteURL(documentID: documentID, remoteURL: remoteURL) { localURL in
+                AudioPlayHelper.shared.url = localURL
+                AudioPlayHelper.shared.setPlayInfo(title: title,
+                                                   author: author,
+                                                   content: content,
+                                                   duration: duration,
+                                                   documentID: documentID,
+                                                   authorUserID: authorUserID,
+                                                   audioImageNumber: audioImageNumber,
+                                                   authorAccountProvider: authorAccountProvider)
+            }
+        }
+
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {

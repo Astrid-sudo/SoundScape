@@ -397,17 +397,20 @@ extension SearchViewController: UITableViewDelegate {
         let authorUserID = resultAudioFiles[indexPath.item].authorID
         let audioImageNumber = resultAudioFiles[indexPath.item].imageNumber
         let authorAccountProvider = resultAudioFiles[indexPath.item].authIDProvider
-
-        remotePlayHelper.url = resultAudioFiles[indexPath.item].audioURL
-        remotePlayHelper.setPlayInfo(title: title,
-                                     author: author,
-                                     content: content,
-                                     duration: duration,
-                                     documentID: documentID,
-                                     authorUserID: authorUserID,
-                                     audioImageNumber: audioImageNumber,
-                                     authorAccountProvider: authorAccountProvider)
-       
+        
+        if let remoteURL = resultAudioFiles[indexPath.item].audioURL {
+            RemoteAudioManager.shared.downloadRemoteURL(documentID: documentID, remoteURL: remoteURL) { localURL in
+                AudioPlayHelper.shared.url = localURL
+                AudioPlayHelper.shared.setPlayInfo(title: title,
+                                                   author: author,
+                                                   content: content,
+                                                   duration: duration,
+                                                   documentID: documentID,
+                                                   authorUserID: authorUserID,
+                                                   audioImageNumber: audioImageNumber,
+                                                   authorAccountProvider: authorAccountProvider)
+            }
+        }
     }
     
 }
