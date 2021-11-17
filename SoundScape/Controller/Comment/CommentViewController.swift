@@ -216,7 +216,7 @@ class CommentViewController: UIViewController {
     private func popBlockAlert(toBeBlockedID: String) {
         
         let alert = UIAlertController(title: "Are you sure?",
-                                      message: "You can't see this user's comments, audio posts and profile page after blocking.",
+                                      message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
                                       preferredStyle: .alert )
         
         let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
@@ -230,6 +230,32 @@ class CommentViewController: UIViewController {
         alert.addAction(okButton)
         
         present(alert, animated: true, completion: nil)
+    }
+    
+    private func popDeleteCommentAlert(commentID: String) {
+        
+        let alert = UIAlertController(title: "Are you sure to delete this comment?",
+                                      message: nil,
+                                      preferredStyle: .alert )
+        
+        let okButton = UIAlertAction(title: "Delete", style: .destructive) {[weak self] _ in
+            guard let self = self else { return }
+            self.deleteComment(commentID: commentID)
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func deleteComment(commentID: String) {
+        
+        guard let audioDocumentID = currentPlayingDocumentID else { return }
+        
+        firebaseManager.deleteComment(audioDocumentID: audioDocumentID, commentDocumentID: commentID)
     }
     
     // MARK: - UI properties
@@ -359,11 +385,10 @@ extension CommentViewController: UITableViewDelegate {
         
         let comment = commentsWillDisplay[indexPath.row]
         let authorID = comment.userID
+        let index = indexPath.row
+        let identifier = "\(index)" as NSString
         
         if authorID != signInManager.currentUserInfoFirebase?.userID {
-            
-            let index = indexPath.row
-            let identifier = "\(index)" as NSString
             
             return UIContextMenuConfiguration(
                 identifier: identifier, previewProvider: nil) { _ in
@@ -379,8 +404,19 @@ extension CommentViewController: UITableViewDelegate {
             
         } else {
             
-            return nil
+            guard let commentID = comment.commentDocumentID else { return nil}
             
+            return UIContextMenuConfiguration(
+                identifier: identifier, previewProvider: nil) { _ in
+                    // 3
+                    let deleteAction = UIAction(title: "Delete this comment",
+                                                image: nil) { _ in
+                        self.popDeleteCommentAlert(commentID: commentID)
+                    }
+                    return UIMenu(title: "",
+                                  image: nil,
+                                  children: [deleteAction])
+                }
         }
     }
     
