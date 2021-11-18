@@ -18,6 +18,7 @@ target 'SoundScape' do
   pod 'lottie-ios'
   pod 'GoogleMaps'
   pod 'GooglePlaces'
-
+  pod 'Firebase/Crashlytics'
+ 
 
 end

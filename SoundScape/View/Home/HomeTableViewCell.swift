@@ -7,13 +7,16 @@
 
 import UIKit
 
+protocol AlertPresentableDelegate: AnyObject {
+    func popBlockAlert(toBeBlockedID: String)
+    func popDeletePostAlert(documentID: String)
+}
+
 class HomeTableViewCell: UITableViewCell {
     
     // MARK: - properties
     
     static let reuseIdentifier = String(describing: HomeTableViewCell.self)
-    
-    let remotePlayHelper = RemotePlayHelper.shared
     
     var firebaseData = [SCPost]() {
         
@@ -25,6 +28,12 @@ class HomeTableViewCell: UITableViewCell {
     var category = ""
     
     var profileSection: ProfilePageSection?
+    
+    let firebaseManager = FirebaseManager.shared
+    
+    let signInManager = SignInManager.shared
+    
+    weak var delegate: AlertPresentableDelegate?
     
     // MARK: - UI properties
     
@@ -56,6 +65,16 @@ class HomeTableViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - method
+    
+    private func popBlockAlert(toBeBlockedID: String) {
+        delegate?.popBlockAlert(toBeBlockedID: toBeBlockedID)
+    }
+    
+    func popDeletePostAlert(documentID: String) {
+        delegate?.popDeletePostAlert(documentID: documentID)
     }
     
     // MARK: - config UI method
@@ -92,10 +111,9 @@ extension HomeTableViewCell: UICollectionViewDataSource {
         
         // swiftlint:enable line_length
         
-        cell.setCell(imageNumber: firebaseData[indexPath.item].imageNumber, audioTitle: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName)
-        
-//        cell.setCell(image: nil,
-//                     audioTitle: firebaseData[indexPath.item].title, author: firebaseData[indexPath.item].authorName)
+        cell.setCell(imageNumber: firebaseData[indexPath.item].imageNumber,
+                     audioTitle: firebaseData[indexPath.item].title,
+                     author: firebaseData[indexPath.item].authorName)
         
         return cell
     }
@@ -110,7 +128,7 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         print("\(category),didSelect \(indexPath), url: \(firebaseData[indexPath.item].audioURL)")
         
         AudioPlayerWindow.shared.show()
-
+        
         let title = firebaseData[indexPath.item].title
         let author = firebaseData[indexPath.item].authorName
         let content = firebaseData[indexPath.item].content
@@ -120,25 +138,74 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         let audioImageNumber = firebaseData[indexPath.item].imageNumber
         let authorAccountProvider = firebaseData[indexPath.item].authIDProvider
         
-        //         Must set url first, then set playInfo.
-        //        (Because in class RemotePlayHelper, set url will make playinfo be nil.)
-        remotePlayHelper.url = firebaseData[indexPath.item].audioURL
-        remotePlayHelper.setPlayInfo(title: title,
-                                     author: author,
-                                     content: content,
-                                     duration: duration,
-                                     documentID: documentID,
-                                     authorUserID: authorUserID,
-                                     audioImageNumber: audioImageNumber,
-                                     authorAccountProvider: authorAccountProvider)
+        if let remoteURL = firebaseData[indexPath.item].audioURL {
+            RemoteAudioManager.shared.downloadRemoteURL(documentID: documentID, remoteURL: remoteURL) { localURL in
+                AudioPlayHelper.shared.url = localURL
+                AudioPlayHelper.shared.setPlayInfo(title: title,
+                                                   author: author,
+                                                   content: content,
+                                                   duration: duration,
+                                                   documentID: documentID,
+                                                   authorUserID: authorUserID,
+                                                   audioImageNumber: audioImageNumber,
+                                                   authorAccountProvider: authorAccountProvider)
+            }
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        contextMenuConfigurationForItemAt indexPath: IndexPath,
+                        point: CGPoint) -> UIContextMenuConfiguration? {
         
-//        remotePlayHelper.setPlayInfo(title: title,
-//                                     author: author,
-//                                     content: content,
-//                                     duration: duration,
-//                                     documentID: documentID, authorUserID: authorUserID,, audioImageNumber: audioImageNumber
-//                                     authorAccountProvider: authorAccountProvider)
+        let index = indexPath.row
+        let identifier = "\(index)" as NSString
+        let post = firebaseData[index]
+        let authorID = post.authorID
         
+        
+        if authorID != signInManager.currentUserInfoFirebase?.userID {
+            //封鎖作者
+            return UIContextMenuConfiguration(
+                identifier: identifier, previewProvider: nil) { _ in
+                    // 3
+                    let blockAction = UIAction(title: "Block this user",
+                                               image: nil) { _ in
+                        self.popBlockAlert(toBeBlockedID: authorID)
+                    }
+                    return UIMenu(title: "",
+                                  image: nil,
+                                  children: [blockAction])
+                }
+            
+        } else {
+            //            刪除post
+            let audioDocumentID = post.documentID
+            
+            return UIContextMenuConfiguration(
+                identifier: identifier, previewProvider: nil) { _ in
+                    // 3
+                    let deleteAction = UIAction(title: "Delete this post",
+                                                image: nil) { _ in
+                        self.popDeletePostAlert(documentID: audioDocumentID)
+                    }
+                    return UIMenu(title: "",
+                                  image: nil,
+                                  children: [deleteAction])
+                }
+        }
     }
     
 }
+
+// MARK: - conform to UICollectionViewDelegateFlowLayout
+
+extension HomeTableViewCell: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
+        UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+    }
+    
+}
+

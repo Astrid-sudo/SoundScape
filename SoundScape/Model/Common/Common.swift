@@ -29,7 +29,8 @@ struct CommonUsage {
                                           UIImage(named: CommonUsage.natureOcean),
                                           UIImage(named: CommonUsage.natureRiver),
                                           UIImage(named: CommonUsage.uniqueRice),
-                                          UIImage(named: CommonUsage.untitledArtwork)
+                                          UIImage(named: CommonUsage.untitledArtwork),
+                                          UIImage(named: CommonUsage.cityCafe)
     ]
     
     static let privacyPolicyURL = "https://www.privacypolicies.com/live/11ed0980-697c-4f2e-9e23-412af25966c4"
@@ -53,6 +54,7 @@ struct CommonUsage {
     static let animalCatPaw = "Animal_CatPaw"
     static let animalDuck = "Animal_Duck"
     static let city = "City"
+    static let cityCafe = "City_Cafe"
     static let meaningfulCake = "Meaningful_cake"
     static let meaningfulFlower = "Meaningful_Flower"
     static let meaningfulWine = "Meaningful_Wine"
@@ -128,7 +130,7 @@ struct CommonUsage {
         static let audioImage = "Pick a cover"
         static let logInNotice = "By using SoundScape you agree to accept our"
         static let privacyPolicy = "Privacy Policy"
-        static let audioLengthNotice = "Only support upload audio file under 90 seconds."
+        static let audioLengthNotice = "Only support upload audio file under 5 to 60 seconds."
         static let noResultTitle =  "No result."
         static let searchHintLabel = "Search by title, author, or content."
         static let block = "block"
@@ -136,6 +138,7 @@ struct CommonUsage {
         static let record = "Record"
         static let selectFile = "Select File"
         static let trim = "Trim"
+        static let deleteAudioMessage = "Long press on image to delete the audio."
 
     }
     
@@ -205,4 +208,3 @@ extension Int {
         return CGFloat(self) * CommonUsage.ratio
     }
 }
-

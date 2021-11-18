@@ -42,6 +42,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        backgroundColor = UIColor(named: CommonUsage.scBlue)
         setAudioImage()
         setAudioTitleLabel()
         setAuthorNameLabel()

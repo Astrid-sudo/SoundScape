@@ -63,6 +63,7 @@
 		56C05AAF2736A829009D029C /* SCMapInfoWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C05AAE2736A829009D029C /* SCMapInfoWindow.swift */; };
 		56D3F0B4272CDFFD00A3B3B3 /* Bungee-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 56D3F0B3272CDFFD00A3B3B3 /* Bungee-Regular.ttf */; };
 		56D3F0C3272D813C00A3B3B3 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D3F0C2272D813C00A3B3B3 /* ProfileViewController.swift */; };
+		56D4C96427437C4C00C57235 /* RemoteAudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D4C96327437C4B00C57235 /* RemoteAudioManager.swift */; };
 		56DC9ABA2737A0BD000B62C6 /* MapSearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DC9AB92737A0BD000B62C6 /* MapSearchResultTableViewCell.swift */; };
 		56DC9ABD2737A753000B62C6 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DC9ABC2737A753000B62C6 /* LocationService.swift */; };
 		56F07D35272BCA7600ABC7B9 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */; };
@@ -131,6 +132,7 @@
 		56C05AAE2736A829009D029C /* SCMapInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCMapInfoWindow.swift; sourceTree = "<group>"; };
 		56D3F0B3272CDFFD00A3B3B3 /* Bungee-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Bungee-Regular.ttf"; sourceTree = "<group>"; };
 		56D3F0C2272D813C00A3B3B3 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		56D4C96327437C4B00C57235 /* RemoteAudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteAudioManager.swift; sourceTree = "<group>"; };
 		56DC9AB92737A0BD000B62C6 /* MapSearchResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSearchResultTableViewCell.swift; sourceTree = "<group>"; };
 		56DC9ABC2737A753000B62C6 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -418,6 +420,7 @@
 				5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */,
 				56201C962721D21F0080A7C7 /* SCRemotePlayerConfig.swift */,
 				563396C4272596A600882711 /* EditAudioManager.swift */,
+				56D4C96327437C4B00C57235 /* RemoteAudioManager.swift */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -471,6 +474,7 @@
 				5679F10E271D112900663001 /* ShellScript */,
 				514A335EAE3FE0DB3303B9A0 /* [CP] Embed Pods Frameworks */,
 				3BB5FA935A177BA83B3FF0F8 /* [CP] Copy Pods Resources */,
+				569EEE782745380F0054DB45 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -596,6 +600,25 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/SwiftLint/swiftlint\"\n";
 		};
+		569EEE782745380F0054DB45 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${SoundScape}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/FirebaseCrashlytics/run\"\n";
+		};
 		70A1E27FB71974FE766AAB92 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -639,6 +662,7 @@
 				56F1C849271FA8F400F64846 /* AudioRecordHelper.swift in Sources */,
 				560DE84D27300B1200FFD240 /* CommentViewController.swift in Sources */,
 				5683B6972740F843004512D4 /* ProSoundDetailViewController.swift in Sources */,
+				56D4C96427437C4C00C57235 /* RemoteAudioManager.swift in Sources */,
 				569A7D7C2722A03500CEE3EA /* HomeCollectionViewCell.swift in Sources */,
 				56DC9ABA2737A0BD000B62C6 /* MapSearchResultTableViewCell.swift in Sources */,
 				568340E1271F11AC00543677 /* UploadVC.swift in Sources */,
@@ -823,6 +847,7 @@
 				CODE_SIGN_ENTITLEMENTS = SoundScape/SoundScape.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = XN354JRCK2;
 				EXCLUDED_ARCHS = "";
 				GENERATE_INFOPLIST_FILE = YES;
@@ -847,7 +872,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -884,7 +909,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

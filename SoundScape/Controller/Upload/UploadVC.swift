@@ -31,7 +31,8 @@ class UploadVC: UIViewController {
     var pinnedLocation: CLLocationCoordinate2D? {
         didSet {
             guard let pinnedLocation = pinnedLocation else { return }
-            mapView.camera = GMSCameraPosition.camera(withLatitude: pinnedLocation.latitude, longitude: pinnedLocation.longitude, zoom: 15)
+            mapView.camera = GMSCameraPosition.camera(withLatitude: pinnedLocation.latitude,
+                                                      longitude: pinnedLocation.longitude, zoom: 15)
             mapMarker.title = titleTextField.text
             mapMarker.position = pinnedLocation
             mapMarker.snippet = signInmanager.currentUserInfoFirebase?.username
@@ -89,6 +90,7 @@ class UploadVC: UIViewController {
         scrollView.minimumZoomScale = 1.0
         scrollView.maximumZoomScale = 1.0
         scrollView.contentSize = CGSize(width: CommonUsage.screenWidth, height: CommonUsage.screenHeight * 1.5)
+        scrollView.backgroundColor = .clear
         return scrollView
     }()
     
@@ -172,29 +174,19 @@ class UploadVC: UIViewController {
         return textView
     }()
     
-    lazy var categorySegmentControl: UISegmentedControl = {
-        let control = UISegmentedControl(
-            items: [
-                AudioCategory.nature.rawValue,
-                AudioCategory.meaningful.rawValue,
-                AudioCategory.unique.rawValue
-            ]
-        )
-        control.tintColor = UIColor.black
-        control.selectedSegmentIndex = 0
-        control.isHidden = true
-        return control
-    }()
-    
     private lazy var viewUndermap: UIView = {
         let view = UIView()
+        view.layer.borderColor = UIColor(named: CommonUsage.scWhite)?.cgColor
+        view.layer.borderWidth = 0.5
+        view.layer.cornerRadius = 10
         return view
     }()
     
     private lazy var mapView: GMSMapView = {
         let mapView = GMSMapView()
         let posision = pinnedLocation ?? currentLocation ?? defaultLocation
-        let camera = GMSCameraPosition.camera(withLatitude: posision.latitude, longitude: posision.longitude, zoom: 15.0)
+        let camera = GMSCameraPosition.camera(withLatitude: posision.latitude,
+                                              longitude: posision.longitude, zoom: 15.0)
         mapView.delegate = self
         mapView.camera = camera
         mapView.layer.cornerRadius = 10
@@ -254,11 +246,10 @@ class UploadVC: UIViewController {
         layout.scrollDirection = .horizontal
         layout.itemSize = CGSize(width: 100, height: 30)
         layout.minimumInteritemSpacing = 0
-        layout.minimumLineSpacing = 8
+        layout.minimumLineSpacing = 0
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .white
-        collectionView.bounces = false
+        collectionView.bounces = true
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.allowsMultipleSelection = false
@@ -274,9 +265,9 @@ class UploadVC: UIViewController {
         layout.scrollDirection = .horizontal
         layout.itemSize = CGSize(width: 150, height: 150)
         layout.minimumInteritemSpacing = 0
-        layout.minimumLineSpacing = 10
+        layout.minimumLineSpacing = 0
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        collectionView.backgroundColor = .clear
         collectionView.bounces = true
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -298,7 +289,6 @@ class UploadVC: UIViewController {
         setDescriptionLabel()
         setDescriptionTextView()
         setCategoryLabel()
-        setCategorySegmentControl()
         setCategoryCollectionView()
         setAudioImageLabel()
         setImageCollectionView()
@@ -313,15 +303,18 @@ class UploadVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         guard let pinnedLocation = pinnedLocation else { return }
-        mapView.camera = GMSCameraPosition.camera(withLatitude: pinnedLocation.latitude, longitude: pinnedLocation.longitude, zoom: 15)
-        
+        mapView.camera = GMSCameraPosition.camera(withLatitude: pinnedLocation.latitude,
+                                                  longitude: pinnedLocation.longitude,
+                                                  zoom: 15)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         guard let pinnedLocation = pinnedLocation else { return }
         askUserLocation()
-        mapView.camera = GMSCameraPosition.camera(withLatitude: pinnedLocation.latitude, longitude: pinnedLocation.longitude, zoom: 15)
+        mapView.camera = GMSCameraPosition.camera(withLatitude: pinnedLocation.latitude,
+                                                  longitude: pinnedLocation.longitude,
+                                                  zoom: 15)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -336,7 +329,10 @@ class UploadVC: UIViewController {
     }
     
     private func setNavigationBar() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil,
+                                                           style: .plain,
+                                                           target: self,
+                                                           action: #selector(backToLastPage))
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
         navigationItem.title = CommonUsage.Text.upload
@@ -385,7 +381,8 @@ class UploadVC: UIViewController {
         scrollView.addSubview(descriptionTextView)
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            descriptionTextView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
+            descriptionTextView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor,
+                                                         constant: 16),
             descriptionTextView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 16),
             descriptionTextView.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32)
         ])
@@ -400,23 +397,12 @@ class UploadVC: UIViewController {
         ])
     }
     
-    private func setCategorySegmentControl() {
-        view.addSubview(categorySegmentControl)
-        categorySegmentControl.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            categorySegmentControl.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            categorySegmentControl.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -16),
-            categorySegmentControl.topAnchor.constraint(equalTo: categoryLabel.bottomAnchor, constant: 16),
-            categorySegmentControl.heightAnchor.constraint(equalToConstant: 15)
-        ])
-    }
-    
     private func setCategoryCollectionView() {
         scrollView.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             collectionView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            collectionView.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth ),
             collectionView.topAnchor.constraint(equalTo: categoryLabel.bottomAnchor, constant: 16),
             collectionView.heightAnchor.constraint(equalToConstant: 50)
         ])
@@ -426,7 +412,8 @@ class UploadVC: UIViewController {
         scrollView.addSubview(audioImageLabel)
         audioImageLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            audioImageLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
+            audioImageLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor,
+                                                     constant: 16),
             audioImageLabel.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 16)
         ])
     }
@@ -436,7 +423,7 @@ class UploadVC: UIViewController {
         audioImageCollectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             audioImageCollectionView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            audioImageCollectionView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            audioImageCollectionView.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth),
             audioImageCollectionView.topAnchor.constraint(equalTo: audioImageLabel.bottomAnchor, constant: 8),
             audioImageCollectionView.heightAnchor.constraint(equalToConstant: 150)
         ])
@@ -456,7 +443,7 @@ class UploadVC: UIViewController {
         viewUndermap.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             viewUndermap.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            viewUndermap.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -16),
+            viewUndermap.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32),
             viewUndermap.topAnchor.constraint(equalTo: mapLabel.bottomAnchor, constant: 16),
             viewUndermap.heightAnchor.constraint(equalToConstant: 180)
         ])
@@ -467,7 +454,7 @@ class UploadVC: UIViewController {
         mapView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             mapView.leadingAnchor.constraint(equalTo: viewUndermap.leadingAnchor),
-            mapView.trailingAnchor.constraint(equalTo: viewUndermap.trailingAnchor),
+            mapView.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32),
             mapView.topAnchor.constraint(equalTo: viewUndermap.topAnchor),
             mapView.bottomAnchor.constraint(equalTo: viewUndermap.bottomAnchor)
         ])
@@ -478,7 +465,7 @@ class UploadVC: UIViewController {
         uploadButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             uploadButton.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            uploadButton.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -16),
+            uploadButton.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32),
             uploadButton.topAnchor.constraint(equalTo: viewUndermap.bottomAnchor, constant: 8),
             uploadButton.heightAnchor.constraint(equalToConstant: 50),
             uploadButton.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -4)
@@ -489,7 +476,7 @@ class UploadVC: UIViewController {
         scrollView.addSubview(searchPlaceButton)
         searchPlaceButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            searchPlaceButton.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -16),
+            searchPlaceButton.trailingAnchor.constraint(equalTo: uploadButton.trailingAnchor),
             searchPlaceButton.centerYAnchor.constraint(equalTo: mapLabel.centerYAnchor),
             searchPlaceButton.widthAnchor.constraint(equalToConstant: 100)
         ])
@@ -739,3 +726,14 @@ extension UploadVC: UICollectionViewDelegate {
     }
     
 }
+
+// MARK: - conform to UICollectionViewDelegateFlowLayout
+
+extension UploadVC: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+    }
+    
+}
+

@@ -116,10 +116,11 @@ class AudioMapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setNavigationBar()
+        setBackgroundcolor()
         
         switch audioMapType {
         case .pinOnMap:
+            setNavigationBar()
             setMap()
             addSearchBar()
             setTableView()
@@ -157,6 +158,10 @@ class AudioMapViewController: UIViewController {
     }
     
     // MARK: - method
+    
+    private func setBackgroundcolor() {
+        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+    }
     
     private func addObserver() {
         NotificationCenter.default.addObserver(self,
@@ -264,7 +269,9 @@ class AudioMapViewController: UIViewController {
     private lazy var mapView: GMSMapView = {
         let mapView = GMSMapView()
         let posision = currentLocation ?? defaultLocation
-        let camera = GMSCameraPosition.camera(withLatitude: posision.latitude, longitude: posision.longitude, zoom: 15.0)
+        let camera = GMSCameraPosition.camera(withLatitude: posision.latitude,
+                                              longitude: posision.longitude,
+                                              zoom: 15.0)
         mapView.delegate = self
         mapView.camera = camera
         mapView.settings.myLocationButton = true
@@ -306,7 +313,6 @@ extension AudioMapViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
-//        navigationItem.title = CommonUsage.Text.upload
     }
 
     
@@ -365,12 +371,15 @@ extension AudioMapViewController: GMSMapViewDelegate {
             
         case .browseMap:
             
-            let location = CLLocationCoordinate2D(latitude: marker.position.latitude, longitude: marker.position.longitude)
+            let location = CLLocationCoordinate2D(latitude: marker.position.latitude,
+                                                  longitude: marker.position.longitude)
             guard let post = marker.userData as? SCPost else { return false }
             let audioAuthorName = post.authorName
             let audioTitle = post.title
             let audioImageNumber = post.imageNumber
-            scInfoWindow.setMapMarkerIcon(title: audioTitle, authorName: audioAuthorName, audioImageNumber: audioImageNumber)
+            scInfoWindow.setMapMarkerIcon(title: audioTitle,
+                                          authorName: audioAuthorName,
+                                          audioImageNumber: audioImageNumber)
             tappedMarker = marker
             scInfoWindow.delegate = self
             self.view.addSubview(scInfoWindow)
@@ -418,7 +427,6 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
         
         guard let post = tappedMarker.userData as? SCPost else { return }
         let documentID = post.documentID
-        let url = post.audioURL
         let title = post.title
         let author = post.authorName
         let content = post.content
@@ -427,16 +435,19 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
         let audioImageNumber = post.imageNumber
         let authorAccountProvider = post.authIDProvider
         
-        remotePlayHelper.url = url
-        remotePlayHelper.setPlayInfo(title: title,
-                                     author: author,
-                                     content: content,
-                                     duration: duration,
-                                     documentID: documentID,
-                                     authorUserID: authorUserID,
-                                     audioImageNumber: audioImageNumber,
-                                     authorAccountProvider: authorAccountProvider)
-        
+        if let remoteURL = post.audioURL {
+            RemoteAudioManager.shared.downloadRemoteURL(documentID: documentID, remoteURL: remoteURL) { localURL in
+                AudioPlayHelper.shared.url = localURL
+                AudioPlayHelper.shared.setPlayInfo(title: title,
+                                                   author: author,
+                                                   content: content,
+                                                   duration: duration,
+                                                   documentID: documentID,
+                                                   authorUserID: authorUserID,
+                                                   audioImageNumber: audioImageNumber,
+                                                   authorAccountProvider: authorAccountProvider)
+            }
+        }
     }
     
 }

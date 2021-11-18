@@ -80,7 +80,6 @@ class RemotePlayHelper {
         }
     }
     
-    
     // MARK: - init
     
     private init() {
@@ -179,12 +178,11 @@ extension RemotePlayHelper: ModernAVPlayerDelegate {
             
             NotificationCenter.default.post(name: .didCurrentTimeChange, object: nil, userInfo: userInfo)
             
-        } else { //play audio from local url (EditVC will get this Notification)
+        } else { // play audio from local url (EditVC will get this Notification)
             
             let userInfoKey = "UserInfo"
             let userInfo: [AnyHashable: Any] = [userInfoKey: currentTime]
             NotificationCenter.default.post(name: .didCurrentTimeChange, object: nil, userInfo: userInfo)
-            
             
         }
         

@@ -17,14 +17,61 @@ class CategoryViewController: UIViewController {
     
     private var profileSection: ProfilePageSection?
     
-    private var data = [SCPost]()
+    private var audioFiles = [SCPost]() {
+       
+        didSet {
+            
+            if category != nil {
+                filterCategory()
+            }
+            
+            if profileSection != nil {
+                filterSection()
+
+            }
+        }
+    }
     
+    private var data = [SCPost]() {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+    
+    private var displayUserID: String? {
+        didSet {
+            fetchUserFavoriteList()
+            fetchAmountOfFollows()
+        }
+    }
+    
+    private var userFavoriteDocumentIDs: [String]? {
+        didSet {
+            if profileSection != nil {
+                filterSection()
+            }
+
+            tableView.reloadData()
+        }
+    }
+    private var othersFollowingList: [SCFollow]? {
+        didSet {
+            if profileSection != nil {
+                filterSection()
+            }
+
+            tableView.reloadData()
+        }
+    }
+    
+    let firebaseManager = FirebaseManager.shared
+    
+    let signInManager = SignInManager.shared
     // MARK: - UI properties
     
     private lazy var headView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        //        imageView.applyBlurEffect()
         imageView.layer.cornerRadius = 10
         imageView.clipsToBounds = true
         return imageView
@@ -37,10 +84,19 @@ class CategoryViewController: UIViewController {
         label.adjustsFontSizeToFitWidth = true
         label.font = UIFont(name: CommonUsage.fontBungee, size: 40)
         label.numberOfLines = 0
-        
         return label
     }()
     
+    private lazy var deleteHintLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textAlignment = .left
+        label.adjustsFontSizeToFitWidth = true
+        label.numberOfLines = 0
+        label.text = CommonUsage.Text.deleteAudioMessage
+        return label
+    }()
+
     private lazy var tableView: UITableView = {
         let table = UITableView()
         table.dataSource = self
@@ -57,7 +113,8 @@ class CategoryViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        addObserver()
+        fetchAllAudioFile()
         setViewBackgroundColor()
         setHeadView()
         
@@ -69,6 +126,13 @@ class CategoryViewController: UIViewController {
         
         setTableView()
         setHeadViewTitle()
+        
+        if profileSection == .myAudio,
+            data.indices.contains(0),
+           data[0].authorID == SignInManager.shared.currentUserInfoFirebase?.userID {
+            setDeleteHintLabel()
+        }
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -81,16 +145,215 @@ class CategoryViewController: UIViewController {
         self.navigationController?.navigationBar.isHidden = false
     }
     
-    // MARK: - method
-    
-    func config(category: AudioCategory, data: [SCPost]) {
-        self.category = category
-        self.data = data
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
-    func config(profileSection: ProfilePageSection, data: [SCPost]) {
+    // MARK: - method
+    
+    private func fetchUserFavoriteList() {
+        
+        guard let userProfileDocumentID = displayUserID else {
+            print("OtherProfileVC: Cant get favorite")
+            return
+        }
+        
+        firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self]
+            
+            result in
+            
+            guard let self = self else { return }
+            
+            switch result {
+                
+            case .success(let scFavorites):
+                self.userFavoriteDocumentIDs = scFavorites.map({$0.favoriteDocumentID})
+                
+            case .failure(let error):
+                print("OtherProfileVC: Failed to get favoriteDocumentID \(error)")
+                
+            }
+        }
+    }
+    
+    private func fetchAmountOfFollows() {
+        
+        guard let userProfileDocumentID = displayUserID else {
+            print("OtherProfileVC: Cant get favorite")
+            return
+        }
+
+        firebaseManager.checkFollowingsChange(userInfoDoumentID: userProfileDocumentID) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let followings):
+                self.othersFollowingList = followings
+                
+            case .failure(let error): print(error)
+            }
+        }
+    }
+
+
+    
+    private func addObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateAllAudioFile),
+                                               name: .allAudioPostChange ,
+                                               object: nil)
+    }
+    
+    @objc func updateAllAudioFile() {
+        fetchAllAudioFile()
+    }
+    
+    private func fetchAllAudioFile() {
+        audioFiles = AudioPostManager.shared.filteredAudioFiles
+    }
+    
+    private func filterCategory() {
+        guard let category = category else { return }
+        let filteredPost = audioFiles.filter({$0.category == category.rawValue})
+        data = filteredPost
+    }
+    
+    private func filterSection() {
+        
+        switch profileSection {
+            
+        case .followingsLatest:
+            
+            var followingList: [SCFollow]?
+            
+            if displayUserID == nil {
+                followingList = SignInManager.shared.currentUserFollowingList
+            } else {
+                followingList = othersFollowingList
+            }
+            
+            if let followingList = followingList {
+                var myFollowingsUserFiles = [SCPost]()
+                for audioFile in audioFiles {
+                    for following in followingList {
+                        if audioFile.authorID == following.userID,
+                            audioFile.authIDProvider == following.provider {
+                            myFollowingsUserFiles.append(audioFile)
+                        }
+                    }
+                }
+                data = myFollowingsUserFiles
+            }
+            
+        case .myFavorite:
+            
+            var favoriteList: [String]?
+            
+            if displayUserID == nil {
+                favoriteList = SignInManager.shared.currentUserFavoriteDocumentIDs
+            } else {
+                favoriteList = userFavoriteDocumentIDs
+            }
+
+            if let favoriteList = favoriteList {
+                var myFavoriteFiles = [SCPost]()
+                
+                for audioFile in audioFiles {
+                    for favorite in favoriteList {
+                        if audioFile.documentID == favorite {
+                            myFavoriteFiles.append(audioFile)
+                        }
+                    }
+                }
+                data = myFavoriteFiles
+            }
+            
+        case .myAudio:
+            
+            var userID: String?
+            
+            if displayUserID == nil {
+                userID = SignInManager.shared.currentUserInfoFirebase?.userID
+            } else {
+                userID = displayUserID
+            }
+
+            let myAudioFiles = audioFiles.filter({$0.authorID == userID})
+            data = myAudioFiles
+            
+        default:
+            break
+        }
+    }
+    
+    func config(category: AudioCategory) {
+        // This method will be called by HomeViewController
+        self.category = category
+        self.profileSection = nil
+        self.displayUserID = nil
+    }
+    
+    func config(profileSection: ProfilePageSection) {
+        // This method will be called by ProfileViewController
         self.profileSection = profileSection
-        self.data = data
+        self.category = nil
+        self.displayUserID = nil
+    }
+    
+    func config(profileSection: ProfilePageSection, displayUserID: String) {
+        // This method will be called by OthersProfileViewController
+        self.profileSection = profileSection
+        self.category = nil
+        self.displayUserID = displayUserID
+    }
+    
+    func popDeletePostAlert(documentID: String) {
+        
+        let alert = UIAlertController(title: "Are you sure to delete this audio?",
+                                      message: nil ,
+                                      preferredStyle: .alert )
+        
+        let okButton = UIAlertAction(title: "Delete", style: .destructive) {[weak self] _ in
+            guard let self = self else { return }
+            self.deletePost(documentID: documentID)
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func deletePost(documentID: String) {
+        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID)
+    }
+    
+    func popBlockAlert(toBeBlockedID: String) {
+       
+       let alert = UIAlertController(title: "Are you sure?",
+                                     message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
+                                     preferredStyle: .alert )
+       
+       let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
+           guard let self = self else { return }
+           self.blockThisUser(toBeBlockedID: toBeBlockedID)
+       }
+       
+       let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+       
+       alert.addAction(cancelButton)
+       alert.addAction(okButton)
+       
+       present(alert, animated: true, completion: nil)
+   }
+    
+    private func blockThisUser(toBeBlockedID: String) {
+        
+        guard let currentUserDocID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else { return }
+        
+        firebaseManager.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
+                                       toBeBlockedID: toBeBlockedID, completion: nil)
     }
     
     // MARK: - config UI method
@@ -107,6 +370,15 @@ class CategoryViewController: UIViewController {
             headView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             headView.topAnchor.constraint(equalTo: view.topAnchor),
             headView.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight / 3.5)
+        ])
+    }
+    
+    private func setDeleteHintLabel() {
+        view.addSubview(deleteHintLabel)
+        deleteHintLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            deleteHintLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            deleteHintLabel.bottomAnchor.constraint(equalTo: headView.bottomAnchor, constant: -16)
         ])
     }
     
@@ -128,7 +400,6 @@ class CategoryViewController: UIViewController {
         ])
     }
 
-    
     private func setTableView() {
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -175,9 +446,6 @@ class CategoryViewController: UIViewController {
             categoryTitleLabel.textColor = UIColor(named: CommonUsage.scWhite)
             headView.image = CommonUsage.audioImages[12]
         }
-        
-        
-        
     }
     
 }
@@ -218,17 +486,20 @@ extension CategoryViewController: UITableViewDelegate {
         let audioImageNumber = data[indexPath.item].imageNumber
         let authorAccountProvider = data[indexPath.item].authIDProvider
         
-        remotePlayHelper.url = data[indexPath.item].audioURL
-        
-        remotePlayHelper.setPlayInfo(title: title,
-                                     author: author,
-                                     content: content,
-                                     duration: duration,
-                                     documentID: documentID,
-                                     authorUserID: authorUserID,
-                                     audioImageNumber: audioImageNumber,
-                                     authorAccountProvider: authorAccountProvider)
-        
+        if let remoteURL = data[indexPath.item].audioURL {
+            RemoteAudioManager.shared.downloadRemoteURL(documentID: documentID, remoteURL: remoteURL) { localURL in
+                AudioPlayHelper.shared.url = localURL
+                AudioPlayHelper.shared.setPlayInfo(title: title,
+                                                   author: author,
+                                                   content: content,
+                                                   duration: duration,
+                                                   documentID: documentID,
+                                                   authorUserID: authorUserID,
+                                                   audioImageNumber: audioImageNumber,
+                                                   authorAccountProvider: authorAccountProvider)
+            }
+        }
+
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -242,6 +513,52 @@ extension CategoryViewController: UITableViewDelegate {
         } else {
             return 100
         }
+    }
+    
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        let row = indexPath.row
+        let identifier = "\(row)" as NSString
+        let post = data[row]
+        
+        if profileSection != nil {
+            if profileSection == .myAudio,
+                data[0].authorID == SignInManager.shared.currentUserInfoFirebase?.userID {
+                
+                return UIContextMenuConfiguration(
+                    identifier: identifier, previewProvider: nil) { _ in
+                        // 3
+                        let deleteAction = UIAction(title: "Delete this audio",
+                                                   image: nil) { [weak self] _ in
+                            guard let self = self else { return }
+                            self.popDeletePostAlert(documentID: self.data[row].documentID)
+                        }
+                        return UIMenu(title: "",
+                                      image: nil,
+                                      children: [deleteAction])
+                    }
+                
+            } else {
+                return nil
+            }
+        }
+        
+        if category != nil,
+            post.authorID != signInManager.currentUserInfoFirebase?.userID {
+            
+            return UIContextMenuConfiguration(
+                identifier: identifier, previewProvider: nil) { _ in
+                    // 3
+                    let blockAction = UIAction(title: "Block this user",
+                                               image: nil) { _ in
+                        self.popBlockAlert(toBeBlockedID: post.authorID)
+                    }
+                    return UIMenu(title: "",
+                                  image: nil,
+                                  children: [blockAction])
+                }
+        }
+        return nil
     }
     
 }

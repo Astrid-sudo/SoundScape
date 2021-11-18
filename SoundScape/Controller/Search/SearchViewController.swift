@@ -165,7 +165,7 @@ class SearchViewController: UIViewController {
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .white
-        collectionView.bounces = false
+        collectionView.bounces = true
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.allowsMultipleSelection = false
@@ -174,7 +174,6 @@ class SearchViewController: UIViewController {
         
         collectionView.register(SearchCollectionViewCell.self,
                                 forCellWithReuseIdentifier: SearchCollectionViewCell.reuseIdentifier)
-        
         return collectionView
     }()
     
@@ -252,8 +251,8 @@ class SearchViewController: UIViewController {
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.topAnchor.constraint(equalTo: categoryTitleLabel.bottomAnchor, constant: 4),
             collectionView.heightAnchor.constraint(equalToConstant: 50)
         ])
@@ -299,8 +298,6 @@ class SearchViewController: UIViewController {
             noResultLabel.topAnchor.constraint(equalTo: noResultImage.bottomAnchor, constant: 8)
         ])
     }
-    
-
     
 }
 
@@ -356,7 +353,8 @@ extension SearchViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.reuseIdentifier, for: indexPath) as? SearchTableViewCell else { return UITableViewCell()}
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.reuseIdentifier,
+                                                       for: indexPath) as? SearchTableViewCell else { return UITableViewCell()}
         let data = resultAudioFiles[indexPath.row]
         cell.selectionStyle = .none
         cell.setContent(title: data.title, author: data.authorName, imageNumber: data.imageNumber)
@@ -399,17 +397,20 @@ extension SearchViewController: UITableViewDelegate {
         let authorUserID = resultAudioFiles[indexPath.item].authorID
         let audioImageNumber = resultAudioFiles[indexPath.item].imageNumber
         let authorAccountProvider = resultAudioFiles[indexPath.item].authIDProvider
-
-        remotePlayHelper.url = resultAudioFiles[indexPath.item].audioURL
-        remotePlayHelper.setPlayInfo(title: title,
-                                     author: author,
-                                     content: content,
-                                     duration: duration,
-                                     documentID: documentID,
-                                     authorUserID: authorUserID,
-                                     audioImageNumber: audioImageNumber,
-                                     authorAccountProvider: authorAccountProvider)
-       
+        
+        if let remoteURL = resultAudioFiles[indexPath.item].audioURL {
+            RemoteAudioManager.shared.downloadRemoteURL(documentID: documentID, remoteURL: remoteURL) { localURL in
+                AudioPlayHelper.shared.url = localURL
+                AudioPlayHelper.shared.setPlayInfo(title: title,
+                                                   author: author,
+                                                   content: content,
+                                                   duration: duration,
+                                                   documentID: documentID,
+                                                   authorUserID: authorUserID,
+                                                   audioImageNumber: audioImageNumber,
+                                                   authorAccountProvider: authorAccountProvider)
+            }
+        }
     }
     
 }
@@ -435,3 +436,16 @@ extension SearchViewController: UISearchBarDelegate {
     }
     
 }
+
+// MARK: - conform to UICollectionViewDelegateFlowLayout
+
+extension SearchViewController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
+        UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+    }
+    
+}
+
