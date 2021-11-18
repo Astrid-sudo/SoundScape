@@ -5,7 +5,7 @@
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
-		<true/>
+		<false/>
 	</dict>
 	<key>UIAppFonts</key>
 	<array>
@@ -30,5 +30,13 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Allow SoundScape access your location so you can pin the sound location on map.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow SoundScape access your photo library so you can change your profile picture.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow SoundScape access your microphone so you can record sound and share with other user on SoundScape.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Allow SoundScape access your Doucument folder so you can select audio file and share with other user on SoundScape.</string>
 </dict>
 </plist>

@@ -33,7 +33,8 @@ struct CommonUsage {
                                           UIImage(named: CommonUsage.cityCafe)
     ]
     
-    static let privacyPolicyURL = "https://www.privacypolicies.com/live/11ed0980-697c-4f2e-9e23-412af25966c4"
+    static let privacyPolicyURL = "https://www.privacypolicies.com/live/441a63bf-7dcb-427a-8f2c-c13a9a69e488"
+    static let LAEUURL = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
     
     static let fontBungee = "Bungee-Regular"
     static let font = "PingFang TC"
@@ -89,6 +90,8 @@ struct CommonUsage {
     static let scWhite = "scWhite"
     static let scGray = "scGray"
     
+    static let logInBlue = "logInBlue"
+    
     struct SFSymbol {
         static let play = "play.fill"
         static let stopPlay = "stop.fill"
@@ -125,7 +128,7 @@ struct CommonUsage {
         static let unfollow = "unfollow"
         static let comments = "Comments"
         static let addComment = "Add comment..."
-        static let appName = "SoundScape"
+        static let appName = "SoundScape_"
         static let searchPlace = "Search Place"
         static let audioImage = "Pick a cover"
         static let logInNotice = "By using SoundScape you agree to accept our"
@@ -139,7 +142,8 @@ struct CommonUsage {
         static let selectFile = "Select File"
         static let trim = "Trim"
         static let deleteAudioMessage = "Long press on image to delete the audio."
-
+        static let laeuButton = "LICENSED APPLICATION END USER LICENSE AGREEMENT"
+        static let and = "and"
     }
     
     struct CollectionName {

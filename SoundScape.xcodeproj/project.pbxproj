@@ -58,6 +58,7 @@
 		569A7D7C2722A03500CEE3EA /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7B2722A03500CEE3EA /* HomeCollectionViewCell.swift */; };
 		569A7D7E2722B75A00CEE3EA /* HomeTableViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7D2722B75A00CEE3EA /* HomeTableViewHeader.swift */; };
 		56A1EA27273CA6E0009AF843 /* AudioPostManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A1EA26273CA6E0009AF843 /* AudioPostManager.swift */; };
+		56AF84AC2745FAD500C94B0A /* LAEUViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AF84AB2745FAD500C94B0A /* LAEUViewController.swift */; };
 		56C05AA927362DEB009D029C /* GoogleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C05AA827362DEB009D029C /* GoogleService.swift */; };
 		56C05AAC2736665A009D029C /* AudioMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C05AAB2736665A009D029C /* AudioMapViewController.swift */; };
 		56C05AAF2736A829009D029C /* SCMapInfoWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C05AAE2736A829009D029C /* SCMapInfoWindow.swift */; };
@@ -127,6 +128,7 @@
 		569A7D7B2722A03500CEE3EA /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
 		569A7D7D2722B75A00CEE3EA /* HomeTableViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewHeader.swift; sourceTree = "<group>"; };
 		56A1EA26273CA6E0009AF843 /* AudioPostManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPostManager.swift; sourceTree = "<group>"; };
+		56AF84AB2745FAD500C94B0A /* LAEUViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LAEUViewController.swift; sourceTree = "<group>"; };
 		56C05AA827362DEB009D029C /* GoogleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleService.swift; sourceTree = "<group>"; };
 		56C05AAB2736665A009D029C /* AudioMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMapViewController.swift; sourceTree = "<group>"; };
 		56C05AAE2736A829009D029C /* SCMapInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCMapInfoWindow.swift; sourceTree = "<group>"; };
@@ -234,6 +236,7 @@
 			isa = PBXGroup;
 			children = (
 				567566EB27323AAD007ACC61 /* SignInViewController.swift */,
+				56AF84AB2745FAD500C94B0A /* LAEUViewController.swift */,
 			);
 			path = SignIn;
 			sourceTree = "<group>";
@@ -657,6 +660,7 @@
 				5655908A2731855500300AF7 /* SettingViewController.swift in Sources */,
 				567566EF273271C6007ACC61 /* SignInHelper.swift in Sources */,
 				5679F0FF271D084A00663001 /* SoundDetailVC.swift in Sources */,
+				56AF84AC2745FAD500C94B0A /* LAEUViewController.swift in Sources */,
 				56C05AAC2736665A009D029C /* AudioMapViewController.swift in Sources */,
 				568210C82723DAE40055642E /* RecordVC.swift in Sources */,
 				56F1C849271FA8F400F64846 /* AudioRecordHelper.swift in Sources */,
