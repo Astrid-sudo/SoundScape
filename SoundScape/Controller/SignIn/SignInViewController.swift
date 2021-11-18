@@ -42,7 +42,7 @@ class SignInViewController: UIViewController {
         let image = UIImageView()
         image.layer.cornerRadius = 25
         image.layer.masksToBounds = true
-        image.image = UIImage(named: "AppIcon")
+        image.image = UIImage(named: "signInPic")
         return image
     }()
     

@@ -231,17 +231,23 @@ class ProSoundDetailViewController: UIViewController {
         if let authorID = authorIdentity?.userID,
            authorID != SignInManager.shared.currentUserInfoFirebase?.userID {
             
-            view.addSubview(blockButton)
-            blockButton.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                blockButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-                blockButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-                blockButton.widthAnchor.constraint(equalToConstant: 50)
-            ])
-            blockButton.isHidden = false
+            DispatchQueue.main.async {
+                self.view.addSubview(self.blockButton)
+                self.blockButton.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    self.blockButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -16),
+                    self.blockButton.centerYAnchor.constraint(equalTo: self.titleLabel.centerYAnchor),
+                    self.blockButton.widthAnchor.constraint(equalToConstant: 50)
+                ])
+                self.blockButton.isHidden = false
+
+            }
 
         } else {
-            blockButton.isHidden = true
+            
+            DispatchQueue.main.async {
+                self.blockButton.isHidden = true
+            }
         }
     }
     
