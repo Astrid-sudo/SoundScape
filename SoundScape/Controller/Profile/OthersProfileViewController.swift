@@ -272,23 +272,23 @@ class OthersProfileViewController: UIViewController {
     }
 
     private func popBlockAlert() {
-        
+
         let alert = UIAlertController(title: "Are you sure?",
                                       message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
                                       preferredStyle: .alert )
-        
+
         let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
             guard let self = self else { return }
             self.blockUser()
         }
-        
+
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
-        
+
         alert.addAction(cancelButton)
         alert.addAction(okButton)
-        
+
         present(alert, animated: true, completion: nil)
-        
+
     }
     
     private func backToHome() {
@@ -305,6 +305,21 @@ class OthersProfileViewController: UIViewController {
         firebaseManager.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
                                        toBeBlockedID: blockUser.userID, completion: backToHome)
     }
+    
+    private func blockThisUser(toBeBlockedID: String) {
+        
+        guard let currentUserDocID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else { return }
+        
+        firebaseManager.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
+                                       toBeBlockedID: toBeBlockedID, completion: nil)
+    }
+    
+    func deletePost(documentID: String) {
+        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID)
+    }
+
+    
+
     
     // MARK: - image method
     
@@ -407,6 +422,8 @@ extension OthersProfileViewController: UITableViewDataSource {
               let userWillDisplay = userWillDisplay else { return UITableViewCell() }
         
         cell.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        cell.delegate = self
+
         profileDataCell.backgroundColor = UIColor(named: CommonUsage.scBlue)
         
         switch indexPath.section {
@@ -675,4 +692,45 @@ extension UIImage {
     }
 }
 
+extension OthersProfileViewController: AlertPresentableDelegate {
+    
+    func popBlockAlert(toBeBlockedID: String) {
+       
+       let alert = UIAlertController(title: "Are you sure?",
+                                     message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
+                                     preferredStyle: .alert )
+       
+       let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
+           guard let self = self else { return }
+           self.blockThisUser(toBeBlockedID: toBeBlockedID)
+       }
+       
+       let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+       
+       alert.addAction(cancelButton)
+       alert.addAction(okButton)
+       
+       present(alert, animated: true, completion: nil)
+   }
+
+    func popDeletePostAlert(documentID: String) {
+        
+        let alert = UIAlertController(title: "Are you sure to delete this audio?",
+                                      message: nil ,
+                                      preferredStyle: .alert )
+        
+        let okButton = UIAlertAction(title: "Delete", style: .destructive) {[weak self] _ in
+            guard let self = self else { return }
+            self.deletePost(documentID: documentID)
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+}
 

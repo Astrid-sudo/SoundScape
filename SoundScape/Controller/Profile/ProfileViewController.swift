@@ -204,6 +204,19 @@ class ProfileViewController: UIViewController {
         fetchCurrentCoverPic()
     }
     
+    private func blockThisUser(toBeBlockedID: String) {
+        
+        guard let currentUserDocID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else { return }
+        
+        firebaseManager.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
+                                       toBeBlockedID: toBeBlockedID, completion: nil)
+    }
+    
+    func deletePost(documentID: String) {
+        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID)
+    }
+
+    
     // MARK: - image method
     
     private func pressSelectImage() {
@@ -282,6 +295,7 @@ extension ProfileViewController: UITableViewDataSource {
               let logginUser = signInManager.currentUserInfoFirebase else { return UITableViewCell() }
         
         cell.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        cell.delegate = self
         profileDataCell.backgroundColor = UIColor(named: CommonUsage.scBlue)
         
         switch indexPath.section {
@@ -507,5 +521,50 @@ extension ProfileViewController: ProfileCellDelegate {
     }
     
 }
+
+// MARK: - conform to AlertPresentableDelegate
+
+extension ProfileViewController: AlertPresentableDelegate {
+    
+    func popBlockAlert(toBeBlockedID: String) {
+       
+       let alert = UIAlertController(title: "Are you sure?",
+                                     message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
+                                     preferredStyle: .alert )
+       
+       let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
+           guard let self = self else { return }
+           self.blockThisUser(toBeBlockedID: toBeBlockedID)
+       }
+       
+       let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+       
+       alert.addAction(cancelButton)
+       alert.addAction(okButton)
+       
+       present(alert, animated: true, completion: nil)
+   }
+
+    func popDeletePostAlert(documentID: String) {
+        
+        let alert = UIAlertController(title: "Are you sure to delete this audio?",
+                                      message: nil ,
+                                      preferredStyle: .alert )
+        
+        let okButton = UIAlertAction(title: "Delete", style: .destructive) {[weak self] _ in
+            guard let self = self else { return }
+            self.deletePost(documentID: documentID)
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+}
+
 
 // swiftlint:enable file_length
