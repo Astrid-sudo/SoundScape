@@ -116,7 +116,7 @@ class SignInViewController: UIViewController {
 extension SignInViewController {
     
     private func setBackgroundColor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        view.backgroundColor = UIColor(named: CommonUsage.logInBlue)
     }
     
     private func setAppImageView() {
@@ -124,9 +124,9 @@ extension SignInViewController {
         appImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             appImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            appImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50),
-            appImageView.heightAnchor.constraint(equalToConstant: 80),
-            appImageView.widthAnchor.constraint(equalToConstant: 80)
+            appImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            appImageView.heightAnchor.constraint(equalToConstant: 300),
+            appImageView.widthAnchor.constraint(equalToConstant: 300)
         ])
     }
     
@@ -135,7 +135,7 @@ extension SignInViewController {
         appNamelabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             appNamelabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            appNamelabel.topAnchor.constraint(equalTo: appImageView.bottomAnchor, constant: 32)
+            appNamelabel.topAnchor.constraint(equalTo: appImageView.bottomAnchor, constant: -60)
         ])
     }
     
@@ -162,7 +162,7 @@ extension SignInViewController {
         andLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             andLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            andLabel.topAnchor.constraint(equalTo: viewPolicyButton.bottomAnchor, constant: 8)
+            andLabel.topAnchor.constraint(equalTo: viewPolicyButton.bottomAnchor, constant: 4)
         ])
     }
     
@@ -171,7 +171,7 @@ extension SignInViewController {
         LAEUButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             LAEUButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            LAEUButton.topAnchor.constraint(equalTo: andLabel.bottomAnchor, constant: 8)
+            LAEUButton.topAnchor.constraint(equalTo: andLabel.bottomAnchor, constant: 4)
         ])
     }
     
@@ -181,11 +181,10 @@ extension SignInViewController {
         logInWithAppeButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             logInWithAppeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            logInWithAppeButton.topAnchor.constraint(equalTo: LAEUButton.bottomAnchor, constant: 32),
+            logInWithAppeButton.topAnchor.constraint(equalTo: LAEUButton.bottomAnchor, constant: 16),
             logInWithAppeButton.widthAnchor.constraint(equalToConstant: 200),
             logInWithAppeButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     
-
 }
