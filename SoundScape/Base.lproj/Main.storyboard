@@ -460,6 +460,21 @@
             </objects>
             <point key="canvasLocation" x="1042.0289855072465" y="116.51785714285714"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="bSP-pp-fGH">
+            <objects>
+                <viewController storyboardIdentifier="LAEUViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Ddv-qr-azT" customClass="LAEUViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ge8-WB-gcF">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="0Zq-11-FlT"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="aV8-17-lZL" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2077" y="128"/>
+        </scene>
         <!--Search-->
         <scene sceneID="jYj-F6-wO1">
             <objects>

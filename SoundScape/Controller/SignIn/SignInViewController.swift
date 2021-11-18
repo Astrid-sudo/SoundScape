@@ -20,6 +20,8 @@ class SignInViewController: UIViewController {
         setAppNamelabel()
         setNoticeLabel()
         setViewPolicyButton()
+        setAndLabel()
+        setLAEUButton()
         setLogInWithAppeButton()
     }
     
@@ -73,6 +75,24 @@ class SignInViewController: UIViewController {
         return button
     }()
     
+    private lazy var andLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textAlignment = .center
+        label.font = UIFont(name: CommonUsage.fontSemibold, size: 12)
+        label.text = CommonUsage.Text.and
+        return label
+    }()
+    
+    private lazy var LAEUButton: UIButton = {
+        let button = UIButton()
+        button.setTitle(CommonUsage.Text.laeuButton, for: .normal)
+        button.setTitleColor(.systemBlue, for: .normal)
+        button.addTarget(self, action: #selector(presentLAEU), for: .touchUpInside)
+        button.titleLabel?.font = UIFont(name: CommonUsage.font, size: 10)
+        return button
+    }()
+
     // MARK: - action
     
     @objc func presentPolicy() {
@@ -80,6 +100,13 @@ class SignInViewController: UIViewController {
         guard let policyVc = storyboard.instantiateViewController(withIdentifier: String(describing: PrivacyPolicyViewController.self)) as? PrivacyPolicyViewController else { return }
         
         present(policyVc, animated: true, completion: nil)
+    }
+    
+    @objc func presentLAEU() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let lAEUViewController = storyboard.instantiateViewController(withIdentifier: String(describing: LAEUViewController.self)) as? LAEUViewController else { return }
+        
+        present(lAEUViewController, animated: true, completion: nil)
     }
     
 }
@@ -130,13 +157,31 @@ extension SignInViewController {
         ])
     }
     
+    private func setAndLabel() {
+        view.addSubview(andLabel)
+        andLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            andLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            andLabel.topAnchor.constraint(equalTo: viewPolicyButton.bottomAnchor, constant: 8)
+        ])
+    }
+    
+    private func setLAEUButton() {
+        view.addSubview(LAEUButton)
+        LAEUButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            LAEUButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            LAEUButton.topAnchor.constraint(equalTo: andLabel.bottomAnchor, constant: 8)
+        ])
+    }
+    
     private func setLogInWithAppeButton() {
         let logInWithAppeButton = signInHelper.logInWithAppeButton
         view.addSubview(logInWithAppeButton)
         logInWithAppeButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             logInWithAppeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            logInWithAppeButton.topAnchor.constraint(equalTo: viewPolicyButton.bottomAnchor, constant: 32),
+            logInWithAppeButton.topAnchor.constraint(equalTo: LAEUButton.bottomAnchor, constant: 32),
             logInWithAppeButton.widthAnchor.constraint(equalToConstant: 200),
             logInWithAppeButton.heightAnchor.constraint(equalToConstant: 60)
         ])

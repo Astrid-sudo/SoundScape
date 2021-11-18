@@ -34,6 +34,7 @@ struct CommonUsage {
     ]
     
     static let privacyPolicyURL = "https://www.privacypolicies.com/live/11ed0980-697c-4f2e-9e23-412af25966c4"
+    static let LAEUURL = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
     
     static let fontBungee = "Bungee-Regular"
     static let font = "PingFang TC"
@@ -139,7 +140,8 @@ struct CommonUsage {
         static let selectFile = "Select File"
         static let trim = "Trim"
         static let deleteAudioMessage = "Long press on image to delete the audio."
-
+        static let laeuButton = "LICENSED APPLICATION END USER LICENSE AGREEMENT"
+        static let and = "and"
     }
     
     struct CollectionName {
