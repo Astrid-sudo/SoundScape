@@ -212,3 +212,18 @@ extension Int {
         return CGFloat(self) * CommonUsage.ratio
     }
 }
+
+extension UIViewController {
+    
+    func popErrorAlert(title: String?, message: String?) {
+        
+        let alert = UIAlertController(title: title,
+                                      message: message,
+                                      preferredStyle: .alert )
+        
+        let okButton = UIAlertAction(title: "OK", style: .cancel)
+        alert.addAction(okButton)
+        present(alert, animated: true, completion: nil)
+    }
+    
+}

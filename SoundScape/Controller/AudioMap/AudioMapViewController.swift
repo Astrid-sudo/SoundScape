@@ -159,6 +159,11 @@ class AudioMapViewController: UIViewController {
     
     // MARK: - method
     
+    private func loadAudio(localURL: URL, playInfo: PlayInfo) {
+        AudioPlayHelper.shared.url = localURL
+        AudioPlayHelper.shared.setPlayInfo(playInfo: playInfo)
+    }
+    
     private func setBackgroundcolor() {
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
     }
@@ -417,6 +422,18 @@ extension AudioMapViewController: GMSMapViewDelegate {
     
 }
 
+/*
+ guard let post = tappedMarker.userData as? SCPost else { return }
+ let documentID = post.documentID
+ let title = post.title
+ let author = post.authorName
+ let content = post.content
+ let duration = post.duration
+ let authorUserID = post.authorID
+ let audioImageNumber = post.imageNumber
+ let authorAccountProvider = post.authIDProvider
+ */
+
 // MARK: - conform to ButtonTappedPassableDelegate
 
 extension AudioMapViewController: ButtonTappedPassableDelegate {
@@ -426,27 +443,25 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
         AudioPlayerWindow.shared.show()
         
         guard let post = tappedMarker.userData as? SCPost else { return }
-        let documentID = post.documentID
-        let title = post.title
-        let author = post.authorName
-        let content = post.content
-        let duration = post.duration
-        let authorUserID = post.authorID
-        let audioImageNumber = post.imageNumber
-        let authorAccountProvider = post.authIDProvider
+        let playInfo = PlayInfo(title:  post.title,
+                                author: post.authorName,
+                                content: post.content,
+                                duration: post.duration,
+                                documentID: post.documentID,
+                                authorUserID: post.authorID,
+                                audioImageNumber: post.imageNumber,
+                                authorAccountProvider: post.authIDProvider)
         
         if let remoteURL = post.audioURL {
-            RemoteAudioManager.shared.downloadRemoteURL(documentID: documentID, remoteURL: remoteURL) { localURL in
-                AudioPlayHelper.shared.url = localURL
-                AudioPlayHelper.shared.setPlayInfo(title: title,
-                                                   author: author,
-                                                   content: content,
-                                                   duration: duration,
-                                                   documentID: documentID,
-                                                   authorUserID: authorUserID,
-                                                   audioImageNumber: audioImageNumber,
-                                                   authorAccountProvider: authorAccountProvider)
+            RemoteAudioManager.shared.downloadRemoteURL(documentID: post.documentID,
+                                                        remoteURL: remoteURL, completion: { localURL in
+                self.loadAudio(localURL: localURL, playInfo: playInfo)
+            },
+            errorCompletion: { [weak self] errorMessage in
+                guard let self = self else { return }
+                self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
             }
+ )
         }
     }
     

@@ -42,6 +42,9 @@ class PrivacyPolicyViewController: UIViewController {
         web.navigationDelegate = self
         return web
     }()
+    
+    let webLoadingView = LottieWrapper.shared.webLoadingLottie(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
+
 }
 
 // MARK: - conform to WKNavigationDelegate
@@ -49,15 +52,19 @@ class PrivacyPolicyViewController: UIViewController {
 extension PrivacyPolicyViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        print(error.localizedDescription)
+        popErrorAlert(title: "Network problem", message: error.localizedDescription)
     }
     
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         print("Start to load")
+        view.addSubview(webLoadingView)
+        webLoadingView.play()
     }
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         print("finish to load")
+        webLoadingView.stop()
+        webLoadingView.removeFromSuperview()
     }
     
 }

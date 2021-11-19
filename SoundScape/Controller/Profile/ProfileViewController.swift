@@ -166,11 +166,33 @@ class ProfileViewController: UIViewController {
                                                selector: #selector(updateAllAudioFile),
                                                name: .allAudioPostChange ,
                                                object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(failedFetchUserProfilePic),
+                                               name: .failedFetchUserProfilePic ,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(failedFetchUserCoverPic),
+                                               name: .failedFetchUserCoverPic ,
+                                               object: nil)
+        
     }
     
     @objc func updateAllAudioFile() {
         fetchDataFromFirebase()
     }
+    
+    @objc func failedFetchUserProfilePic(notification: Notification) {
+        guard let error = notification.userInfo?["UserInfo"] as? String else { return }
+        popErrorAlert(title: "Failed to fetch user profile pic", message: error)
+    }
+    
+    @objc func failedFetchUserCoverPic(notification: Notification) {
+        guard let error = notification.userInfo?["UserInfo"] as? String else { return }
+        popErrorAlert(title: "Failed to fetch user cover pic", message: error)
+    }
+
     
     private func fetchFollowerList() {
         numbersOfFollowers = signInManager.currentUserFollowerList?.count
@@ -213,10 +235,12 @@ class ProfileViewController: UIViewController {
     }
     
     func deletePost(documentID: String) {
-        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID)
+        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.popErrorAlert(title: "Failed to delete post", message: errorMessage)
+        }
     }
 
-    
     // MARK: - image method
     
     private func pressSelectImage() {
@@ -240,7 +264,10 @@ class ProfileViewController: UIViewController {
         
         firebaseManager.uploadPicToFirebase(userDocumentID: userDocumentID,
                                             picString: imageBase64String,
-                                            picType: selectedPicButton)
+                                            picType: selectedPicButton) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.popErrorAlert(title: "Failed to uplaod picyure", message: errorMessage)
+        }
     }
     
     // MARK: - action
@@ -562,6 +589,10 @@ extension ProfileViewController: AlertPresentableDelegate {
         alert.addAction(okButton)
         
         present(alert, animated: true, completion: nil)
+    }
+    
+    func popErrorAlert(errorMessage: String?) {
+        popErrorAlert(title: "Failed to download audio", message: errorMessage)
     }
     
 }

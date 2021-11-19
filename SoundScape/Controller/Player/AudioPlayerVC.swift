@@ -225,7 +225,11 @@ class AudioPlayerVC: UIViewController {
         firebaseManager.manipulateFavorite(userProfileDocumentID: userProfileDocumentID,
                                            documendID: nowPlayDocumentID,
                                            addCompletion: fillFavoriteButton,
-                                           removeCompletion: emptyFavoriteButton)
+                                           removeCompletion: emptyFavoriteButton) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.popErrorAlert(title: "Failed to add or remove favorite", message: errorMessage)
+            
+        }
     }
     
     // MARK: - UI method

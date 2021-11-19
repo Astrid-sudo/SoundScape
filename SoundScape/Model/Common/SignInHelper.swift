@@ -159,21 +159,6 @@ extension SignInHelper: ASAuthorizationControllerDelegate {
                     
                     print("--------Sucessfully SignIn to firebase--------")
                     
-                    //                    if currentUser.metadata.creationDate == currentUser.metadata.lastSignInDate {
-                    //                        // 幫他創建新帳號
-                    //                        if let userEmail = authResult.user.email {
-                    //                            SignInManager.shared.uploadNewUserToFirebase(userID: authResult.user.uid,
-                    //                                                                         provider: authResult.credential?.provider ?? "dont know",
-                    //                                                                         userEmail: userEmail,
-                    //                                                                         userName: userName)
-                    //
-                    //                        }
-                    //
-                    //                    } else {
-                    //                        //幫他下載資料
-                    //                        SignInManager.shared.fetchUserInfoFromFirebase(userID: authResult.user.uid)
-                    //                    }
-                    
                     SignInManager.shared.checkUserInFirebase(userID: authResult.user.uid,
                                                              userProvider: authResult.credential?.provider ?? "dont know" ,
                                                              userEmail: authResult.user.email ,

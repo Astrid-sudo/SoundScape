@@ -562,7 +562,13 @@ class UploadVC: UIViewController {
         }
         
         if let selectedFileURL = selectedFileURL {
-            firebasemanager.upload(localURL: selectedFileURL, post: post, completion: backToHome)
+            firebasemanager.upload(localURL: selectedFileURL,
+                                   post: post,
+                                   completion: backToHome) { [weak self] errorMessage in
+                guard let self = self else { return }
+                self.popErrorAlert(title: "Failed to upload audio", message: errorMessage)
+            }
+                                   
         }
     }
     

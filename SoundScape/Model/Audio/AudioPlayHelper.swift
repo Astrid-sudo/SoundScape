@@ -150,23 +150,8 @@ class AudioPlayHelper: NSObject {
         }
     }
     
-    func setPlayInfo(title: String,
-                     author: String,
-                     content: String,
-                     duration: Double,
-                     documentID: String,
-                     authorUserID: String,
-                     audioImageNumber: Int,
-                     authorAccountProvider: String) {
-        
-        currentPlayInfo = PlayInfo(title: title,
-                                   author: author,
-                                   content: content,
-                                   duration: duration,
-                                   documentID: documentID,
-                                   authorUserID: authorUserID,
-                                   audioImageNumber: audioImageNumber,
-                                   authorAccountProvider: authorAccountProvider)
+    func setPlayInfo(playInfo: PlayInfo) {
+        currentPlayInfo = playInfo
     }
 
 }

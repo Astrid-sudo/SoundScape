@@ -177,6 +177,12 @@ class CommentViewController: UIViewController {
     
     // MARK: - method
     
+    private func addCommentCompletion(){
+        commentTextView.text = nil
+        commentTextView.endEditing(true)
+        animationView.removeFromSuperview()
+    }
+    
     private func addCommentToFirebase() {
         addLottie()
         
@@ -196,12 +202,11 @@ class CommentViewController: UIViewController {
                                     lastEditedTime: nil,
                                     comment: comment)
         
-        firebaseManager.addComment(to: currentPlayingDocumentID, with: commentData) { [weak self] in
+        firebaseManager.addComment(to: currentPlayingDocumentID,
+                                   with: commentData,
+                                   completion: addCommentCompletion) { [weak self] errorMessage in
             guard let self = self else { return }
-            
-            self.commentTextView.text = nil
-            self.commentTextView.endEditing(true)
-            self.animationView.removeFromSuperview()
+            self.popErrorAlert(title: "Failed to add comment", message: errorMessage)
         }
     }
     
@@ -255,7 +260,11 @@ class CommentViewController: UIViewController {
         
         guard let audioDocumentID = currentPlayingDocumentID else { return }
         
-        firebaseManager.deleteComment(audioDocumentID: audioDocumentID, commentDocumentID: commentID)
+        firebaseManager.deleteComment(audioDocumentID: audioDocumentID, commentDocumentID: commentID) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.popErrorAlert(title: "Failed to delete comment", message: errorMessage)
+            
+        }
     }
     
     // MARK: - UI properties

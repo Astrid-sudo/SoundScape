@@ -315,12 +315,17 @@ class OthersProfileViewController: UIViewController {
     }
     
     func deletePost(documentID: String) {
-        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID)
+        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.popErrorAlert(title: "Failed to delete post", message: errorMessage)
+        }
+    }
+    
+    private func loadAudio(localURL: URL, playInfo: PlayInfo) {
+        AudioPlayHelper.shared.url = localURL
+        AudioPlayHelper.shared.setPlayInfo(playInfo: playInfo)
     }
 
-    
-
-    
     // MARK: - image method
     
     func pressSelectImage(selectedPicButton: PicType) {
@@ -346,7 +351,10 @@ class OthersProfileViewController: UIViewController {
         
         firebaseManager.uploadPicToFirebase(userDocumentID: userDocumentID,
                                             picString: imageBase64String,
-                                            picType: selectedPicButton)
+                                            picType: selectedPicButton) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.popErrorAlert(title: "Failed to uplaod picyure", message: errorMessage)
+        }
     }
 
     
@@ -621,7 +629,10 @@ extension OthersProfileViewController: ProfileCellDelegate {
                                          loggedInUserInfo: SCFollow(userID: loggedInUserInfo.userID,
                                                                     provider: loggedInUserInfo.provider),
                                          followCompletion: makeButtonFollowed,
-                                         unfollowCompletion: makeButtonUnFollow)
+                                         unfollowCompletion: makeButtonUnFollow){ [weak self] errorMessage in
+            guard let self = self else { return }
+            self.popErrorAlert(title: "Failed to add or remove follow", message: errorMessage)
+        }
     }
     
     func goSettingPage() {
@@ -731,6 +742,11 @@ extension OthersProfileViewController: AlertPresentableDelegate {
         
         present(alert, animated: true, completion: nil)
     }
+    
+    func popErrorAlert(errorMessage: String?) {
+        popErrorAlert(title: "Failed to download audio", message: errorMessage)
+    }
+
     
 }
 

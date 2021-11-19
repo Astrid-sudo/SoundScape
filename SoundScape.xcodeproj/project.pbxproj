@@ -51,6 +51,7 @@
 		5683B6952740ACE9004512D4 /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5683B6942740ACE9004512D4 /* ProfileTableViewCell.swift */; };
 		5683B6972740F843004512D4 /* ProSoundDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5683B6962740F843004512D4 /* ProSoundDetailViewController.swift */; };
 		5683B699274151BA004512D4 /* lf30_editor_nhixegma.json in Resources */ = {isa = PBXBuildFile; fileRef = 5683B698274151BA004512D4 /* lf30_editor_nhixegma.json */; };
+		568FEAF1274648DC0028B2EB /* blueStripeLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 568FEAF0274648DC0028B2EB /* blueStripeLoading.json */; };
 		56950630271FDD08009E4C74 /* RemotePlayHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */; };
 		5698830C27400089008BF438 /* style.json in Resources */ = {isa = PBXBuildFile; fileRef = 5698830B27400089008BF438 /* style.json */; };
 		569A7D7827229AE500CEE3EA /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7727229AE500CEE3EA /* HomeVC.swift */; };
@@ -59,6 +60,8 @@
 		569A7D7E2722B75A00CEE3EA /* HomeTableViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7D2722B75A00CEE3EA /* HomeTableViewHeader.swift */; };
 		56A1EA27273CA6E0009AF843 /* AudioPostManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A1EA26273CA6E0009AF843 /* AudioPostManager.swift */; };
 		56AF84AC2745FAD500C94B0A /* LAEUViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AF84AB2745FAD500C94B0A /* LAEUViewController.swift */; };
+		56AF84AE274641A200C94B0A /* LottieWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AF84AD274641A200C94B0A /* LottieWrapper.swift */; };
+		56AF84B0274642AC00C94B0A /* lf30_editor_kp9yptl2.json in Resources */ = {isa = PBXBuildFile; fileRef = 56AF84AF274642AC00C94B0A /* lf30_editor_kp9yptl2.json */; };
 		56C05AA927362DEB009D029C /* GoogleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C05AA827362DEB009D029C /* GoogleService.swift */; };
 		56C05AAC2736665A009D029C /* AudioMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C05AAB2736665A009D029C /* AudioMapViewController.swift */; };
 		56C05AAF2736A829009D029C /* SCMapInfoWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C05AAE2736A829009D029C /* SCMapInfoWindow.swift */; };
@@ -121,6 +124,7 @@
 		5683B6942740ACE9004512D4 /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
 		5683B6962740F843004512D4 /* ProSoundDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProSoundDetailViewController.swift; sourceTree = "<group>"; };
 		5683B698274151BA004512D4 /* lf30_editor_nhixegma.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = lf30_editor_nhixegma.json; sourceTree = "<group>"; };
+		568FEAF0274648DC0028B2EB /* blueStripeLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = blueStripeLoading.json; sourceTree = "<group>"; };
 		5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemotePlayHelper.swift; sourceTree = "<group>"; };
 		5698830B27400089008BF438 /* style.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = style.json; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.json; };
 		569A7D7727229AE500CEE3EA /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
@@ -129,6 +133,8 @@
 		569A7D7D2722B75A00CEE3EA /* HomeTableViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewHeader.swift; sourceTree = "<group>"; };
 		56A1EA26273CA6E0009AF843 /* AudioPostManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPostManager.swift; sourceTree = "<group>"; };
 		56AF84AB2745FAD500C94B0A /* LAEUViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LAEUViewController.swift; sourceTree = "<group>"; };
+		56AF84AD274641A200C94B0A /* LottieWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieWrapper.swift; sourceTree = "<group>"; };
+		56AF84AF274642AC00C94B0A /* lf30_editor_kp9yptl2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = lf30_editor_kp9yptl2.json; sourceTree = "<group>"; };
 		56C05AA827362DEB009D029C /* GoogleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleService.swift; sourceTree = "<group>"; };
 		56C05AAB2736665A009D029C /* AudioMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMapViewController.swift; sourceTree = "<group>"; };
 		56C05AAE2736A829009D029C /* SCMapInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCMapInfoWindow.swift; sourceTree = "<group>"; };
@@ -284,7 +290,9 @@
 			children = (
 				5630FE28272F01A0003A38FB /* 77378-sunset.json */,
 				56D3F0B3272CDFFD00A3B3B3 /* Bungee-Regular.ttf */,
+				568FEAF0274648DC0028B2EB /* blueStripeLoading.json */,
 				5655908F27318F0D00300AF7 /* lf30_editor_xgoxkd3f.json */,
+				56AF84AF274642AC00C94B0A /* lf30_editor_kp9yptl2.json */,
 				565BD478272FE0DB00143108 /* lf30_editor_r2yecdir.json */,
 				5630FE2A272F049F003A38FB /* 74194-sleepy-sleep.json */,
 				5683B698274151BA004512D4 /* lf30_editor_nhixegma.json */,
@@ -308,6 +316,7 @@
 			children = (
 				56C05AAE2736A829009D029C /* SCMapInfoWindow.swift */,
 				56DC9AB92737A0BD000B62C6 /* MapSearchResultTableViewCell.swift */,
+				56AF84AD274641A200C94B0A /* LottieWrapper.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -536,12 +545,14 @@
 				5679F117271D6B2500663001 /* example_sound.wav in Resources */,
 				5698830C27400089008BF438 /* style.json in Resources */,
 				5679F107271D084B00663001 /* LaunchScreen.storyboard in Resources */,
+				56AF84B0274642AC00C94B0A /* lf30_editor_kp9yptl2.json in Resources */,
 				565BD479272FE0DB00143108 /* lf30_editor_r2yecdir.json in Resources */,
 				5630FE2B272F049F003A38FB /* 74194-sleepy-sleep.json in Resources */,
 				5630FE29272F01A0003A38FB /* 77378-sunset.json in Resources */,
 				56D3F0B4272CDFFD00A3B3B3 /* Bungee-Regular.ttf in Resources */,
 				5679F104271D084B00663001 /* Assets.xcassets in Resources */,
 				5679F102271D084A00663001 /* Main.storyboard in Resources */,
+				568FEAF1274648DC0028B2EB /* blueStripeLoading.json in Resources */,
 				5683B699274151BA004512D4 /* lf30_editor_nhixegma.json in Resources */,
 				5655909027318F0D00300AF7 /* lf30_editor_xgoxkd3f.json in Resources */,
 				5679F119271D6D8400663001 /* memories.mp3 in Resources */,
@@ -696,6 +707,7 @@
 				56F07D37272BCC0F00ABC7B9 /* SearchTableViewCell.swift in Sources */,
 				567566EC27323AAD007ACC61 /* SignInViewController.swift in Sources */,
 				563396C5272596A600882711 /* EditAudioManager.swift in Sources */,
+				56AF84AE274641A200C94B0A /* LottieWrapper.swift in Sources */,
 				565C9C2F271E8D6900189B85 /* SCTabBarController.swift in Sources */,
 				564C79FA272C2180005EEA53 /* CategoryTableViewCell.swift in Sources */,
 				56C05AAF2736A829009D029C /* SCMapInfoWindow.swift in Sources */,
