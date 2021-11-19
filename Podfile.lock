@@ -342,6 +342,7 @@ PODS:
   - nanopb/decode (1.30906.0)
   - nanopb/encode (1.30906.0)
   - PromisesObjC (1.2.12)
+  - SPAlert (3.5.0)
   - SwiftLint (0.44.0)
 
 DEPENDENCIES:
@@ -356,6 +357,7 @@ DEPENDENCIES:
   - IQKeyboardManagerSwift
   - lottie-ios
   - ModernAVPlayer
+  - SPAlert
   - SwiftLint
 
 SPEC REPOS:
@@ -385,6 +387,7 @@ SPEC REPOS:
     - ModernAVPlayer
     - nanopb
     - PromisesObjC
+    - SPAlert
     - SwiftLint
 
 SPEC CHECKSUMS:
@@ -413,8 +416,9 @@ SPEC CHECKSUMS:
   ModernAVPlayer: d04d53be7b620990250d0e13bee3be7217dc6214
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
+  SPAlert: dba6f2400072964a5eb7240db6c9748ac6896ae6
   SwiftLint: e96c0a8c770c7ebbc4d36c55baf9096bb65c4584
 
-PODFILE CHECKSUM: c90e6b0eb0c7f5f987fe5638aa50edeb929ed31b
+PODFILE CHECKSUM: 5d6ada637b353fa2115eee6b468b532862e8f9ae
 
 COCOAPODS: 1.11.2

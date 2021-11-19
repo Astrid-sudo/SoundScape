@@ -272,21 +272,6 @@ class FirebaseManager {
             }
         }
     }
-//
-//    func uploadUserInfo(userInfo: SCUser) {
-//
-//        var userInfo = userInfo
-//        let document = allUsersCollectionRef.document()
-//        userInfo.userInfoDoumentID = document.documentID
-//
-//        do {
-//
-//            try document.setData(from: userInfo)
-//
-//        } catch {
-//            print(error)
-//        }
-//    }
     
     // MARK: - real member method
     
@@ -636,7 +621,10 @@ class FirebaseManager {
     
     // MARK: - comment
     
-    func deleteComment(audioDocumentID: String, commentDocumentID: String, errorCompletion: @escaping (_ errorMessage:String) -> Void) {
+    func deleteComment(audioDocumentID: String,
+                       commentDocumentID: String,
+                       errorCompletion: @escaping (_ errorMessage:String) -> Void,
+                       successedCompletion: @escaping() -> Void) {
         let db = Firestore.firestore()
         let commentRef = db.collection(CommonUsage.CollectionName.allAudioFiles).document(audioDocumentID).collection(CommonUsage.CollectionName.comments).document(commentDocumentID)
         
@@ -646,6 +634,7 @@ class FirebaseManager {
                 errorCompletion(error.localizedDescription)
             } else {
                 print("Succeffully delete comment \(commentRef)")
+                successedCompletion()
             }
         }
     }

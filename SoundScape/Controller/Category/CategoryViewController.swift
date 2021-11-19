@@ -199,7 +199,6 @@ class CategoryViewController: UIViewController {
         }
     }
 
-
     private func addObserver() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateAllAudioFile),

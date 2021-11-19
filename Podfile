@@ -19,6 +19,7 @@ target 'SoundScape' do
   pod 'GoogleMaps'
   pod 'GooglePlaces'
   pod 'Firebase/Crashlytics'
+  pod 'SPAlert' 
  
 
 end
