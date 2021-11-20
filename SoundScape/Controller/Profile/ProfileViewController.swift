@@ -87,6 +87,7 @@ class ProfileViewController: UIViewController {
         table.register(HomeTableViewCell.self, forCellReuseIdentifier: HomeTableViewCell.reuseIdentifier)
         table.register(HomeTableViewHeader.self, forHeaderFooterViewReuseIdentifier: HomeTableViewHeader.reuseIdentifier)
         table.register(ProfileTableViewCell.self, forCellReuseIdentifier: ProfileTableViewCell.reuseIdentifier)
+        table.register(ProfileBlankTableViewCell.self, forCellReuseIdentifier: ProfileBlankTableViewCell.reuseIdentifier)
         return table
     }()
     
@@ -194,7 +195,7 @@ class ProfileViewController: UIViewController {
         guard let error = notification.userInfo?["UserInfo"] as? String else { return }
         popErrorAlert(title: "Failed to fetch user cover pic", message: error)
     }
-
+    
     private func fetchFollowerList() {
         numbersOfFollowers = signInManager.currentUserFollowerList?.count
     }
@@ -250,7 +251,7 @@ class ProfileViewController: UIViewController {
             self.loadingAnimationView.removeFromSuperview()
             SPAlertWrapper.shared.presentSPAlert(title: "Post deleted!", message: nil, preset: .done, completion: nil)}
     }
-
+    
     // MARK: - image method
     
     private func pressSelectImage() {
@@ -280,7 +281,7 @@ class ProfileViewController: UIViewController {
         } succeededCompletion: {
             SPAlertWrapper.shared.presentSPAlert(title: "Photo added!", message: nil, preset: .heart, completion: nil)
         }
-
+        
     }
     
     // MARK: - action
@@ -332,6 +333,7 @@ extension ProfileViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell,
               let profileDataCell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.reuseIdentifier) as? ProfileTableViewCell,
+              let profileBlankCell = tableView.dequeueReusableCell(withIdentifier: ProfileBlankTableViewCell.reuseIdentifier) as? ProfileBlankTableViewCell,
               let logginUser = signInManager.currentUserInfoFirebase else { return UITableViewCell() }
         
         cell.backgroundColor = UIColor(named: CommonUsage.scBlue)
@@ -350,29 +352,40 @@ extension ProfileViewController: UITableViewDataSource {
             return profileDataCell
             
         case 1:
-            guard let followings = currentUserFollowingList else {
-                print("ProfilePage cant get followingList")
-                return UITableViewCell()
-            }
+            guard let followings = currentUserFollowingList,
+                  !followings.isEmpty else {
+                      print("ProfilePage cant get followingList")
+                      profileBlankCell.cellType(profilePageSection: .followingsLatest)
+                      return profileBlankCell
+                  }
             
             var myFollowingsUserFiles = [SCPost]()
             for audioFile in allAudioFiles {
                 for folloing in followings {
-                    if audioFile.authorID == folloing.userID, audioFile.authIDProvider == folloing.provider {
+                    if audioFile.authorID == folloing.userID,
+                        audioFile.authIDProvider == folloing.provider {
                         myFollowingsUserFiles.append(audioFile)
                     }
                 }
             }
+            
+            guard !myFollowingsUserFiles.isEmpty else {
+                profileBlankCell.cellType(profilePageSection: .followingsLatest)
+                return profileBlankCell
+            }
+            
             cell.firebaseData = myFollowingsUserFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
             return cell
             
         case 2:
             
-            guard let currentUserFavoriteDocumentIDs = currentUserFavoriteDocumentIDs else {
-                print("ProfilePage cant get currentUserFavoriteDocumentIDs")
-                return UITableViewCell()
-            }
+            guard let currentUserFavoriteDocumentIDs = currentUserFavoriteDocumentIDs,
+                  !currentUserFavoriteDocumentIDs.isEmpty else {
+                      profileBlankCell.cellType(profilePageSection: .myFavorite)
+                      return profileBlankCell
+                      print("ProfilePage cant get currentUserFavoriteDocumentIDs")
+                  }
             
             var myFavoriteFiles = [SCPost]()
             
@@ -383,6 +396,12 @@ extension ProfileViewController: UITableViewDataSource {
                     }
                 }
             }
+            
+            guard !myFavoriteFiles.isEmpty else {
+                profileBlankCell.cellType(profilePageSection: .myFavorite)
+                return profileBlankCell
+            }
+            
             cell.firebaseData = myFavoriteFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
             return cell
@@ -390,6 +409,10 @@ extension ProfileViewController: UITableViewDataSource {
         case 3:
             
             let myAudioFiles = allAudioFiles.filter({$0.authorName == signInManager.currentUserInfoFirebase?.username})
+            guard !myAudioFiles.isEmpty else {
+                profileBlankCell.cellType(profilePageSection: .myAudio)
+                return profileBlankCell
+            }
             cell.firebaseData = myAudioFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
             return cell
@@ -414,9 +437,9 @@ extension ProfileViewController: UITableViewDelegate {
         if section == 0 {
             
             return nil
-        
+            
         } else {
-           
+            
             guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomeTableViewHeader.reuseIdentifier) as? HomeTableViewHeader else { return UIView()}
             
             headerView.delegate = self
@@ -471,7 +494,7 @@ extension ProfileViewController: PressPassableDelegate {
         switch section {
             
         case 1:
-           
+            
             let section = ProfilePageSection.allCases[section - 1]
             categoryPage.config(profileSection: section)
             
@@ -484,7 +507,7 @@ extension ProfileViewController: PressPassableDelegate {
             
             let section = ProfilePageSection.allCases[section - 1]
             categoryPage.config(profileSection: section)
-
+            
         default:
             break
         }
@@ -541,11 +564,11 @@ extension ProfileViewController: ProfileCellDelegate {
         picker.sourceType = .photoLibrary
         
         picker.allowsEditing = true
-
+        
         present(picker, animated: true)
         
         self.selectedPicButton = selectedPicButton
-
+        
     }
     
     func blockThisUser() {
@@ -567,24 +590,24 @@ extension ProfileViewController: ProfileCellDelegate {
 extension ProfileViewController: AlertPresentableDelegate {
     
     func popBlockAlert(toBeBlockedID: String) {
-       
-       let alert = UIAlertController(title: "Are you sure?",
-                                     message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
-                                     preferredStyle: .alert )
-       
-       let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
-           guard let self = self else { return }
-           self.blockThisUser(toBeBlockedID: toBeBlockedID)
-       }
-       
-       let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
-       
-       alert.addAction(cancelButton)
-       alert.addAction(okButton)
-       
-       present(alert, animated: true, completion: nil)
-   }
-
+        
+        let alert = UIAlertController(title: "Are you sure?",
+                                      message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
+                                      preferredStyle: .alert )
+        
+        let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
+            guard let self = self else { return }
+            self.blockThisUser(toBeBlockedID: toBeBlockedID)
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
     func popDeletePostAlert(documentID: String) {
         
         let alert = UIAlertController(title: "Are you sure to delete this audio?",
@@ -609,6 +632,5 @@ extension ProfileViewController: AlertPresentableDelegate {
     }
     
 }
-
 
 // swiftlint:enable file_length

@@ -72,6 +72,7 @@
 		56D72F162747941A000D6868 /* whiteStripeLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 56D72F152747941A000D6868 /* whiteStripeLoading.json */; };
 		56D72F18274799FC000D6868 /* greyStripeLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 56D72F17274799FC000D6868 /* greyStripeLoading.json */; };
 		56D72F1B2748F039000D6868 /* UPloadVC + extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D72F1A2748F039000D6868 /* UPloadVC + extension.swift */; };
+		56D72F1E27494780000D6868 /* ProfileBlankTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D72F1D27494780000D6868 /* ProfileBlankTableViewCell.swift */; };
 		56DC9ABA2737A0BD000B62C6 /* MapSearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DC9AB92737A0BD000B62C6 /* MapSearchResultTableViewCell.swift */; };
 		56DC9ABD2737A753000B62C6 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DC9ABC2737A753000B62C6 /* LocationService.swift */; };
 		56F07D35272BCA7600ABC7B9 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */; };
@@ -149,6 +150,7 @@
 		56D72F152747941A000D6868 /* whiteStripeLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = whiteStripeLoading.json; sourceTree = "<group>"; };
 		56D72F17274799FC000D6868 /* greyStripeLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = greyStripeLoading.json; sourceTree = "<group>"; };
 		56D72F1A2748F039000D6868 /* UPloadVC + extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UPloadVC + extension.swift"; sourceTree = "<group>"; };
+		56D72F1D27494780000D6868 /* ProfileBlankTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBlankTableViewCell.swift; sourceTree = "<group>"; };
 		56DC9AB92737A0BD000B62C6 /* MapSearchResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSearchResultTableViewCell.swift; sourceTree = "<group>"; };
 		56DC9ABC2737A753000B62C6 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -234,6 +236,7 @@
 		565C9C32271EB46D00189B85 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				56D72F1C2749472B000D6868 /* Profile */,
 				56C05AAD2736A7DE009D029C /* Common */,
 				5655908C2731860600300AF7 /* Setting */,
 				560DE84E2730110100FFD240 /* Comment */,
@@ -241,7 +244,6 @@
 				56D3F0B7272D7F2A00A3B3B3 /* Search */,
 				56D3F0B6272D7F0F00A3B3B3 /* Home */,
 				56D3F0B5272D7EFF00A3B3B3 /* Player */,
-				5683B6942740ACE9004512D4 /* ProfileTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -455,6 +457,15 @@
 				56D3F0C2272D813C00A3B3B3 /* ProfileViewController.swift */,
 				5630FE26272EB5D7003A38FB /* OthersProfileViewController.swift */,
 				5679328E273B61290074D15A /* PrivacyPolicyViewController.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		56D72F1C2749472B000D6868 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				5683B6942740ACE9004512D4 /* ProfileTableViewCell.swift */,
+				56D72F1D27494780000D6868 /* ProfileBlankTableViewCell.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -698,6 +709,7 @@
 				568340E1271F11AC00543677 /* UploadVC.swift in Sources */,
 				56F07D39272BCFB300ABC7B9 /* SearchCollectionViewCell.swift in Sources */,
 				564C79F8272C2056005EEA53 /* CategoryViewController.swift in Sources */,
+				56D72F1E27494780000D6868 /* ProfileBlankTableViewCell.swift in Sources */,
 				5679F0FB271D084A00663001 /* AppDelegate.swift in Sources */,
 				5678FFA6272418B500E1ADD5 /* TestEditVC.swift in Sources */,
 				5655908E2731863300300AF7 /* SettingTableViewCell.swift in Sources */,
