@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Lottie
 import GoogleMaps
 import CoreLocation
 
@@ -26,7 +25,7 @@ class UploadVC: UIViewController {
     
     var currentLocation: CLLocationCoordinate2D?
     
-    var defaultLocation = CLLocationCoordinate2DMake(25.034012, 121.563461)
+    var defaultLocation = CLLocationCoordinate2DMake(23.97565, 120.9738819)
     
     var pinnedLocation: CLLocationCoordinate2D? {
         didSet {
@@ -191,15 +190,15 @@ class UploadVC: UIViewController {
         mapView.camera = camera
         mapView.layer.cornerRadius = 10
         do {
-          if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
-            mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
-          } else {
-            NSLog("Unable to find style.json")
-          }
+            if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
+                mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
+            } else {
+                NSLog("Unable to find style.json")
+            }
         } catch {
-          NSLog("One or more of the map styles failed to load. \(error)")
+            NSLog("One or more of the map styles failed to load. \(error)")
         }
-
+        
         if backFromBigMap {
             mapView.settings.myLocationButton = false
             mapView.isMyLocationEnabled = false
@@ -221,14 +220,7 @@ class UploadVC: UIViewController {
         return button
     }()
     
-    private lazy var animationView: AnimationView = {
-        let animationView = AnimationView(name: "lf30_editor_r2yecdir")
-        animationView.frame = CGRect(x: 0, y: 100, width: 400, height: 400)
-        animationView.center = view.center
-        animationView.contentMode = .scaleAspectFill
-        animationView.loopMode = .loop
-        return animationView
-    }()
+    private let animationView = LottieWrapper.shared.greyStripeLoadingView(frame: CGRect(x: 0, y: 100, width: 400, height: 400))
     
     private lazy var searchPlaceButton: UIButton = {
         let button = UIButton()
@@ -492,13 +484,14 @@ class UploadVC: UIViewController {
     private func backToHome() {
         navigationController?.popToRootViewController(animated: true)
         animationView.removeFromSuperview()
+        SPAlertWrapper.shared.presentSPAlert(title: "Post added!", message: nil, preset: .done, completion: nil)
         guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
         scTabBarController.selectedIndex = 0
     }
     
-    private func popFillAlert() {
-        let alert = UIAlertController(title: "請填滿所有欄位", message: "登入後即可PO聲", preferredStyle: .alert )
-        let okButton = UIAlertAction(title: "是！", style: .default)
+    private func popFillAlert(title: String, message: String?) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert )
+        let okButton = UIAlertAction(title: "OK", style: .default)
         
         alert.addAction(okButton)
         present(alert, animated: true, completion: nil)
@@ -535,15 +528,29 @@ class UploadVC: UIViewController {
     
     @objc func upload() {
         
-        addLottie()
-        
         guard let title = titleTextField.text,
-              let content = descriptionTextView.text,
-              let item = selectedCategoryIndex?.item,
-        let audioImageNumber = selectedImageIndex?.item else {
-                  popFillAlert()
-                  return
-              }
+        title.trimmingCharacters(in: .whitespacesAndNewlines) != "" else {
+            popFillAlert(title: "Please fill in Title field.", message: nil)
+            return
+        }
+        
+        guard  let content = descriptionTextView.text,
+                content.trimmingCharacters(in: .whitespacesAndNewlines) != "" else {
+            popFillAlert(title: "Please fill in Description field.", message: nil)
+            return
+        }
+        
+        guard let item = selectedCategoryIndex?.item else {
+            popFillAlert(title: "Please tap one Category.", message: nil)
+            return
+        }
+        
+        guard let audioImageNumber = selectedImageIndex?.item else {
+            popFillAlert(title: "Please choose one cover image.", message: nil)
+            return
+        }
+        
+        addLottie()
         
         var post = SCPost(documentID: "",
                           authorID: signInmanager.currentUserInfoFirebase?.userID ?? "No signIn",
@@ -568,7 +575,7 @@ class UploadVC: UIViewController {
                 guard let self = self else { return }
                 self.popErrorAlert(title: "Failed to upload audio", message: errorMessage)
             }
-                                   
+            
         }
     }
     

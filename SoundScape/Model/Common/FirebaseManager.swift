@@ -157,7 +157,9 @@ class FirebaseManager {
         }
     }
     
-    func deletePostInAllAudio(documentID: String, errorCompletion: @escaping (_ errorMessage:String) -> Void) {
+    func deletePostInAllAudio(documentID: String,
+                              errorCompletion: @escaping (_ errorMessage:String) -> Void,
+                              succeededCompletion: @escaping () -> Void) {
        
         allAudioCollectionRef.document(documentID).delete() { error in
             if let error = error {
@@ -165,12 +167,15 @@ class FirebaseManager {
                 print("Error remove post in AllAudioCollection \(documentID), error: \(error)")
             } else {
                 print("\(documentID) in AllAudioCollection successfully removed.")
-                self.deletePostInAllLocation(documentID: documentID, errorCompletion: errorCompletion)
+                self.deletePostInAllLocation(documentID: documentID,
+                                             errorCompletion: errorCompletion,
+                                             succeededCompletion: succeededCompletion)
             }
         }
     }
     
-   private func deletePostInAllLocation(documentID: String, errorCompletion: @escaping (_ errorMessage:String) -> Void) {
+   private func deletePostInAllLocation(documentID: String,
+                                        errorCompletion: @escaping (_ errorMessage:String) -> Void, succeededCompletion: @escaping () -> Void) {
         
         allLocationsCollectionRef.document(documentID).delete() { error in
             if let error = error {
@@ -178,13 +183,17 @@ class FirebaseManager {
                 errorCompletion(error.localizedDescription)
             } else {
                 print("\(documentID) in AllLocationCollection successfully removed.")
-                self.deleteAudioInStorage(documentID: documentID, errorCompletion: errorCompletion)
+                self.deleteAudioInStorage(documentID: documentID,
+                                          errorCompletion: errorCompletion,
+                                          succeededCompletion: succeededCompletion)
                 
             }
         }
     }
     
-    private func deleteAudioInStorage(documentID: String, errorCompletion: @escaping (_ errorMessage:String) -> Void) {
+    private func deleteAudioInStorage(documentID: String,
+                                      errorCompletion: @escaping (_ errorMessage:String) -> Void,
+                                      succeededCompletion: @escaping () -> Void) {
         
         let audioName = documentID + ".m4a"
         let audioReference = storage.child("\(audioName)")
@@ -195,6 +204,7 @@ class FirebaseManager {
                 errorCompletion(error.localizedDescription)
             } else {
                 print("\(audioReference) in Storage successfully removed.")
+                succeededCompletion()
             }
         }
         
@@ -716,12 +726,14 @@ class FirebaseManager {
     func uploadPicToFirebase(userDocumentID: String,
                              picString:String,
                              picType: PicType,
-                             errorCompletion: @escaping (_ errorMessage:String) -> Void) {
+                             errorCompletion: @escaping (_ errorMessage:String) -> Void,
+                             succeededCompletion: @escaping () -> Void) {
         
         let profilePicSubCollection = allUsersCollectionRef.document(userDocumentID).collection("profilePicture")
         let picture = SCPicture(picture: picString)
         do {
             try profilePicSubCollection.document(picType.rawValue).setData(from: picture)
+            succeededCompletion()
         } catch {
             errorCompletion(error.localizedDescription)
             print(error)

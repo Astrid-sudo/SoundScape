@@ -25,7 +25,4 @@ class SPAlertWrapper {
                         completion: completion)
     }
     
-    
-    
-    
 }

@@ -6,13 +6,16 @@
 //
 
 import UIKit
-import Lottie
 
 class SettingViewController: UIViewController {
-
+    
+    // MARK: - properties
+    
     var settingsOptions = ["Privacy Policy", "Delete Account", "About", "Log Out"]
     
     let signInHelper = SignInHelper.shared
+    
+    // MARK: - life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +38,8 @@ class SettingViewController: UIViewController {
         animationView.stop()
     }
     
+    // MARK: - UI properties
+    
     private lazy var tableView: UITableView = {
         let table = UITableView()
         table.backgroundColor = UIColor(named: CommonUsage.scBlue)
@@ -47,18 +52,49 @@ class SettingViewController: UIViewController {
         return table
     }()
     
-    private lazy var animationView: AnimationView = {
-        let animationView = AnimationView(name: "lf30_editor_xgoxkd3f")
-        animationView.frame = CGRect(x: 0, y: 80, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight / 3)
-        animationView.contentMode = .scaleAspectFill
-        animationView.loopMode = .loop
-        return animationView
-    }()
+    private let animationView = LottieWrapper.shared.womanWalkingAnimationView(frame: CGRect(x: 0,
+                                                                                             y: 80,
+                                                                                             width: CommonUsage.screenWidth,
+                                                                                             height: CommonUsage.screenHeight / 3))
+    
+    // MARK: - action
     
     @objc func backToLastPage() {
         self.navigationController?.popViewController(animated: true)
     }
-
+    
+    // MARK: - method
+    
+    private func navigateToSignInPage() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let signInViewController = storyboard.instantiateViewController(withIdentifier: String(describing: SignInViewController.self)) as? SignInViewController else { return }
+        navigationController?.pushViewController(signInViewController, animated: true)
+    }
+    
+    private func popSignOutAlert() {
+        
+        let alert = UIAlertController(title: "Are you sure ?",
+                                      message: "Looking forward to hearing from you again.",
+                                      preferredStyle: .alert )
+        
+        let okButton = UIAlertAction(title: "Log out", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            self.signInHelper.signOutAuth {
+                self.navigateToSignInPage()
+            }
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        
+        self.present(alert, animated: true, completion: nil)
+        
+    }
+    
+    // MARK: - UI method
+    
     private func setBackgroundColor() {
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
     }
@@ -75,7 +111,7 @@ class SettingViewController: UIViewController {
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
     }
-
+    
     private func setTableView() {
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -91,16 +127,12 @@ class SettingViewController: UIViewController {
         view.addSubview(animationView)
     }
     
-    private func navigateToSignInPage() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let signInViewController = storyboard.instantiateViewController(withIdentifier: String(describing: SignInViewController.self)) as? SignInViewController else { return }
-        navigationController?.pushViewController(signInViewController, animated: true)
-    }
-
 }
 
+// MARK: - conform to UITableViewDataSource
+
 extension SettingViewController: UITableViewDataSource {
-   
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         settingsOptions.count
     }
@@ -113,15 +145,14 @@ extension SettingViewController: UITableViewDataSource {
     }
 }
 
+// MARK: - conform to UITableViewDelegate
+
 extension SettingViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-       
+        
         if indexPath.row == 3 {
-            signInHelper.signOutAuth { [weak self] in
-                guard let self = self else { return }
-                self.navigateToSignInPage()
-            }
+            popSignOutAlert()
         }
         
         if indexPath.row == 0 {
@@ -139,9 +170,7 @@ extension SettingViewController: UITableViewDelegate {
             
             alert.addAction(okButton)
             present(alert, animated: true, completion: nil)
-
         }
-        
     }
     
 }

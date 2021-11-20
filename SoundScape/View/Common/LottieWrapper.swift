@@ -14,7 +14,7 @@ class LottieWrapper {
     
     private init () {}
     
-    func webLoadingLottie(frame: CGRect) -> AnimationView {
+    func blueStripeLoadingView(frame: CGRect) -> AnimationView {
         let animationView = AnimationView(name: "blueStripeLoading")
         animationView.frame = frame
         animationView.contentMode = .scaleAspectFill
@@ -22,7 +22,31 @@ class LottieWrapper {
         return animationView
     }
     
+    func whiteStripeLoadingView(frame: CGRect) -> AnimationView {
+        let animationView = AnimationView(name: "whiteStripeLoading")
+        animationView.frame = frame
+        animationView.contentMode = .scaleAspectFill
+        animationView.loopMode = .loop
+        return animationView
+    }
+
+    func greyStripeLoadingView(frame: CGRect) -> AnimationView {
+        let animationView = AnimationView(name: "greyStripeLoading")
+        animationView.frame = frame
+        animationView.contentMode = .scaleAspectFill
+        animationView.loopMode = .loop
+        return animationView
+    }
     
+    func womanWalkingAnimationView(frame: CGRect) -> AnimationView {
+        let animationView = AnimationView(name: "lf30_editor_xgoxkd3f")
+        animationView.frame = frame
+        animationView.contentMode = .scaleAspectFill
+        animationView.loopMode = .loop
+        return animationView
+    }
+
+
     
     
     

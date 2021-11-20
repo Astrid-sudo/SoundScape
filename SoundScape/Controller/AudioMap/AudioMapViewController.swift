@@ -66,7 +66,7 @@ class AudioMapViewController: UIViewController {
     
     var currentLocation: CLLocationCoordinate2D?
     
-    var defaultLocation = CLLocationCoordinate2DMake(25.034012, 121.563461)
+    var defaultLocation = CLLocationCoordinate2DMake(23.97565, 120.9738819)
     
     var audioPostCache: [String: SCPost] = [:]
     
@@ -134,7 +134,7 @@ class AudioMapViewController: UIViewController {
         }
         
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if audioMapType == .pinOnMap {
@@ -283,15 +283,15 @@ class AudioMapViewController: UIViewController {
         mapView.isMyLocationEnabled = true
         mapView.padding = UIEdgeInsets(top: 0, left: 0, bottom: 65.adjusted, right: 0)
         do {
-          if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
-            mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
-          } else {
-            NSLog("Unable to find style.json")
-          }
+            if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
+                mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
+            } else {
+                NSLog("Unable to find style.json")
+            }
         } catch {
-          NSLog("One or more of the map styles failed to load. \(error)")
+            NSLog("One or more of the map styles failed to load. \(error)")
         }
-
+        
         return mapView
     }()
     
@@ -319,7 +319,7 @@ extension AudioMapViewController {
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
     }
-
+    
     
     private func addSearchBar() {
         navigationItem.titleView = searchBar
@@ -422,18 +422,6 @@ extension AudioMapViewController: GMSMapViewDelegate {
     
 }
 
-/*
- guard let post = tappedMarker.userData as? SCPost else { return }
- let documentID = post.documentID
- let title = post.title
- let author = post.authorName
- let content = post.content
- let duration = post.duration
- let authorUserID = post.authorID
- let audioImageNumber = post.imageNumber
- let authorAccountProvider = post.authIDProvider
- */
-
 // MARK: - conform to ButtonTappedPassableDelegate
 
 extension AudioMapViewController: ButtonTappedPassableDelegate {
@@ -443,7 +431,7 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
         AudioPlayerWindow.shared.show()
         
         guard let post = tappedMarker.userData as? SCPost else { return }
-        let playInfo = PlayInfo(title:  post.title,
+        let playInfo = PlayInfo(title: post.title,
                                 author: post.authorName,
                                 content: post.content,
                                 duration: post.duration,
@@ -457,11 +445,11 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
                                                         remoteURL: remoteURL, completion: { localURL in
                 self.loadAudio(localURL: localURL, playInfo: playInfo)
             },
-            errorCompletion: { [weak self] errorMessage in
+                                                        errorCompletion: { [weak self] errorMessage in
                 guard let self = self else { return }
                 self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
             }
- )
+            )
         }
     }
     

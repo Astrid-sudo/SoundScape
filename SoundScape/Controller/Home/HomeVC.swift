@@ -36,6 +36,8 @@ class HomeVC: UIViewController {
         return table
     }()
     
+    let loadingAnimationView = LottieWrapper.shared.greyStripeLoadingView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -164,10 +166,19 @@ class HomeVC: UIViewController {
     }
     
     func deletePost(documentID: String) {
+        
+        view.addSubview(loadingAnimationView)
+        loadingAnimationView.play()
+        
         FirebaseManager.shared.deletePostInAllAudio(documentID: documentID) { [weak self] errorMessage in
             guard let self = self else { return }
+            self.loadingAnimationView.stop()
+            self.loadingAnimationView.removeFromSuperview()
             self.popErrorAlert(title: "Failed to delete post", message: errorMessage)
-        }
+        } succeededCompletion: {
+            self.loadingAnimationView.stop()
+            self.loadingAnimationView.removeFromSuperview()
+            SPAlertWrapper.shared.presentSPAlert(title: "Post deleted!", message: nil, preset: .done, completion: nil)}
     }
 
 }

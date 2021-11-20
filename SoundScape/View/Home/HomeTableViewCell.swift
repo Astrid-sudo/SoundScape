@@ -148,19 +148,11 @@ extension HomeTableViewCell: UICollectionViewDelegate {
                                                         remoteURL: remoteURL, completion: { localURL in
                 self.loadAudio(localURL: localURL, playInfo: playInfo)
             },
-            errorCompletion: { errorMessage in
+                                                        errorCompletion: { errorMessage in
                 self.delegate?.popErrorAlert(errorMessage: errorMessage)
             }
- )
+            )
         }
-
-//        if let remoteURL = firebaseData[indexPath.item].audioURL {
-//            RemoteAudioManager.shared.downloadRemoteURL(documentID: firebaseData[indexPath.item].documentID,
-//                                                        remoteURL: remoteURL) { localURL in
-//                AudioPlayHelper.shared.url = localURL
-//                AudioPlayHelper.shared.setPlayInfo(playInfo: playInfo)
-//            }
-//        }
     }
     
     func collectionView(_ collectionView: UICollectionView,
@@ -218,4 +210,3 @@ extension HomeTableViewCell: UICollectionViewDelegateFlowLayout {
     }
     
 }
-

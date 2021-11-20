@@ -185,6 +185,12 @@ class EditVC: UIViewController {
     
     @objc func trim() {
         
+        guard let trimmedDuration = trimmedDuration,
+            trimmedDuration > 5 else {
+            popErrorAlert(title: "Can't upload file under 5 seconds.", message: nil)
+            return
+        }
+        
         EditAudioManager.shared.trimAudio(from: trimHeadTime, to: trimTailTime)
         
         trimHeadView.frame = CGRect(x: slider.center.x - slider.frame.width / 2 - 2,
@@ -292,20 +298,6 @@ class EditVC: UIViewController {
         
     }
     
-//    @objc func highPass() {
-//        EditAudioManager.shared.manipulateHighPass()
-//
-//        if EditAudioManager.shared.highPassOn {
-//
-//            lowCutButton.backgroundColor = UIColor(named: CommonUsage.scOrange)
-//
-//        } else {
-//
-//            lowCutButton.backgroundColor = UIColor(named: CommonUsage.scYellow)
-//
-//        }
-//
-//    }
     
     @objc func scrubToTime() {
         remotePlayerHelper.seek(position: Double(slider.value))

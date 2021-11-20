@@ -43,7 +43,7 @@ class PrivacyPolicyViewController: UIViewController {
         return web
     }()
     
-    let webLoadingView = LottieWrapper.shared.webLoadingLottie(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
+    let webLoadingView = LottieWrapper.shared.blueStripeLoadingView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
 
 }
 

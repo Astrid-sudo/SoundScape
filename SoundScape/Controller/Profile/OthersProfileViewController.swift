@@ -86,6 +86,8 @@ class OthersProfileViewController: UIViewController {
     
     var selectedPicButton = PicType.coverPic
     
+    let loadingAnimationView = LottieWrapper.shared.greyStripeLoadingView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
+
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -315,12 +317,21 @@ class OthersProfileViewController: UIViewController {
     }
     
     func deletePost(documentID: String) {
+        
+        view.addSubview(loadingAnimationView)
+        loadingAnimationView.play()
+        
         FirebaseManager.shared.deletePostInAllAudio(documentID: documentID) { [weak self] errorMessage in
             guard let self = self else { return }
+            self.loadingAnimationView.stop()
+            self.loadingAnimationView.removeFromSuperview()
             self.popErrorAlert(title: "Failed to delete post", message: errorMessage)
-        }
+        } succeededCompletion: {
+            self.loadingAnimationView.stop()
+            self.loadingAnimationView.removeFromSuperview()
+            SPAlertWrapper.shared.presentSPAlert(title: "Post deleted!", message: nil, preset: .done, completion: nil)}
     }
-    
+
     private func loadAudio(localURL: URL, playInfo: PlayInfo) {
         AudioPlayHelper.shared.url = localURL
         AudioPlayHelper.shared.setPlayInfo(playInfo: playInfo)
@@ -353,11 +364,13 @@ class OthersProfileViewController: UIViewController {
                                             picString: imageBase64String,
                                             picType: selectedPicButton) { [weak self] errorMessage in
             guard let self = self else { return }
-            self.popErrorAlert(title: "Failed to uplaod picyure", message: errorMessage)
+            self.popErrorAlert(title: "Failed to uplaod picture", message: errorMessage)
+        } succeededCompletion: {
+            SPAlertWrapper.shared.presentSPAlert(title: "Photo added!", message: nil, preset: .heart, completion: nil)
         }
+
     }
 
-    
     // MARK: - UI properties
     
     private lazy var tableView: UITableView = {
@@ -732,6 +745,7 @@ extension OthersProfileViewController: AlertPresentableDelegate {
         
         let okButton = UIAlertAction(title: "Delete", style: .destructive) {[weak self] _ in
             guard let self = self else { return }
+            
             self.deletePost(documentID: documentID)
         }
         

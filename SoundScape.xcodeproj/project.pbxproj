@@ -69,6 +69,8 @@
 		56D3F0C3272D813C00A3B3B3 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D3F0C2272D813C00A3B3B3 /* ProfileViewController.swift */; };
 		56D4C96427437C4C00C57235 /* RemoteAudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D4C96327437C4B00C57235 /* RemoteAudioManager.swift */; };
 		56D72F142747838C000D6868 /* SPAlertWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D72F132747838C000D6868 /* SPAlertWrapper.swift */; };
+		56D72F162747941A000D6868 /* whiteStripeLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 56D72F152747941A000D6868 /* whiteStripeLoading.json */; };
+		56D72F18274799FC000D6868 /* greyStripeLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 56D72F17274799FC000D6868 /* greyStripeLoading.json */; };
 		56DC9ABA2737A0BD000B62C6 /* MapSearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DC9AB92737A0BD000B62C6 /* MapSearchResultTableViewCell.swift */; };
 		56DC9ABD2737A753000B62C6 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DC9ABC2737A753000B62C6 /* LocationService.swift */; };
 		56F07D35272BCA7600ABC7B9 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */; };
@@ -143,6 +145,8 @@
 		56D3F0C2272D813C00A3B3B3 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		56D4C96327437C4B00C57235 /* RemoteAudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteAudioManager.swift; sourceTree = "<group>"; };
 		56D72F132747838C000D6868 /* SPAlertWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPAlertWrapper.swift; sourceTree = "<group>"; };
+		56D72F152747941A000D6868 /* whiteStripeLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = whiteStripeLoading.json; sourceTree = "<group>"; };
+		56D72F17274799FC000D6868 /* greyStripeLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = greyStripeLoading.json; sourceTree = "<group>"; };
 		56DC9AB92737A0BD000B62C6 /* MapSearchResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSearchResultTableViewCell.swift; sourceTree = "<group>"; };
 		56DC9ABC2737A753000B62C6 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -294,9 +298,11 @@
 				56D3F0B3272CDFFD00A3B3B3 /* Bungee-Regular.ttf */,
 				568FEAF0274648DC0028B2EB /* blueStripeLoading.json */,
 				5655908F27318F0D00300AF7 /* lf30_editor_xgoxkd3f.json */,
+				56D72F17274799FC000D6868 /* greyStripeLoading.json */,
 				56AF84AF274642AC00C94B0A /* lf30_editor_kp9yptl2.json */,
 				565BD478272FE0DB00143108 /* lf30_editor_r2yecdir.json */,
 				5630FE2A272F049F003A38FB /* 74194-sleepy-sleep.json */,
+				56D72F152747941A000D6868 /* whiteStripeLoading.json */,
 				5683B698274151BA004512D4 /* lf30_editor_nhixegma.json */,
 				5679F118271D6D8400663001 /* memories.mp3 */,
 				5679F116271D6B2500663001 /* example_sound.wav */,
@@ -550,11 +556,13 @@
 				5679F107271D084B00663001 /* LaunchScreen.storyboard in Resources */,
 				56AF84B0274642AC00C94B0A /* lf30_editor_kp9yptl2.json in Resources */,
 				565BD479272FE0DB00143108 /* lf30_editor_r2yecdir.json in Resources */,
+				56D72F18274799FC000D6868 /* greyStripeLoading.json in Resources */,
 				5630FE2B272F049F003A38FB /* 74194-sleepy-sleep.json in Resources */,
 				5630FE29272F01A0003A38FB /* 77378-sunset.json in Resources */,
 				56D3F0B4272CDFFD00A3B3B3 /* Bungee-Regular.ttf in Resources */,
 				5679F104271D084B00663001 /* Assets.xcassets in Resources */,
 				5679F102271D084A00663001 /* Main.storyboard in Resources */,
+				56D72F162747941A000D6868 /* whiteStripeLoading.json in Resources */,
 				568FEAF1274648DC0028B2EB /* blueStripeLoading.json in Resources */,
 				5683B699274151BA004512D4 /* lf30_editor_nhixegma.json in Resources */,
 				5655909027318F0D00300AF7 /* lf30_editor_xgoxkd3f.json in Resources */,
