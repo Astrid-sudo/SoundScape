@@ -10,6 +10,7 @@ import UIKit
 protocol AlertPresentableDelegate: AnyObject {
     func popBlockAlert(toBeBlockedID: String)
     func popDeletePostAlert(documentID: String)
+    func popErrorAlert(errorMessage: String?)
 }
 
 class HomeTableViewCell: UITableViewCell {
@@ -68,6 +69,11 @@ class HomeTableViewCell: UITableViewCell {
     }
     
     // MARK: - method
+    
+    private func loadAudio(localURL: URL, playInfo: PlayInfo) {
+        AudioPlayHelper.shared.url = localURL
+        AudioPlayHelper.shared.setPlayInfo(playInfo: playInfo)
+    }
     
     private func popBlockAlert(toBeBlockedID: String) {
         delegate?.popBlockAlert(toBeBlockedID: toBeBlockedID)
@@ -128,28 +134,24 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         print("\(category),didSelect \(indexPath), url: \(firebaseData[indexPath.item].audioURL)")
         
         AudioPlayerWindow.shared.show()
-        
-        let title = firebaseData[indexPath.item].title
-        let author = firebaseData[indexPath.item].authorName
-        let content = firebaseData[indexPath.item].content
-        let duration = firebaseData[indexPath.item].duration
-        let documentID = firebaseData[indexPath.item].documentID
-        let authorUserID = firebaseData[indexPath.item].authorID
-        let audioImageNumber = firebaseData[indexPath.item].imageNumber
-        let authorAccountProvider = firebaseData[indexPath.item].authIDProvider
+        let playInfo = PlayInfo(title: firebaseData[indexPath.item].title,
+                                author: firebaseData[indexPath.item].authorName,
+                                content: firebaseData[indexPath.item].content,
+                                duration: firebaseData[indexPath.item].duration,
+                                documentID: firebaseData[indexPath.item].documentID,
+                                authorUserID: firebaseData[indexPath.item].authorID,
+                                audioImageNumber: firebaseData[indexPath.item].imageNumber,
+                                authorAccountProvider: firebaseData[indexPath.item].authIDProvider)
         
         if let remoteURL = firebaseData[indexPath.item].audioURL {
-            RemoteAudioManager.shared.downloadRemoteURL(documentID: documentID, remoteURL: remoteURL) { localURL in
-                AudioPlayHelper.shared.url = localURL
-                AudioPlayHelper.shared.setPlayInfo(title: title,
-                                                   author: author,
-                                                   content: content,
-                                                   duration: duration,
-                                                   documentID: documentID,
-                                                   authorUserID: authorUserID,
-                                                   audioImageNumber: audioImageNumber,
-                                                   authorAccountProvider: authorAccountProvider)
+            RemoteAudioManager.shared.downloadRemoteURL(documentID: firebaseData[indexPath.item].documentID,
+                                                        remoteURL: remoteURL, completion: { localURL in
+                self.loadAudio(localURL: localURL, playInfo: playInfo)
+            },
+                                                        errorCompletion: { errorMessage in
+                self.delegate?.popErrorAlert(errorMessage: errorMessage)
             }
+            )
         }
     }
     
@@ -164,7 +166,7 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         
         
         if authorID != signInManager.currentUserInfoFirebase?.userID {
-            //封鎖作者
+            // 封鎖作者
             return UIContextMenuConfiguration(
                 identifier: identifier, previewProvider: nil) { _ in
                     // 3
@@ -208,4 +210,3 @@ extension HomeTableViewCell: UICollectionViewDelegateFlowLayout {
     }
     
 }
-

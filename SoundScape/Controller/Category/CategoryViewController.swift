@@ -69,6 +69,8 @@ class CategoryViewController: UIViewController {
     let signInManager = SignInManager.shared
     // MARK: - UI properties
     
+    let loadingAnimationView = LottieWrapper.shared.greyStripeLoadingView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
+
     private lazy var headView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -151,6 +153,11 @@ class CategoryViewController: UIViewController {
     
     // MARK: - method
     
+    private func loadAudio(localURL: URL, playInfo: PlayInfo) {
+        AudioPlayHelper.shared.url = localURL
+        AudioPlayHelper.shared.setPlayInfo(playInfo: playInfo)
+    }
+    
     private func fetchUserFavoriteList() {
         
         guard let userProfileDocumentID = displayUserID else {
@@ -194,8 +201,6 @@ class CategoryViewController: UIViewController {
         }
     }
 
-
-    
     private func addObserver() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateAllAudioFile),
@@ -326,9 +331,21 @@ class CategoryViewController: UIViewController {
     }
     
     func deletePost(documentID: String) {
-        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID)
+        
+        view.addSubview(loadingAnimationView)
+        loadingAnimationView.play()
+        
+        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.loadingAnimationView.stop()
+            self.loadingAnimationView.removeFromSuperview()
+            self.popErrorAlert(title: "Failed to delete post", message: errorMessage)
+        } succeededCompletion: {
+            self.loadingAnimationView.stop()
+            self.loadingAnimationView.removeFromSuperview()
+            SPAlertWrapper.shared.presentSPAlert(title: "Post deleted!", message: nil, preset: .done, completion: nil)}
     }
-    
+
     func popBlockAlert(toBeBlockedID: String) {
        
        let alert = UIAlertController(title: "Are you sure?",
@@ -477,27 +494,25 @@ extension CategoryViewController: UITableViewDelegate {
         
         AudioPlayerWindow.shared.show()
         
-        let title = data[indexPath.item].title
-        let author = data[indexPath.item].authorName
-        let content = data[indexPath.item].content
-        let duration = data[indexPath.item].duration
-        let documentID = data[indexPath.item].documentID
-        let authorUserID = data[indexPath.item].authorID
-        let audioImageNumber = data[indexPath.item].imageNumber
-        let authorAccountProvider = data[indexPath.item].authIDProvider
+        let playInfo = PlayInfo(title: data[indexPath.item].title,
+                                author: data[indexPath.item].authorName,
+                                content: data[indexPath.item].content,
+                                duration: data[indexPath.item].duration,
+                                documentID: data[indexPath.item].documentID,
+                                authorUserID: data[indexPath.item].authorID,
+                                audioImageNumber: data[indexPath.item].imageNumber,
+                                authorAccountProvider: data[indexPath.item].authIDProvider)
         
         if let remoteURL = data[indexPath.item].audioURL {
-            RemoteAudioManager.shared.downloadRemoteURL(documentID: documentID, remoteURL: remoteURL) { localURL in
-                AudioPlayHelper.shared.url = localURL
-                AudioPlayHelper.shared.setPlayInfo(title: title,
-                                                   author: author,
-                                                   content: content,
-                                                   duration: duration,
-                                                   documentID: documentID,
-                                                   authorUserID: authorUserID,
-                                                   audioImageNumber: audioImageNumber,
-                                                   authorAccountProvider: authorAccountProvider)
+            RemoteAudioManager.shared.downloadRemoteURL(documentID: data[indexPath.item].documentID,
+                                                        remoteURL: remoteURL, completion: { localURL in
+                self.loadAudio(localURL: localURL, playInfo: playInfo)
+            },
+            errorCompletion: { [weak self] errorMessage in
+                guard let self = self else { return }
+                self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
             }
+ )
         }
 
     }

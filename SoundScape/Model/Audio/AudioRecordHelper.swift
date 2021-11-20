@@ -105,6 +105,18 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         }
     }
     
+    
+     func checkAudioPermission(grantedCompletion: @escaping() -> Void,
+                               notGrantedCompletion: @escaping() -> Void) {
+        AVAudioSession.sharedInstance().requestRecordPermission { granted in
+            if granted {
+                grantedCompletion()
+            } else {
+                notGrantedCompletion()
+            }
+        }
+    }
+
     func recordAudio() {
         settingAudioSession(toMode: .record)
         audioRecorder?.prepareToRecord()
@@ -112,8 +124,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         isRecording = true
         displayLink = CADisplayLink(target: self, selector: #selector(updateTimeAndPower))
         displayLink?.add(to: RunLoop.main, forMode: .common)
-
-
     }
     
     func stopRecording() -> URL? {
@@ -130,8 +140,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     
     func playRecordedSound() {
         if isRecording == false {
-//            audioPlayer?.stop()
-//            audioPlayer?.currentTime = 0
             audioPlayer?.play()
              isPlaying = true
         }
@@ -165,17 +173,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         delegate?.updateTimeAndPower(currentTime: audioRecorder.currentTime, power: avaragePower)
         
     }
-    
-//    func showAveragePower() {
-//        
-//        guard let audioRecorder = audioRecorder else { return }
-//        
-//        let avaragePower = audioRecorder.averagePower(forChannel: 0)
-//        let peak = audioRecorder.peakPower(forChannel: 0)
-//        print("from AudioHelper Recorder_avaragePower: \(avaragePower), peak: \(peak)")
-//        
-//
-//    }
     
 }
 

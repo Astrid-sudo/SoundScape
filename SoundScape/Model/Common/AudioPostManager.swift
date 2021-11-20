@@ -85,7 +85,13 @@ class AudioPostManager {
                 self.allAudioFiles = posts
                 
             case.failure(let error):
-                print(error)
+                print(error.localizedDescription)
+                let errorMessage = error.localizedDescription
+                let userInfoKey = "UserInfo"
+                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
+
+                //Home VC will observe
+                NotificationCenter.default.post(name: .fetchAudioPostError, object: nil, userInfo: userInfo)
             }
         }
         
@@ -96,5 +102,6 @@ class AudioPostManager {
 
 extension Notification.Name {
     static let allAudioPostChange = Notification.Name("allAudioPostChange")
+    static let fetchAudioPostError = Notification.Name("fetchAudioPostError")
 }
     

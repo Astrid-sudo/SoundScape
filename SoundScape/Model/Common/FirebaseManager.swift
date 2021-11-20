@@ -89,7 +89,9 @@ class FirebaseManager {
         }
     }
     
-    func upload(localURL: URL, post: SCPost, completion: @escaping () -> Void) {
+    func upload(localURL: URL, post: SCPost,
+                completion: @escaping () -> Void,
+                errorCompletion:@escaping (_ errorMessage:String) -> Void) {
         
         var fullPost = post
         
@@ -100,8 +102,8 @@ class FirebaseManager {
         
         let audioReference = storage.child("\(audioName)")
         let uploadTask = audioReference.putFile(from: localURL, metadata: nil) { metadata, error in
-            if error != nil {
-                print(String(describing: error))
+            if let error = error {
+                errorCompletion(error.localizedDescription)
                 return
             }
             print("Upload audio suceeded from localUrl:\(localURL)")
@@ -110,8 +112,9 @@ class FirebaseManager {
                 
                 guard let self = self else { return }
                 
-                if error != nil {
+                if let error = error {
                     print("Failed to get audio remote URL")
+                    errorCompletion(error.localizedDescription)
                     return
                 }
                 
@@ -120,7 +123,6 @@ class FirebaseManager {
                 fullPost.audioURL = url
                 fullPost.createdTime = Timestamp(date: Date())
                 fullPost.documentID = audioString
-                
                 
                 do {
                     try document.setData(from: fullPost)
@@ -134,7 +136,9 @@ class FirebaseManager {
                         
                         self.uploadGeoPointToAllLocations(audioDocumentID: fullPost.documentID,
                                                           locationData: locationData,
-                                                          completion: completion)
+                                                          completion: completion) { errorMessage in
+                            errorCompletion(errorMessage)
+                        }
                     } else {
                         
                         completion()
@@ -143,6 +147,7 @@ class FirebaseManager {
                     
                 } catch {
                     print("Failed add data to firestire \(error)")
+                    errorCompletion(error.localizedDescription)
                 }
             }
         }
@@ -152,33 +157,43 @@ class FirebaseManager {
         }
     }
     
-    func deletePostInAllAudio(documentID: String) {
+    func deletePostInAllAudio(documentID: String,
+                              errorCompletion: @escaping (_ errorMessage:String) -> Void,
+                              succeededCompletion: @escaping () -> Void) {
+       
         allAudioCollectionRef.document(documentID).delete() { error in
-            
             if let error = error {
+                errorCompletion(error.localizedDescription)
                 print("Error remove post in AllAudioCollection \(documentID), error: \(error)")
             } else {
                 print("\(documentID) in AllAudioCollection successfully removed.")
-                self.deletePostInAllLocation(documentID: documentID)
+                self.deletePostInAllLocation(documentID: documentID,
+                                             errorCompletion: errorCompletion,
+                                             succeededCompletion: succeededCompletion)
             }
         }
     }
     
-   private func deletePostInAllLocation(documentID: String) {
+   private func deletePostInAllLocation(documentID: String,
+                                        errorCompletion: @escaping (_ errorMessage:String) -> Void, succeededCompletion: @escaping () -> Void) {
         
         allLocationsCollectionRef.document(documentID).delete() { error in
-            
             if let error = error {
                 print("Error remove post \(documentID), error: \(error)")
+                errorCompletion(error.localizedDescription)
             } else {
                 print("\(documentID) in AllLocationCollection successfully removed.")
-                self.deleteAudioInStorage(documentID: documentID)
+                self.deleteAudioInStorage(documentID: documentID,
+                                          errorCompletion: errorCompletion,
+                                          succeededCompletion: succeededCompletion)
                 
             }
         }
     }
     
-    private func deleteAudioInStorage(documentID: String) {
+    private func deleteAudioInStorage(documentID: String,
+                                      errorCompletion: @escaping (_ errorMessage:String) -> Void,
+                                      succeededCompletion: @escaping () -> Void) {
         
         let audioName = documentID + ".m4a"
         let audioReference = storage.child("\(audioName)")
@@ -186,98 +201,43 @@ class FirebaseManager {
         audioReference.delete { error in
             if let error = error {
                 print("Error remove audio \(audioReference), error: \(error)")
+                errorCompletion(error.localizedDescription)
             } else {
                 print("\(audioReference) in Storage successfully removed.")
+                succeededCompletion()
             }
         }
         
-    }
-    
-    // MARK: - temporary fake member method
-    
-    func checkUsers(provider: String, userID: String, completion: @escaping (Result<[SCUser], Error>) -> Void) {
-        
-        allUsersCollectionRef.whereField("provider", isEqualTo: provider).whereField("userID", isEqualTo: userID).getDocuments { [weak self] snapshot, error in
-            
-            if let error = error {
-                completion(Result.failure(error))
-                return
-            }
-            
-            if let snapshot = snapshot {
-                
-                let users = snapshot.documents.compactMap({ snapshot in
-                    try? snapshot.data(as: SCUser.self)
-                })
-                
-                completion(Result.success(users))
-            }
-        }
-    }
-    
-    func fetchUsers(completion: @escaping (Result<[SCUser], Error>) -> Void) {
-        
-        allUsersCollectionRef.getDocuments { snapshot, error in
-            
-            if let error = error {
-                completion(Result.failure(error))
-                return
-            }
-            
-            if let snapshot = snapshot {
-                let users = snapshot.documents.compactMap({ snapshot in
-                    try? snapshot.data(as: SCUser.self)
-                })
-                
-                completion(Result.success(users))
-                
-            }
-        }
     }
     
     func fetchUser(userID: String,
                    userIDProvider: String,
                    completion: @escaping (Result<SCUser, Error>) -> Void) {
-        
+
         allUsersCollectionRef.whereField("userID", isEqualTo: userID).whereField("provider", isEqualTo: userIDProvider).getDocuments { snapshot, error in
-            
+
             if let error = error {
                 completion(Result.failure(error))
                 return
             }
-            
+
             if let snapshot = snapshot {
-                
+
                 if snapshot.documents.isEmpty {
-                    
+
                     print("Firebase manager: No such user")
                 } else {
-                    
+
                     let users = snapshot.documents.compactMap({ snapshot in
                         try? snapshot.data(as: SCUser.self)
                     })
-                    
+
                     guard let user = users.first else { return }
-                    
+
                     completion(Result.success(user))
-                    
+
                 }
             }
-        }
-    }
-    
-    func uploadUserInfo(userInfo: SCUser) {
-        
-        var userInfo = userInfo
-        let document = allUsersCollectionRef.document()
-        userInfo.userInfoDoumentID = document.documentID
-        
-        do {
-            
-            try document.setData(from: userInfo)
-            
-        } catch {
-            print(error)
         }
     }
     
@@ -303,7 +263,6 @@ class FirebaseManager {
             } else {
                 print("Document does not exist")
                 completion(Result.success(SCUser(userID: "", provider: "", username: "", userEmail: "", userPic: nil, userProfileCover: nil, userInfoDoumentID: nil)))
-                
             }
         }
     }
@@ -350,7 +309,8 @@ class FirebaseManager {
     func manipulateFavorite(userProfileDocumentID: String,
                             documendID: String,
                             addCompletion: @escaping () -> Void,
-                            removeCompletion: @escaping () -> Void) {
+                            removeCompletion: @escaping () -> Void,
+                            errorCompletion: @escaping (_ errorMessage:String) -> Void) {
         
         let myFavoriteSubCollectionRef = allUsersCollectionRef.document(userProfileDocumentID).collection("myFavorite")
         
@@ -358,6 +318,7 @@ class FirebaseManager {
             
             if let error = error {
                 print("Failed to fetch myFavorite collection \(error)")
+                errorCompletion(error.localizedDescription)
                 return
             }
             
@@ -369,6 +330,7 @@ class FirebaseManager {
                         try myFavoriteSubCollectionRef.addDocument(from: favorite)
                         addCompletion()
                     } catch {
+                        errorCompletion(error.localizedDescription)
                         print(error)
                     }
                     
@@ -382,6 +344,7 @@ class FirebaseManager {
                     myFavoriteSubCollectionRef.document(refDocumentID).delete() { error in
                         if let error = error {
                             print("Error removing favorite: \(error)")
+                            errorCompletion(error.localizedDescription)
                         } else {
                             print("Document successfully removed favorite!")
                             removeCompletion()
@@ -442,7 +405,8 @@ class FirebaseManager {
                           loggedInUserInfoDocumentID: String,
                           loggedInUserInfo: SCFollow,
                           followCompletion: @escaping () -> Void,
-                          unfollowCompletion: @escaping () -> Void) {
+                          unfollowCompletion: @escaping () -> Void,
+                          errorCompletion: @escaping (_ errorMessage:String) -> Void) {
         
         let myFollowingSubCollectionRef = allUsersCollectionRef.document(loggedInUserInfoDocumentID).collection("following")
         
@@ -451,6 +415,7 @@ class FirebaseManager {
         myFollowingSubCollectionRef.whereField("userID", isEqualTo: userInfo.userID).whereField("provider", isEqualTo: userInfo.provider).getDocuments { snapshot, error in
             
             if let error = error {
+                errorCompletion(error.localizedDescription)
                 print("Failed to fetch myFollowing subCollection collection \(error)")
                 return
             }
@@ -469,6 +434,7 @@ class FirebaseManager {
                         followCompletion()
                         
                     } catch {
+                        errorCompletion(error.localizedDescription)
                         print(error)
                     }
                     
@@ -481,6 +447,7 @@ class FirebaseManager {
                         guard let self = self else { return }
                         
                         if let error = error {
+                            errorCompletion(error.localizedDescription)
                             print("Error removing favorite: \(error)")
                         } else {
                             print("Person successfully removed from loggedIn's following!")
@@ -496,7 +463,7 @@ class FirebaseManager {
         }
     }
     
-    func removeFollowersDocID(userInfoDoumentID: String,
+    private func removeFollowersDocID(userInfoDoumentID: String,
                               userInfo: SCFollow,
                               loggedInUserInfoDocumentID: String,
                               loggedInUserInfo: SCFollow) {
@@ -622,22 +589,27 @@ class FirebaseManager {
     
     // MARK: - comment
     
-    func deleteComment(audioDocumentID: String, commentDocumentID: String) {
+    func deleteComment(audioDocumentID: String,
+                       commentDocumentID: String,
+                       errorCompletion: @escaping (_ errorMessage:String) -> Void,
+                       successedCompletion: @escaping() -> Void) {
         let db = Firestore.firestore()
         let commentRef = db.collection(CommonUsage.CollectionName.allAudioFiles).document(audioDocumentID).collection(CommonUsage.CollectionName.comments).document(commentDocumentID)
         
         commentRef.delete { error in
             if let error = error {
                 print("Failed to delete comment \(commentRef), error: \(error)")
+                errorCompletion(error.localizedDescription)
             } else {
                 print("Succeffully delete comment \(commentRef)")
+                successedCompletion()
             }
         }
     }
     
-    func addComment(to documentID: String, with comment: SCComment, completion: @escaping () -> Void) {
+    func addComment(to documentID: String, with comment: SCComment, completion: @escaping () -> Void, errorCompletion: @escaping (String) -> Void) {
+       
         let db = Firestore.firestore()
-        
         let commentSubCollectionRef = db.collection(CommonUsage.CollectionName.allAudioFiles).document(documentID).collection(CommonUsage.CollectionName.comments)
         
         let document = commentSubCollectionRef.document()
@@ -654,11 +626,13 @@ class FirebaseManager {
             try document.setData(from: newComment)
             completion()
         } catch {
+            errorCompletion(error.localizedDescription)
             print("FirebaseManager:mfailed to add comment")
         }
     }
     
-    func fetchComment(from documentID: String, completion: @escaping (Result<[SCComment], Error>) -> Void) {
+    private func fetchComment(from documentID: String,
+                              completion: @escaping (Result<[SCComment], Error>) -> Void) {
         
         let db = Firestore.firestore()
         
@@ -682,7 +656,8 @@ class FirebaseManager {
         }
     }
     
-    func checkCommentChange(from documentID: String, completion: @escaping (Result<[SCComment], Error>) -> Void) {
+    func checkCommentChange(from documentID: String,
+                            completion: @escaping (Result<[SCComment], Error>) -> Void) {
         
         let db = Firestore.firestore()
         
@@ -706,14 +681,19 @@ class FirebaseManager {
         }
     }
     
-    func uploadPicToFirebase(userDocumentID: String, picString:String, picType: PicType) {
+    func uploadPicToFirebase(userDocumentID: String,
+                             picString:String,
+                             picType: PicType,
+                             errorCompletion: @escaping (_ errorMessage:String) -> Void,
+                             succeededCompletion: @escaping () -> Void) {
         
         let profilePicSubCollection = allUsersCollectionRef.document(userDocumentID).collection("profilePicture")
         let picture = SCPicture(picture: picString)
         do {
             try profilePicSubCollection.document(picType.rawValue).setData(from: picture)
+            succeededCompletion()
         } catch {
-            
+            errorCompletion(error.localizedDescription)
             print(error)
         }
     }
@@ -797,13 +777,16 @@ class FirebaseManager {
     
     // MARK: - Location
     
-    func uploadGeoPointToAllLocations(audioDocumentID: String, locationData: SCLocation, completion: () -> Void) {
+    func uploadGeoPointToAllLocations(audioDocumentID: String,
+                                      locationData: SCLocation,
+                                      completion: () -> Void,
+                                      errorCompletion:@escaping (_ errorMessage:String) -> Void) {
         
         do {
             try allLocationsCollectionRef.document(audioDocumentID).setData(from: locationData)
             completion()
         } catch {
-            
+            errorCompletion(error.localizedDescription)
             print("Failed to upload locationData to allLocations collection \(error)")
         }
         

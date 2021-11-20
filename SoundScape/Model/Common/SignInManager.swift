@@ -115,12 +115,18 @@ class SignInManager {
                 
             case.failure(let error):
                 print("fetchUserInfo failed\(error)")
+                let errorMessage = error.localizedDescription
+                let userInfoKey = "UserInfo"
+                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
+
+                //Home VC will observe
+                NotificationCenter.default.post(name: .fetchLoginUserError, object: nil, userInfo: userInfo)
+
             }
         }
     }
     
     func uploadNewUserToFirebase(userID: String, provider: String, userEmail: String, userName: String) {
-        
         let newUser = SCUser(userID: userID,
                              provider: provider,
                              username: userName,
@@ -128,10 +134,8 @@ class SignInManager {
                              userPic: nil,
                              userProfileCover: nil,
                              userInfoDoumentID: userID)
-        
         self.firebaseManager.uploadUserToFirebase(userInfo: newUser)
         self.currentUserInfoFirebase = newUser
-        
     }
     
     func fetchUserInfoFromFirebase(userID: String) {
@@ -148,6 +152,12 @@ class SignInManager {
                 
             case.failure(let error):
                 print("fetchUserInfo failed\(error)")
+                let errorMessage = error.localizedDescription
+                let userInfoKey = "UserInfo"
+                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
+
+                //Home VC will observe
+                NotificationCenter.default.post(name: .fetchLoginUserError, object: nil, userInfo: userInfo)
             }
         }
     }
@@ -167,6 +177,12 @@ class SignInManager {
                 
             case .failure(let error):
                 print("SignInManager: Failed to get favoriteDocumentID \(error)")
+                let errorMessage = error.localizedDescription
+                let userInfoKey = "UserInfo"
+                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
+
+                //Home VC will observe
+                NotificationCenter.default.post(name: .failedFetchFavorite, object: nil, userInfo: userInfo)
                 
             }
         }
@@ -183,7 +199,13 @@ class SignInManager {
                 
                 self.currentUserFollowingList = followings
                 
-            case .failure(let error): print(error)
+            case .failure(let error):
+                let errorMessage = error.localizedDescription
+                let userInfoKey = "UserInfo"
+                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
+
+                //Home VC will observe
+                NotificationCenter.default.post(name: .failedFetchFollowingList, object: nil, userInfo: userInfo)
             }
         }
     }
@@ -200,7 +222,12 @@ class SignInManager {
                 self.currentUserFollowerList = followers
                 
             case .failure(let error):
-                print(error)
+                let errorMessage = error.localizedDescription
+                let userInfoKey = "UserInfo"
+                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
+
+                //Home VC will observe
+                NotificationCenter.default.post(name: .failedFetchFollowerList, object: nil, userInfo: userInfo)
             }
         }
     }
@@ -214,7 +241,12 @@ class SignInManager {
             case .success(let picture):
                 self.currentUserPic = picture.picture
             case .failure(let error):
-                print(error)
+                let errorMessage = error.localizedDescription
+                let userInfoKey = "UserInfo"
+                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
+
+                //Profile VC will observe
+                NotificationCenter.default.post(name: .failedFetchUserProfilePic, object: nil, userInfo: userInfo)
             }
         }
     }
@@ -226,7 +258,12 @@ class SignInManager {
             case .success(let picture):
                 self.currentUserPic = picture.picture
             case .failure(let error):
-                print(error)
+                let errorMessage = error.localizedDescription
+                let userInfoKey = "UserInfo"
+                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
+
+                // Profile VC will observe
+                NotificationCenter.default.post(name: .failedFetchUserProfilePic, object: nil, userInfo: userInfo)
             }
         }
     }
@@ -240,7 +277,12 @@ class SignInManager {
             case .success(let picture):
                 self.currentUserCover = picture.picture
             case .failure(let error):
-                print(error)
+                let errorMessage = error.localizedDescription
+                let userInfoKey = "UserInfo"
+                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
+
+                // Profile VC will observe
+                NotificationCenter.default.post(name: .failedFetchUserCoverPic, object: nil, userInfo: userInfo)
             }
         }
     }
@@ -252,7 +294,12 @@ class SignInManager {
             case .success(let picture):
                 self.currentUserCover = picture.picture
             case .failure(let error):
-                print(error)
+                let errorMessage = error.localizedDescription
+                let userInfoKey = "UserInfo"
+                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
+
+                //Profile VC will observe
+                NotificationCenter.default.post(name: .failedFetchUserCoverPic, object: nil, userInfo: userInfo)
             }
         }
     }
@@ -264,7 +311,12 @@ class SignInManager {
             case .success(let users):
                 self.currentUserBlacklist = users
             case .failure(let error):
-                print(error)
+                let errorMessage = error.localizedDescription
+                let userInfoKey = "UserInfo"
+                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
+
+                //Home VC will observe
+                NotificationCenter.default.post(name: .failedFetchBlackList, object: nil, userInfo: userInfo)
             }
         }
     }
@@ -278,4 +330,11 @@ extension Notification.Name {
     static let currentUserPicChange = Notification.Name("currentUserPicChange")
     static let currentUserCoverChange = Notification.Name("currentUserCoverChange")
     static let currentUserBlacklistChange = Notification.Name("currentUserBlacklistChange")
+    static let fetchLoginUserError = Notification.Name("fetchLoginUserError")
+    static let failedFetchFavorite = Notification.Name("failedFetchFavorite")
+    static let failedFetchFollowingList = Notification.Name("failedFetchFollowingList")
+    static let failedFetchFollowerList = Notification.Name("failedFetchFollowerList")
+    static let failedFetchUserProfilePic = Notification.Name("failedFetchUserProfilePic")
+    static let failedFetchUserCoverPic = Notification.Name("failedFetchUserCoverPic")
+    static let failedFetchBlackList = Notification.Name("failedFetchBlackList")
 }

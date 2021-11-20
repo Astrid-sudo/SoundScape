@@ -74,6 +74,8 @@ class ProfileViewController: UIViewController {
     
     // MARK: - UI properties
     
+    let loadingAnimationView = LottieWrapper.shared.greyStripeLoadingView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
+    
     private lazy var tableView: UITableView = {
         let table = UITableView()
         table.dataSource = self
@@ -166,12 +168,33 @@ class ProfileViewController: UIViewController {
                                                selector: #selector(updateAllAudioFile),
                                                name: .allAudioPostChange ,
                                                object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(failedFetchUserProfilePic),
+                                               name: .failedFetchUserProfilePic ,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(failedFetchUserCoverPic),
+                                               name: .failedFetchUserCoverPic ,
+                                               object: nil)
+        
     }
     
     @objc func updateAllAudioFile() {
         fetchDataFromFirebase()
     }
     
+    @objc func failedFetchUserProfilePic(notification: Notification) {
+        guard let error = notification.userInfo?["UserInfo"] as? String else { return }
+        popErrorAlert(title: "Failed to fetch user profile pic", message: error)
+    }
+    
+    @objc func failedFetchUserCoverPic(notification: Notification) {
+        guard let error = notification.userInfo?["UserInfo"] as? String else { return }
+        popErrorAlert(title: "Failed to fetch user cover pic", message: error)
+    }
+
     private func fetchFollowerList() {
         numbersOfFollowers = signInManager.currentUserFollowerList?.count
     }
@@ -213,10 +236,21 @@ class ProfileViewController: UIViewController {
     }
     
     func deletePost(documentID: String) {
-        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID)
+        
+        view.addSubview(loadingAnimationView)
+        loadingAnimationView.play()
+        
+        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.loadingAnimationView.stop()
+            self.loadingAnimationView.removeFromSuperview()
+            self.popErrorAlert(title: "Failed to delete post", message: errorMessage)
+        } succeededCompletion: {
+            self.loadingAnimationView.stop()
+            self.loadingAnimationView.removeFromSuperview()
+            SPAlertWrapper.shared.presentSPAlert(title: "Post deleted!", message: nil, preset: .done, completion: nil)}
     }
 
-    
     // MARK: - image method
     
     private func pressSelectImage() {
@@ -240,7 +274,13 @@ class ProfileViewController: UIViewController {
         
         firebaseManager.uploadPicToFirebase(userDocumentID: userDocumentID,
                                             picString: imageBase64String,
-                                            picType: selectedPicButton)
+                                            picType: selectedPicButton) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.popErrorAlert(title: "Failed to uplaod picyure", message: errorMessage)
+        } succeededCompletion: {
+            SPAlertWrapper.shared.presentSPAlert(title: "Photo added!", message: nil, preset: .heart, completion: nil)
+        }
+
     }
     
     // MARK: - action
@@ -412,7 +452,7 @@ extension ProfileViewController: UITableViewDelegate {
             
         } else {
             
-            return 168
+            return 200
             
         }
     }
@@ -562,6 +602,10 @@ extension ProfileViewController: AlertPresentableDelegate {
         alert.addAction(okButton)
         
         present(alert, animated: true, completion: nil)
+    }
+    
+    func popErrorAlert(errorMessage: String?) {
+        popErrorAlert(title: "Failed to download audio", message: errorMessage)
     }
     
 }
