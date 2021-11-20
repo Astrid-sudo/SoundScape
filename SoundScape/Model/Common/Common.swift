@@ -134,6 +134,7 @@ struct CommonUsage {
         static let logInNotice = "By using SoundScape you agree to accept our"
         static let privacyPolicy = "Privacy Policy"
         static let audioLengthNotice = "Only support upload audio file between 5 to 60 seconds."
+        static let audioLengthNoticeWhenRecord = "Only support upload audio file between 5 to 60 seconds. You may edit audio on next page."
         static let noResultTitle =  "No result."
         static let searchHintLabel = "Search by title, author, or content."
         static let block = "block"
@@ -144,6 +145,9 @@ struct CommonUsage {
         static let deleteAudioMessage = "Long press on image to delete the audio."
         static let laeuButton = "LICENSED APPLICATION END USER LICENSE AGREEMENT"
         static let and = "and"
+        static let recordAgain = "(record again)"
+        static let pinOnMapHint = "Tap to add location"
+        static let finish = "Finish adding marker"
     }
     
     struct CollectionName {

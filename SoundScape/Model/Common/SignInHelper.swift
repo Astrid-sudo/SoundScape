@@ -117,7 +117,8 @@ class SignInHelper: NSObject {
 
 extension SignInHelper: ASAuthorizationControllerDelegate {
     
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+    func authorizationController(controller: ASAuthorizationController,
+                                 didCompleteWithAuthorization authorization: ASAuthorization) {
         
         if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
             
@@ -183,6 +184,8 @@ extension SignInHelper: ASAuthorizationControllerDelegate {
     }
     
 }
+
+// MARK: - conform ASAuthorizationControllerPresentationContextProviding
 
 extension SignInHelper: ASAuthorizationControllerPresentationContextProviding {
     

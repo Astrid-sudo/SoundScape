@@ -185,7 +185,7 @@
         <!--Create AudioVC-->
         <scene sceneID="j1U-B4-N7Q">
             <objects>
-                <viewController id="aSM-Zi-js2" customClass="CreateAudioVC" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CreateAudioVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="aSM-Zi-js2" customClass="CreateAudioVC" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ViH-y6-qpk">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

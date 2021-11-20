@@ -123,6 +123,8 @@ class AudioMapViewController: UIViewController {
             setNavigationBar()
             setMap()
             addSearchBar()
+            setPinLoactionButton()
+            setMapHintLabel()
             setTableView()
         case .browseMap:
             addObserver()
@@ -263,7 +265,7 @@ class AudioMapViewController: UIViewController {
         let searchBar = UISearchBar()
         searchBar.backgroundImage = UIImage()
         searchBar.barTintColor = UIColor(named: CommonUsage.scWhite)
-        searchBar.placeholder = CommonUsage.Text.search
+        searchBar.placeholder = CommonUsage.Text.searchPlace
         searchBar.delegate = self
         searchBar.searchTextField.textColor = UIColor(named: CommonUsage.scWhite)
         searchBar.showsCancelButton = true
@@ -308,6 +310,27 @@ class AudioMapViewController: UIViewController {
         return marker
     }()
     
+    lazy var pinLoactionButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = UIColor(named: CommonUsage.scWhite)
+        button.setTitle(CommonUsage.Text.finish, for: .normal)
+        button.titleLabel?.font = UIFont(name: CommonUsage.fontSemibold, size: 14)
+        button.setTitleColor(UIColor(named: CommonUsage.scBlue), for: .normal)
+        button.addTarget(self, action: #selector(backToLastPage), for: .touchUpInside)
+        button.layer.cornerRadius = 10
+        return button
+    }()
+    
+    lazy var mapNoticeLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textAlignment = .left
+        label.numberOfLines = 0
+        label.font = UIFont(name: CommonUsage.font, size: 20)
+        label.text = CommonUsage.Text.pinOnMapHint
+        return label
+    }()
+    
 }
 
 // MARK: - UI method
@@ -315,6 +338,8 @@ class AudioMapViewController: UIViewController {
 extension AudioMapViewController {
     
     private func setNavigationBar() {
+        
+        //        navigationItem.hidesBackButton = true
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
@@ -327,6 +352,20 @@ extension AudioMapViewController {
         navigationItem.titleView?.backgroundColor = UIColor(named: CommonUsage.scBlue)
     }
     
+    private func setPinLoactionButton() {
+        view.addSubview(pinLoactionButton)
+        pinLoactionButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            //            pinLoactionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            //            pinLoactionButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
+            pinLoactionButton.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 76),
+            pinLoactionButton.heightAnchor.constraint(equalToConstant: 41),
+            pinLoactionButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pinLoactionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+        ])
+        
+    }
+    
     private func setTableView() {
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -337,6 +376,15 @@ extension AudioMapViewController {
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
         ])
     }
+    
+    func setMapHintLabel() {
+       view.addSubview(mapNoticeLabel)
+        mapNoticeLabel.translatesAutoresizingMaskIntoConstraints = false
+       NSLayoutConstraint.activate([
+           mapNoticeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+           mapNoticeLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32)
+       ])
+   }
     
     private func setMap() {
         view.addSubview(mapView)

@@ -71,6 +71,7 @@
 		56D72F142747838C000D6868 /* SPAlertWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D72F132747838C000D6868 /* SPAlertWrapper.swift */; };
 		56D72F162747941A000D6868 /* whiteStripeLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 56D72F152747941A000D6868 /* whiteStripeLoading.json */; };
 		56D72F18274799FC000D6868 /* greyStripeLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 56D72F17274799FC000D6868 /* greyStripeLoading.json */; };
+		56D72F1B2748F039000D6868 /* UPloadVC + extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D72F1A2748F039000D6868 /* UPloadVC + extension.swift */; };
 		56DC9ABA2737A0BD000B62C6 /* MapSearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DC9AB92737A0BD000B62C6 /* MapSearchResultTableViewCell.swift */; };
 		56DC9ABD2737A753000B62C6 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DC9ABC2737A753000B62C6 /* LocationService.swift */; };
 		56F07D35272BCA7600ABC7B9 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */; };
@@ -147,6 +148,7 @@
 		56D72F132747838C000D6868 /* SPAlertWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPAlertWrapper.swift; sourceTree = "<group>"; };
 		56D72F152747941A000D6868 /* whiteStripeLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = whiteStripeLoading.json; sourceTree = "<group>"; };
 		56D72F17274799FC000D6868 /* greyStripeLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = greyStripeLoading.json; sourceTree = "<group>"; };
+		56D72F1A2748F039000D6868 /* UPloadVC + extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UPloadVC + extension.swift"; sourceTree = "<group>"; };
 		56DC9AB92737A0BD000B62C6 /* MapSearchResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSearchResultTableViewCell.swift; sourceTree = "<group>"; };
 		56DC9ABC2737A753000B62C6 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		56F07D34272BCA7600ABC7B9 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -399,6 +401,7 @@
 				568210C72723DAE40055642E /* RecordVC.swift */,
 				5678FFA5272418B500E1ADD5 /* TestEditVC.swift */,
 				5678FFA727243FA300E1ADD5 /* EditVC.swift */,
+				56D72F1A2748F039000D6868 /* UPloadVC + extension.swift */,
 			);
 			path = Upload;
 			sourceTree = "<group>";
@@ -682,6 +685,7 @@
 				5655908A2731855500300AF7 /* SettingViewController.swift in Sources */,
 				567566EF273271C6007ACC61 /* SignInHelper.swift in Sources */,
 				5679F0FF271D084A00663001 /* SoundDetailVC.swift in Sources */,
+				56D72F1B2748F039000D6868 /* UPloadVC + extension.swift in Sources */,
 				56AF84AC2745FAD500C94B0A /* LAEUViewController.swift in Sources */,
 				56C05AAC2736665A009D029C /* AudioMapViewController.swift in Sources */,
 				568210C82723DAE40055642E /* RecordVC.swift in Sources */,

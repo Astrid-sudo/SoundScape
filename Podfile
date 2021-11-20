@@ -20,6 +20,6 @@ target 'SoundScape' do
   pod 'GooglePlaces'
   pod 'Firebase/Crashlytics'
   pod 'SPAlert' 
- 
+  pod 'JGProgressHUD'
 
 end

@@ -210,48 +210,6 @@ class FirebaseManager {
         
     }
     
-    // MARK: - temporary fake member method
-    
-//    func checkUsers(provider: String, userID: String, completion: @escaping (Result<[SCUser], Error>) -> Void) {
-//
-//        allUsersCollectionRef.whereField("provider", isEqualTo: provider).whereField("userID", isEqualTo: userID).getDocuments { [weak self] snapshot, error in
-//
-//            if let error = error {
-//                completion(Result.failure(error))
-//                return
-//            }
-//
-//            if let snapshot = snapshot {
-//
-//                let users = snapshot.documents.compactMap({ snapshot in
-//                    try? snapshot.data(as: SCUser.self)
-//                })
-//
-//                completion(Result.success(users))
-//            }
-//        }
-//    }
-//
-//    func fetchUsers(completion: @escaping (Result<[SCUser], Error>) -> Void) {
-//
-//        allUsersCollectionRef.getDocuments { snapshot, error in
-//
-//            if let error = error {
-//                completion(Result.failure(error))
-//                return
-//            }
-//
-//            if let snapshot = snapshot {
-//                let users = snapshot.documents.compactMap({ snapshot in
-//                    try? snapshot.data(as: SCUser.self)
-//                })
-//
-//                completion(Result.success(users))
-//
-//            }
-//        }
-//    }
-//
     func fetchUser(userID: String,
                    userIDProvider: String,
                    completion: @escaping (Result<SCUser, Error>) -> Void) {

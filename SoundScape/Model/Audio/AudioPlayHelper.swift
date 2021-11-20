@@ -56,6 +56,9 @@ class AudioPlayHelper: NSObject {
                 audioPlayer?.delegate = self
             } catch {
                 print("fail to create AVAudioPlayer")
+                NotificationCenter.default.post(name: .audioPlayHelperError, object: nil, userInfo: nil)
+
+                
             }
             
             let userInfoKey = "UserInfo"
@@ -167,4 +170,5 @@ extension AudioPlayHelper: AVAudioPlayerDelegate {
 extension Notification.Name {
     static let audioPlayHelperUpdateTime = Notification.Name("audioPlayHelperUpdateTime")
     static let audioPlayHelperDidPlayEnd = Notification.Name("audioPlayHelperDidPlayEnd")
+    static let audioPlayHelperError = Notification.Name("audioPlayHelperError")
 }

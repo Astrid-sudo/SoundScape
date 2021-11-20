@@ -440,6 +440,16 @@ class AudioPlayerVC: UIViewController {
                                                selector: #selector(changeButtImage),
                                                name: .didItemPlayToEndTime,
                                                object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(audioPlayHelperError),
+                                               name: .audioPlayHelperError,
+                                               object: nil)
+
+    }
+    
+    @objc func audioPlayHelperError() {
+        popErrorAlert(title: "Audio player errer", message: "Please terminate SoundScape_ and try again.")
     }
     
     @objc func changeButtImage() {
