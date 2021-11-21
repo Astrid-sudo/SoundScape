@@ -49,6 +49,7 @@ struct CommonUsage {
     static let profileCover4 = "profileCover4"
     static let profileCover5 = "profileCover5"
     static let yeh1024 = "yeh1024"
+    static let launchScreen1 = "launchScreen1"
     
     static let animalDog = "Animal_Dog"
     static let animalCat = "Animal_Cat"
@@ -64,14 +65,6 @@ struct CommonUsage {
     static let natureRiver = "Nature_River"
     static let uniqueRice = "Unique_Rice"
     static let untitledArtwork = "Untitled_Artwork 4"
-    
-    static let profilePic = "profilePic"
-    static let profilePic2 = "profilePic2"
-    static let profilePic3 = "profilePic3"
-    static let profilePic4 = "profilePic4"
-    static let profilePic5 = "profilePic5"
-    
-    static let line = "line"
     
     static let scDarkGreen = "scDarkGreen"
     static let scGreen = "scGreen"
@@ -133,7 +126,8 @@ struct CommonUsage {
         static let audioImage = "Pick a cover"
         static let logInNotice = "By using SoundScape you agree to accept our"
         static let privacyPolicy = "Privacy Policy"
-        static let audioLengthNotice = "Only support upload audio file under 5 to 60 seconds."
+        static let audioLengthNotice = "Only support upload audio file between 5 to 60 seconds."
+        static let audioLengthNoticeWhenRecord = "Only support upload audio file between 5 to 60 seconds. You may edit audio on next page."
         static let noResultTitle =  "No result."
         static let searchHintLabel = "Search by title, author, or content."
         static let block = "block"
@@ -144,6 +138,10 @@ struct CommonUsage {
         static let deleteAudioMessage = "Long press on image to delete the audio."
         static let laeuButton = "LICENSED APPLICATION END USER LICENSE AGREEMENT"
         static let and = "and"
+        static let recordAgain = "(record again)"
+        static let pinOnMapHint = "Tap to add location"
+        static let finish = "Finish adding marker"
+        static let loading = "loading..."
     }
     
     struct CollectionName {
@@ -211,4 +209,19 @@ extension Int {
         
         return CGFloat(self) * CommonUsage.ratio
     }
+}
+
+extension UIViewController {
+    
+    func popErrorAlert(title: String?, message: String?) {
+        
+        let alert = UIAlertController(title: title,
+                                      message: message,
+                                      preferredStyle: .alert )
+        
+        let okButton = UIAlertAction(title: "OK", style: .cancel)
+        alert.addAction(okButton)
+        present(alert, animated: true, completion: nil)
+    }
+    
 }

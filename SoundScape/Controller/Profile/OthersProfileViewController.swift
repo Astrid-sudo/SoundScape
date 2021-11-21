@@ -86,6 +86,8 @@ class OthersProfileViewController: UIViewController {
     
     var selectedPicButton = PicType.coverPic
     
+    let loadingAnimationView = LottieWrapper.shared.greyStripeLoadingView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
+
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -315,12 +317,26 @@ class OthersProfileViewController: UIViewController {
     }
     
     func deletePost(documentID: String) {
-        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID)
+        
+        view.addSubview(loadingAnimationView)
+        loadingAnimationView.play()
+        
+        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.loadingAnimationView.stop()
+            self.loadingAnimationView.removeFromSuperview()
+            self.popErrorAlert(title: "Failed to delete post", message: errorMessage)
+        } succeededCompletion: {
+            self.loadingAnimationView.stop()
+            self.loadingAnimationView.removeFromSuperview()
+            SPAlertWrapper.shared.presentSPAlert(title: "Post deleted!", message: nil, preset: .done, completion: nil)}
     }
 
-    
+    private func loadAudio(localURL: URL, playInfo: PlayInfo) {
+        AudioPlayHelper.shared.url = localURL
+        AudioPlayHelper.shared.setPlayInfo(playInfo: playInfo)
+    }
 
-    
     // MARK: - image method
     
     func pressSelectImage(selectedPicButton: PicType) {
@@ -346,10 +362,15 @@ class OthersProfileViewController: UIViewController {
         
         firebaseManager.uploadPicToFirebase(userDocumentID: userDocumentID,
                                             picString: imageBase64String,
-                                            picType: selectedPicButton)
+                                            picType: selectedPicButton) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.popErrorAlert(title: "Failed to uplaod picture", message: errorMessage)
+        } succeededCompletion: {
+            SPAlertWrapper.shared.presentSPAlert(title: "Photo added!", message: nil, preset: .heart, completion: nil)
+        }
+
     }
 
-    
     // MARK: - UI properties
     
     private lazy var tableView: UITableView = {
@@ -416,6 +437,8 @@ extension OthersProfileViewController: UITableViewDataSource {
         1
     }
     
+    // swiftlint:disable cyclomatic_complexity
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell,
               let profileDataCell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.reuseIdentifier) as? ProfileTableViewCell,
@@ -454,7 +477,7 @@ extension OthersProfileViewController: UITableViewDataSource {
         case 1:
             guard let followings = othersFollowingList else {
                 print("OtherProfilePage cant get othersFollowingList")
-                return UITableViewCell()
+                return ProfileBlankTableViewCell()
             }
             
             var myFollowingsUserFiles = [SCPost]()
@@ -466,6 +489,11 @@ extension OthersProfileViewController: UITableViewDataSource {
                     }
                 }
             }
+            
+            guard !myFollowingsUserFiles.isEmpty else {
+                return ProfileBlankTableViewCell()
+            }
+            
             cell.firebaseData = myFollowingsUserFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
             return cell
@@ -475,7 +503,7 @@ extension OthersProfileViewController: UITableViewDataSource {
             
             guard let userFavoriteDocumentIDs = userFavoriteDocumentIDs else {
                 print("ProfilePage cant get userFavoriteDocumentIDs")
-                return UITableViewCell()
+               return ProfileBlankTableViewCell()
             }
             
             var myFavoriteFiles = [SCPost]()
@@ -487,12 +515,22 @@ extension OthersProfileViewController: UITableViewDataSource {
                     }
                 }
             }
+            
+            guard !myFavoriteFiles.isEmpty else {
+                return ProfileBlankTableViewCell()
+            }
+            
             cell.firebaseData = myFavoriteFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
             return cell
             
         case 3:
             let myAudioFiles = allAudioFiles.filter({$0.authorName == userWillDisplay.username})
+            
+            guard !myAudioFiles.isEmpty else {
+                return ProfileBlankTableViewCell()
+            }
+            
             cell.firebaseData = myAudioFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
             return cell
@@ -506,6 +544,8 @@ extension OthersProfileViewController: UITableViewDataSource {
         }
     }
     
+    // swiftlint:enable cyclomatic_complexity
+
 }
 
 // MARK: - conform to UITableViewDelegate
@@ -621,7 +661,10 @@ extension OthersProfileViewController: ProfileCellDelegate {
                                          loggedInUserInfo: SCFollow(userID: loggedInUserInfo.userID,
                                                                     provider: loggedInUserInfo.provider),
                                          followCompletion: makeButtonFollowed,
-                                         unfollowCompletion: makeButtonUnFollow)
+                                         unfollowCompletion: makeButtonUnFollow){ [weak self] errorMessage in
+            guard let self = self else { return }
+            self.popErrorAlert(title: "Failed to add or remove follow", message: errorMessage)
+        }
     }
     
     func goSettingPage() {
@@ -721,6 +764,7 @@ extension OthersProfileViewController: AlertPresentableDelegate {
         
         let okButton = UIAlertAction(title: "Delete", style: .destructive) {[weak self] _ in
             guard let self = self else { return }
+            
             self.deletePost(documentID: documentID)
         }
         
@@ -731,6 +775,11 @@ extension OthersProfileViewController: AlertPresentableDelegate {
         
         present(alert, animated: true, completion: nil)
     }
+    
+    func popErrorAlert(errorMessage: String?) {
+        popErrorAlert(title: "Failed to download audio", message: errorMessage)
+    }
+
     
 }
 

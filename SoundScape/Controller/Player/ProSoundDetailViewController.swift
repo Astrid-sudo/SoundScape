@@ -131,7 +131,7 @@ class ProSoundDetailViewController: UIViewController {
     
     weak var delegate: DetailPageShowableDelegate?
     
-    let remotePlayerHelper = RemotePlayHelper.shared
+//    let remotePlayerHelper = RemotePlayHelper.shared
     
     var authorIdentity: UserIdentity?
     
@@ -326,6 +326,15 @@ class ProSoundDetailViewController: UIViewController {
                                                name: .didItemPlayToEndTime,
                                                object: nil)
         
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(audioPlayHelperError),
+                                               name: .audioPlayHelperError,
+                                               object: nil)
+        
+    }
+    
+    @objc func audioPlayHelperError() {
+        popErrorAlert(title: "Audio player errer", message: "Please terminate SoundScape_ and try again.")
     }
     
     func renderWave(documentID: String) {

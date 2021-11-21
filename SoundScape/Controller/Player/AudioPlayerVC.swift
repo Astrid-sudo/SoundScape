@@ -21,7 +21,7 @@ class AudioPlayerVC: UIViewController {
     
     let audioHelper = AudioPlayHelper.shared
     
-    let remotePlayerHelper = RemotePlayHelper.shared
+//    let remotePlayerHelper = RemotePlayHelper.shared
     
     private let audioURL = Bundle.main.url(forResource: "memories", withExtension: "mp3")
     
@@ -50,7 +50,7 @@ class AudioPlayerVC: UIViewController {
         image.layer.cornerRadius = 10
         image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
-        image.image = UIImage(named: CommonUsage.audioImage)
+        image.image = UIImage(named: CommonUsage.launchScreen1)
         return image
     }()
     
@@ -59,6 +59,7 @@ class AudioPlayerVC: UIViewController {
         label.textColor = UIColor.white
         label.font = UIFont(name: CommonUsage.font, size: 15)
         label.textAlignment = .left
+        label.text = CommonUsage.Text.loading
         return label
     }()
     
@@ -108,6 +109,7 @@ class AudioPlayerVC: UIViewController {
     private lazy var indicatorView: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView(style: .medium )
         view.color = UIColor(named: CommonUsage.scWhite)
+        view.hidesWhenStopped = true
         view.isHidden = true
         return view
     }()
@@ -225,7 +227,11 @@ class AudioPlayerVC: UIViewController {
         firebaseManager.manipulateFavorite(userProfileDocumentID: userProfileDocumentID,
                                            documendID: nowPlayDocumentID,
                                            addCompletion: fillFavoriteButton,
-                                           removeCompletion: emptyFavoriteButton)
+                                           removeCompletion: emptyFavoriteButton) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.popErrorAlert(title: "Failed to add or remove favorite", message: errorMessage)
+            
+        }
     }
     
     // MARK: - UI method
@@ -299,7 +305,6 @@ class AudioPlayerVC: UIViewController {
         ])
     }
 
-    
     private func setFavoriteButton() {
         baseView.addSubview(favoriteButton)
         favoriteButton.translatesAutoresizingMaskIntoConstraints = false
@@ -394,6 +399,9 @@ class AudioPlayerVC: UIViewController {
             self.nowPlayDocumentID = nowPlayingInfo.documentID
             self.audioImage.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
             self.manipulateFavoriteImage()
+            self.indicatorView.stopAnimating()
+            self.playButton.isHidden = false
+            self.updateProgressWaveform(0)
         }
         
     }
@@ -436,6 +444,16 @@ class AudioPlayerVC: UIViewController {
                                                selector: #selector(changeButtImage),
                                                name: .didItemPlayToEndTime,
                                                object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(audioPlayHelperError),
+                                               name: .audioPlayHelperError,
+                                               object: nil)
+
+    }
+    
+    @objc func audioPlayHelperError() {
+        popErrorAlert(title: "Audio player errer", message: "Please terminate SoundScape_ and try again.")
     }
     
     @objc func changeButtImage() {
@@ -507,12 +525,14 @@ class AudioPlayerVC: UIViewController {
         progressView.layer.mask = maskLayer
     }
     
-    func updateUI() {
-        if remotePlayerHelper.state == .playing {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-        } else if remotePlayerHelper.state == .paused {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-        }
+    func resetAudioPlayerUI(audioTitle: String, audioImageNumber: Int) {
+        audioTitleLabel.text = audioTitle
+        authorLabel.text = CommonUsage.Text.loading
+        updateProgressWaveform(0)
+        indicatorView.startAnimating()
+        indicatorView.isHidden = false
+        playButton.isHidden = true
+        audioImage.image = CommonUsage.audioImages[audioImageNumber]
     }
     
 }

@@ -111,7 +111,6 @@ class CommentViewController: UIViewController {
                                                selector: #selector(currentUserBlacklistChange),
                                                name: .currentUserBlacklistChange ,
                                                object: nil)
-        
     }
     
     @objc func currentUserBlacklistChange() {
@@ -168,7 +167,15 @@ class CommentViewController: UIViewController {
     }
     
     @objc private func addComment() {
-        addCommentToFirebase()
+        
+        let checkMessage = commentTextView.text.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if commentTextView.text != nil,
+           checkMessage != "" {
+            addCommentToFirebase()
+        } else {
+            popBlankCommentAlert()
+        }
     }
     
     @objc func dismissCommentViewController() {
@@ -176,6 +183,16 @@ class CommentViewController: UIViewController {
     }
     
     // MARK: - method
+    
+    private func popBlankCommentAlert() {
+        popErrorAlert(title: "Yoy have a blank commet.", message: "Please type something to leave your comment.")
+    }
+    
+    private func addCommentCompletion() {
+        commentTextView.text = nil
+        commentTextView.endEditing(true)
+        animationView.removeFromSuperview()
+    }
     
     private func addCommentToFirebase() {
         addLottie()
@@ -196,12 +213,11 @@ class CommentViewController: UIViewController {
                                     lastEditedTime: nil,
                                     comment: comment)
         
-        firebaseManager.addComment(to: currentPlayingDocumentID, with: commentData) { [weak self] in
+        firebaseManager.addComment(to: currentPlayingDocumentID,
+                                   with: commentData,
+                                   completion: addCommentCompletion) { [weak self] errorMessage in
             guard let self = self else { return }
-            
-            self.commentTextView.text = nil
-            self.commentTextView.endEditing(true)
-            self.animationView.removeFromSuperview()
+            self.popErrorAlert(title: "Failed to add comment", message: errorMessage)
         }
     }
     
@@ -252,10 +268,13 @@ class CommentViewController: UIViewController {
     }
     
     private func deleteComment(commentID: String) {
-        
         guard let audioDocumentID = currentPlayingDocumentID else { return }
-        
-        firebaseManager.deleteComment(audioDocumentID: audioDocumentID, commentDocumentID: commentID)
+        firebaseManager.deleteComment(audioDocumentID: audioDocumentID, commentDocumentID: commentID) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.popErrorAlert(title: "Failed to delete comment", message: errorMessage)
+        } successedCompletion: {
+            SPAlertWrapper.shared.presentSPAlert(title: "Comment deleted!", message: nil, preset: .done, completion: nil)
+        }
     }
     
     // MARK: - UI properties

@@ -14,8 +14,6 @@ class SearchViewController: UIViewController {
     
     private let firebaseManager = FirebaseManager.shared
     
-    private let remotePlayHelper = RemotePlayHelper.shared
-    
     private var selectedCategories = [AudioCategory]()
     
     private var keyWord: String?
@@ -212,6 +210,13 @@ class SearchViewController: UIViewController {
         label.font = UIFont(name: CommonUsage.font, size: 12)
         return label
     }()
+    
+    // MARK: - method
+    
+    private func loadAudio(localURL: URL, playInfo: PlayInfo) {
+        AudioPlayHelper.shared.url = localURL
+        AudioPlayHelper.shared.setPlayInfo(playInfo: playInfo)
+    }
 
     // MARK: - UI method
     
@@ -387,29 +392,32 @@ extension SearchViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        guard let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerVC else { return }
+        audioPlayerVC.resetAudioPlayerUI(audioTitle: resultAudioFiles[indexPath.item].title,
+                                         audioImageNumber: resultAudioFiles[indexPath.item].imageNumber)
         AudioPlayerWindow.shared.show()
-        
-        let title = resultAudioFiles[indexPath.item].title
-        let author = resultAudioFiles[indexPath.item].authorName
-        let content = resultAudioFiles[indexPath.item].content
-        let duration = resultAudioFiles[indexPath.item].duration
-        let documentID =  resultAudioFiles[indexPath.item].documentID
-        let authorUserID = resultAudioFiles[indexPath.item].authorID
-        let audioImageNumber = resultAudioFiles[indexPath.item].imageNumber
-        let authorAccountProvider = resultAudioFiles[indexPath.item].authIDProvider
+        let playInfo = PlayInfo(title: resultAudioFiles[indexPath.item].title,
+                                author: resultAudioFiles[indexPath.item].authorName,
+                                content: resultAudioFiles[indexPath.item].content,
+                                duration: resultAudioFiles[indexPath.item].duration,
+                                documentID: resultAudioFiles[indexPath.item].documentID,
+                                authorUserID: resultAudioFiles[indexPath.item].authorID,
+                                audioImageNumber: resultAudioFiles[indexPath.item].imageNumber,
+                                authorAccountProvider: resultAudioFiles[indexPath.item].authIDProvider)
         
         if let remoteURL = resultAudioFiles[indexPath.item].audioURL {
-            RemoteAudioManager.shared.downloadRemoteURL(documentID: documentID, remoteURL: remoteURL) { localURL in
-                AudioPlayHelper.shared.url = localURL
-                AudioPlayHelper.shared.setPlayInfo(title: title,
-                                                   author: author,
-                                                   content: content,
-                                                   duration: duration,
-                                                   documentID: documentID,
-                                                   authorUserID: authorUserID,
-                                                   audioImageNumber: audioImageNumber,
-                                                   authorAccountProvider: authorAccountProvider)
+            RemoteAudioManager.shared.downloadRemoteURL(documentID: resultAudioFiles[indexPath.item].documentID,
+                                                        remoteURL: remoteURL, completion: { localURL in
+                self.loadAudio(localURL: localURL, playInfo: playInfo)
+            },
+            errorCompletion: { [weak self] errorMessage in
+                guard let self = self else { return }
+
+                DispatchQueue.main.async {
+                    self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
+                }
             }
+ )
         }
     }
     
@@ -435,6 +443,10 @@ extension SearchViewController: UISearchBarDelegate {
         searchBar.endEditing(true)
     }
     
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        keyWord = searchText
+        search()
+    }
 }
 
 // MARK: - conform to UICollectionViewDelegateFlowLayout
@@ -448,4 +460,3 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout {
     }
     
 }
-

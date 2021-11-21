@@ -31,7 +31,7 @@ class AudioMapViewController: UIViewController {
     
     var audioTitle: String?
     
-    let remotePlayHelper = RemotePlayHelper.shared
+//    let remotePlayHelper = RemotePlayHelper.shared
     
     var tappedMarker = GMSMarker()
     
@@ -66,7 +66,7 @@ class AudioMapViewController: UIViewController {
     
     var currentLocation: CLLocationCoordinate2D?
     
-    var defaultLocation = CLLocationCoordinate2DMake(25.034012, 121.563461)
+    var defaultLocation = CLLocationCoordinate2DMake(23.97565, 120.9738819)
     
     var audioPostCache: [String: SCPost] = [:]
     
@@ -123,6 +123,8 @@ class AudioMapViewController: UIViewController {
             setNavigationBar()
             setMap()
             addSearchBar()
+            setPinLoactionButton()
+            setMapHintLabel()
             setTableView()
         case .browseMap:
             addObserver()
@@ -134,7 +136,7 @@ class AudioMapViewController: UIViewController {
         }
         
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if audioMapType == .pinOnMap {
@@ -158,6 +160,11 @@ class AudioMapViewController: UIViewController {
     }
     
     // MARK: - method
+    
+    private func loadAudio(localURL: URL, playInfo: PlayInfo) {
+        AudioPlayHelper.shared.url = localURL
+        AudioPlayHelper.shared.setPlayInfo(playInfo: playInfo)
+    }
     
     private func setBackgroundcolor() {
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
@@ -258,7 +265,7 @@ class AudioMapViewController: UIViewController {
         let searchBar = UISearchBar()
         searchBar.backgroundImage = UIImage()
         searchBar.barTintColor = UIColor(named: CommonUsage.scWhite)
-        searchBar.placeholder = CommonUsage.Text.search
+        searchBar.placeholder = CommonUsage.Text.searchPlace
         searchBar.delegate = self
         searchBar.searchTextField.textColor = UIColor(named: CommonUsage.scWhite)
         searchBar.showsCancelButton = true
@@ -278,15 +285,15 @@ class AudioMapViewController: UIViewController {
         mapView.isMyLocationEnabled = true
         mapView.padding = UIEdgeInsets(top: 0, left: 0, bottom: 65.adjusted, right: 0)
         do {
-          if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
-            mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
-          } else {
-            NSLog("Unable to find style.json")
-          }
+            if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
+                mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
+            } else {
+                NSLog("Unable to find style.json")
+            }
         } catch {
-          NSLog("One or more of the map styles failed to load. \(error)")
+            NSLog("One or more of the map styles failed to load. \(error)")
         }
-
+        
         return mapView
     }()
     
@@ -303,6 +310,27 @@ class AudioMapViewController: UIViewController {
         return marker
     }()
     
+    lazy var pinLoactionButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = UIColor(named: CommonUsage.scWhite)
+        button.setTitle(CommonUsage.Text.finish, for: .normal)
+        button.titleLabel?.font = UIFont(name: CommonUsage.fontSemibold, size: 14)
+        button.setTitleColor(UIColor(named: CommonUsage.scBlue), for: .normal)
+        button.addTarget(self, action: #selector(backToLastPage), for: .touchUpInside)
+        button.layer.cornerRadius = 10
+        return button
+    }()
+    
+    lazy var mapNoticeLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textAlignment = .left
+        label.numberOfLines = 0
+        label.font = UIFont(name: CommonUsage.font, size: 20)
+        label.text = CommonUsage.Text.pinOnMapHint
+        return label
+    }()
+    
 }
 
 // MARK: - UI method
@@ -310,16 +338,29 @@ class AudioMapViewController: UIViewController {
 extension AudioMapViewController {
     
     private func setNavigationBar() {
+        
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
     }
-
+    
     
     private func addSearchBar() {
         navigationItem.titleView = searchBar
         navigationItem.titleView?.tintColor = UIColor(named: CommonUsage.scWhite)
         navigationItem.titleView?.backgroundColor = UIColor(named: CommonUsage.scBlue)
+    }
+    
+    private func setPinLoactionButton() {
+        view.addSubview(pinLoactionButton)
+        pinLoactionButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            pinLoactionButton.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 76),
+            pinLoactionButton.heightAnchor.constraint(equalToConstant: 41),
+            pinLoactionButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pinLoactionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+        ])
+        
     }
     
     private func setTableView() {
@@ -332,6 +373,15 @@ extension AudioMapViewController {
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
         ])
     }
+    
+    func setMapHintLabel() {
+       view.addSubview(mapNoticeLabel)
+        mapNoticeLabel.translatesAutoresizingMaskIntoConstraints = false
+       NSLayoutConstraint.activate([
+           mapNoticeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+           mapNoticeLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32)
+       ])
+   }
     
     private func setMap() {
         view.addSubview(mapView)
@@ -422,31 +472,32 @@ extension AudioMapViewController: GMSMapViewDelegate {
 extension AudioMapViewController: ButtonTappedPassableDelegate {
     
     func pushSoundDetailPage() {
+        guard let post = tappedMarker.userData as? SCPost,
+              let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerVC else { return }
+        audioPlayerVC.resetAudioPlayerUI(audioTitle: post.title,
+                                         audioImageNumber: post.imageNumber)
         
         AudioPlayerWindow.shared.show()
         
-        guard let post = tappedMarker.userData as? SCPost else { return }
-        let documentID = post.documentID
-        let title = post.title
-        let author = post.authorName
-        let content = post.content
-        let duration = post.duration
-        let authorUserID = post.authorID
-        let audioImageNumber = post.imageNumber
-        let authorAccountProvider = post.authIDProvider
+        let playInfo = PlayInfo(title: post.title,
+                                author: post.authorName,
+                                content: post.content,
+                                duration: post.duration,
+                                documentID: post.documentID,
+                                authorUserID: post.authorID,
+                                audioImageNumber: post.imageNumber,
+                                authorAccountProvider: post.authIDProvider)
         
         if let remoteURL = post.audioURL {
-            RemoteAudioManager.shared.downloadRemoteURL(documentID: documentID, remoteURL: remoteURL) { localURL in
-                AudioPlayHelper.shared.url = localURL
-                AudioPlayHelper.shared.setPlayInfo(title: title,
-                                                   author: author,
-                                                   content: content,
-                                                   duration: duration,
-                                                   documentID: documentID,
-                                                   authorUserID: authorUserID,
-                                                   audioImageNumber: audioImageNumber,
-                                                   authorAccountProvider: authorAccountProvider)
+            RemoteAudioManager.shared.downloadRemoteURL(documentID: post.documentID,
+                                                        remoteURL: remoteURL, completion: { localURL in
+                self.loadAudio(localURL: localURL, playInfo: playInfo)
+            },
+                                                        errorCompletion: { [weak self] errorMessage in
+                guard let self = self else { return }
+                self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
             }
+            )
         }
     }
     

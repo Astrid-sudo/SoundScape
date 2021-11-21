@@ -36,6 +36,8 @@ class HomeVC: UIViewController {
         return table
     }()
     
+    let loadingAnimationView = LottieWrapper.shared.greyStripeLoadingView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -85,6 +87,66 @@ class HomeVC: UIViewController {
                                                selector: #selector(updateAllAudioFile),
                                                name: .allAudioPostChange ,
                                                object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(fetchAudioPostError),
+                                               name: .fetchAudioPostError ,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(fetchLoginUserError),
+                                               name: .fetchLoginUserError ,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(failedFetchFavorite),
+                                               name: .failedFetchFavorite ,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(failedFetchFollowingList),
+                                               name: .failedFetchFollowingList ,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(failedFetchFollowerList),
+                                               name: .failedFetchFollowerList ,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(failedFetchBlackList),
+                                               name: .failedFetchBlackList ,
+                                               object: nil)
+    }
+    
+    @objc func failedFetchBlackList(notification: Notification) {
+        guard let error = notification.userInfo?["UserInfo"] as? String else { return }
+        popErrorAlert(title: "Failed to fetch loggin user's black list", message: error)
+    }
+    
+    @objc func failedFetchFollowerList(notification: Notification) {
+        guard let error = notification.userInfo?["UserInfo"] as? String else { return }
+        popErrorAlert(title: "Failed to fetch loggin user's follower list", message: error)
+    }
+    
+    @objc func failedFetchFollowingList(notification: Notification) {
+        guard let error = notification.userInfo?["UserInfo"] as? String else { return }
+        popErrorAlert(title: "Failed to fetch loggin user's following list", message: error)
+    }
+    
+    @objc func failedFetchFavorite(notification: Notification) {
+        guard let error = notification.userInfo?["UserInfo"] as? String else { return }
+        popErrorAlert(title: "Failed to fetch loggin user's favorite", message: error)
+    }
+    
+    @objc func fetchLoginUserError(notification: Notification) {
+        guard let error = notification.userInfo?["UserInfo"] as? String else { return }
+        popErrorAlert(title: "Failed to fetch loggin user's info", message: error)
+    }
+    
+    @objc func fetchAudioPostError(notification: Notification) {
+        guard let error = notification.userInfo?["UserInfo"] as? String else { return }
+        popErrorAlert(title: "Fetch audio post error", message: error)
     }
     
     @objc func updateAllAudioFile() {
@@ -104,7 +166,19 @@ class HomeVC: UIViewController {
     }
     
     func deletePost(documentID: String) {
-        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID)
+        
+        view.addSubview(loadingAnimationView)
+        loadingAnimationView.play()
+        
+        FirebaseManager.shared.deletePostInAllAudio(documentID: documentID) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.loadingAnimationView.stop()
+            self.loadingAnimationView.removeFromSuperview()
+            self.popErrorAlert(title: "Failed to delete post", message: errorMessage)
+        } succeededCompletion: {
+            self.loadingAnimationView.stop()
+            self.loadingAnimationView.removeFromSuperview()
+            SPAlertWrapper.shared.presentSPAlert(title: "Post deleted!", message: nil, preset: .done, completion: nil)}
     }
 
 }
@@ -164,7 +238,6 @@ extension HomeVC: UITableViewDelegate {
         } else {
             
             return 168
-            
             
         }
         
@@ -245,6 +318,10 @@ extension HomeVC: AlertPresentableDelegate {
         alert.addAction(okButton)
         
         present(alert, animated: true, completion: nil)
+    }
+    
+    func popErrorAlert(errorMessage: String?) {
+        popErrorAlert(title: "Failed to download audio", message: errorMessage)
     }
     
 }

@@ -5,10 +5,13 @@
 //  Created by Astrid on 2021/10/19.
 //
 
+
+// swiftlint:disable file_length
+
 import UIKit
-import Lottie
 import GoogleMaps
 import CoreLocation
+import JGProgressHUD
 
 class UploadVC: UIViewController {
     
@@ -26,7 +29,7 @@ class UploadVC: UIViewController {
     
     var currentLocation: CLLocationCoordinate2D?
     
-    var defaultLocation = CLLocationCoordinate2DMake(25.034012, 121.563461)
+    var defaultLocation = CLLocationCoordinate2DMake(23.97565, 120.9738819)
     
     var pinnedLocation: CLLocationCoordinate2D? {
         didSet {
@@ -41,7 +44,7 @@ class UploadVC: UIViewController {
         }
     }
     
-    private lazy var myLocation: CLLocationManager = {
+     lazy var myLocation: CLLocationManager = {
         let location = CLLocationManager()
         location.delegate = self
         location.distanceFilter = kCLLocationAccuracyNearestTenMeters
@@ -49,7 +52,7 @@ class UploadVC: UIViewController {
         return location
     }()
     
-    private var selectedCategoryIndex: IndexPath? {
+     var selectedCategoryIndex: IndexPath? {
         didSet {
             
             if let oldValue = oldValue {
@@ -64,7 +67,7 @@ class UploadVC: UIViewController {
         }
     }
     
-    private var selectedImageIndex: IndexPath? {
+     var selectedImageIndex: IndexPath? {
         didSet {
             
             if let oldValue = oldValue {
@@ -81,7 +84,17 @@ class UploadVC: UIViewController {
     
     // MARK: - UI properties
     
-    private lazy var scrollView: UIScrollView = {
+     lazy var mapNoticeLabel: UILabel = {
+        let label = UILabel()
+         label.textColor = UIColor(named: CommonUsage.scGray)
+        label.textAlignment = .left
+        label.numberOfLines = 0
+        label.font = UIFont(name: CommonUsage.font, size: 12)
+        label.text = CommonUsage.Text.pinOnMapHint
+        return label
+    }()
+    
+     lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.isScrollEnabled = true
         scrollView.isDirectionalLockEnabled = true
@@ -94,14 +107,14 @@ class UploadVC: UIViewController {
         return scrollView
     }()
     
-    private lazy var mapMarker: GMSMarker = {
+     lazy var mapMarker: GMSMarker = {
         var marker = GMSMarker(position: currentLocation ?? defaultLocation)
         marker.icon = GMSMarker.markerImage(with: UIColor(named: CommonUsage.scRed))
         marker.map = mapView
         return marker
     }()
     
-    private lazy var titleLabel: UILabel = {
+     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
         label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
@@ -110,7 +123,7 @@ class UploadVC: UIViewController {
         return label
     }()
     
-    private lazy var descriptionLabel: UILabel = {
+     lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
         label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
@@ -119,7 +132,7 @@ class UploadVC: UIViewController {
         return label
     }()
     
-    private lazy var categoryLabel: UILabel = {
+     lazy var categoryLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
         label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
@@ -128,7 +141,7 @@ class UploadVC: UIViewController {
         return label
     }()
     
-    private  lazy var mapLabel: UILabel = {
+      lazy var mapLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
         label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
@@ -137,7 +150,7 @@ class UploadVC: UIViewController {
         return label
     }()
     
-    private  lazy var audioImageLabel: UILabel = {
+      lazy var audioImageLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
         label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
@@ -146,7 +159,7 @@ class UploadVC: UIViewController {
         return label
     }()
     
-    private lazy var titleTextField: UITextField = {
+     lazy var titleTextField: UITextField = {
         let textField = UITextField()
         textField.borderStyle = .roundedRect
         textField.textColor = .white
@@ -159,7 +172,7 @@ class UploadVC: UIViewController {
         return textField
     }()
     
-    private lazy var descriptionTextView: UITextView = {
+     lazy var descriptionTextView: UITextView = {
         let textView = UITextView()
         textView.layer.borderWidth = 1
         textView.layer.borderColor = UIColor.white.cgColor
@@ -174,7 +187,7 @@ class UploadVC: UIViewController {
         return textView
     }()
     
-    private lazy var viewUndermap: UIView = {
+     lazy var viewUndermap: UIView = {
         let view = UIView()
         view.layer.borderColor = UIColor(named: CommonUsage.scWhite)?.cgColor
         view.layer.borderWidth = 0.5
@@ -182,7 +195,7 @@ class UploadVC: UIViewController {
         return view
     }()
     
-    private lazy var mapView: GMSMapView = {
+     lazy var mapView: GMSMapView = {
         let mapView = GMSMapView()
         let posision = pinnedLocation ?? currentLocation ?? defaultLocation
         let camera = GMSCameraPosition.camera(withLatitude: posision.latitude,
@@ -191,15 +204,15 @@ class UploadVC: UIViewController {
         mapView.camera = camera
         mapView.layer.cornerRadius = 10
         do {
-          if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
-            mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
-          } else {
-            NSLog("Unable to find style.json")
-          }
+            if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
+                mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
+            } else {
+                NSLog("Unable to find style.json")
+            }
         } catch {
-          NSLog("One or more of the map styles failed to load. \(error)")
+            NSLog("One or more of the map styles failed to load. \(error)")
         }
-
+        
         if backFromBigMap {
             mapView.settings.myLocationButton = false
             mapView.isMyLocationEnabled = false
@@ -211,7 +224,7 @@ class UploadVC: UIViewController {
         return mapView
     }()
     
-    private lazy var uploadButton: UIButton = {
+     lazy var uploadButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         button.setTitle(CommonUsage.Text.upload, for: .normal)
@@ -221,16 +234,9 @@ class UploadVC: UIViewController {
         return button
     }()
     
-    private lazy var animationView: AnimationView = {
-        let animationView = AnimationView(name: "lf30_editor_r2yecdir")
-        animationView.frame = CGRect(x: 0, y: 100, width: 400, height: 400)
-        animationView.center = view.center
-        animationView.contentMode = .scaleAspectFill
-        animationView.loopMode = .loop
-        return animationView
-    }()
+     let animationView = LottieWrapper.shared.greyStripeLoadingView(frame: CGRect(x: 0, y: 100, width: 400, height: 400))
     
-    private lazy var searchPlaceButton: UIButton = {
+     lazy var searchPlaceButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         button.setTitle(CommonUsage.Text.searchPlace, for: .normal)
@@ -241,7 +247,7 @@ class UploadVC: UIViewController {
         return button
     }()
     
-    private lazy var collectionView: UICollectionView = {
+     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.itemSize = CGSize(width: 100, height: 30)
@@ -260,7 +266,7 @@ class UploadVC: UIViewController {
         return collectionView
     }()
     
-    private lazy var audioImageCollectionView: UICollectionView = {
+     lazy var audioImageCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.itemSize = CGSize(width: 150, height: 150)
@@ -282,6 +288,7 @@ class UploadVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        askUserLocation()
         setNavigationBar()
         setScrollView()
         setTitleLabel()
@@ -293,6 +300,7 @@ class UploadVC: UIViewController {
         setAudioImageLabel()
         setImageCollectionView()
         setMapLabel()
+        setMapHintLabel()
         setViewUnderMap()
         setMapView()
         setUploadButton()
@@ -311,7 +319,6 @@ class UploadVC: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         guard let pinnedLocation = pinnedLocation else { return }
-        askUserLocation()
         mapView.camera = GMSCameraPosition.camera(withLatitude: pinnedLocation.latitude,
                                                   longitude: pinnedLocation.longitude,
                                                   zoom: 15)
@@ -320,166 +327,6 @@ class UploadVC: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidAppear(animated)
         myLocation.stopUpdatingLocation()
-    }
-    
-    // MARK: - UI method
-    
-    private func setViewBackgroundColor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
-    }
-    
-    private func setNavigationBar() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil,
-                                                           style: .plain,
-                                                           target: self,
-                                                           action: #selector(backToLastPage))
-        navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
-        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
-        navigationItem.title = CommonUsage.Text.upload
-    }
-    
-    private func setScrollView() {
-        view.addSubview(scrollView)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8)
-        ])
-    }
-    
-    private func setTitleLabel() {
-        scrollView.addSubview(titleLabel)
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            titleLabel.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 8)
-        ])
-    }
-    
-    private func setTitleTextField() {
-        scrollView.addSubview(titleTextField)
-        titleTextField.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            titleTextField.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            titleTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
-            titleTextField.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32)
-        ])
-    }
-    
-    private func setDescriptionLabel() {
-        scrollView.addSubview(descriptionLabel)
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            descriptionLabel.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 16)
-        ])
-    }
-    
-    private func setDescriptionTextView() {
-        scrollView.addSubview(descriptionTextView)
-        descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            descriptionTextView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor,
-                                                         constant: 16),
-            descriptionTextView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 16),
-            descriptionTextView.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32)
-        ])
-    }
-    
-    private func setCategoryLabel() {
-        scrollView.addSubview(categoryLabel)
-        categoryLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            categoryLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            categoryLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 16)
-        ])
-    }
-    
-    private func setCategoryCollectionView() {
-        scrollView.addSubview(collectionView)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            collectionView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            collectionView.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth ),
-            collectionView.topAnchor.constraint(equalTo: categoryLabel.bottomAnchor, constant: 16),
-            collectionView.heightAnchor.constraint(equalToConstant: 50)
-        ])
-    }
-    
-    private func setAudioImageLabel() {
-        scrollView.addSubview(audioImageLabel)
-        audioImageLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            audioImageLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor,
-                                                     constant: 16),
-            audioImageLabel.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 16)
-        ])
-    }
-    
-    private func setImageCollectionView() {
-        scrollView.addSubview(audioImageCollectionView)
-        audioImageCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            audioImageCollectionView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            audioImageCollectionView.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth),
-            audioImageCollectionView.topAnchor.constraint(equalTo: audioImageLabel.bottomAnchor, constant: 8),
-            audioImageCollectionView.heightAnchor.constraint(equalToConstant: 150)
-        ])
-    }
-    
-    private func setMapLabel() {
-        scrollView.addSubview(mapLabel)
-        mapLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            mapLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            mapLabel.topAnchor.constraint(equalTo: audioImageCollectionView.bottomAnchor, constant: 8)
-        ])
-    }
-    
-    private func setViewUnderMap() {
-        scrollView.addSubview(viewUndermap)
-        viewUndermap.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            viewUndermap.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            viewUndermap.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32),
-            viewUndermap.topAnchor.constraint(equalTo: mapLabel.bottomAnchor, constant: 16),
-            viewUndermap.heightAnchor.constraint(equalToConstant: 180)
-        ])
-    }
-    
-    private func setMapView() {
-        viewUndermap.addSubview(mapView)
-        mapView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            mapView.leadingAnchor.constraint(equalTo: viewUndermap.leadingAnchor),
-            mapView.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32),
-            mapView.topAnchor.constraint(equalTo: viewUndermap.topAnchor),
-            mapView.bottomAnchor.constraint(equalTo: viewUndermap.bottomAnchor)
-        ])
-    }
-    
-    private func setUploadButton() {
-        scrollView.addSubview(uploadButton)
-        uploadButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            uploadButton.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            uploadButton.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32),
-            uploadButton.topAnchor.constraint(equalTo: viewUndermap.bottomAnchor, constant: 8),
-            uploadButton.heightAnchor.constraint(equalToConstant: 50),
-            uploadButton.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -4)
-        ])
-    }
-    
-    private func setSearchPlaceButton() {
-        scrollView.addSubview(searchPlaceButton)
-        searchPlaceButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            searchPlaceButton.trailingAnchor.constraint(equalTo: uploadButton.trailingAnchor),
-            searchPlaceButton.centerYAnchor.constraint(equalTo: mapLabel.centerYAnchor),
-            searchPlaceButton.widthAnchor.constraint(equalToConstant: 100)
-        ])
     }
     
     // MARK: - method
@@ -492,13 +339,14 @@ class UploadVC: UIViewController {
     private func backToHome() {
         navigationController?.popToRootViewController(animated: true)
         animationView.removeFromSuperview()
+        SPAlertWrapper.shared.presentSPAlert(title: "Post added!", message: nil, preset: .done, completion: nil)
         guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
         scTabBarController.selectedIndex = 0
     }
     
-    private func popFillAlert() {
-        let alert = UIAlertController(title: "請填滿所有欄位", message: "登入後即可PO聲", preferredStyle: .alert )
-        let okButton = UIAlertAction(title: "是！", style: .default)
+    private func popFillAlert(title: String, message: String?) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert )
+        let okButton = UIAlertAction(title: "OK", style: .default)
         
         alert.addAction(okButton)
         present(alert, animated: true, completion: nil)
@@ -515,10 +363,10 @@ class UploadVC: UIViewController {
             myLocation.startUpdatingLocation() // Start location
             
         case .denied:
-            let alertController = UIAlertController(title: "定位權限已關閉",
-                                                    message: "如要變更權限，請至 設定 > 隱私權 > 定位服務 開啟",
+            let alertController = UIAlertController(title: "Allow SoundScape_ to access your location if you wish to pin marker from your current location.",
+                                                    message: "Settings > SoundScape_ > Allow access location",
                                                     preferredStyle: .alert)
-            let okAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
             alertController.addAction(okAction)
             self.present(alertController, animated: true, completion: nil)
             
@@ -535,15 +383,27 @@ class UploadVC: UIViewController {
     
     @objc func upload() {
         
-        addLottie()
-        
         guard let title = titleTextField.text,
-              let content = descriptionTextView.text,
-              let item = selectedCategoryIndex?.item,
-        let audioImageNumber = selectedImageIndex?.item else {
-                  popFillAlert()
+              title.trimmingCharacters(in: .whitespacesAndNewlines) != "" else {
+                  popFillAlert(title: "Please fill in Title field.", message: nil)
                   return
               }
+        
+        guard  let content = descriptionTextView.text,
+               content.trimmingCharacters(in: .whitespacesAndNewlines) != "" else {
+                   popFillAlert(title: "Please fill in Description field.", message: nil)
+                   return
+               }
+        
+        guard let item = selectedCategoryIndex?.item else {
+            popFillAlert(title: "Please tap one Category.", message: nil)
+            return
+        }
+        
+        guard let audioImageNumber = selectedImageIndex?.item else {
+            popFillAlert(title: "Please choose one cover image.", message: nil)
+            return
+        }
         
         var post = SCPost(documentID: "",
                           authorID: signInmanager.currentUserInfoFirebase?.userID ?? "No signIn",
@@ -557,12 +417,22 @@ class UploadVC: UIViewController {
                           audioLocation: clLocationToGepPoint(cl: pinnedLocation),
                           duration: 0.0)
         
+        addLottie()
+        
         if let selectedFileDuration = selectedFileDuration {
             post.duration = selectedFileDuration
         }
         
         if let selectedFileURL = selectedFileURL {
-            firebasemanager.upload(localURL: selectedFileURL, post: post, completion: backToHome)
+            firebasemanager.upload(localURL: selectedFileURL,
+                                   post: post,
+                                   completion: backToHome) { [weak self] errorMessage in
+                guard let self = self else { return }
+                self.animationView.stop()
+                self.animationView.removeFromSuperview()
+                self.popErrorAlert(title: "Failed to upload audio. Please terminate SoundScape_ and try again.", message: errorMessage)
+            }
+            
         }
     }
     
@@ -736,4 +606,5 @@ extension UploadVC: UICollectionViewDelegateFlowLayout {
     }
     
 }
+// swiftlint:enable file_length
 

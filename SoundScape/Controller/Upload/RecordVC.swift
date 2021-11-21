@@ -18,12 +18,22 @@ class RecordVC: UIViewController {
 
     // MARK: - UI properties
     
+    private lazy var noticeLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.textAlignment = .left
+        label.numberOfLines = 0
+        label.font = UIFont(name: CommonUsage.font, size: 14)
+        label.text = CommonUsage.Text.audioLengthNoticeWhenRecord
+        return label
+    }()
+    
     private lazy var goEditButton: UIButton = {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 30)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.trim, withConfiguration: config)
-        button.setImage(bigImage, for: .normal)
-        button.tintColor = UIColor(named: CommonUsage.scWhite)
+        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        button.layer.cornerRadius = 10
+        button.setTitle("Finish recording", for: .normal)
         button.addTarget(self, action: #selector(pushToNext), for: .touchUpInside)
         button.isHidden = true
         return button
@@ -43,6 +53,15 @@ class RecordVC: UIViewController {
         return label
     }()
     
+    private lazy var recordAgainLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        label.textAlignment = .left
+        label.text = CommonUsage.Text.recordAgain
+        label.isHidden = true
+        return label
+    }()
+
     private lazy var recordButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 30)
@@ -50,6 +69,7 @@ class RecordVC: UIViewController {
         button.setImage(bigImage, for: .normal)
         button.tintColor = UIColor(named: CommonUsage.scRed)
         button.addTarget(self, action: #selector(manipulaterecord), for: .touchUpInside)
+        button.isHidden = true
         return button
     }()
     
@@ -81,12 +101,14 @@ class RecordVC: UIViewController {
         super.viewDidLoad()
         setNavigationBar()
         setGoEditButton()
+        setAudioLengthNotice()
         setWaveformLiveView()
         setRecordButton()
+        checkMicPermission()
         setRecordTimeLabel()
         setPlaybackButton()
         setStopButton()
-        
+        setRecordAgainLabel()
         audioRecordHelper.delegate = self
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
         
@@ -109,6 +131,25 @@ class RecordVC: UIViewController {
         
         waveformLiveView.shouldDrawSilencePadding = true
     }
+    
+    // MARK: - method
+    
+    
+    private func checkMicPermission() {
+        audioRecordHelper.checkAudioPermission {
+            DispatchQueue.main.async {
+                self.recordButton.isHidden = false
+            }
+        } notGrantedCompletion: {
+            
+            DispatchQueue.main.async {
+                self.popErrorAlert(title: "Please allow SoundScape_ to access your microphone.",
+                                   message: "Settings > SoundScape_ > Allow access Microphone")
+            }
+            
+        }
+
+    }
 
     // MARK: - UI method
     
@@ -127,15 +168,26 @@ class RecordVC: UIViewController {
         goEditButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             goEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            goEditButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
+            goEditButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            goEditButton.widthAnchor.constraint(equalToConstant: 150)
         ])
     }
     
+    private func setAudioLengthNotice() {
+        view.addSubview(noticeLabel)
+        noticeLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            noticeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            noticeLabel.topAnchor.constraint(equalTo: goEditButton.bottomAnchor, constant: 32),
+            noticeLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
+    }
+
     private func setWaveformLiveView() {
         view.addSubview(waveformLiveView)
         waveformLiveView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            waveformLiveView.topAnchor.constraint(equalTo: goEditButton.bottomAnchor, constant: 36),
+            waveformLiveView.topAnchor.constraint(equalTo: noticeLabel.bottomAnchor, constant: 32),
             waveformLiveView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             waveformLiveView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             waveformLiveView.heightAnchor.constraint(equalToConstant: 200)
@@ -150,6 +202,7 @@ class RecordVC: UIViewController {
             recordButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
+    
     
     private func setRecordTimeLabel() {
         view.addSubview(recordTimeLabel)
@@ -178,6 +231,16 @@ class RecordVC: UIViewController {
         ])
     }
     
+    private func setRecordAgainLabel() {
+        view.addSubview(recordAgainLabel)
+        recordAgainLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            recordAgainLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            recordAgainLabel.topAnchor.constraint(equalTo: stopButton.bottomAnchor, constant: 8)
+        ])
+
+    }
+    
     // MARK: - action
     
     @objc func backToLastPage() {
@@ -193,11 +256,11 @@ class RecordVC: UIViewController {
             playbackButton.isHidden = true
             stopButton.isHidden = true
             goEditButton.isHidden = true
+            recordAgainLabel.isHidden = true
         } else {
             audioRecordHelper.stopRecording()
-            playbackButton.isHidden = false
-            stopButton.isHidden = false
             goEditButton.isHidden = false
+            recordAgainLabel.isHidden = false
         }
     }
     
@@ -257,6 +320,13 @@ class RecordVC: UIViewController {
     }
     
     @objc func pushToNext() {
+        
+        guard let recordTime = recordTimeLabel.text,
+               let time = Double(recordTime),
+              time >= 5 else {
+                   popErrorAlert(title: "Recorded audio too short.", message: "Required minimum length: 5 seconds.")
+                  return
+              }
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let editVC = storyboard.instantiateViewController(withIdentifier: "EditVC") as? EditVC else { return }
