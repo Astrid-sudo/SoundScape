@@ -288,6 +288,7 @@ class UploadVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        askUserLocation()
         setNavigationBar()
         setScrollView()
         setTitleLabel()
@@ -318,7 +319,6 @@ class UploadVC: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         guard let pinnedLocation = pinnedLocation else { return }
-        askUserLocation()
         mapView.camera = GMSCameraPosition.camera(withLatitude: pinnedLocation.latitude,
                                                   longitude: pinnedLocation.longitude,
                                                   zoom: 15)
@@ -363,10 +363,10 @@ class UploadVC: UIViewController {
             myLocation.startUpdatingLocation() // Start location
             
         case .denied:
-            let alertController = UIAlertController(title: "定位權限已關閉",
-                                                    message: "如要變更權限，請至 設定 > 隱私權 > 定位服務 開啟",
+            let alertController = UIAlertController(title: "Allow SoundScape_ to access your location if you wish to pin marker from your current location.",
+                                                    message: "Settings > SoundScape_ > Allow access location",
                                                     preferredStyle: .alert)
-            let okAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
             alertController.addAction(okAction)
             self.present(alertController, animated: true, completion: nil)
             
@@ -405,7 +405,6 @@ class UploadVC: UIViewController {
             return
         }
         
-        addLottie()
         var post = SCPost(documentID: "",
                           authorID: signInmanager.currentUserInfoFirebase?.userID ?? "No signIn",
                           authIDProvider: signInmanager.currentUserInfoFirebase?.provider ?? "No signIn",
@@ -418,6 +417,8 @@ class UploadVC: UIViewController {
                           audioLocation: clLocationToGepPoint(cl: pinnedLocation),
                           duration: 0.0)
         
+        addLottie()
+        
         if let selectedFileDuration = selectedFileDuration {
             post.duration = selectedFileDuration
         }
@@ -427,7 +428,9 @@ class UploadVC: UIViewController {
                                    post: post,
                                    completion: backToHome) { [weak self] errorMessage in
                 guard let self = self else { return }
-                self.popErrorAlert(title: "Failed to upload audio", message: errorMessage)
+                self.animationView.stop()
+                self.animationView.removeFromSuperview()
+                self.popErrorAlert(title: "Failed to upload audio. Please terminate SoundScape_ and try again.", message: errorMessage)
             }
             
         }

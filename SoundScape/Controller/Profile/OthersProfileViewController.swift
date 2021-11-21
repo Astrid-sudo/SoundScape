@@ -437,6 +437,8 @@ extension OthersProfileViewController: UITableViewDataSource {
         1
     }
     
+    // swiftlint:disable cyclomatic_complexity
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell,
               let profileDataCell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.reuseIdentifier) as? ProfileTableViewCell,
@@ -475,7 +477,7 @@ extension OthersProfileViewController: UITableViewDataSource {
         case 1:
             guard let followings = othersFollowingList else {
                 print("OtherProfilePage cant get othersFollowingList")
-                return UITableViewCell()
+                return ProfileBlankTableViewCell()
             }
             
             var myFollowingsUserFiles = [SCPost]()
@@ -487,6 +489,11 @@ extension OthersProfileViewController: UITableViewDataSource {
                     }
                 }
             }
+            
+            guard !myFollowingsUserFiles.isEmpty else {
+                return ProfileBlankTableViewCell()
+            }
+            
             cell.firebaseData = myFollowingsUserFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
             return cell
@@ -496,7 +503,7 @@ extension OthersProfileViewController: UITableViewDataSource {
             
             guard let userFavoriteDocumentIDs = userFavoriteDocumentIDs else {
                 print("ProfilePage cant get userFavoriteDocumentIDs")
-                return UITableViewCell()
+               return ProfileBlankTableViewCell()
             }
             
             var myFavoriteFiles = [SCPost]()
@@ -508,12 +515,22 @@ extension OthersProfileViewController: UITableViewDataSource {
                     }
                 }
             }
+            
+            guard !myFavoriteFiles.isEmpty else {
+                return ProfileBlankTableViewCell()
+            }
+            
             cell.firebaseData = myFavoriteFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
             return cell
             
         case 3:
             let myAudioFiles = allAudioFiles.filter({$0.authorName == userWillDisplay.username})
+            
+            guard !myAudioFiles.isEmpty else {
+                return ProfileBlankTableViewCell()
+            }
+            
             cell.firebaseData = myAudioFiles
             cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
             return cell
@@ -527,6 +544,8 @@ extension OthersProfileViewController: UITableViewDataSource {
         }
     }
     
+    // swiftlint:enable cyclomatic_complexity
+
 }
 
 // MARK: - conform to UITableViewDelegate

@@ -31,7 +31,7 @@ class AudioMapViewController: UIViewController {
     
     var audioTitle: String?
     
-    let remotePlayHelper = RemotePlayHelper.shared
+//    let remotePlayHelper = RemotePlayHelper.shared
     
     var tappedMarker = GMSMarker()
     
@@ -339,7 +339,6 @@ extension AudioMapViewController {
     
     private func setNavigationBar() {
         
-        //        navigationItem.hidesBackButton = true
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
@@ -356,8 +355,6 @@ extension AudioMapViewController {
         view.addSubview(pinLoactionButton)
         pinLoactionButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            //            pinLoactionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
-            //            pinLoactionButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
             pinLoactionButton.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 76),
             pinLoactionButton.heightAnchor.constraint(equalToConstant: 41),
             pinLoactionButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -475,10 +472,13 @@ extension AudioMapViewController: GMSMapViewDelegate {
 extension AudioMapViewController: ButtonTappedPassableDelegate {
     
     func pushSoundDetailPage() {
+        guard let post = tappedMarker.userData as? SCPost,
+              let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerVC else { return }
+        audioPlayerVC.resetAudioPlayerUI(audioTitle: post.title,
+                                         audioImageNumber: post.imageNumber)
         
         AudioPlayerWindow.shared.show()
         
-        guard let post = tappedMarker.userData as? SCPost else { return }
         let playInfo = PlayInfo(title: post.title,
                                 author: post.authorName,
                                 content: post.content,

@@ -82,13 +82,6 @@ class AudioPlayerWindow {
         window?.frame =  windowFullFrame
     }
     
-//    func resizeFrame(newWidth: CGFloat, newHeight: CGFloat) {
-//        if let originalFrame = window?.frame {
-//            let newSize = CGSize(width: newWidth, height: newHeight)
-//            window?.setFrame(CGRect(origin: originalFrame.origin, size: newSize), display: true, animate: true)
-//        }
-//    }
-    
 }
 
 extension AudioPlayerWindow: DetailPageShowableDelegate {

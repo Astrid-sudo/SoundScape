@@ -14,8 +14,6 @@ class SearchViewController: UIViewController {
     
     private let firebaseManager = FirebaseManager.shared
     
-    private let remotePlayHelper = RemotePlayHelper.shared
-    
     private var selectedCategories = [AudioCategory]()
     
     private var keyWord: String?
@@ -394,6 +392,9 @@ extension SearchViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        guard let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerVC else { return }
+        audioPlayerVC.resetAudioPlayerUI(audioTitle: resultAudioFiles[indexPath.item].title,
+                                         audioImageNumber: resultAudioFiles[indexPath.item].imageNumber)
         AudioPlayerWindow.shared.show()
         let playInfo = PlayInfo(title: resultAudioFiles[indexPath.item].title,
                                 author: resultAudioFiles[indexPath.item].authorName,
@@ -409,8 +410,12 @@ extension SearchViewController: UITableViewDelegate {
                                                         remoteURL: remoteURL, completion: { localURL in
                 self.loadAudio(localURL: localURL, playInfo: playInfo)
             },
-            errorCompletion: { errorMessage in
-                self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
+            errorCompletion: { [weak self] errorMessage in
+                guard let self = self else { return }
+
+                DispatchQueue.main.async {
+                    self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
+                }
             }
  )
         }
@@ -438,6 +443,10 @@ extension SearchViewController: UISearchBarDelegate {
         searchBar.endEditing(true)
     }
     
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        keyWord = searchText
+        search()
+    }
 }
 
 // MARK: - conform to UICollectionViewDelegateFlowLayout
@@ -451,4 +460,3 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout {
     }
     
 }
-

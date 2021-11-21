@@ -22,8 +22,6 @@ class ProfileTableViewCell: UITableViewCell {
     
     weak var delegate: ProfileCellDelegate?
     
-//    var selectedPicButton = PicType.coverPic
-    
     // MARK: - UI properties
     
     private lazy var coverImageView: UIImageView = {

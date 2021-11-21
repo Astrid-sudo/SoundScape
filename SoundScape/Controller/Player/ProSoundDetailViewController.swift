@@ -131,7 +131,7 @@ class ProSoundDetailViewController: UIViewController {
     
     weak var delegate: DetailPageShowableDelegate?
     
-    let remotePlayerHelper = RemotePlayHelper.shared
+//    let remotePlayerHelper = RemotePlayHelper.shared
     
     var authorIdentity: UserIdentity?
     

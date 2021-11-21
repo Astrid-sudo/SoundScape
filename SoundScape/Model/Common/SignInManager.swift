@@ -65,20 +65,6 @@ class SignInManager {
 
     private init() {}
     
-    // MARK: - user 2
-    
-    var currentUserID = "astridtingan"
-    
-    var provider = "Google"
-    
-    var userName = "Astrid"
-    
-    var userEmail = "astridtingan@gmail.com"
-    
-    var userPic = CommonUsage.profilePic2
-    
-    var profileCover = CommonUsage.profileCover2
-    
     // MARK: - real user method
     
     func checkUserInFirebase(userID: String,
