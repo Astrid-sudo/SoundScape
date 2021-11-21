@@ -133,7 +133,11 @@ extension HomeTableViewCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("\(category),didSelect \(indexPath), url: \(firebaseData[indexPath.item].audioURL)")
         
+        guard let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerVC else { return }
+        audioPlayerVC.resetAudioPlayerUI(audioTitle: firebaseData[indexPath.item].title,
+                                         audioImageNumber: firebaseData[indexPath.item].imageNumber)
         AudioPlayerWindow.shared.show()
+        
         let playInfo = PlayInfo(title: firebaseData[indexPath.item].title,
                                 author: firebaseData[indexPath.item].authorName,
                                 content: firebaseData[indexPath.item].content,
@@ -163,7 +167,6 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         let identifier = "\(index)" as NSString
         let post = firebaseData[index]
         let authorID = post.authorID
-        
         
         if authorID != signInManager.currentUserInfoFirebase?.userID {
             // 封鎖作者

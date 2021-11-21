@@ -59,6 +59,7 @@ class AudioPlayerVC: UIViewController {
         label.textColor = UIColor.white
         label.font = UIFont(name: CommonUsage.font, size: 15)
         label.textAlignment = .left
+        label.text = CommonUsage.Text.loading
         return label
     }()
     
@@ -108,6 +109,7 @@ class AudioPlayerVC: UIViewController {
     private lazy var indicatorView: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView(style: .medium )
         view.color = UIColor(named: CommonUsage.scWhite)
+        view.hidesWhenStopped = true
         view.isHidden = true
         return view
     }()
@@ -397,6 +399,9 @@ class AudioPlayerVC: UIViewController {
             self.nowPlayDocumentID = nowPlayingInfo.documentID
             self.audioImage.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
             self.manipulateFavoriteImage()
+            self.indicatorView.stopAnimating()
+            self.playButton.isHidden = false
+            self.updateProgressWaveform(0)
         }
         
     }
@@ -520,15 +525,15 @@ class AudioPlayerVC: UIViewController {
         progressView.layer.mask = maskLayer
     }
     
-    func updateUI() {
-//        if remotePlayerHelper.state == .playing {
-//            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-//        } else if remotePlayerHelper.state == .paused {
-//            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-//        }
-//    }
-    
-}
+    func resetAudioPlayerUI(audioTitle: String, audioImageNumber: Int) {
+        audioTitleLabel.text = audioTitle
+        authorLabel.text = CommonUsage.Text.loading
+        updateProgressWaveform(0)
+        indicatorView.startAnimating()
+        indicatorView.isHidden = false
+        playButton.isHidden = true
+        audioImage.image = CommonUsage.audioImages[audioImageNumber]
+    }
     
 }
 

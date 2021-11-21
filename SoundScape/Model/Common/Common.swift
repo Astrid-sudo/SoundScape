@@ -141,6 +141,7 @@ struct CommonUsage {
         static let recordAgain = "(record again)"
         static let pinOnMapHint = "Tap to add location"
         static let finish = "Finish adding marker"
+        static let loading = "loading..."
     }
     
     struct CollectionName {

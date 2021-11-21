@@ -492,6 +492,9 @@ extension CategoryViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        guard let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerVC else { return }
+        audioPlayerVC.resetAudioPlayerUI(audioTitle: data[indexPath.item].title,
+                                         audioImageNumber: data[indexPath.item].imageNumber)
         AudioPlayerWindow.shared.show()
         
         let playInfo = PlayInfo(title: data[indexPath.item].title,
