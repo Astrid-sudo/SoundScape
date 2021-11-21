@@ -14,7 +14,7 @@ class SearchViewController: UIViewController {
     
     private let firebaseManager = FirebaseManager.shared
     
-    private let remotePlayHelper = RemotePlayHelper.shared
+//    private let remotePlayHelper = RemotePlayHelper.shared
     
     private var selectedCategories = [AudioCategory]()
     
@@ -409,8 +409,12 @@ extension SearchViewController: UITableViewDelegate {
                                                         remoteURL: remoteURL, completion: { localURL in
                 self.loadAudio(localURL: localURL, playInfo: playInfo)
             },
-            errorCompletion: { errorMessage in
-                self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
+            errorCompletion: { [weak self] errorMessage in
+                guard let self = self else { return }
+
+                DispatchQueue.main.async {
+                    self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
+                }
             }
  )
         }

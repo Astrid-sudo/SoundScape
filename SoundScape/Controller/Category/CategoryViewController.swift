@@ -11,7 +11,7 @@ class CategoryViewController: UIViewController {
     
     // MARK: - properties
     
-    private let remotePlayHelper = RemotePlayHelper.shared
+//    private let remotePlayHelper = RemotePlayHelper.shared
     
     private var category: AudioCategory?
     

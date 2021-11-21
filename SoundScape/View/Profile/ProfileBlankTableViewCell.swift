@@ -83,8 +83,6 @@ class ProfileBlankTableViewCell: UITableViewCell {
 
         }
         
-        
     }
     
 }
-

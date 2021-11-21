@@ -21,7 +21,7 @@ class AudioPlayerVC: UIViewController {
     
     let audioHelper = AudioPlayHelper.shared
     
-    let remotePlayerHelper = RemotePlayHelper.shared
+//    let remotePlayerHelper = RemotePlayHelper.shared
     
     private let audioURL = Bundle.main.url(forResource: "memories", withExtension: "mp3")
     
@@ -50,7 +50,7 @@ class AudioPlayerVC: UIViewController {
         image.layer.cornerRadius = 10
         image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
-        image.image = UIImage(named: CommonUsage.audioImage)
+        image.image = UIImage(named: CommonUsage.launchScreen1)
         return image
     }()
     
@@ -303,7 +303,6 @@ class AudioPlayerVC: UIViewController {
         ])
     }
 
-    
     private func setFavoriteButton() {
         baseView.addSubview(favoriteButton)
         favoriteButton.translatesAutoresizingMaskIntoConstraints = false
@@ -522,12 +521,14 @@ class AudioPlayerVC: UIViewController {
     }
     
     func updateUI() {
-        if remotePlayerHelper.state == .playing {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-        } else if remotePlayerHelper.state == .paused {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-        }
-    }
+//        if remotePlayerHelper.state == .playing {
+//            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
+//        } else if remotePlayerHelper.state == .paused {
+//            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+//        }
+//    }
+    
+}
     
 }
 

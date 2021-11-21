@@ -49,8 +49,8 @@ class CreateAudioVC: UIViewController {
         animationView.play()
 
         AudioPlayerWindow.shared.window?.isHidden = true
-        if RemotePlayHelper.shared.state == .playing {
-            RemotePlayHelper.shared.pause()
+        if AudioPlayHelper.shared.isPlaying {
+            AudioPlayHelper.shared.stop()
         }
     }
     

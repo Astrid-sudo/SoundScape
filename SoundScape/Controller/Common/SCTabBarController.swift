@@ -37,7 +37,7 @@ class SCTabBarController: UITabBarController {
     
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
       
-        if item.tag == 2 && RemotePlayHelper.shared.state == .playing {
+        if item.tag == 2 && AudioPlayHelper.shared.isPlaying {
             popStopPlayingAlert()
      }
     }
@@ -99,7 +99,7 @@ extension SCTabBarController: UITabBarControllerDelegate {
 
       if viewController == viewControllers[2] {
 
-          if RemotePlayHelper.shared.state != .playing {
+          if !AudioPlayHelper.shared.isPlaying {
           return true
 
         } else {
