@@ -31,7 +31,7 @@ class ProSoundDetailViewController: UIViewController {
     
     // MARK: - conform to PlayerUpdatable
     
-     lazy var playButton: UIButton = {
+    lazy var playButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 32)
         let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
@@ -40,9 +40,23 @@ class ProSoundDetailViewController: UIViewController {
         button.addTarget(self, action: #selector(playOrPause), for: .touchUpInside)
         return button
     }()
-
-     var caDisplayLink: CADisplayLink?
-
+    
+    var caDisplayLink: CADisplayLink?
+    
+    var progressView: UIView {
+        return waveformProgressView
+    }
+    
+    lazy var waveformProgressView: WaveformImageView = {
+        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) }
+        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
+        let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
+        let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
+        return waveformView
+    }()
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -132,9 +146,9 @@ class ProSoundDetailViewController: UIViewController {
                     self.blockButton.widthAnchor.constraint(equalToConstant: 50)
                 ])
                 self.blockButton.isHidden = false
-
+                
             }
-
+            
         } else {
             
             DispatchQueue.main.async {
@@ -150,12 +164,12 @@ class ProSoundDetailViewController: UIViewController {
         AudioPlayerWindow.shared.makeSmallFrame()
         AudioPlayerWindow.shared.showVC()
         leave()
-
+        
         navigationController?.popToRootViewController(animated: true)
         guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
         scTabBarController.selectedIndex = 0
     }
-
+    
     private func popBlockAlert() {
         
         let alert = UIAlertController(title: "Are you sure?",
@@ -175,17 +189,17 @@ class ProSoundDetailViewController: UIViewController {
         present(alert, animated: true, completion: nil)
         
     }
-
+    
     private func blockUser() {
         
         guard let currentUserDocID = SignInManager.shared.currentUserInfoFirebase?.userInfoDoumentID,
               let  blockUser = authorIdentity?.userID else { return }
         
         FirebaseManager.shared.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
-                                       toBeBlockedID: blockUser,
+                                              toBeBlockedID: blockUser,
                                               completion: backToHome)
     }
-
+    
     private func setWaveformView() {
         view.addSubview(waveformView)
     }
@@ -243,34 +257,19 @@ class ProSoundDetailViewController: UIViewController {
     }
     
     @objc func updateTime(notification: Notification) {
-        updatePlayTime(notification: notification)
+        updatePlaybackTime(notification: notification)
     }
     
-    @objc func updatePlaybackTime(notification: Notification) {
-        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
-        let currentTime = playProgress.currentTime
-        let duration = playProgress.duration
-        let timeProgress = currentTime / duration
-        updateProgressWaveform(timeProgress)
-    }
+    //    @objc func updatePlaybackTime(notification: Notification) {
+    //        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
+    //        let currentTime = playProgress.currentTime
+    //        let duration = playProgress.duration
+    //        let timeProgress = currentTime / duration
+    //        updateProgressWaveform(timeProgress)
+    //    }
     
     @objc func changeButtImage() {
-        
-        if AudioPlayHelper.shared.isPlaying {
-            DispatchQueue.main.async {
-                            let config = UIImage.SymbolConfiguration(pointSize: 32)
-                            let bigImage = UIImage(systemName: CommonUsage.SFSymbol.pause, withConfiguration: config)
-                self.playButton.setImage(bigImage, for: .normal)
-            }
-        }
-        
-        if !AudioPlayHelper.shared.isPlaying {
-            DispatchQueue.main.async {
-                let config = UIImage.SymbolConfiguration(pointSize: 32)
-                let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
-                self.playButton.setImage(bigImage, for: .normal)
-            }
-        }
+        changeButtonImage()
     }
     
     @objc func updateInfo(notification: Notification) {
@@ -320,16 +319,6 @@ class ProSoundDetailViewController: UIViewController {
     // MARK: - UI properties
     
     private lazy var waveformView: WaveformImageView = {
-        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) }
-        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
-        let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
-        let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
-        return waveformView
-    }()
-    
-    private lazy var waveformProgressView: WaveformImageView = {
         let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) }
@@ -416,44 +405,47 @@ class ProSoundDetailViewController: UIViewController {
     
 }
 
-// MARK: - conform to PlayerUpdatable
+// MARK: - conform to PlayerUIProtocol
 
-extension ProSoundDetailViewController: PlayerUpdatable {
+extension ProSoundDetailViewController: PlayerUIProtocol {
+    //    var waveformProgressView: UIView {
+    //        <#code#>
+    //    }
     
-    func changeButtonImage() {
-        
-        if audioPlayHelper.isPlaying {
-            DispatchQueue.main.async {
-                self.playButton.isHidden = false
-                self.playButton.setImage(self.playButtonImagePause, for: .normal)
-            }
-        }
-
-        if !audioPlayHelper.isPlaying {
-            DispatchQueue.main.async {
-                self.playButton.isHidden = false
-                self.playButton.setImage(self.playButtonImagePlay, for: .normal)
-            }
-        }
-
-    }
     
-    func manipulatePlayer() {
-        if AudioPlayHelper.shared.isPlaying {
-            AudioPlayHelper.shared.pause()
-        } else {
-            AudioPlayHelper.shared.play()
-        }
-    }
+    //    func changeButtonImage() {
+    //
+    //        if audioPlayHelper.isPlaying {
+    //            DispatchQueue.main.async {
+    //                self.playButton.isHidden = false
+    //                self.playButton.setImage(self.playButtonImagePause, for: .normal)
+    //            }
+    //        }
+    //
+    //        if !audioPlayHelper.isPlaying {
+    //            DispatchQueue.main.async {
+    //                self.playButton.isHidden = false
+    //                self.playButton.setImage(self.playButtonImagePlay, for: .normal)
+    //            }
+    //        }
+    //
+    //    }
     
-    func updatePlayTime(notification: Notification) {
-        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
-        let currentTime = playProgress.currentTime
-        let duration = playProgress.duration
-        let timeProgress = currentTime / duration
-        
-        updateProgressWaveform(timeProgress)
-    }
+    //    func manipulatePlayer() {
+    //        if AudioPlayHelper.shared.isPlaying {
+    //            AudioPlayHelper.shared.pause()
+    //        } else {
+    //            AudioPlayHelper.shared.play()
+    //        }
+    //    }
+    
+    //    func updatePlayTime(notification: Notification) {
+    //        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
+    //        let currentTime = playProgress.currentTime
+    //        let duration = playProgress.duration
+    //        let timeProgress = currentTime / duration
+    //        updateProgressWaveform(timeProgress)
+    //    }
     
     func updatePlayInfo(notification: Notification) {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }

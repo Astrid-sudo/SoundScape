@@ -29,7 +29,6 @@ class AudioPlayerVC: UIViewController {
     
     private var soundDetailVC: ProSoundDetailViewController?
     
-    
     // MARK: - conform to PlayerUpdatable
     
     lazy var playButton: UIButton = {
@@ -40,10 +39,16 @@ class AudioPlayerVC: UIViewController {
         return button
     }()
     
+    lazy var progressView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(named: CommonUsage.scOrange)
+        return view
+    }()
+    
     var nowPlayingURL: URL?
     
     var caDisplayLink: CADisplayLink?
-
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -374,12 +379,6 @@ class AudioPlayerVC: UIViewController {
         return view
     }()
     
-    private lazy var progressView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(named: CommonUsage.scOrange)
-        return view
-    }()
-    
     private lazy var detailButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .clear
@@ -399,41 +398,7 @@ class AudioPlayerVC: UIViewController {
 
 // MARK: - conform to PlayerUpdatable
 
-extension AudioPlayerVC: PlayerUpdatable {
-    
-    func changeButtonImage() {
-        
-        if audioPlayHelper.isPlaying {
-            DispatchQueue.main.async {
-                self.playButton.isHidden = false
-                self.playButton.setImage(self.playButtonImagePause, for: .normal)
-            }
-        }
-
-        if !audioPlayHelper.isPlaying {
-            DispatchQueue.main.async {
-                self.playButton.isHidden = false
-                self.playButton.setImage(self.playButtonImagePlay, for: .normal)
-            }
-        }
-
-    }
-    
-    func manipulatePlayer() {
-        if AudioPlayHelper.shared.isPlaying {
-            AudioPlayHelper.shared.pause()
-        } else {
-            AudioPlayHelper.shared.play()
-        }
-    }
-    
-    func updatePlaybackTime(notification: Notification) {
-        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
-        let currentTime = playProgress.currentTime
-        let duration = playProgress.duration
-        let timeProgress = currentTime / duration
-        updateProgressWaveform(timeProgress)
-    }
+extension AudioPlayerVC: PlayerUIProtocol {
     
     func updatePlayInfo(notification: Notification) {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }

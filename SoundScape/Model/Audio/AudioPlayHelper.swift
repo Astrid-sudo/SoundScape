@@ -14,7 +14,7 @@ class AudioPlayHelper: NSObject {
     
     static let shared = AudioPlayHelper()
     
-    var audioPlayer: AVAudioPlayer?
+    private var audioPlayer: AVAudioPlayer?
     
     var displayLink: CADisplayLink?
     
