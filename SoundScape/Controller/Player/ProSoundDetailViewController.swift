@@ -5,137 +5,23 @@
 //  Created by Astrid on 2021/11/14.
 //
 
+
+// swiftlint:disable line_length
+
 import UIKit
 import DSWaveformImage
 
 class ProSoundDetailViewController: UIViewController {
     
-    // MARK: - UI properties
-    
-    // swiftlint:disable line_length
-    
-    private lazy var waveformView: WaveformImageView = {
-        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) }
-        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
-        let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
-        let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
-        return waveformView
-    }()
-    
-    private lazy var waveformProgressView: WaveformImageView = {
-        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) }
-        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
-        let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
-        let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
-        return waveformView
-    }()
-    
-    // swiftlint:enable line_length
-    
-    private lazy var playButton: UIButton = {
-        let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 32)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
-        button.setImage(bigImage, for: .normal)
-        button.tintColor = .white
-        button.addTarget(self, action: #selector(manipulatePlayer), for: .touchUpInside)
-        return button
-    }()
-    
-    private lazy var commentButton: UIButton = {
-        let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 20)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.comment, withConfiguration: config)
-        button.setImage(bigImage, for: .normal)
-        button.tintColor = .white
-        button.addTarget(self, action: #selector(presentCommentPage), for: .touchUpInside)
-        return button
-    }()
-    
-    private lazy var leaveButton: UIButton = {
-        let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 20)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.chevronDown, withConfiguration: config)
-        button.setImage(bigImage, for: .normal)
-        button.tintColor = .white
-        button.addTarget(self, action: #selector(leaveDetailPage), for: .touchUpInside)
-        return button
-    }()
-    
-    private lazy var authorButton: UIButton = {
-        let button = UIButton()
-        button.addTarget(self, action: #selector(goAuthorPage), for: .touchUpInside)
-        button.titleLabel?.font = UIFont(name: CommonUsage.fontBungee, size: 24)
-        return button
-    }()
-    
-    private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 18)
-        
-        label.textAlignment = .left
-        return label
-    }()
-    
-    private lazy var contentTextView: UITextView = {
-        let textView = UITextView()
-        textView.textColor = .white
-        textView.font = UIFont(name: CommonUsage.font, size: 14)
-        textView.textAlignment = .left
-        textView.isEditable = false
-        textView.isSelectable = false
-        textView.isScrollEnabled = true
-        textView.backgroundColor = .clear
-        textView.isUserInteractionEnabled = true
-        textView.textContainer.lineBreakMode = .byWordWrapping
-        return textView
-    }()
-    
-    private lazy var backgroundImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        return imageView
-    }()
-    
-    private lazy var backgroundView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(red: 24/255, green: 31/255, blue: 41/255, alpha: 0.7)
-        return view
-    }()
-    
-    private lazy var blockButton: UIButton = {
-        let button = UIButton()
-        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
-        button.addTarget(self, action: #selector(block), for: .touchUpInside)
-        button.backgroundColor = UIColor(named: CommonUsage.scGray)
-        button.layer.cornerRadius = 15
-        button.setTitle(CommonUsage.Text.block, for: .normal)
-        button.isHidden = true
-        return button
-    }()
-    
     // MARK: - properties
     
     private let waveformImageDrawer = WaveformImageDrawer()
     
-    var audioHelper = AudioPlayHelper.shared
-    
-    var displayLink: CADisplayLink?
-    
-    var fileNameCount = 300
-    
     weak var delegate: DetailPageShowableDelegate?
     
-//    let remotePlayerHelper = RemotePlayHelper.shared
+    private var authorIdentity: UserIdentity?
     
-    var authorIdentity: UserIdentity?
-    
-    var nowPlayingDocumentID: String? {
+    private var nowPlayingDocumentID: String? {
         didSet {
             guard let nowPlayingDocumentID = nowPlayingDocumentID else { return }
             renderWave(documentID: nowPlayingDocumentID)
@@ -143,6 +29,20 @@ class ProSoundDetailViewController: UIViewController {
         }
     }
     
+    // MARK: - conform to PlayerUpdatable
+    
+     lazy var playButton: UIButton = {
+        let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 32)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
+        button.setImage(bigImage, for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(playOrPause), for: .touchUpInside)
+        return button
+    }()
+
+     var caDisplayLink: CADisplayLink?
+
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -160,9 +60,7 @@ class ProSoundDetailViewController: UIViewController {
         setPlayButton()
     }
     
-    // MARK: - deinit
-    
-    deinit {
+    override func viewWillDisappear(_ animated: Bool) {
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -196,7 +94,7 @@ class ProSoundDetailViewController: UIViewController {
         homeVC.navigationController?.pushViewController(othersProfileViewController, animated: true)
         
         guard let leave = delegate?.leaveDetailPage else { return }
-        displayLink?.invalidate()
+        caDisplayLink?.invalidate()
         
         AudioPlayerWindow.shared.makeSmallFrame()
         AudioPlayerWindow.shared.showVC()
@@ -207,21 +105,15 @@ class ProSoundDetailViewController: UIViewController {
     
     @objc func leaveDetailPage() {
         guard let leave = delegate?.leaveDetailPage else { return }
-        displayLink?.invalidate()
+        caDisplayLink?.invalidate()
         AudioPlayerWindow.shared.makeSmallFrame()
         AudioPlayerWindow.shared.showVC()
         
         leave()
     }
     
-    @objc func manipulatePlayer() {
-        
-        if AudioPlayHelper.shared.isPlaying {
-            AudioPlayHelper.shared.pause()
-        } else {
-            AudioPlayHelper.shared.play()
-        }
-        
+    @objc func playOrPause() {
+        manipulatePlayer()
     }
     
     // MARK: - method
@@ -254,7 +146,7 @@ class ProSoundDetailViewController: UIViewController {
     private func backToHome() {
         
         guard let leave = delegate?.leaveDetailPage else { return }
-        displayLink?.invalidate()
+        caDisplayLink?.invalidate()
         AudioPlayerWindow.shared.makeSmallFrame()
         AudioPlayerWindow.shared.showVC()
         leave()
@@ -264,7 +156,6 @@ class ProSoundDetailViewController: UIViewController {
         scTabBarController.selectedIndex = 0
     }
 
-    
     private func popBlockAlert() {
         
         let alert = UIAlertController(title: "Are you sure?",
@@ -285,7 +176,6 @@ class ProSoundDetailViewController: UIViewController {
         
     }
 
-    
     private func blockUser() {
         
         guard let currentUserDocID = SignInManager.shared.currentUserInfoFirebase?.userInfoDoumentID,
@@ -296,7 +186,6 @@ class ProSoundDetailViewController: UIViewController {
                                               completion: backToHome)
     }
 
-    
     private func setWaveformView() {
         view.addSubview(waveformView)
     }
@@ -307,7 +196,7 @@ class ProSoundDetailViewController: UIViewController {
     
     func addObserver() {
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updatePlayInfo),
+                                               selector: #selector(updateInfo),
                                                name: .playingAudioChange,
                                                object: nil)
         
@@ -317,7 +206,7 @@ class ProSoundDetailViewController: UIViewController {
                                                object: nil)
         
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updatePlaybackTime),
+                                               selector: #selector(updateTime),
                                                name: .didCurrentTimeChange,
                                                object: nil)
         
@@ -353,15 +242,16 @@ class ProSoundDetailViewController: UIViewController {
         
     }
     
+    @objc func updateTime(notification: Notification) {
+        updatePlayTime(notification: notification)
+    }
+    
     @objc func updatePlaybackTime(notification: Notification) {
-        
         guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
         let currentTime = playProgress.currentTime
         let duration = playProgress.duration
         let timeProgress = currentTime / duration
-        
         updateProgressWaveform(timeProgress)
-        
     }
     
     @objc func changeButtImage() {
@@ -383,18 +273,8 @@ class ProSoundDetailViewController: UIViewController {
         }
     }
     
-    @objc func updatePlayInfo(notification: Notification) {
-        guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
-        
-        DispatchQueue.main.async {
-            self.titleLabel.text = nowPlayingInfo.title
-            self.backgroundImageView.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
-            self.authorButton.setTitle(nowPlayingInfo.author, for: .normal)
-            self.contentTextView.text = nowPlayingInfo.content
-        }
-        
-        authorIdentity = UserIdentity(userID: nowPlayingInfo.authorUserID, userIDProvider: nowPlayingInfo.authorAccountProvider)
-        nowPlayingDocumentID = nowPlayingInfo.documentID
+    @objc func updateInfo(notification: Notification) {
+        updatePlayInfo(notification: notification)
     }
     
     private func updateWaveformImages(localURL: URL) {
@@ -437,22 +317,162 @@ class ProSoundDetailViewController: UIViewController {
         waveformProgressView.layer.mask = maskLayer
     }
     
-    func updateUI() {
+    // MARK: - UI properties
+    
+    private lazy var waveformView: WaveformImageView = {
+        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) }
+        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
+        let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
+        let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
+        return waveformView
+    }()
+    
+    private lazy var waveformProgressView: WaveformImageView = {
+        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) }
+        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
+        let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
+        let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
+        return waveformView
+    }()
+    
+    // swiftlint:enable line_length
+    
+    
+    private lazy var commentButton: UIButton = {
+        let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 20)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.comment, withConfiguration: config)
+        button.setImage(bigImage, for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(presentCommentPage), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var leaveButton: UIButton = {
+        let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 20)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.chevronDown, withConfiguration: config)
+        button.setImage(bigImage, for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(leaveDetailPage), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var authorButton: UIButton = {
+        let button = UIButton()
+        button.addTarget(self, action: #selector(goAuthorPage), for: .touchUpInside)
+        button.titleLabel?.font = UIFont(name: CommonUsage.fontBungee, size: 24)
+        return button
+    }()
+    
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.font = UIFont(name: CommonUsage.fontSemibold, size: 18)
+        label.textAlignment = .left
+        return label
+    }()
+    
+    private lazy var contentTextView: UITextView = {
+        let textView = UITextView()
+        textView.textColor = .white
+        textView.font = UIFont(name: CommonUsage.font, size: 14)
+        textView.textAlignment = .left
+        textView.isEditable = false
+        textView.isSelectable = false
+        textView.isScrollEnabled = true
+        textView.backgroundColor = .clear
+        textView.isUserInteractionEnabled = true
+        textView.textContainer.lineBreakMode = .byWordWrapping
+        return textView
+    }()
+    
+    private lazy var backgroundImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        return imageView
+    }()
+    
+    private lazy var backgroundView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(red: 24/255, green: 31/255, blue: 41/255, alpha: 0.7)
+        return view
+    }()
+    
+    private lazy var blockButton: UIButton = {
+        let button = UIButton()
+        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.addTarget(self, action: #selector(block), for: .touchUpInside)
+        button.backgroundColor = UIColor(named: CommonUsage.scGray)
+        button.layer.cornerRadius = 15
+        button.setTitle(CommonUsage.Text.block, for: .normal)
+        button.isHidden = true
+        return button
+    }()
+    
+}
+
+// MARK: - conform to PlayerUpdatable
+
+extension ProSoundDetailViewController: PlayerUpdatable {
+    
+    func changeButtonImage() {
         
-        displayLink = CADisplayLink(target: self, selector: #selector(updatePlaybackTime))
-        displayLink?.add(to: RunLoop.main, forMode: .common)
-        
-        if audioHelper.isPlaying == true {
-            
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-            
+        if audioPlayHelper.isPlaying {
+            DispatchQueue.main.async {
+                self.playButton.isHidden = false
+                self.playButton.setImage(self.playButtonImagePause, for: .normal)
+            }
+        }
+
+        if !audioPlayHelper.isPlaying {
+            DispatchQueue.main.async {
+                self.playButton.isHidden = false
+                self.playButton.setImage(self.playButtonImagePlay, for: .normal)
+            }
+        }
+
+    }
+    
+    func manipulatePlayer() {
+        if AudioPlayHelper.shared.isPlaying {
+            AudioPlayHelper.shared.pause()
         } else {
-            
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
+            AudioPlayHelper.shared.play()
         }
     }
     
+    func updatePlayTime(notification: Notification) {
+        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
+        let currentTime = playProgress.currentTime
+        let duration = playProgress.duration
+        let timeProgress = currentTime / duration
+        
+        updateProgressWaveform(timeProgress)
+    }
+    
+    func updatePlayInfo(notification: Notification) {
+        guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
+        
+        DispatchQueue.main.async {
+            self.titleLabel.text = nowPlayingInfo.title
+            self.backgroundImageView.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
+            self.authorButton.setTitle(nowPlayingInfo.author, for: .normal)
+            self.contentTextView.text = nowPlayingInfo.content
+        }
+        
+        authorIdentity = UserIdentity(userID: nowPlayingInfo.authorUserID, userIDProvider: nowPlayingInfo.authorAccountProvider)
+        nowPlayingDocumentID = nowPlayingInfo.documentID
+    }
+    
 }
+
+
+// MARK: - UI method
 
 extension ProSoundDetailViewController {
     

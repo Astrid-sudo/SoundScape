@@ -88,10 +88,9 @@ class EditVC: UIViewController {
         
         EditAudioManager.shared.delegate = self
         
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-        setNavigationBar()
+        setNavigationController()
         addObserver()
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        setBackgroundviewColor()
         setGoUploadPageButton()
         setAudioLengthNotice()
         setLowCutButton()
@@ -119,12 +118,9 @@ class EditVC: UIViewController {
             setTrimTailPreciseView()
             trimerViewDidAdd = true
         }
-        
     }
     
-    // MARK: - deinit
-    
-    deinit {
+    override func viewWillDisappear(_ animated: Bool) {
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -297,7 +293,6 @@ class EditVC: UIViewController {
         }
         
     }
-    
     
     @objc func scrubToTime() {
         remotePlayerHelper.seek(position: Double(slider.value))
@@ -520,11 +515,16 @@ Cut
     
     // MARK: - config UI method
     
-    private func setNavigationBar() {
+    private func setNavigationController() {
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
         navigationItem.title = CommonUsage.Text.trim
+    }
+    
+    private func setBackgroundviewColor() {
+        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
     }
     
     private func setGoUploadPageButton() {
@@ -597,8 +597,7 @@ Cut
         currentTimeLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             currentTimeLabel.topAnchor.constraint(equalTo: playButton.bottomAnchor, constant: 8),
-            currentTimeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: (CommonUsage.screenWidth - 62) / 2 ),
-
+            currentTimeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: (CommonUsage.screenWidth - 62) / 2 )
         ])
     }
     
@@ -631,7 +630,6 @@ Cut
     }
     
     private func setTrimHeadView() {
-        
         view.addSubview(trimHeadView)
         trimHeadView.frame = CGRect(x: slider.center.x - slider.frame.width / 2 - 3,
                                     y: slider.center.y - 55,
@@ -640,7 +638,6 @@ Cut
     }
     
     private func setTrimTailView() {
-        
         view.addSubview(trimTailView)
         trimTailView.frame = CGRect(x: CommonUsage.screenWidth - 75,
                                     y: slider.center.y - 55,
@@ -649,7 +646,6 @@ Cut
     }
     
     private func setTrimHeadPreciseView() {
-        
         trimHeadView.addSubview(trimHeadPreciseView)
         trimHeadPreciseView.frame = CGRect(x: 0,
                                            y: 0,
@@ -659,9 +655,7 @@ Cut
     }
     
     private func setTrimTailPreciseView() {
-        
         trimTailView.addSubview(trimTailPreciseView)
-        
         trimTailPreciseView.frame = CGRect(x: trimTailView.frame.width,
                                            y: 0,
                                            width: 3,

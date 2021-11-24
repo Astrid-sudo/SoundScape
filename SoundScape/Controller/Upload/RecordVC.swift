@@ -79,7 +79,6 @@ class RecordVC: UIViewController {
         let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
         button.setImage(bigImage, for: .normal)
         button.tintColor = UIColor(named: CommonUsage.scWhite)
-        button.addTarget(self, action: #selector(manipulatePlayback), for: .touchUpInside)
         button.isHidden = true
         return button
     }()
@@ -261,16 +260,6 @@ class RecordVC: UIViewController {
             audioRecordHelper.stopRecording()
             goEditButton.isHidden = false
             recordAgainLabel.isHidden = false
-        }
-    }
-    
-    @objc func manipulatePlayback() {
-        
-        togglePlayButtonImage()
-        if audioRecordHelper.isPlaying == false {
-            audioRecordHelper.playRecordedSound()
-        } else {
-            audioRecordHelper.pausePlayRecorded()
         }
     }
     

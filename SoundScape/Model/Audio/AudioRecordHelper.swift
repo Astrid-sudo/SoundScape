@@ -26,11 +26,7 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     
     var audioRecorder: AVAudioRecorder?
    
-    var audioPlayer: AVAudioPlayer? {
-        didSet {
-            audioPlayer?.delegate = self
-        }
-    }
+    var audioPlayer: AVAudioPlayer?
     
     var isRecording = false
     
@@ -49,7 +45,7 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     private override init() {
         super.init()
         
-        //init an audio recorder
+        // init an audio recorder
         let filename = "User.m4a"
         let path = NSHomeDirectory() + "/Documents/" + filename
         //        let url = URL(fileURLWithPath: path)
@@ -105,7 +101,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         }
     }
     
-    
      func checkAudioPermission(grantedCompletion: @escaping() -> Void,
                                notGrantedCompletion: @escaping() -> Void) {
         AVAudioSession.sharedInstance().requestRecordPermission { granted in
@@ -138,20 +133,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         return url
     }
     
-    func playRecordedSound() {
-        if isRecording == false {
-            audioPlayer?.play()
-             isPlaying = true
-        }
-    }
-    
-    func pausePlayRecorded() {
-        if isRecording == false {
-            audioPlayer?.pause()
-             isPlaying = false
-        }
-    }
-    
     func stopPlaying() {
         if isRecording == false {
             audioPlayer?.stop()
@@ -174,11 +155,4 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         
     }
     
-}
-
-extension AudioRecordHelper: AVAudioPlayerDelegate {
-    
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        delegate?.didFinishPlaying()
-    }
 }

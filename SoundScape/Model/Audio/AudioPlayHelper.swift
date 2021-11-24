@@ -57,7 +57,6 @@ class AudioPlayHelper: NSObject {
             } catch {
                 print("fail to create AVAudioPlayer")
                 NotificationCenter.default.post(name: .audioPlayHelperError, object: nil, userInfo: nil)
-
                 
             }
             
@@ -72,7 +71,6 @@ class AudioPlayHelper: NSObject {
         didSet {
             
             guard let currentPlayInfo = currentPlayInfo else { return }
-            
             let userInfoKey = "UserInfo"
             let userInfo: [AnyHashable: Any] = [userInfoKey: currentPlayInfo]
             NotificationCenter.default.post(name: .playingAudioChange, object: nil, userInfo: userInfo)
@@ -103,7 +101,7 @@ class AudioPlayHelper: NSObject {
             let userInfo: [AnyHashable: Any] = [userInfoKey: currentTime]
             NotificationCenter.default.post(name: .didCurrentTimeChange, object: nil, userInfo: userInfo)
         }
-
+        
     }
     
     func play() {
@@ -156,8 +154,10 @@ class AudioPlayHelper: NSObject {
     func setPlayInfo(playInfo: PlayInfo) {
         currentPlayInfo = playInfo
     }
-
+    
 }
+
+// MARK: - conform to AVAudioPlayerDelegate
 
 extension AudioPlayHelper: AVAudioPlayerDelegate {
     
@@ -166,6 +166,8 @@ extension AudioPlayHelper: AVAudioPlayerDelegate {
         NotificationCenter.default.post(name: .didItemPlayToEndTime, object: nil, userInfo: nil)
     }
 }
+
+// MARK: - extension Notification.Name
 
 extension Notification.Name {
     static let audioPlayHelperUpdateTime = Notification.Name("audioPlayHelperUpdateTime")
