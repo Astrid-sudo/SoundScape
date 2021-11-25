@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import AVFoundation
 
 struct CommonUsage {
     
@@ -225,3 +226,13 @@ extension UIViewController {
     }
     
 }
+
+extension Notification.Name {
+    static let playingAudioChange = Notification.Name("playingAudioChange")
+    static let didItemPlayToEndTime = Notification.Name("didItemPlayToEndTime")
+    static let didCurrentTimeChange = Notification.Name("didCurrentTimeChange")
+    static let didStateChange = Notification.Name("didStateChange")
+    static let remoteURLDidSelect = Notification.Name("remoteURLDidSelect")
+    static let didItemDurationChange = Notification.Name("didItemDurationChange")
+}
+

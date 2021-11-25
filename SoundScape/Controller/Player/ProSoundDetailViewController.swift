@@ -29,34 +29,6 @@ class ProSoundDetailViewController: UIViewController {
         }
     }
     
-    // MARK: - conform to PlayerUpdatable
-    
-    lazy var playButton: UIButton = {
-        let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 32)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
-        button.setImage(bigImage, for: .normal)
-        button.tintColor = .white
-        button.addTarget(self, action: #selector(playOrPause), for: .touchUpInside)
-        return button
-    }()
-    
-    var caDisplayLink: CADisplayLink?
-    
-    var progressView: UIView {
-        return waveformProgressView
-    }
-    
-    lazy var waveformProgressView: WaveformImageView = {
-        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) }
-        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
-        let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
-        let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
-        return waveformView
-    }()
-    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -260,14 +232,6 @@ class ProSoundDetailViewController: UIViewController {
         updatePlaybackTime(notification: notification)
     }
     
-    //    @objc func updatePlaybackTime(notification: Notification) {
-    //        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
-    //        let currentTime = playProgress.currentTime
-    //        let duration = playProgress.duration
-    //        let timeProgress = currentTime / duration
-    //        updateProgressWaveform(timeProgress)
-    //    }
-    
     @objc func changeButtImage() {
         changeButtonImage()
     }
@@ -330,8 +294,7 @@ class ProSoundDetailViewController: UIViewController {
     
     // swiftlint:enable line_length
     
-    
-    private lazy var commentButton: UIButton = {
+        private lazy var commentButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 20)
         let bigImage = UIImage(systemName: CommonUsage.SFSymbol.comment, withConfiguration: config)
@@ -403,49 +366,42 @@ class ProSoundDetailViewController: UIViewController {
         return button
     }()
     
+    // MARK: - conform to PlayerUIProtocol
+    
+    lazy var playButton: UIButton = {
+        let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 32)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
+        button.setImage(bigImage, for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(playOrPause), for: .touchUpInside)
+        return button
+    }()
+    
+    var caDisplayLink: CADisplayLink?
+    
+    var progressView: UIView {
+        return waveformProgressView
+    }
+    
+    lazy var waveformProgressView: WaveformImageView = {
+        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0,
+                                                                                                                                                                                   y: 0,
+                                                                                                                                                                                   width: 0,
+                                                                                                                                                                                   height: 0)) }
+        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
+        let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
+        let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
+        return waveformView
+    }()
+    
 }
 
 // MARK: - conform to PlayerUIProtocol
 
 extension ProSoundDetailViewController: PlayerUIProtocol {
-    //    var waveformProgressView: UIView {
-    //        <#code#>
-    //    }
-    
-    
-    //    func changeButtonImage() {
-    //
-    //        if audioPlayHelper.isPlaying {
-    //            DispatchQueue.main.async {
-    //                self.playButton.isHidden = false
-    //                self.playButton.setImage(self.playButtonImagePause, for: .normal)
-    //            }
-    //        }
-    //
-    //        if !audioPlayHelper.isPlaying {
-    //            DispatchQueue.main.async {
-    //                self.playButton.isHidden = false
-    //                self.playButton.setImage(self.playButtonImagePlay, for: .normal)
-    //            }
-    //        }
-    //
-    //    }
-    
-    //    func manipulatePlayer() {
-    //        if AudioPlayHelper.shared.isPlaying {
-    //            AudioPlayHelper.shared.pause()
-    //        } else {
-    //            AudioPlayHelper.shared.play()
-    //        }
-    //    }
-    
-    //    func updatePlayTime(notification: Notification) {
-    //        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
-    //        let currentTime = playProgress.currentTime
-    //        let duration = playProgress.duration
-    //        let timeProgress = currentTime / duration
-    //        updateProgressWaveform(timeProgress)
-    //    }
     
     func updatePlayInfo(notification: Notification) {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }

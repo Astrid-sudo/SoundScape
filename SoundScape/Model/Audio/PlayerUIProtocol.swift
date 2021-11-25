@@ -10,15 +10,9 @@ import UIKit
 
 protocol PlayerUIProtocol: AnyObject {
     
-    // model
-    
-    //    var nowPlayingURL: URL? { get set }
-    
     // UI
     
-    //    var playButtonColor: UIColor { get set } // default
-    
-    var playButton: UIButton { get } // default
+    var playButton: UIButton { get }
     
     var caDisplayLink: CADisplayLink? { get set }
     
@@ -26,17 +20,15 @@ protocol PlayerUIProtocol: AnyObject {
     
     var playButtonImagePause: UIImage { get } // default
     
-    var playButtonImageStop: UIImage { get } // default
-    
     var progressView: UIView { get }
     
     // method
     
-    func manipulatePlayer()
+    func manipulatePlayer() // default
     
-    func updatePlaybackTime(notification: Notification)
+    func updatePlaybackTime(notification: Notification) // default
     
-    func updatePlayInfo(notification: Notification)
+    func updatePlayInfo(notification: Notification) // default
     
     func changeButtonImage() // default
     
@@ -59,11 +51,6 @@ extension PlayerUIProtocol {
     
     var playButtonImagePause: UIImage {
         let image = UIImage(systemName: CommonUsage.SFSymbol.pause) ?? UIImage()
-        return image
-    }
-    
-    var playButtonImageStop: UIImage {
-        let image = UIImage(systemName: CommonUsage.SFSymbol.stopPlay) ?? UIImage()
         return image
     }
     

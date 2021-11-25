@@ -113,7 +113,6 @@ class CreateAudioVC: UIViewController {
         ])
     }
 
-    
     private func setRecordButton() {
         view.addSubview(recordButton)
         recordButton.translatesAutoresizingMaskIntoConstraints = false
@@ -124,7 +123,6 @@ class CreateAudioVC: UIViewController {
             recordButton.heightAnchor.constraint(equalToConstant: 48)
         ])
     }
-    
     
 }
 
@@ -138,6 +136,7 @@ extension CreateAudioVC: UIDocumentPickerDelegate {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             guard let editVC = storyboard.instantiateViewController(withIdentifier: "EditVC") as? EditVC else { return }
             editVC.selectedFileURL = url
+            editVC.originDuraion = AudioPlayHelper.shared.duration
             navigationController?.pushViewController(editVC, animated: true)
         }
     }

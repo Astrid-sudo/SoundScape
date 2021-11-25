@@ -47,7 +47,6 @@
 		5683B6972740F843004512D4 /* ProSoundDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5683B6962740F843004512D4 /* ProSoundDetailViewController.swift */; };
 		5683B699274151BA004512D4 /* lf30_editor_nhixegma.json in Resources */ = {isa = PBXBuildFile; fileRef = 5683B698274151BA004512D4 /* lf30_editor_nhixegma.json */; };
 		568FEAF1274648DC0028B2EB /* blueStripeLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 568FEAF0274648DC0028B2EB /* blueStripeLoading.json */; };
-		56950630271FDD08009E4C74 /* RemotePlayHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */; };
 		5698830C27400089008BF438 /* style.json in Resources */ = {isa = PBXBuildFile; fileRef = 5698830B27400089008BF438 /* style.json */; };
 		569A7D7827229AE500CEE3EA /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7727229AE500CEE3EA /* HomeVC.swift */; };
 		569A7D7A27229EB200CEE3EA /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569A7D7927229EB200CEE3EA /* HomeTableViewCell.swift */; };
@@ -121,7 +120,6 @@
 		5683B6962740F843004512D4 /* ProSoundDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProSoundDetailViewController.swift; sourceTree = "<group>"; };
 		5683B698274151BA004512D4 /* lf30_editor_nhixegma.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = lf30_editor_nhixegma.json; sourceTree = "<group>"; };
 		568FEAF0274648DC0028B2EB /* blueStripeLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = blueStripeLoading.json; sourceTree = "<group>"; };
-		5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemotePlayHelper.swift; sourceTree = "<group>"; };
 		5698830B27400089008BF438 /* style.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = style.json; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.json; };
 		569A7D7727229AE500CEE3EA /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
 		569A7D7927229EB200CEE3EA /* HomeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
@@ -430,7 +428,6 @@
 			children = (
 				5679F114271D641B00663001 /* AudioPlayHelper.swift */,
 				56F1C848271FA8F400F64846 /* AudioRecordHelper.swift */,
-				5695062F271FDD08009E4C74 /* RemotePlayHelper.swift */,
 				56201C962721D21F0080A7C7 /* SCRemotePlayerConfig.swift */,
 				563396C4272596A600882711 /* EditAudioManager.swift */,
 				56D4C96327437C4B00C57235 /* RemoteAudioManager.swift */,
@@ -708,7 +705,6 @@
 				56D3F0C3272D813C00A3B3B3 /* ProfileViewController.swift in Sources */,
 				56DC9ABD2737A753000B62C6 /* LocationService.swift in Sources */,
 				560DE8502730113600FFD240 /* CommentTableViewCell.swift in Sources */,
-				56950630271FDD08009E4C74 /* RemotePlayHelper.swift in Sources */,
 				565C9C29271E6AFE00189B85 /* AudioPlayerWindow.swift in Sources */,
 				568340DF271F113F00543677 /* CreateAudioVC.swift in Sources */,
 				5679F0FD271D084A00663001 /* SceneDelegate.swift in Sources */,

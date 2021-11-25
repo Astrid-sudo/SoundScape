@@ -21,6 +21,8 @@ class AudioPlayerVC: UIViewController {
     
     private var currentUserFavoriteDocumentIDs: [String]?
     
+    var nowPlayingURL: URL?
+    
     private let audioURL = Bundle.main.url(forResource: "memories", withExtension: "mp3")
     
     private var dontShowDetailConstraint = NSLayoutConstraint()
@@ -28,26 +30,6 @@ class AudioPlayerVC: UIViewController {
     private var showDetailConstraint = NSLayoutConstraint()
     
     private var soundDetailVC: ProSoundDetailViewController?
-    
-    // MARK: - conform to PlayerUpdatable
-    
-    lazy var playButton: UIButton = {
-        let button = UIButton()
-        button.setImage(playButtonImagePlay, for: .normal)
-        button.tintColor = .white
-        button.addTarget(self, action: #selector(playOrPause), for: .touchUpInside)
-        return button
-    }()
-    
-    lazy var progressView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(named: CommonUsage.scOrange)
-        return view
-    }()
-    
-    var nowPlayingURL: URL?
-    
-    var caDisplayLink: CADisplayLink?
     
     // MARK: - life cycle
     
@@ -67,7 +49,6 @@ class AudioPlayerVC: UIViewController {
         setProgressView()
         setDetailButton()
         addDetailPage()
-        setPlayButtonMethod()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -85,10 +66,6 @@ class AudioPlayerVC: UIViewController {
     }
     
     // MARK: - method
-    
-    private func setPlayButtonMethod() {
-        playButton.addTarget(self, action: #selector(playOrPause), for: .touchUpInside)
-    }
     
     private func fetchUserFavoriteList() {
         
@@ -252,72 +229,11 @@ class AudioPlayerVC: UIViewController {
     }
     
     @objc func changeButtImage() {
-        
-        if AudioPlayHelper.shared.isPlaying {
-            DispatchQueue.main.async {
-                self.playButton.isHidden = false
-                self.playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-            }
-        }
-        
-        if !AudioPlayHelper.shared.isPlaying {
-            DispatchQueue.main.async {
-                self.playButton.isHidden = false
-                self.playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-            }
-        }
-        
-    }
-    
-    func localManipulatePlayer() {
-        if audioPlayHelper.isPlaying == true {
-            self.audioPlayHelper.pause()
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-            
-            if let caDisplayLink = caDisplayLink {
-                caDisplayLink.invalidate()
-            }
-            
-        } else {
-            audioPlayHelper.play()
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-            caDisplayLink = CADisplayLink(target: self, selector: #selector(updatePlayTime))
-            caDisplayLink?.add(to: RunLoop.main, forMode: .common)
-        }
-        
-    }
-    
-    func localUpdatePlaybackTime() {
-        print(audioPlayHelper.currentTime)
-        let progress = audioPlayHelper.currentTime / audioPlayHelper.duration
-        updateProgressWaveform(progress)
-    }
-    
-    func localUpdateUI() {
-        
-        caDisplayLink = CADisplayLink(target: self, selector: #selector(updatePlayTime))
-        caDisplayLink?.add(to: RunLoop.main, forMode: .common)
-        
-        if audioPlayHelper.isPlaying == true {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-        } else {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-        }
-        
+        changeButtonImage()
     }
     
     private func setAudioHelper() {
         audioPlayHelper.url = audioURL
-    }
-    
-    private func updateProgressWaveform(_ progress: Double) {
-        let fullRect = progressView.bounds
-        let newWidth = Double(fullRect.size.width) * progress
-        let maskLayer = CAShapeLayer()
-        let maskRect = CGRect(x: 0.0, y: 0.0, width: newWidth, height: Double(fullRect.size.height))
-        let path = CGPath(rect: maskRect, transform: nil)
-        maskLayer.path = path
-        progressView.layer.mask = maskLayer
     }
     
     func resetAudioPlayerUI(audioTitle: String, audioImageNumber: Int) {
@@ -394,9 +310,27 @@ class AudioPlayerVC: UIViewController {
         return view
     }()
     
+    // MARK: - conform to PlayerUIProtocol
+    
+    lazy var playButton: UIButton = {
+        let button = UIButton()
+        button.setImage(playButtonImagePlay, for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(playOrPause), for: .touchUpInside)
+        return button
+    }()
+    
+    lazy var progressView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(named: CommonUsage.scOrange)
+        return view
+    }()
+    
+    var caDisplayLink: CADisplayLink?
+    
 }
 
-// MARK: - conform to PlayerUpdatable
+// MARK: - conform to PlayerUIProtocol
 
 extension AudioPlayerVC: PlayerUIProtocol {
     

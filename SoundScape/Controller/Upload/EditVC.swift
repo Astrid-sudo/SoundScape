@@ -33,23 +33,24 @@ class EditVC: UIViewController {
         CGFloat(slider.value / slider.maximumValue) * (CommonUsage.screenWidth - 32)
     }
     
-    let remotePlayerHelper = RemotePlayHelper.shared
+    let audioPlayerHelper = AudioPlayHelper.shared
     
     var originDuraion: Double? {
         didSet {
             guard let originDuraion = originDuraion else { return }
             let roundedValue1 = String(format: "%.2f", originDuraion)
-            durationLabel.text = String(describing: roundedValue1)
-            if 5 <= originDuraion, originDuraion <= 60 {
-                goUploadPageButton.isHidden = false
-            } else {
-                goUploadPageButton.isHidden = true
+            DispatchQueue.main.async {
+                self.durationLabel.text = String(describing: roundedValue1)
+                if 5 <= originDuraion, originDuraion <= 60 {
+                    self.goUploadPageButton.isHidden = false
+                } else {
+                    self.goUploadPageButton.isHidden = true
+                }
             }
         }
     }
     
     var trimmedDuration: Double? {
-        
         didSet {
             guard let trimmedDuration = trimmedDuration else { return }
             let roundedValue1 = String(format: "%.2f", trimmedDuration)
@@ -72,8 +73,7 @@ class EditVC: UIViewController {
                 print("sampled down to 10, results are \(samples ?? [])")
             }
             
-            // prepare player
-            remotePlayerHelper.url = selectedFileURL
+            audioPlayerHelper.url = selectedFileURL
             EditAudioManager.shared.originalURL = selectedFileURL
             
         }
@@ -164,28 +164,26 @@ class EditVC: UIViewController {
             })
             
         } else {
-                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    guard let uploadVC = storyboard.instantiateViewController(withIdentifier: "UploadVC") as? UploadVC else { return }
-                    uploadVC.selectedFileURL = selectedFileURL
-                    uploadVC.selectedFileDuration = originDuraion
-                    navigationController?.pushViewController(uploadVC, animated: true)
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            guard let uploadVC = storyboard.instantiateViewController(withIdentifier: "UploadVC") as? UploadVC else { return }
+            uploadVC.selectedFileURL = selectedFileURL
+            uploadVC.selectedFileDuration = originDuraion
+            navigationController?.pushViewController(uploadVC, animated: true)
         }
     }
     
     @objc func setDurationText(notification: Notification) {
         guard let duration = notification.userInfo?["UserInfo"] as? Double else { return }
-        print("EditVC recieved duration \(duration)")
-        slider.maximumValue = Float(duration)
         self.originDuraion = duration
     }
     
     @objc func trim() {
         
         guard let trimmedDuration = trimmedDuration,
-            trimmedDuration > 5 else {
-            popErrorAlert(title: "Can't upload file under 5 seconds.", message: nil)
-            return
-        }
+              trimmedDuration > 5 else {
+                  popErrorAlert(title: "Can't upload file under 5 seconds.", message: nil)
+                  return
+              }
         
         EditAudioManager.shared.trimAudio(from: trimHeadTime, to: trimTailTime)
         
@@ -199,14 +197,10 @@ class EditVC: UIViewController {
                                     width: 60,
                                     height: 110)
     }
-
+    
     @objc func changeButtImage() {
         
-        if remotePlayerHelper.state == .stopped
-            || remotePlayerHelper.state == .buffering
-            || remotePlayerHelper.state == .paused
-            || remotePlayerHelper.state == .loaded {
-            
+        if !audioPlayerHelper.isPlaying {
             DispatchQueue.main.async {
                 let config = UIImage.SymbolConfiguration(pointSize: 20)
                 let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
@@ -214,8 +208,8 @@ class EditVC: UIViewController {
             }
         }
         
-        if remotePlayerHelper.state == .playing {
-            
+        
+        if audioPlayerHelper.isPlaying {
             DispatchQueue.main.async {
                 let config = UIImage.SymbolConfiguration(pointSize: 20)
                 let bigImage = UIImage(systemName: CommonUsage.SFSymbol.pause, withConfiguration: config)
@@ -226,17 +220,16 @@ class EditVC: UIViewController {
     }
     
     @objc func updatePlaybackTime(notification: Notification) {
-        guard let currentTime = notification.userInfo?["UserInfo"] as? Double else { return }
-        print("EditVC recieved current time \(currentTime)")
+        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
+        let currentTime = playProgress.currentTime
+        let duration = playProgress.duration
+        let timeProgress = currentTime / duration
         
         DispatchQueue.main.async { [self] in
-            
             let current = String(describing: currentTime).dropLast(13)
             let roundedValue1 = String(format: "%.2f", currentTime)
             self.currentTimeLabel.text = String(describing: roundedValue1)
-            self.slider.value = Float(currentTime)
-            remotePlayerHelper.limitCurrentTime(head: trimHeadTime, tail: trimTailTime)
-            print("headTime: \(trimHeadTime), tailTime: \(trimTailTime), originDuration: \(originDuraion), sliderWidth: \(slider.frame.width), tailCenterX: \(trimTailViewX)")
+            self.slider.value = Float(timeProgress)
         }
     }
     
@@ -266,10 +259,6 @@ class EditVC: UIViewController {
     }
     
     private func calculateDuration() {
-        
-        //        guard let originDuraion = originDuraion else { return }
-        //        trimmedDuration = (trimTailViewX - trimHeadViewX) / CommonUsage.screenWidth * originDuraion
-        
         trimmedDuration = trimTailTime - trimHeadTime
     }
     
@@ -281,21 +270,17 @@ class EditVC: UIViewController {
     
     @objc func manipulatePlayer() {
         
-//        EditAudioManager.shared.manipulatePlay()
-        
-        if remotePlayerHelper.state == .playing {
-            remotePlayerHelper.pause()
-        } else if remotePlayerHelper.state == .paused
-                    || remotePlayerHelper.state == .loaded
-                    || remotePlayerHelper.state == .buffering
-                    || remotePlayerHelper.state == .stopped {
-            remotePlayerHelper.play()
+        if audioPlayerHelper.isPlaying {
+            audioPlayerHelper.pause()
+        } else {
+            audioPlayerHelper.play()
         }
-        
     }
     
     @objc func scrubToTime() {
-        remotePlayerHelper.seek(position: Double(slider.value))
+        //        remotePlayerHelper.seek(position: Double(slider.value))
+        audioPlayerHelper.seek(position: Double(slider.value))
+        print(slider.value)
     }
     
     @objc func handleHeadPanGesture(pan: UIPanGestureRecognizer) {
@@ -392,7 +377,7 @@ Cut
         button.titleLabel?.numberOfLines = 0
         //        button.titleLabel?.font = UIFont(name: CommonUsage.font, size: 8)
         button.backgroundColor = UIColor(named: CommonUsage.scYellow)
-//              button.addTarget(self, action: #selector(highPass), for: .touchUpInside)
+        //              button.addTarget(self, action: #selector(highPass), for: .touchUpInside)
         button.layer.cornerRadius = 30
         button.isHidden = true
         return button
@@ -472,6 +457,7 @@ Cut
         slider.setThumbImage(colorImage, for: .normal)
         
         slider.minimumValue = 0
+        slider.maximumValue = 1
         slider.value = 0
         slider.isEnabled = true
         slider.isContinuous = true
@@ -517,7 +503,10 @@ Cut
     
     private func setNavigationController() {
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil,
+                                                           style: .plain,
+                                                           target: self,
+                                                           action: #selector(backToLastPage))
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
         navigationItem.title = CommonUsage.Text.trim
@@ -671,6 +660,7 @@ extension EditVC: EditAudioManagerDelegate {
     
     func didExport(to url: URL) {
         selectedFileURL = url
+        originDuraion = AudioPlayHelper.shared.duration
     }
     
 }

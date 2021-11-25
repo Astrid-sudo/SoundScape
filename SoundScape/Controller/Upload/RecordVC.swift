@@ -202,7 +202,6 @@ class RecordVC: UIViewController {
         ])
     }
     
-    
     private func setRecordTimeLabel() {
         view.addSubview(recordTimeLabel)
         recordTimeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -325,6 +324,7 @@ class RecordVC: UIViewController {
         let url = URL(fileURLWithPath: path)
         
         editVC.selectedFileURL = url
+        editVC.originDuraion = AudioPlayHelper.shared.duration
         navigationController?.pushViewController(editVC, animated: true)
         
     }
