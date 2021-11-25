@@ -29,7 +29,7 @@ class AudioPlayerVC: UIViewController {
     
     private var showDetailConstraint = NSLayoutConstraint()
     
-    private var soundDetailVC: ProSoundDetailViewController?
+    private var soundDetailVC: SoundDetailViewController?
     
     // MARK: - life cycle
     
@@ -68,7 +68,6 @@ class AudioPlayerVC: UIViewController {
     // MARK: - method
     
     private func fetchUserFavoriteList() {
-        
         guard let userProfileDocumentID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else {
             print("AudioPlayerVC: Cant get favorite before login")
             return
@@ -91,9 +90,8 @@ class AudioPlayerVC: UIViewController {
     }
     
     private func addDetailPage() {
-        
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "ProSoundDetailViewController") as? ProSoundDetailViewController else { return }
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "SoundDetailViewController") as? SoundDetailViewController else { return }
         
         self.soundDetailVC = vc
         guard let soundDetailVC = soundDetailVC else { return }
@@ -118,7 +116,6 @@ class AudioPlayerVC: UIViewController {
     private func fillFavoriteButton() {
         favoriteButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.heart), for: .normal)
         favoriteButton.tintColor = UIColor(named: CommonUsage.scYellow)
-        
     }
     
     private func emptyFavoriteButton() {
@@ -129,7 +126,6 @@ class AudioPlayerVC: UIViewController {
     // MARK: - action
     
     @objc func manipulateFavorite() {
-        
         guard let userProfileDocumentID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else {
             print("Cant addToFavorite before loggin")
             return
@@ -158,7 +154,6 @@ class AudioPlayerVC: UIViewController {
     }
     
     @objc func presentDetail() {
-        
         AudioPlayerWindow.shared.showDetailPage()
         
         guard let soundDetailVC = soundDetailVC else { return }
@@ -171,7 +166,6 @@ class AudioPlayerVC: UIViewController {
             soundDetailVC.view.isHidden = false
             self.view.layoutIfNeeded()
         }
-        
     }
     
     @objc func updateInfo(notification: Notification) {
@@ -179,7 +173,8 @@ class AudioPlayerVC: UIViewController {
     }
     
     @objc func audioPlayHelperError() {
-        popErrorAlert(title: "Audio player error", message: "Please terminate SoundScape_ and try again.")
+        popErrorAlert(title: "Audio player error",
+                      message: "Please terminate SoundScape_ and try again.")
     }
     
     @objc func changeButtImage() {
@@ -229,15 +224,13 @@ class AudioPlayerVC: UIViewController {
                                                selector: #selector(audioPlayHelperError),
                                                name: .audioPlayHelperError,
                                                object: nil)
-        
     }
-    
     
     private func setAudioHelper() {
         audioPlayHelper.url = audioURL
     }
     
-    private func resetAudioPlayerUI(audioTitle: String, audioImageNumber: Int) {
+    func resetAudioPlayerUI(audioTitle: String, audioImageNumber: Int) {
         audioTitleLabel.text = audioTitle
         authorLabel.text = CommonUsage.Text.loading
         updateProgressWaveform(0)
@@ -310,7 +303,7 @@ class AudioPlayerVC: UIViewController {
         return view
     }()
     
-    // MARK: - conform to PlayerUIProtocol
+    // MARK: - conform to AudioPlayerUIProtocol
     
     lazy var playButton: UIButton = {
         let button = UIButton()
@@ -330,9 +323,9 @@ class AudioPlayerVC: UIViewController {
     
 }
 
-// MARK: - conform to PlayerUIProtocol
+// MARK: - conform to AudioPlayerUIProtocol
 
-extension AudioPlayerVC: PlayerUIProtocol {
+extension AudioPlayerVC: AudioPlayerUIProtocol {
     
     func updatePlayInfo(notification: Notification) {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }

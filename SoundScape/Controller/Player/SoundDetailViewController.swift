@@ -1,5 +1,5 @@
 //
-//  ProSoundDetailViewController.swift
+//  SoundDetailViewController.swift
 //  SoundScape
 //
 //  Created by Astrid on 2021/11/14.
@@ -8,7 +8,7 @@
 import UIKit
 import DSWaveformImage
 
-class ProSoundDetailViewController: UIViewController {
+class SoundDetailViewController: UIViewController {
     
     // MARK: - properties
     
@@ -356,7 +356,7 @@ class ProSoundDetailViewController: UIViewController {
         return button
     }()
     
-    // MARK: - conform to PlayerUIProtocol
+    // MARK: - conform to AudioPlayerUIProtocol
     
     lazy var playButton: UIButton = {
         let button = UIButton()
@@ -389,9 +389,9 @@ class ProSoundDetailViewController: UIViewController {
     
 }
 
-// MARK: - conform to PlayerUIProtocol
+// MARK: - conform to AudioPlayerUIProtocol
 
-extension ProSoundDetailViewController: PlayerUIProtocol {
+extension SoundDetailViewController: AudioPlayerUIProtocol {
     
     func updatePlayInfo(notification: Notification) {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
@@ -410,7 +410,7 @@ extension ProSoundDetailViewController: PlayerUIProtocol {
 
 // MARK: - UI method
 
-extension ProSoundDetailViewController {
+extension SoundDetailViewController {
     
     private func setBackgroundImage() {
         view.addSubview(backgroundImageView)

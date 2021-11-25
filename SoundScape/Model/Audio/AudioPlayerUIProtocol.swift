@@ -1,5 +1,5 @@
 //
-//  PlayerUIProtocol.swift
+//  AudioPlayerUIProtocol.swift
 //  SoundScape
 //
 //  Created by Astrid on 2021/11/24.
@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-protocol PlayerUIProtocol: AnyObject {
+protocol AudioPlayerUIProtocol: AnyObject {
     
     // UI
     
@@ -22,7 +22,6 @@ protocol PlayerUIProtocol: AnyObject {
     
     var playButtonImagePause: UIImage { get } // default
     
-    
     // method
     
     func manipulatePlayer() // default
@@ -33,15 +32,18 @@ protocol PlayerUIProtocol: AnyObject {
     
 }
 
-//    default setting
-extension PlayerUIProtocol {
+// MARK: - default setting
+
+extension AudioPlayerUIProtocol {
     
     // model
+    
     var audioPlayHelper: AudioPlayHelper {
         return AudioPlayHelper.shared
     }
     
     // UI
+    
     var playButtonImagePlay: UIImage {
         let image = UIImage(systemName: CommonUsage.SFSymbol.play) ?? UIImage()
         return image
@@ -94,4 +96,3 @@ extension PlayerUIProtocol {
     }
     
 }
-

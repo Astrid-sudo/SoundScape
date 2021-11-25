@@ -476,10 +476,10 @@
             </objects>
             <point key="canvasLocation" x="3535" y="2314"/>
         </scene>
-        <!--Pro Sound Detail View Controller-->
+        <!--Sound Detail View Controller-->
         <scene sceneID="jid-As-RoD">
             <objects>
-                <viewController storyboardIdentifier="ProSoundDetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="DwO-QL-2Oe" customClass="ProSoundDetailViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SoundDetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="DwO-QL-2Oe" customClass="SoundDetailViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="vsC-AB-Tkb">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

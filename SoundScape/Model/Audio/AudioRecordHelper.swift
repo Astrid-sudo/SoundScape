@@ -48,7 +48,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         // init an audio recorder
         let filename = "User.m4a"
         let path = NSHomeDirectory() + "/Documents/" + filename
-        //        let url = URL(fileURLWithPath: path)
         self.url = URL(fileURLWithPath: path)
         let recordSettings: [String: Any] = [
             AVEncoderAudioQualityKey: AVAudioQuality.min.rawValue,
@@ -93,8 +92,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
             do {
                 audioPlayer = try AVAudioPlayer(contentsOf: recorder.url)
                 self.duration = audioPlayer?.duration
-                print(duration)
-
             } catch {
                 print(error.localizedDescription)
             }

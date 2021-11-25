@@ -29,11 +29,10 @@ class EditVC: UIViewController {
         guard let originDuraion = originDuraion else { return 0.0 }
         return (trimTailViewX + 30)  * originDuraion / (slider.frame.width)
     }
+    
     var sliderCenterX: CGFloat {
         CGFloat(slider.value / slider.maximumValue) * (CommonUsage.screenWidth - 32)
     }
-    
-    let audioPlayerHelper = AudioPlayHelper.shared
     
     var originDuraion: Double? {
         didSet {
@@ -59,23 +58,24 @@ class EditVC: UIViewController {
     }
     
     var selectedFileURL: URL? {
-        
         didSet {
             guard let selectedFileURL = selectedFileURL else { return }
             
             // render waveform
             self.updateWaveformImages(localURL: selectedFileURL)
+//            let waveformAnalyzer = dSWaveformImageWrapper.initWaveformAnalyzer(audioAssetURL: selectedFileURL)
             let waveformAnalyzer = WaveformAnalyzer(audioAssetURL: selectedFileURL)
             waveformAnalyzer?.samples(count: 10) { samples in
                 print("sampled down to 10, results are \(samples ?? [])")
             }
-            
-            audioPlayerHelper.url = selectedFileURL
-            EditAudioManager.shared.originalURL = selectedFileURL
+            audioPlayHelper.url = selectedFileURL
+            AudioEditHelper.shared.originalURL = selectedFileURL
         }
     }
     
     private var trimerViewDidAdd = false
+    
+    private let dSWaveformImageWrapper = DSWaveformImageWrapper.shared
     
     // MARK: - life cycle
     
@@ -87,7 +87,6 @@ class EditVC: UIViewController {
         setBackgroundviewColor()
         setGoUploadPageButton()
         setAudioLengthNotice()
-        setLowCutButton()
         setWaveformImageView()
         setTrimButton()
         setPlayButton()
@@ -121,7 +120,7 @@ class EditVC: UIViewController {
     // MARK: - method
     
     private func setEditAudioManager() {
-        EditAudioManager.shared.delegate = self
+        AudioEditHelper.shared.delegate = self
     }
     
     private func addObserver() {
@@ -150,26 +149,27 @@ class EditVC: UIViewController {
     private func updateWaveformImages(localURL: URL) {
         // always uses background thread rendering
         
-        let config = Waveform.Style.StripeConfig.init(color: UIColor(named: CommonUsage.scWhite) ?? .white, width: 2, spacing: 2, lineCap: .butt)
+//        let config = dSWaveformImageWrapper.configWaveform(color: UIColor(named: CommonUsage.scWhite), width: 2,, spacing: 2, lineCap: .butt)
+        
+        let config = Waveform.Style.StripeConfig.init(color: UIColor(named: CommonUsage.scWhite) ?? .white,
+                                                      width: 2,
+                                                      spacing: 2,
+                                                      lineCap: .butt)
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.waveformImageDrawer.waveformImage(fromAudioAt: localURL,
                                                    with: Waveform.Configuration(size: self.waveformImageView.bounds.size,
-                                                                                backgroundColor: .clear, style: .striped(config) ,
+                                                        backgroundColor: .clear,
+                                                                                style: .striped(config),
                                                                                 dampening: nil,
                                                                                 position: .middle,
-                                                                                scale: 10.0 ,
-                                                                                verticalScalingFactor: 0.5,
-                                                                                shouldAntialias: true),
-                                                   completionHandler: { image in
+                                                                                scale: 10.0, verticalScalingFactor: 0.5, shouldAntialias: true), completionHandler: { image in
                 DispatchQueue.main.async {
                     self.waveformImageView.image = image
                 }
             })
-            
         }
-        
     }
     
     private func calculateDuration() {
@@ -187,7 +187,7 @@ class EditVC: UIViewController {
     }
     
     @objc func scrubToTime() {
-        audioPlayerHelper.seek(position: Double(slider.value))
+        audioPlayHelper.seek(position: Double(slider.value))
         print(slider.value)
     }
     
@@ -262,25 +262,11 @@ class EditVC: UIViewController {
     }
     
     @objc func goUpload() {
-        if EditAudioManager.shared.highPassOn {
-            
-            EditAudioManager.shared.renderEQtoFile(completion: { [weak self] url in
-                
-                guard let self = self else { return }
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                guard let uploadVC = storyboard.instantiateViewController(withIdentifier: "UploadVC") as? UploadVC else { return }
-                uploadVC.selectedFileURL = url
-                uploadVC.selectedFileDuration = self.originDuraion
-                self.navigationController?.pushViewController(uploadVC, animated: true)
-            })
-            
-        } else {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             guard let uploadVC = storyboard.instantiateViewController(withIdentifier: "UploadVC") as? UploadVC else { return }
             uploadVC.selectedFileURL = selectedFileURL
             uploadVC.selectedFileDuration = originDuraion
             navigationController?.pushViewController(uploadVC, animated: true)
-        }
     }
     
     @objc func setDurationText(notification: Notification) {
@@ -294,14 +280,11 @@ class EditVC: UIViewController {
                   popErrorAlert(title: "Can't upload file under 5 seconds.", message: nil)
                   return
               }
-        
-        EditAudioManager.shared.trimAudio(from: trimHeadTime, to: trimTailTime)
-        
+        AudioEditHelper.shared.trimAudio(from: trimHeadTime, to: trimTailTime)
         trimHeadView.frame = CGRect(x: slider.center.x - slider.frame.width / 2 - 2,
                                     y: slider.center.y - 55,
                                     width: 60,
                                     height: 110)
-        
         trimTailView.frame = CGRect(x: CommonUsage.screenWidth - 75,
                                     y: slider.center.y - 55,
                                     width: 60,
@@ -321,22 +304,6 @@ class EditVC: UIViewController {
         button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(goUpload), for: .touchUpInside)
-        return button
-    }()
-    
-    private lazy var lowCutButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("""
-Low
-Cut
-""", for: .normal)
-        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
-        button.titleLabel?.numberOfLines = 0
-        //        button.titleLabel?.font = UIFont(name: CommonUsage.font, size: 8)
-        button.backgroundColor = UIColor(named: CommonUsage.scYellow)
-        //              button.addTarget(self, action: #selector(highPass), for: .touchUpInside)
-        button.layer.cornerRadius = 30
-        button.isHidden = true
         return button
     }()
     
@@ -474,17 +441,6 @@ Cut
         ])
     }
     
-    private func setLowCutButton() {
-        view.addSubview(lowCutButton)
-        lowCutButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            lowCutButton.topAnchor.constraint(equalTo: goUploadPageButton.bottomAnchor, constant: 16),
-            lowCutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            lowCutButton.heightAnchor.constraint(equalToConstant: 60),
-            lowCutButton.widthAnchor.constraint(equalToConstant: 60)
-        ])
-    }
-    
     private func setAudioLengthNotice() {
         view.addSubview(noticeLabel)
         noticeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -499,7 +455,7 @@ Cut
         view.addSubview(waveformImageView)
         waveformImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            waveformImageView.topAnchor.constraint(equalTo: lowCutButton.bottomAnchor, constant: 16),
+            waveformImageView.topAnchor.constraint(equalTo: noticeLabel.bottomAnchor, constant: 16),
             waveformImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             waveformImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             waveformImageView.heightAnchor.constraint(equalToConstant: 80)
@@ -599,12 +555,13 @@ Cut
         view.layoutIfNeeded()
     }
     
-    // MARK: - conform to PlayerUIProtocol
+    // MARK: - conform to AudioPlayerUIProtocol
     
     lazy var playButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 32)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play,
+                               withConfiguration: config)
         button.setImage(bigImage, for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(playOrPause), for: .touchUpInside)
@@ -620,10 +577,11 @@ Cut
     lazy var waveformProgressView: WaveformImageView = {
         let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0,
-                                                                                                                                                                                   y: 0,
-                                                                                                                                                                                   width: 0,
-                                                                                                                                                                                   height: 0)) }
+        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else {
+            return WaveformImageView(frame: CGRect(x: 0,
+                                                   y: 0,
+                                                   width: 0,
+                                                   height: 0))}
         let tabBarHeight = sCTabBarController.tabBar.frame.size.height
         let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
         let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
@@ -632,9 +590,9 @@ Cut
     
 }
 
-// MARK: - conform to PlayerUIProtocol
+// MARK: - conform to AudioPlayerUIProtocol
 
-extension EditVC: PlayerUIProtocol {
+extension EditVC: AudioPlayerUIProtocol {
     @objc func updatePlaybackTime(notification: Notification) {
         guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
         let currentTime = playProgress.currentTime

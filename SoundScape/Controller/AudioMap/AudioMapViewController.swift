@@ -489,7 +489,7 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
                                 authorAccountProvider: post.authIDProvider)
         
         if let remoteURL = post.audioURL {
-            RemoteAudioManager.shared.downloadRemoteURL(documentID: post.documentID,
+            AudioDownloadManager.shared.downloadRemoteURL(documentID: post.documentID,
                                                         remoteURL: remoteURL, completion: { localURL in
                 self.loadAudio(localURL: localURL, playInfo: playInfo)
             },

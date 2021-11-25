@@ -148,7 +148,7 @@ extension HomeTableViewCell: UICollectionViewDelegate {
                                 authorAccountProvider: firebaseData[indexPath.item].authIDProvider)
         
         if let remoteURL = firebaseData[indexPath.item].audioURL {
-            RemoteAudioManager.shared.downloadRemoteURL(documentID: firebaseData[indexPath.item].documentID,
+            AudioDownloadManager.shared.downloadRemoteURL(documentID: firebaseData[indexPath.item].documentID,
                                                         remoteURL: remoteURL, completion: { localURL in
                 self.loadAudio(localURL: localURL, playInfo: playInfo)
             },
