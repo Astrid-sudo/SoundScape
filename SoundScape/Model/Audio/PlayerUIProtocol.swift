@@ -16,11 +16,12 @@ protocol PlayerUIProtocol: AnyObject {
     
     var caDisplayLink: CADisplayLink? { get set }
     
+    var progressView: UIView { get }
+    
     var playButtonImagePlay: UIImage { get } // default
     
     var playButtonImagePause: UIImage { get } // default
     
-    var progressView: UIView { get }
     
     // method
     
@@ -28,14 +29,11 @@ protocol PlayerUIProtocol: AnyObject {
     
     func updatePlaybackTime(notification: Notification) // default
     
-    func updatePlayInfo(notification: Notification) // default
-    
     func changeButtonImage() // default
     
 }
 
 //    default setting
-
 extension PlayerUIProtocol {
     
     // model

@@ -61,13 +61,10 @@ class EditVC: UIViewController {
     var selectedFileURL: URL? {
         
         didSet {
-            
-            // render waveform
-            
             guard let selectedFileURL = selectedFileURL else { return }
             
+            // render waveform
             self.updateWaveformImages(localURL: selectedFileURL)
-            
             let waveformAnalyzer = WaveformAnalyzer(audioAssetURL: selectedFileURL)
             waveformAnalyzer?.samples(count: 10) { samples in
                 print("sampled down to 10, results are \(samples ?? [])")
@@ -75,7 +72,6 @@ class EditVC: UIViewController {
             
             audioPlayerHelper.url = selectedFileURL
             EditAudioManager.shared.originalURL = selectedFileURL
-            
         }
     }
     
@@ -85,9 +81,7 @@ class EditVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        EditAudioManager.shared.delegate = self
-        
+        setEditAudioManager()
         setNavigationController()
         addObserver()
         setBackgroundviewColor()
@@ -126,6 +120,10 @@ class EditVC: UIViewController {
     
     // MARK: - method
     
+    private func setEditAudioManager() {
+        EditAudioManager.shared.delegate = self
+    }
+    
     private func addObserver() {
         
         NotificationCenter.default.addObserver(self,
@@ -147,90 +145,6 @@ class EditVC: UIViewController {
                                                selector: #selector(setDurationText),
                                                name: .didItemDurationChange,
                                                object: nil)
-    }
-    
-    @objc func goUpload() {
-        
-        if EditAudioManager.shared.highPassOn {
-            
-            EditAudioManager.shared.renderEQtoFile(completion: { [weak self] url in
-                
-                guard let self = self else { return }
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                guard let uploadVC = storyboard.instantiateViewController(withIdentifier: "UploadVC") as? UploadVC else { return }
-                uploadVC.selectedFileURL = url
-                uploadVC.selectedFileDuration = self.originDuraion
-                self.navigationController?.pushViewController(uploadVC, animated: true)
-            })
-            
-        } else {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            guard let uploadVC = storyboard.instantiateViewController(withIdentifier: "UploadVC") as? UploadVC else { return }
-            uploadVC.selectedFileURL = selectedFileURL
-            uploadVC.selectedFileDuration = originDuraion
-            navigationController?.pushViewController(uploadVC, animated: true)
-        }
-    }
-    
-    @objc func setDurationText(notification: Notification) {
-        guard let duration = notification.userInfo?["UserInfo"] as? Double else { return }
-        self.originDuraion = duration
-    }
-    
-    @objc func trim() {
-        
-        guard let trimmedDuration = trimmedDuration,
-              trimmedDuration > 5 else {
-                  popErrorAlert(title: "Can't upload file under 5 seconds.", message: nil)
-                  return
-              }
-        
-        EditAudioManager.shared.trimAudio(from: trimHeadTime, to: trimTailTime)
-        
-        trimHeadView.frame = CGRect(x: slider.center.x - slider.frame.width / 2 - 2,
-                                    y: slider.center.y - 55,
-                                    width: 60,
-                                    height: 110)
-        
-        trimTailView.frame = CGRect(x: CommonUsage.screenWidth - 75,
-                                    y: slider.center.y - 55,
-                                    width: 60,
-                                    height: 110)
-    }
-    
-    @objc func changeButtImage() {
-        
-        if !audioPlayerHelper.isPlaying {
-            DispatchQueue.main.async {
-                let config = UIImage.SymbolConfiguration(pointSize: 20)
-                let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
-                self.playButton.setImage(bigImage, for: .normal)
-            }
-        }
-        
-        
-        if audioPlayerHelper.isPlaying {
-            DispatchQueue.main.async {
-                let config = UIImage.SymbolConfiguration(pointSize: 20)
-                let bigImage = UIImage(systemName: CommonUsage.SFSymbol.pause, withConfiguration: config)
-                self.playButton.setImage(bigImage, for: .normal)
-            }
-        }
-        
-    }
-    
-    @objc func updatePlaybackTime(notification: Notification) {
-        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
-        let currentTime = playProgress.currentTime
-        let duration = playProgress.duration
-        let timeProgress = currentTime / duration
-        
-        DispatchQueue.main.async { [self] in
-            let current = String(describing: currentTime).dropLast(13)
-            let roundedValue1 = String(format: "%.2f", currentTime)
-            self.currentTimeLabel.text = String(describing: roundedValue1)
-            self.slider.value = Float(timeProgress)
-        }
     }
     
     private func updateWaveformImages(localURL: URL) {
@@ -268,17 +182,11 @@ class EditVC: UIViewController {
         self.navigationController?.popViewController(animated: true)
     }
     
-    @objc func manipulatePlayer() {
-        
-        if audioPlayerHelper.isPlaying {
-            audioPlayerHelper.pause()
-        } else {
-            audioPlayerHelper.play()
-        }
+    @objc func playOrPause() {
+        manipulatePlayer()
     }
     
     @objc func scrubToTime() {
-        //        remotePlayerHelper.seek(position: Double(slider.value))
         audioPlayerHelper.seek(position: Double(slider.value))
         print(slider.value)
     }
@@ -315,8 +223,6 @@ class EditVC: UIViewController {
         }
         
         pan.setTranslation(.zero, in: view)
-        
-        //        trimHeadViewX = trimHeadView.center.x
         calculateDuration()
     }
     
@@ -353,6 +259,57 @@ class EditVC: UIViewController {
         pan.setTranslation(.zero, in: view)
         
         calculateDuration()
+    }
+    
+    @objc func goUpload() {
+        if EditAudioManager.shared.highPassOn {
+            
+            EditAudioManager.shared.renderEQtoFile(completion: { [weak self] url in
+                
+                guard let self = self else { return }
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                guard let uploadVC = storyboard.instantiateViewController(withIdentifier: "UploadVC") as? UploadVC else { return }
+                uploadVC.selectedFileURL = url
+                uploadVC.selectedFileDuration = self.originDuraion
+                self.navigationController?.pushViewController(uploadVC, animated: true)
+            })
+            
+        } else {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            guard let uploadVC = storyboard.instantiateViewController(withIdentifier: "UploadVC") as? UploadVC else { return }
+            uploadVC.selectedFileURL = selectedFileURL
+            uploadVC.selectedFileDuration = originDuraion
+            navigationController?.pushViewController(uploadVC, animated: true)
+        }
+    }
+    
+    @objc func setDurationText(notification: Notification) {
+        guard let duration = notification.userInfo?["UserInfo"] as? Double else { return }
+        self.originDuraion = duration
+    }
+    
+    @objc func trim() {
+        guard let trimmedDuration = trimmedDuration,
+              trimmedDuration > 5 else {
+                  popErrorAlert(title: "Can't upload file under 5 seconds.", message: nil)
+                  return
+              }
+        
+        EditAudioManager.shared.trimAudio(from: trimHeadTime, to: trimTailTime)
+        
+        trimHeadView.frame = CGRect(x: slider.center.x - slider.frame.width / 2 - 2,
+                                    y: slider.center.y - 55,
+                                    width: 60,
+                                    height: 110)
+        
+        trimTailView.frame = CGRect(x: CommonUsage.screenWidth - 75,
+                                    y: slider.center.y - 55,
+                                    width: 60,
+                                    height: 110)
+    }
+    
+    @objc func changeButtImage() {
+        changeButtonImage()
     }
     
     // MARK: - UI properties
@@ -392,16 +349,6 @@ Cut
         button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         button.addTarget(self, action: #selector(trim), for: .touchUpInside)
         button.layer.cornerRadius = 15
-        return button
-    }()
-    
-    private lazy var playButton: UIButton = {
-        let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 20)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
-        button.setImage(bigImage, for: .normal)
-        button.tintColor = .white
-        button.addTarget(self, action: #selector(manipulatePlayer), for: .touchUpInside)
         return button
     }()
     
@@ -650,6 +597,56 @@ Cut
                                            width: 3,
                                            height: 110)
         view.layoutIfNeeded()
+    }
+    
+    // MARK: - conform to PlayerUIProtocol
+    
+    lazy var playButton: UIButton = {
+        let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 32)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
+        button.setImage(bigImage, for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(playOrPause), for: .touchUpInside)
+        return button
+    }()
+    
+    var caDisplayLink: CADisplayLink?
+    
+    var progressView: UIView {
+        return waveformProgressView
+    }
+    
+    lazy var waveformProgressView: WaveformImageView = {
+        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0,
+                                                                                                                                                                                   y: 0,
+                                                                                                                                                                                   width: 0,
+                                                                                                                                                                                   height: 0)) }
+        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
+        let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
+        let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
+        return waveformView
+    }()
+    
+}
+
+// MARK: - conform to PlayerUIProtocol
+
+extension EditVC: PlayerUIProtocol {
+    @objc func updatePlaybackTime(notification: Notification) {
+        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
+        let currentTime = playProgress.currentTime
+        let duration = playProgress.duration
+        let timeProgress = currentTime / duration
+        
+        DispatchQueue.main.async { [self] in
+            let current = String(describing: currentTime).dropLast(13)
+            let roundedValue1 = String(format: "%.2f", currentTime)
+            self.currentTimeLabel.text = String(describing: roundedValue1)
+            self.slider.value = Float(timeProgress)
+        }
     }
     
 }

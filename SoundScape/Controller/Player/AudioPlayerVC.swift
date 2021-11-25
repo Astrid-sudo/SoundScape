@@ -178,6 +178,14 @@ class AudioPlayerVC: UIViewController {
         updatePlayInfo(notification: notification)
     }
     
+    @objc func audioPlayHelperError() {
+        popErrorAlert(title: "Audio player error", message: "Please terminate SoundScape_ and try again.")
+    }
+    
+    @objc func changeButtImage() {
+        changeButtonImage()
+    }
+    
     // MARK: - method
     
     private func manipulateFavoriteImage() {
@@ -195,7 +203,7 @@ class AudioPlayerVC: UIViewController {
         }
     }
     
-    func addObserver() {
+    private func addObserver() {
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateInfo),
@@ -224,19 +232,12 @@ class AudioPlayerVC: UIViewController {
         
     }
     
-    @objc func audioPlayHelperError() {
-        popErrorAlert(title: "Audio player error", message: "Please terminate SoundScape_ and try again.")
-    }
-    
-    @objc func changeButtImage() {
-        changeButtonImage()
-    }
     
     private func setAudioHelper() {
         audioPlayHelper.url = audioURL
     }
     
-    func resetAudioPlayerUI(audioTitle: String, audioImageNumber: Int) {
+    private func resetAudioPlayerUI(audioTitle: String, audioImageNumber: Int) {
         audioTitleLabel.text = audioTitle
         authorLabel.text = CommonUsage.Text.loading
         updateProgressWaveform(0)
@@ -248,7 +249,7 @@ class AudioPlayerVC: UIViewController {
     
     // MARK: - UI properties
     
-    lazy var baseView: UIView = {
+    private lazy var baseView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         return view
@@ -287,7 +288,6 @@ class AudioPlayerVC: UIViewController {
         button.addTarget(self, action: #selector(manipulateFavorite), for: .touchUpInside)
         return button
     }()
-    
     
     private lazy var fullDurationView: UIView = {
         let view = UIView()

@@ -5,9 +5,6 @@
 //  Created by Astrid on 2021/11/14.
 //
 
-
-// swiftlint:disable line_length
-
 import UIKit
 import DSWaveformImage
 
@@ -102,6 +99,22 @@ class ProSoundDetailViewController: UIViewController {
         manipulatePlayer()
     }
     
+    @objc func audioPlayHelperError() {
+        popErrorAlert(title: "Audio player errer", message: "Please terminate SoundScape_ and try again.")
+    }
+    
+    @objc func updateTime(notification: Notification) {
+        updatePlaybackTime(notification: notification)
+    }
+    
+    @objc func changeButtImage() {
+        changeButtonImage()
+    }
+    
+    @objc func updateInfo(notification: Notification) {
+        updatePlayInfo(notification: notification)
+    }
+    
     // MARK: - method
     
     private func setBlockButton() {
@@ -118,7 +131,6 @@ class ProSoundDetailViewController: UIViewController {
                     self.blockButton.widthAnchor.constraint(equalToConstant: 50)
                 ])
                 self.blockButton.isHidden = false
-                
             }
             
         } else {
@@ -130,7 +142,6 @@ class ProSoundDetailViewController: UIViewController {
     }
     
     private func backToHome() {
-        
         guard let leave = delegate?.leaveDetailPage else { return }
         caDisplayLink?.invalidate()
         AudioPlayerWindow.shared.makeSmallFrame()
@@ -143,7 +154,6 @@ class ProSoundDetailViewController: UIViewController {
     }
     
     private func popBlockAlert() {
-        
         let alert = UIAlertController(title: "Are you sure?",
                                       message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
                                       preferredStyle: .alert )
@@ -159,11 +169,9 @@ class ProSoundDetailViewController: UIViewController {
         alert.addAction(okButton)
         
         present(alert, animated: true, completion: nil)
-        
     }
     
     private func blockUser() {
-        
         guard let currentUserDocID = SignInManager.shared.currentUserInfoFirebase?.userInfoDoumentID,
               let  blockUser = authorIdentity?.userID else { return }
         
@@ -180,7 +188,7 @@ class ProSoundDetailViewController: UIViewController {
         view.addSubview(waveformProgressView)
     }
     
-    func addObserver() {
+    private func addObserver() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateInfo),
                                                name: .playingAudioChange,
@@ -208,10 +216,6 @@ class ProSoundDetailViewController: UIViewController {
         
     }
     
-    @objc func audioPlayHelperError() {
-        popErrorAlert(title: "Audio player errer", message: "Please terminate SoundScape_ and try again.")
-    }
-    
     func renderWave(documentID: String) {
         let cachesFolderURL = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
         let audioFileURL = cachesFolderURL?.appendingPathComponent("\(documentID).m4a")
@@ -225,24 +229,10 @@ class ProSoundDetailViewController: UIViewController {
                 print("sampled down to 10, results are \(samples ?? [])")
             }
         }
-        
-    }
-    
-    @objc func updateTime(notification: Notification) {
-        updatePlaybackTime(notification: notification)
-    }
-    
-    @objc func changeButtImage() {
-        changeButtonImage()
-    }
-    
-    @objc func updateInfo(notification: Notification) {
-        updatePlayInfo(notification: notification)
     }
     
     private func updateWaveformImages(localURL: URL) {
         // always uses background thread rendering
-        
         let waveformViewConfig = Waveform.Style.StripeConfig.init(color: UIColor(named: CommonUsage.scSuperLightBlue) ?? .green, width: 1.0, spacing: 1, lineCap: .round)
         waveformImageDrawer.waveformImage(fromAudioAt: localURL,
                                           with: Waveform.Configuration(size: self.waveformView.bounds.size,
@@ -285,14 +275,14 @@ class ProSoundDetailViewController: UIViewController {
     private lazy var waveformView: WaveformImageView = {
         let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) }
+        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else {
+            return WaveformImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+        }
         let tabBarHeight = sCTabBarController.tabBar.frame.size.height
         let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
         let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
         return waveformView
     }()
-    
-    // swiftlint:enable line_length
     
         private lazy var commentButton: UIButton = {
         let button = UIButton()
@@ -405,20 +395,18 @@ extension ProSoundDetailViewController: PlayerUIProtocol {
     
     func updatePlayInfo(notification: Notification) {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
-        
         DispatchQueue.main.async {
             self.titleLabel.text = nowPlayingInfo.title
             self.backgroundImageView.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
             self.authorButton.setTitle(nowPlayingInfo.author, for: .normal)
             self.contentTextView.text = nowPlayingInfo.content
         }
-        
-        authorIdentity = UserIdentity(userID: nowPlayingInfo.authorUserID, userIDProvider: nowPlayingInfo.authorAccountProvider)
+        authorIdentity = UserIdentity(userID: nowPlayingInfo.authorUserID,
+                                      userIDProvider: nowPlayingInfo.authorAccountProvider)
         nowPlayingDocumentID = nowPlayingInfo.documentID
     }
     
 }
-
 
 // MARK: - UI method
 
