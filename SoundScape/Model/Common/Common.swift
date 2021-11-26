@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import AVFoundation
 
 struct CommonUsage {
     
@@ -15,6 +16,15 @@ struct CommonUsage {
     static let base: CGFloat = 375
     static var ratio: CGFloat {
         return screenWidth / base
+    }
+    
+    static let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
+    
+    static var tabBarHeight: CGFloat {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return 0 }
+        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
+        return tabBarHeight
     }
     
     static var audioImages: [UIImage?] = [UIImage(named: CommonUsage.animalDog),
@@ -178,16 +188,6 @@ extension UIView {
     }
 }
 
-extension UIImageView {
-    func applyBlurEffect() {
-        let blurEffect = UIBlurEffect(style: .regular)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.frame = bounds
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        addSubview(blurEffectView)
-    }
-}
-
 extension CGFloat {
     
     var adjusted: CGFloat {
@@ -224,4 +224,13 @@ extension UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
+}
+
+extension Notification.Name {
+    static let playingAudioChange = Notification.Name("playingAudioChange")
+    static let didItemPlayToEndTime = Notification.Name("didItemPlayToEndTime")
+    static let didCurrentTimeChange = Notification.Name("didCurrentTimeChange")
+    static let didStateChange = Notification.Name("didStateChange")
+    static let remoteURLDidSelect = Notification.Name("remoteURLDidSelect")
+    static let didItemDurationChange = Notification.Name("didItemDurationChange")
 }

@@ -507,7 +507,7 @@ extension CategoryViewController: UITableViewDelegate {
                                 authorAccountProvider: data[indexPath.item].authIDProvider)
         
         if let remoteURL = data[indexPath.item].audioURL {
-            RemoteAudioManager.shared.downloadRemoteURL(documentID: data[indexPath.item].documentID,
+            AudioDownloadManager.shared.downloadRemoteURL(documentID: data[indexPath.item].documentID,
                                                         remoteURL: remoteURL, completion: { localURL in
                 self.loadAudio(localURL: localURL, playInfo: playInfo)
             },

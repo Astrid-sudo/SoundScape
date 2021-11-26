@@ -11,17 +11,17 @@ class AudioPlayerVC: UIViewController {
     
     // MARK: - properties
     
-    let signInManager = SignInManager.shared
+    private let signInManager = SignInManager.shared
     
-    let firebaseManager = FirebaseManager.shared
+    private let firebaseManager = FirebaseManager.shared
     
     weak var delegate: DetailPageShowableDelegate?
     
-    var displayLink: CADisplayLink?
+    private var nowPlayDocumentID: String?
     
-    let audioHelper = AudioPlayHelper.shared
+    private var currentUserFavoriteDocumentIDs: [String]?
     
-//    let remotePlayerHelper = RemotePlayHelper.shared
+    var nowPlayingURL: URL?
     
     private let audioURL = Bundle.main.url(forResource: "memories", withExtension: "mp3")
     
@@ -29,17 +29,220 @@ class AudioPlayerVC: UIViewController {
     
     private var showDetailConstraint = NSLayoutConstraint()
     
-    var soundDetailVC: ProSoundDetailViewController?
+    private var soundDetailVC: SoundDetailViewController?
     
-//    var soundDetailVC: soundDetailVC?
-
-    var nowPlayDocumentID: String?
+    // MARK: - life cycle
     
-    var currentUserFavoriteDocumentIDs: [String]?
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        fetchUserFavoriteList()
+        addObserver()
+        setviewBackgroundcolor()
+        setupBaseVew()
+        setAudioImage()
+        setAudioTitle()
+        setAuthorLabel()
+        setPlayButton()
+        setIndicatorView()
+        setFavoriteButton()
+        setFullDurationView()
+        setProgressView()
+        setDetailButton()
+        addDetailPage()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    // MARK: - init
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - method
+    
+    private func fetchUserFavoriteList() {
+        guard let userProfileDocumentID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else {
+            print("AudioPlayerVC: Cant get favorite before login")
+            return
+        }
+        
+        firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self] result in
+            
+            guard let self = self else { return }
+            
+            switch result {
+                
+            case .success(let scFavorites):
+                self.currentUserFavoriteDocumentIDs = scFavorites.map({$0.favoriteDocumentID})
+                
+            case .failure(let error):
+                print("AudioPlayerVC: Failed to get favoriteDocumentID \(error)")
+                
+            }
+        }
+    }
+    
+    private func addDetailPage() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "SoundDetailViewController") as? SoundDetailViewController else { return }
+        
+        self.soundDetailVC = vc
+        guard let soundDetailVC = soundDetailVC else { return }
+        soundDetailVC.delegate = self
+        
+        view.addSubview(soundDetailVC.view)
+        soundDetailVC.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        dontShowDetailConstraint = soundDetailVC.view.topAnchor.constraint(equalTo: view.bottomAnchor)
+        showDetailConstraint = soundDetailVC.view.topAnchor.constraint(equalTo: view.topAnchor)
+        
+        NSLayoutConstraint.activate([
+            soundDetailVC.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            soundDetailVC.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            soundDetailVC.view.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight),
+            dontShowDetailConstraint
+        ])
+        
+        soundDetailVC.view.isHidden = true
+    }
+    
+    private func fillFavoriteButton() {
+        favoriteButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.heart), for: .normal)
+        favoriteButton.tintColor = UIColor(named: CommonUsage.scYellow)
+    }
+    
+    private func emptyFavoriteButton() {
+        favoriteButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.heartEmpty), for: .normal)
+        favoriteButton.tintColor = UIColor(named: CommonUsage.scYellow)
+    }
+    
+    // MARK: - action
+    
+    @objc func manipulateFavorite() {
+        guard let userProfileDocumentID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else {
+            print("Cant addToFavorite before loggin")
+            return
+        }
+        
+        guard let nowPlayDocumentID = nowPlayDocumentID else {
+            return
+        }
+        
+        firebaseManager.manipulateFavorite(userProfileDocumentID: userProfileDocumentID,
+                                           documendID: nowPlayDocumentID,
+                                           addCompletion: fillFavoriteButton,
+                                           removeCompletion: emptyFavoriteButton) { [weak self] errorMessage in
+            guard let self = self else { return }
+            self.popErrorAlert(title: "Failed to add or remove favorite", message: errorMessage)
+            
+        }
+    }
+    
+    @objc func playOrPause() {
+        togglePlayer()
+    }
+    
+    @objc func updatePlayTime(notification: Notification) {
+        updatePlaybackTime(notification: notification)
+    }
+    
+    @objc func presentDetail() {
+        AudioPlayerWindow.shared.showDetailPage()
+        
+        guard let soundDetailVC = soundDetailVC else { return }
+        soundDetailVC.view.alpha = 1
+        
+        dontShowDetailConstraint.isActive = false
+        showDetailConstraint.isActive = true
+        
+        UIView.animate(withDuration: 0.9, delay: 0, options: .curveLinear) {
+            soundDetailVC.view.isHidden = false
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    @objc func updateInfo(notification: Notification) {
+        updatePlayInfo(notification: notification)
+    }
+    
+    @objc func audioPlayHelperError() {
+        popErrorAlert(title: "Audio player error",
+                      message: "Please terminate SoundScape_ and try again.")
+    }
+    
+    @objc func changeButtImage() {
+        changeButtonImage()
+    }
+    
+    // MARK: - method
+    
+    private func manipulateFavoriteImage() {
+        
+        guard let currentUserFavoriteDocumentIDs = currentUserFavoriteDocumentIDs,
+              let nowPlayDocumentID = nowPlayDocumentID else {
+                  print("AudioPlayerVC: Cant get currentUserFavoriteDocumentIDs and nowPlayDocumentID  ")
+                  return
+              }
+        
+        if currentUserFavoriteDocumentIDs.contains(nowPlayDocumentID) {
+            fillFavoriteButton()
+        } else {
+            emptyFavoriteButton()
+        }
+    }
+    
+    private func addObserver() {
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateInfo),
+                                               name: .playingAudioChange,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(changeButtImage),
+                                               name: .didStateChange,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updatePlayTime),
+                                               name: .didCurrentTimeChange,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(changeButtImage),
+                                               name: .didItemPlayToEndTime,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(audioPlayHelperError),
+                                               name: .audioPlayHelperError,
+                                               object: nil)
+    }
+    
+    private func setAudioHelper() {
+        audioPlayHelper.url = audioURL
+    }
+    
+    func resetAudioPlayerUI(audioTitle: String, audioImageNumber: Int) {
+        audioTitleLabel.text = audioTitle
+        authorLabel.text = CommonUsage.Text.loading
+        updateProgressWaveform(0)
+        indicatorView.startAnimating()
+        indicatorView.isHidden = false
+        playButton.isHidden = true
+        audioImage.image = CommonUsage.audioImages[audioImageNumber]
+    }
     
     // MARK: - UI properties
     
-    lazy var baseView: UIView = {
+    private lazy var baseView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         return view
@@ -79,23 +282,9 @@ class AudioPlayerVC: UIViewController {
         return button
     }()
     
-    private lazy var playButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-        button.tintColor = .white
-        button.addTarget(self, action: #selector(manipulatePlayer), for: .touchUpInside)
-        return button
-    }()
-    
     private lazy var fullDurationView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
-        return view
-    }()
-    
-    private lazy var progressView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(named: CommonUsage.scOrange)
         return view
     }()
     
@@ -114,127 +303,76 @@ class AudioPlayerVC: UIViewController {
         return view
     }()
     
-    // MARK: - life cycle
+    // MARK: - AudioPlayerProtocol
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        fetchUserFavoriteList()
-        addObserver()
-        setviewBackgroundcolor()
-        setupBaseVew()
-        setAudioImage()
-        setAudioTitle()
-        setAuthorLabel()
-        setPlayButton()
-        setIndicatorView()
-        setFavoriteButton()
-        setFullDurationView()
-        setProgressView()
-        setDetailButton()
-        addDetailPage()
-    }
+    lazy var playButton: UIButton = {
+        let button = UIButton()
+        button.setImage(playButtonImagePlay, for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(playOrPause), for: .touchUpInside)
+        return button
+    }()
     
-    // MARK: - init
+    lazy var progressView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(named: CommonUsage.scOrange)
+        return view
+    }()
     
-    init() {
-        super.init(nibName: nil, bundle: nil)
-    }
+    var caDisplayLink: CADisplayLink?
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+}
+
+extension AudioPlayerVC: AudioPlayerProtocol {
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    // MARK: - method
-    
-    private func fetchUserFavoriteList() {
-        
-        guard let userProfileDocumentID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else {
-            print("AudioPlayerVC: Cant get favorite before login")
-            return
-        }
-        
-        firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self]
-            result in
-            
-            guard let self = self else { return }
-            
-            switch result {
-                
-            case .success(let scFavorites):
-                self.currentUserFavoriteDocumentIDs = scFavorites.map({$0.favoriteDocumentID})
-                
-            case .failure(let error):
-                print("AudioPlayerVC: Failed to get favoriteDocumentID \(error)")
-                
-            }
+    func updatePlayInfo(notification: Notification) {
+        guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
+        DispatchQueue.main.async {
+            self.audioTitleLabel.text = nowPlayingInfo.title
+            self.authorLabel.text = nowPlayingInfo.author
+            self.nowPlayDocumentID = nowPlayingInfo.documentID
+            self.audioImage.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
+            self.manipulateFavoriteImage()
+            self.indicatorView.stopAnimating()
+            self.playButton.isHidden = false
+            self.updateProgressWaveform(0)
         }
     }
     
-    private func addDetailPage() {
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "ProSoundDetailViewController") as? ProSoundDetailViewController else { return }
-        
-        self.soundDetailVC = vc
+}
+
+// MARK: - conform to DetailPageShowableDelegate
+
+extension AudioPlayerVC: DetailPageShowableDelegate {
+    
+    func showDetailPage() {
         guard let soundDetailVC = soundDetailVC else { return }
-        soundDetailVC.delegate = self
+        soundDetailVC.view.alpha = 1
         
-        view.addSubview(soundDetailVC.view)
-        soundDetailVC.view.translatesAutoresizingMaskIntoConstraints = false
+        dontShowDetailConstraint.isActive = false
+        showDetailConstraint.isActive = true
         
-        dontShowDetailConstraint = soundDetailVC.view.topAnchor.constraint(equalTo: view.bottomAnchor)
-        showDetailConstraint = soundDetailVC.view.topAnchor.constraint(equalTo: view.topAnchor)
-        
-        NSLayoutConstraint.activate([
-            soundDetailVC.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            soundDetailVC.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            soundDetailVC.view.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight),
-            dontShowDetailConstraint
-        ])
-        
-        soundDetailVC.view.isHidden = true
-    }
-    
-    private func fillFavoriteButton() {
-        favoriteButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.heart), for: .normal)
-        favoriteButton.tintColor = UIColor(named: CommonUsage.scYellow)
-        
-    }
-    
-    private func emptyFavoriteButton() {
-        favoriteButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.heartEmpty), for: .normal)
-        favoriteButton.tintColor = UIColor(named: CommonUsage.scYellow)
-    }
-    
-    // MARK: - action
-    
-    @objc func manipulateFavorite() {
-        
-        guard let userProfileDocumentID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else {
-            print("Cant addToFavorite before loggin")
-            return
-        }
-        
-        guard let nowPlayDocumentID = nowPlayDocumentID else {
-            return
-        }
-        
-        firebaseManager.manipulateFavorite(userProfileDocumentID: userProfileDocumentID,
-                                           documendID: nowPlayDocumentID,
-                                           addCompletion: fillFavoriteButton,
-                                           removeCompletion: emptyFavoriteButton) { [weak self] errorMessage in
-            guard let self = self else { return }
-            self.popErrorAlert(title: "Failed to add or remove favorite", message: errorMessage)
-            
+        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseIn) {
+            soundDetailVC.view.isHidden = false
+            self.view.layoutIfNeeded()
         }
     }
     
-    // MARK: - UI method
+    func leaveDetailPage() {
+        showDetailConstraint.isActive = false
+        dontShowDetailConstraint.isActive = true
+        guard let soundDetailVC = soundDetailVC else { return }
+        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseIn) {
+            soundDetailVC.view.alpha = 0
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+}
+
+// MARK: - config UI method
+
+extension AudioPlayerVC {
     
     private func setviewBackgroundcolor() {
         view.backgroundColor = UIColor(named: CommonUsage.scGreen)
@@ -256,7 +394,6 @@ class AudioPlayerVC: UIViewController {
         audioImage.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             audioImage.leadingAnchor.constraint(equalTo: baseView.leadingAnchor, constant: 8),
-            //            audioImage.topAnchor.constraint(equalTo: baseView.topAnchor, constant: 4),
             audioImage.centerYAnchor.constraint(equalTo: baseView.centerYAnchor, constant: -5),
             audioImage.widthAnchor.constraint(equalToConstant: 40.adjusted),
             audioImage.heightAnchor.constraint(equalToConstant: 40.adjusted)
@@ -268,7 +405,6 @@ class AudioPlayerVC: UIViewController {
         audioTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             audioTitleLabel.leadingAnchor.constraint(equalTo: audioImage.trailingAnchor, constant: 20),
-            //            audioTitleLabel.topAnchor.constraint(equalTo: baseView.topAnchor, constant: 4)
             audioTitleLabel.bottomAnchor.constraint(equalTo: audioImage.centerYAnchor)
         ])
     }
@@ -278,7 +414,6 @@ class AudioPlayerVC: UIViewController {
         authorLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             authorLabel.leadingAnchor.constraint(equalTo: audioImage.trailingAnchor, constant: 20),
-//            authorLabel.topAnchor.constraint(equalTo: audioTitleLabel.bottomAnchor, constant: 4)
             authorLabel.topAnchor.constraint(equalTo: audioImage.centerYAnchor)
         ])
     }
@@ -304,7 +439,7 @@ class AudioPlayerVC: UIViewController {
             indicatorView.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
-
+    
     private func setFavoriteButton() {
         baseView.addSubview(favoriteButton)
         favoriteButton.translatesAutoresizingMaskIntoConstraints = false
@@ -347,225 +482,6 @@ class AudioPlayerVC: UIViewController {
             detailButton.topAnchor.constraint(equalTo: baseView.topAnchor),
             detailButton.bottomAnchor.constraint(equalTo: baseView.bottomAnchor)
         ])
-    }
-    
-    // MARK: - action
-    
-    @objc func manipulatePlayer() {
-        
-        if AudioPlayHelper.shared.isPlaying {
-            AudioPlayHelper.shared.pause()
-        } else {
-            AudioPlayHelper.shared.play()
-        }
-    }
-    
-    @objc func updatePlaybackTime(notification: Notification) {
-        //        localUpdatePlaybackTime()
-        
-        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
-        let currentTime = playProgress.currentTime
-        let duration = playProgress.duration
-        let timeProgress = currentTime / duration
-        
-        updateProgressWaveform(timeProgress)
-        
-    }
-    
-    @objc func presentDetail() {
-        
-        AudioPlayerWindow.shared.showDetailPage()
-        
-        guard let soundDetailVC = soundDetailVC else { return }
-        soundDetailVC.view.alpha = 1
-        
-        dontShowDetailConstraint.isActive = false
-        showDetailConstraint.isActive = true
-        
-        UIView.animate(withDuration: 0.9, delay: 0, options: .curveLinear) {
-            soundDetailVC.view.isHidden = false
-            self.view.layoutIfNeeded()
-        }
-        
-    }
-    
-    @objc func updatePlayInfo(notification: Notification) {
-        
-        guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
-        
-        DispatchQueue.main.async {
-            self.audioTitleLabel.text = nowPlayingInfo.title
-            self.authorLabel.text = nowPlayingInfo.author
-            self.nowPlayDocumentID = nowPlayingInfo.documentID
-            self.audioImage.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
-            self.manipulateFavoriteImage()
-            self.indicatorView.stopAnimating()
-            self.playButton.isHidden = false
-            self.updateProgressWaveform(0)
-        }
-        
-    }
-    
-    // MARK: - method
-    
-    private func manipulateFavoriteImage() {
-        
-        guard let currentUserFavoriteDocumentIDs = currentUserFavoriteDocumentIDs,
-              let nowPlayDocumentID = nowPlayDocumentID else {
-                  print("AudioPlayerVC: Cant get currentUserFavoriteDocumentIDs and nowPlayDocumentID  ")
-                  return
-              }
-        
-        if currentUserFavoriteDocumentIDs.contains(nowPlayDocumentID) {
-            fillFavoriteButton()
-        } else {
-            emptyFavoriteButton()
-        }
-    }
-    
-    func addObserver() {
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updatePlayInfo),
-                                               name: .playingAudioChange,
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(changeButtImage),
-                                               name: .didStateChange,
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updatePlaybackTime),
-                                               name: .didCurrentTimeChange,
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(changeButtImage),
-                                               name: .didItemPlayToEndTime,
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(audioPlayHelperError),
-                                               name: .audioPlayHelperError,
-                                               object: nil)
-
-    }
-    
-    @objc func audioPlayHelperError() {
-        popErrorAlert(title: "Audio player errer", message: "Please terminate SoundScape_ and try again.")
-    }
-    
-    @objc func changeButtImage() {
-        
-        if AudioPlayHelper.shared.isPlaying {
-            DispatchQueue.main.async {
-                self.playButton.isHidden = false
-                self.playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-            }
-        }
-        
-        if !AudioPlayHelper.shared.isPlaying {
-            DispatchQueue.main.async {
-                self.playButton.isHidden = false
-                self.playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-            }
-        }
-        
-    }
-    
-    func localManipulatePlayer() {
-        if audioHelper.isPlaying == true {
-            self.audioHelper.pause()
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-            
-            if let displayLink = displayLink {
-                displayLink.invalidate()
-            }
-            
-        } else {
-            audioHelper.play()
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-            displayLink = CADisplayLink(target: self, selector: #selector(updatePlaybackTime))
-            displayLink?.add(to: RunLoop.main, forMode: .common)
-        }
-        
-    }
-    
-    func localUpdatePlaybackTime() {
-        print(audioHelper.currentTime)
-        let progress = audioHelper.currentTime / audioHelper.duration
-        updateProgressWaveform(progress)
-    }
-    
-    func localUpdateUI() {
-        
-        displayLink = CADisplayLink(target: self, selector: #selector(updatePlaybackTime))
-        displayLink?.add(to: RunLoop.main, forMode: .common)
-        
-        if audioHelper.isPlaying == true {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-        } else {
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-        }
-        
-    }
-    
-    private func setAudioHelper() {
-        audioHelper.url = audioURL
-    }
-    
-    private func updateProgressWaveform(_ progress: Double) {
-        let fullRect = progressView.bounds
-        let newWidth = Double(fullRect.size.width) * progress
-        let maskLayer = CAShapeLayer()
-        let maskRect = CGRect(x: 0.0, y: 0.0, width: newWidth, height: Double(fullRect.size.height))
-        let path = CGPath(rect: maskRect, transform: nil)
-        maskLayer.path = path
-        progressView.layer.mask = maskLayer
-    }
-    
-    func resetAudioPlayerUI(audioTitle: String, audioImageNumber: Int) {
-        audioTitleLabel.text = audioTitle
-        authorLabel.text = CommonUsage.Text.loading
-        updateProgressWaveform(0)
-        indicatorView.startAnimating()
-        indicatorView.isHidden = false
-        playButton.isHidden = true
-        audioImage.image = CommonUsage.audioImages[audioImageNumber]
-    }
-    
-}
-
-extension AudioPlayerVC: DetailPageShowableDelegate {
-    
-    func showDetailPage() {
-        
-        guard let soundDetailVC = soundDetailVC else { return }
-        soundDetailVC.view.alpha = 1
-        
-        dontShowDetailConstraint.isActive = false
-        showDetailConstraint.isActive = true
-        
-        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseIn) {
-            soundDetailVC.view.isHidden = false
-            self.view.layoutIfNeeded()
-        }
-        
-    }
-    
-    func leaveDetailPage() {
-        
-        showDetailConstraint.isActive = false
-        
-        dontShowDetailConstraint.isActive = true
-        
-        guard let soundDetailVC = soundDetailVC else { return }
-        
-        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseIn) {
-            soundDetailVC.view.alpha = 0
-            self.view.layoutIfNeeded()
-        }
     }
     
 }

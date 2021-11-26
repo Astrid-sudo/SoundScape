@@ -160,7 +160,7 @@ class FirebaseManager {
     func deletePostInAllAudio(documentID: String,
                               errorCompletion: @escaping (_ errorMessage:String) -> Void,
                               succeededCompletion: @escaping () -> Void) {
-       
+        
         allAudioCollectionRef.document(documentID).delete() { error in
             if let error = error {
                 errorCompletion(error.localizedDescription)
@@ -174,8 +174,8 @@ class FirebaseManager {
         }
     }
     
-   private func deletePostInAllLocation(documentID: String,
-                                        errorCompletion: @escaping (_ errorMessage:String) -> Void, succeededCompletion: @escaping () -> Void) {
+    private func deletePostInAllLocation(documentID: String,
+                                         errorCompletion: @escaping (_ errorMessage:String) -> Void, succeededCompletion: @escaping () -> Void) {
         
         allLocationsCollectionRef.document(documentID).delete() { error in
             if let error = error {
@@ -213,29 +213,29 @@ class FirebaseManager {
     func fetchUser(userID: String,
                    userIDProvider: String,
                    completion: @escaping (Result<SCUser, Error>) -> Void) {
-
+        
         allUsersCollectionRef.whereField("userID", isEqualTo: userID).whereField("provider", isEqualTo: userIDProvider).getDocuments { snapshot, error in
-
+            
             if let error = error {
                 completion(Result.failure(error))
                 return
             }
-
+            
             if let snapshot = snapshot {
-
+                
                 if snapshot.documents.isEmpty {
-
+                    
                     print("Firebase manager: No such user")
                 } else {
-
+                    
                     let users = snapshot.documents.compactMap({ snapshot in
                         try? snapshot.data(as: SCUser.self)
                     })
-
+                    
                     guard let user = users.first else { return }
-
+                    
                     completion(Result.success(user))
-
+                    
                 }
             }
         }
@@ -464,9 +464,9 @@ class FirebaseManager {
     }
     
     private func removeFollowersDocID(userInfoDoumentID: String,
-                              userInfo: SCFollow,
-                              loggedInUserInfoDocumentID: String,
-                              loggedInUserInfo: SCFollow) {
+                                      userInfo: SCFollow,
+                                      loggedInUserInfoDocumentID: String,
+                                      loggedInUserInfo: SCFollow) {
         
         let othersFollowedBySubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("followedBy")
         
@@ -608,7 +608,7 @@ class FirebaseManager {
     }
     
     func addComment(to documentID: String, with comment: SCComment, completion: @escaping () -> Void, errorCompletion: @escaping (String) -> Void) {
-       
+        
         let db = Firestore.firestore()
         let commentSubCollectionRef = db.collection(CommonUsage.CollectionName.allAudioFiles).document(documentID).collection(CommonUsage.CollectionName.comments)
         

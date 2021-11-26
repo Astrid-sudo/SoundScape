@@ -406,7 +406,7 @@ extension SearchViewController: UITableViewDelegate {
                                 authorAccountProvider: resultAudioFiles[indexPath.item].authIDProvider)
         
         if let remoteURL = resultAudioFiles[indexPath.item].audioURL {
-            RemoteAudioManager.shared.downloadRemoteURL(documentID: resultAudioFiles[indexPath.item].documentID,
+            AudioDownloadManager.shared.downloadRemoteURL(documentID: resultAudioFiles[indexPath.item].documentID,
                                                         remoteURL: remoteURL, completion: { localURL in
                 self.loadAudio(localURL: localURL, playInfo: playInfo)
             },

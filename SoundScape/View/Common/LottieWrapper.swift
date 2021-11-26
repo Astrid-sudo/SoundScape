@@ -45,10 +45,5 @@ class LottieWrapper {
         animationView.loopMode = .loop
         return animationView
     }
-
-
-    
-    
-    
     
 }
