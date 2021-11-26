@@ -18,6 +18,15 @@ struct CommonUsage {
         return screenWidth / base
     }
     
+    static let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
+    
+    static var tabBarHeight: CGFloat {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return 0 }
+        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
+        return tabBarHeight
+    }
+    
     static var audioImages: [UIImage?] = [UIImage(named: CommonUsage.animalDog),
                                           UIImage(named: CommonUsage.animalCat),
                                           UIImage(named: CommonUsage.animalCatPaw),
@@ -179,16 +188,6 @@ extension UIView {
     }
 }
 
-extension UIImageView {
-    func applyBlurEffect() {
-        let blurEffect = UIBlurEffect(style: .regular)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.frame = bounds
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        addSubview(blurEffectView)
-    }
-}
-
 extension CGFloat {
     
     var adjusted: CGFloat {
@@ -235,4 +234,3 @@ extension Notification.Name {
     static let remoteURLDidSelect = Notification.Name("remoteURLDidSelect")
     static let didItemDurationChange = Notification.Name("didItemDurationChange")
 }
-

@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import DSWaveformImage
 
 class EditVC: UIViewController {
     
@@ -63,11 +62,6 @@ class EditVC: UIViewController {
             
             // render waveform
             self.updateWaveformImages(localURL: selectedFileURL)
-//            let waveformAnalyzer = dSWaveformImageWrapper.initWaveformAnalyzer(audioAssetURL: selectedFileURL)
-            let waveformAnalyzer = WaveformAnalyzer(audioAssetURL: selectedFileURL)
-            waveformAnalyzer?.samples(count: 10) { samples in
-                print("sampled down to 10, results are \(samples ?? [])")
-            }
             audioPlayHelper.url = selectedFileURL
             AudioEditHelper.shared.originalURL = selectedFileURL
         }
@@ -147,24 +141,22 @@ class EditVC: UIViewController {
     }
     
     private func updateWaveformImages(localURL: URL) {
-        // always uses background thread rendering
-        
-//        let config = dSWaveformImageWrapper.configWaveform(color: UIColor(named: CommonUsage.scWhite), width: 2,, spacing: 2, lineCap: .butt)
-        
-        let config = Waveform.Style.StripeConfig.init(color: UIColor(named: CommonUsage.scWhite) ?? .white,
-                                                      width: 2,
-                                                      spacing: 2,
-                                                      lineCap: .butt)
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
+            
+            let stripeConfig = self.dSWaveformImageWrapper.configWaveformStripe(
+                color: UIColor(named: CommonUsage.scWhite),
+                width: 2,
+                spacing: 2,
+                lineCap: .butt)
+
+            let waveformConfig = self.dSWaveformImageWrapper.configWaveform(
+                waveformImageView: self.waveformImageView,
+                config: stripeConfig)
+
             self.waveformImageDrawer.waveformImage(fromAudioAt: localURL,
-                                                   with: Waveform.Configuration(size: self.waveformImageView.bounds.size,
-                                                        backgroundColor: .clear,
-                                                                                style: .striped(config),
-                                                                                dampening: nil,
-                                                                                position: .middle,
-                                                                                scale: 10.0, verticalScalingFactor: 0.5, shouldAntialias: true), completionHandler: { image in
+                                                   with: waveformConfig, completionHandler: { image in
                 DispatchQueue.main.async {
                     self.waveformImageView.image = image
                 }
@@ -183,7 +175,7 @@ class EditVC: UIViewController {
     }
     
     @objc func playOrPause() {
-        manipulatePlayer()
+        togglePlayer()
     }
     
     @objc func scrubToTime() {
@@ -307,8 +299,12 @@ class EditVC: UIViewController {
         return button
     }()
     
-    let waveformImageView = WaveformImageView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: 100))
-    
+    let waveformImageView = DSWaveformImageWrapper.shared.createWaveformImageView(
+        frame: CGRect(x: 0,
+                      y: 0,
+                      width: CommonUsage.screenWidth,
+                      height: 100))
+
     private lazy var trimButton: UIButton = {
         let button = UIButton()
         button.setTitle("TRIM", for: .normal)
@@ -355,7 +351,7 @@ class EditVC: UIViewController {
         return label
     }()
     
-    private let waveformImageDrawer = WaveformImageDrawer()
+    private let waveformImageDrawer = DSWaveformImageWrapper.shared.initWaveformImageDrawer()
     
     private lazy var slider: UISlider = {
         let slider = UISlider()
@@ -489,7 +485,8 @@ class EditVC: UIViewController {
         currentTimeLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             currentTimeLabel.topAnchor.constraint(equalTo: playButton.bottomAnchor, constant: 8),
-            currentTimeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: (CommonUsage.screenWidth - 62) / 2 )
+            currentTimeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor,
+                                                      constant: (CommonUsage.screenWidth - 62) / 2 )
         ])
     }
     
@@ -555,7 +552,7 @@ class EditVC: UIViewController {
         view.layoutIfNeeded()
     }
     
-    // MARK: - conform to AudioPlayerUIProtocol
+    // MARK: - AudioPlayerProtocol
     
     lazy var playButton: UIButton = {
         let button = UIButton()
@@ -571,28 +568,19 @@ class EditVC: UIViewController {
     var caDisplayLink: CADisplayLink?
     
     var progressView: UIView {
-        return waveformProgressView
-    }
-    
-    lazy var waveformProgressView: WaveformImageView = {
-        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else {
-            return WaveformImageView(frame: CGRect(x: 0,
-                                                   y: 0,
-                                                   width: 0,
-                                                   height: 0))}
-        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
-        let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
-        let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
+        let waveformViewY = CommonUsage.screenHeight - CommonUsage.safeAreaHeight - CommonUsage.tabBarHeight - 180
+        let waveformView = DSWaveformImageWrapper.shared.createWaveformImageView(
+            frame: CGRect(x: 0,
+                          y: waveformViewY,
+                          width: CommonUsage.screenWidth,
+                          height: 100))
         return waveformView
-    }()
-    
+    }
+
 }
 
-// MARK: - conform to AudioPlayerUIProtocol
-
-extension EditVC: AudioPlayerUIProtocol {
+extension EditVC: AudioPlayerProtocol {
+    
     @objc func updatePlaybackTime(notification: Notification) {
         guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
         let currentTime = playProgress.currentTime
@@ -609,7 +597,7 @@ extension EditVC: AudioPlayerUIProtocol {
     
 }
 
-// MARK: - conform to EditAudioManagerDelegate
+// MARK: - EditAudioManagerDelegate
 
 extension EditVC: EditAudioManagerDelegate {
     

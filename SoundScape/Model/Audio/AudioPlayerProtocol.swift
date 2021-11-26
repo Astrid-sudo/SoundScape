@@ -1,5 +1,5 @@
 //
-//  AudioPlayerUIProtocol.swift
+//  AudioPlayerProtocol.swift
 //  SoundScape
 //
 //  Created by Astrid on 2021/11/24.
@@ -8,33 +8,33 @@
 import Foundation
 import UIKit
 
-protocol AudioPlayerUIProtocol: AnyObject {
+protocol AudioPlayerProtocol: AnyObject {
     
     // UI
     
     var playButton: UIButton { get }
     
-    var caDisplayLink: CADisplayLink? { get set }
-    
     var progressView: UIView { get }
     
-    var playButtonImagePlay: UIImage { get } // default
+    var caDisplayLink: CADisplayLink? { get set }
     
-    var playButtonImagePause: UIImage { get } // default
+    var playButtonImagePlay: UIImage? { get } // default
+    
+    var playButtonImagePause: UIImage? { get } // default
     
     // method
     
-    func manipulatePlayer() // default
-    
-    func updatePlaybackTime(notification: Notification) // default
+    func togglePlayer() // default
     
     func changeButtonImage() // default
+    
+    func updatePlaybackTime(notification: Notification) // default
     
 }
 
 // MARK: - default setting
 
-extension AudioPlayerUIProtocol {
+extension AudioPlayerProtocol {
     
     // model
     
@@ -44,17 +44,17 @@ extension AudioPlayerUIProtocol {
     
     // UI
     
-    var playButtonImagePlay: UIImage {
-        let image = UIImage(systemName: CommonUsage.SFSymbol.play) ?? UIImage()
-        return image
+    var playButtonImagePlay: UIImage? {
+        UIImage(systemName: CommonUsage.SFSymbol.play)
     }
     
-    var playButtonImagePause: UIImage {
-        let image = UIImage(systemName: CommonUsage.SFSymbol.pause) ?? UIImage()
-        return image
+    var playButtonImagePause: UIImage? {
+        UIImage(systemName: CommonUsage.SFSymbol.pause)
     }
     
-    func manipulatePlayer() {
+    // method
+    
+    func togglePlayer() {
         if audioPlayHelper.isPlaying {
             audioPlayHelper.pause()
         } else {
@@ -81,17 +81,10 @@ extension AudioPlayerUIProtocol {
     }
     
     func changeButtonImage() {
-        if audioPlayHelper.isPlaying {
-            DispatchQueue.main.async {
-                self.playButton.isHidden = false
-                self.playButton.setImage(self.playButtonImagePause, for: .normal)
-            }
-        }
-        if !audioPlayHelper.isPlaying {
-            DispatchQueue.main.async {
-                self.playButton.isHidden = false
-                self.playButton.setImage(self.playButtonImagePlay, for: .normal)
-            }
+        DispatchQueue.main.async {
+            self.playButton.isHidden = false
+            let image = self.audioPlayHelper.isPlaying ? self.playButtonImagePause : self.playButtonImagePlay
+            self.playButton.setImage(image, for: .normal)
         }
     }
     

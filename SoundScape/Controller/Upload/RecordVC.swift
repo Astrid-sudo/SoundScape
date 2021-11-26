@@ -6,16 +6,15 @@
 //
 
 import UIKit
-import DSWaveformImage
 
 class RecordVC: UIViewController {
     
     // MARK: - properties
     
-    let audioRecordHelper = AudioRecordHelper.shared
+    private let audioRecordHelper = AudioRecordHelper.shared
     
-    private let waveformImageDrawer = WaveformImageDrawer()
-
+    private let waveformImageDrawer = DSWaveformImageWrapper.shared.initWaveformImageDrawer()
+    
     // MARK: - UI properties
     
     private lazy var noticeLabel: UILabel = {
@@ -39,10 +38,11 @@ class RecordVC: UIViewController {
         return button
     }()
     
-    private lazy var waveformLiveView: WaveformLiveView = {
-        let waveformLiveView = WaveformLiveView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: 100))
-        return waveformLiveView
-    }()
+    private let waveformLiveView = DSWaveformImageWrapper.shared.createWaveformLiveView(
+        frame: CGRect(x: 0,
+                      y: 0,
+                      width: CommonUsage.screenWidth,
+                      height: 100))
     
     private lazy var recordTimeLabel: UILabel = {
         let label = UILabel()
@@ -61,7 +61,7 @@ class RecordVC: UIViewController {
         label.isHidden = true
         return label
     }()
-
+    
     private lazy var recordButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 30)
@@ -69,27 +69,6 @@ class RecordVC: UIViewController {
         button.setImage(bigImage, for: .normal)
         button.tintColor = UIColor(named: CommonUsage.scRed)
         button.addTarget(self, action: #selector(manipulaterecord), for: .touchUpInside)
-        button.isHidden = true
-        return button
-    }()
-    
-    private lazy var playbackButton: UIButton = {
-        let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 30)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
-        button.setImage(bigImage, for: .normal)
-        button.tintColor = UIColor(named: CommonUsage.scWhite)
-        button.isHidden = true
-        return button
-    }()
-    
-    private lazy var stopButton: UIButton = {
-        let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 30)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.stopPlay, withConfiguration: config)
-        button.setImage(bigImage, for: .normal)
-        button.tintColor = UIColor(named: CommonUsage.scWhite)
-        button.addTarget(self, action: #selector(stopPlaying), for: .touchUpInside)
         button.isHidden = true
         return button
     }()
@@ -105,34 +84,35 @@ class RecordVC: UIViewController {
         setRecordButton()
         checkMicPermission()
         setRecordTimeLabel()
-        setPlaybackButton()
-        setStopButton()
         setRecordAgainLabel()
         audioRecordHelper.delegate = self
         view.backgroundColor = UIColor(named: CommonUsage.scBlue)
-        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        let config = Waveform.Style.StripeConfig.init(color: UIColor(named: CommonUsage.scWhite) ?? .white, width: 3.0,
-                                                      spacing: 3.5,
-                                                      lineCap: .butt)
+        let stripeConfig = DSWaveformImageWrapper.shared.configWaveformStripe(
+            color: UIColor(named: CommonUsage.scWhite),
+            width: 3,
+            spacing: 3.5,
+            lineCap: .butt)
         
-        waveformLiveView.configuration = waveformLiveView.configuration.with(size: self.waveformLiveView.bounds.size,
-                                                                             backgroundColor: UIColor(named: CommonUsage.scBlue),
-                                                                             style: .striped(config),
-                                                                             dampening: nil,
-                                                                             position: .middle,
-                                                                             scale: nil,
-                                                                             verticalScalingFactor: nil, shouldDampenSides: true, shouldAntialias: false)
+        waveformLiveView.configuration = waveformLiveView.configuration.with(
+            size: self.waveformLiveView.bounds.size,
+            backgroundColor: UIColor(named: CommonUsage.scBlue),
+            style: .striped(stripeConfig),
+            dampening: nil,
+            position: .middle,
+            scale: nil,
+            verticalScalingFactor: nil,
+            shouldDampenSides: true,
+            shouldAntialias: false)
         
         waveformLiveView.shouldDrawSilencePadding = true
     }
     
     // MARK: - method
-    
     
     private func checkMicPermission() {
         audioRecordHelper.checkAudioPermission {
@@ -145,11 +125,9 @@ class RecordVC: UIViewController {
                 self.popErrorAlert(title: "Please allow SoundScape_ to access your microphone.",
                                    message: "Settings > SoundScape_ > Allow access Microphone")
             }
-            
         }
-
     }
-
+    
     // MARK: - UI method
     
     private func setNavigationBar() {
@@ -161,7 +139,7 @@ class RecordVC: UIViewController {
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
         navigationItem.title = CommonUsage.Text.record
     }
-
+    
     private func setGoEditButton() {
         view.addSubview(goEditButton)
         goEditButton.translatesAutoresizingMaskIntoConstraints = false
@@ -181,7 +159,7 @@ class RecordVC: UIViewController {
             noticeLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
     }
-
+    
     private func setWaveformLiveView() {
         view.addSubview(waveformLiveView)
         waveformLiveView.translatesAutoresizingMaskIntoConstraints = false
@@ -192,7 +170,7 @@ class RecordVC: UIViewController {
             waveformLiveView.heightAnchor.constraint(equalToConstant: 200)
         ])
     }
-
+    
     private func setRecordButton() {
         view.addSubview(recordButton)
         recordButton.translatesAutoresizingMaskIntoConstraints = false
@@ -206,26 +184,9 @@ class RecordVC: UIViewController {
         view.addSubview(recordTimeLabel)
         recordTimeLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            recordTimeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: (CommonUsage.screenWidth - 99) / 2 ),
+            recordTimeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor,
+                                                     constant: (CommonUsage.screenWidth - 99) / 2 ),
             recordTimeLabel.bottomAnchor.constraint(equalTo: recordButton.topAnchor, constant: -24)
-        ])
-    }
-
-    private func setPlaybackButton() {
-        view.addSubview(playbackButton)
-        playbackButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            playbackButton.leadingAnchor.constraint(equalTo: recordButton.trailingAnchor, constant: 10),
-            playbackButton.centerYAnchor.constraint(equalTo: recordButton.centerYAnchor)
-        ])
-    }
-    
-    private func setStopButton() {
-        view.addSubview(stopButton)
-        stopButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stopButton.leadingAnchor.constraint(equalTo: playbackButton.trailingAnchor, constant: 16),
-            stopButton.centerYAnchor.constraint(equalTo: playbackButton.centerYAnchor)
         ])
     }
     
@@ -234,9 +195,8 @@ class RecordVC: UIViewController {
         recordAgainLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             recordAgainLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            recordAgainLabel.topAnchor.constraint(equalTo: stopButton.bottomAnchor, constant: 8)
+            recordAgainLabel.topAnchor.constraint(equalTo: recordButton.bottomAnchor, constant: 8)
         ])
-
     }
     
     // MARK: - action
@@ -246,29 +206,17 @@ class RecordVC: UIViewController {
     }
     
     @objc func manipulaterecord() {
-        
         toggleRecordButtonImage()
         if audioRecordHelper.isRecording == false {
             waveformLiveView.reset()
             audioRecordHelper.recordAudio()
-            playbackButton.isHidden = true
-            stopButton.isHidden = true
             goEditButton.isHidden = true
             recordAgainLabel.isHidden = true
         } else {
-            audioRecordHelper.stopRecording()
+            _ = audioRecordHelper.stopRecording()
             goEditButton.isHidden = false
             recordAgainLabel.isHidden = false
         }
-    }
-    
-    @objc func stopPlaying() {
-        
-        audioRecordHelper.stopPlaying()
-        
-        let config = UIImage.SymbolConfiguration(pointSize: 30)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
-        playbackButton.setImage(bigImage, for: .normal)
     }
     
     func toggleRecordButtonImage() {
@@ -289,30 +237,12 @@ class RecordVC: UIViewController {
         
     }
     
-    func togglePlayButtonImage() {
-        
-        if audioRecordHelper.isPlaying == false {
-            
-            let config = UIImage.SymbolConfiguration(pointSize: 30)
-            let bigImage = UIImage(systemName: CommonUsage.SFSymbol.pause, withConfiguration: config)
-            playbackButton.setImage(bigImage, for: .normal)
-            
-        } else {
-            
-            let config = UIImage.SymbolConfiguration(pointSize: 30)
-            let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
-            playbackButton.setImage(bigImage, for: .normal)
-
-        }
-        
-    }
-    
     @objc func pushToNext() {
         
         guard let recordTime = recordTimeLabel.text,
-               let time = Double(recordTime),
+              let time = Double(recordTime),
               time >= 5 else {
-                   popErrorAlert(title: "Recorded audio too short.", message: "Required minimum length: 5 seconds.")
+                  popErrorAlert(title: "Recorded audio too short.", message: "Required minimum length: 5 seconds.")
                   return
               }
         
@@ -333,7 +263,7 @@ class RecordVC: UIViewController {
 
 // MARK: - conform to PlayRecoredStateChangableDelegate
 
-extension RecordVC: PlayRecoredStateChangableDelegate {
+extension RecordVC: RecordingUpdatableDelegate {
     
     func updateTimeAndPower(currentTime: TimeInterval, power: Float) {
         let current = String(describing: currentTime).dropLast(13)
@@ -344,15 +274,9 @@ extension RecordVC: PlayRecoredStateChangableDelegate {
         let linear = 1 - pow(10, power / 20)
         
         print(String(current), linear)
-
+        
         waveformLiveView.add(samples: [linear])
-
-    }
-    
-    func didFinishPlaying() {
-        let config = UIImage.SymbolConfiguration(pointSize: 30)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
-        playbackButton.setImage(bigImage, for: .normal)
+        
     }
     
 }

@@ -8,8 +8,7 @@
 import Foundation
 import AVFoundation
 
-protocol PlayRecoredStateChangableDelegate: AnyObject {
-    func didFinishPlaying()
+protocol RecordingUpdatableDelegate: AnyObject {
     func updateTimeAndPower(currentTime: TimeInterval, power: Float)
 }
 
@@ -26,8 +25,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     
     var audioRecorder: AVAudioRecorder?
    
-    var audioPlayer: AVAudioPlayer?
-    
     var isRecording = false
     
     var isPlaying = false
@@ -36,7 +33,7 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     
     var duration: Double?
     
-    weak var delegate: PlayRecoredStateChangableDelegate?
+    weak var delegate: RecordingUpdatableDelegate?
     
     var displayLink: CADisplayLink?
     
@@ -70,7 +67,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     // MARK: - method
     
     func settingAudioSession(toMode mode: AudioSessionMode) {
-        audioPlayer?.stop()
         
         let session = AVAudioSession.sharedInstance()
         do {
@@ -83,18 +79,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
             try session.setActive(false)
         } catch {
             print(error.localizedDescription)
-        }
-    }
-    
-    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
-        
-        if flag == true {
-            do {
-                audioPlayer = try AVAudioPlayer(contentsOf: recorder.url)
-                self.duration = audioPlayer?.duration
-            } catch {
-                print(error.localizedDescription)
-            }
         }
     }
     
@@ -128,14 +112,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         }
         
         return url
-    }
-    
-    func stopPlaying() {
-        if isRecording == false {
-            audioPlayer?.stop()
-            isPlaying = false
-            audioPlayer?.currentTime = 0
-        }
     }
     
     @objc func updateTimeAndPower() {

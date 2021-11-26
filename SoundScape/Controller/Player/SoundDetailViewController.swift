@@ -6,13 +6,12 @@
 //
 
 import UIKit
-import DSWaveformImage
 
 class SoundDetailViewController: UIViewController {
     
     // MARK: - properties
     
-    private let waveformImageDrawer = WaveformImageDrawer()
+    private let waveformImageDrawer = DSWaveformImageWrapper.shared.initWaveformImageDrawer()
     
     weak var delegate: DetailPageShowableDelegate?
     
@@ -96,7 +95,7 @@ class SoundDetailViewController: UIViewController {
     }
     
     @objc func playOrPause() {
-        manipulatePlayer()
+        togglePlayer()
     }
     
     @objc func audioPlayHelperError() {
@@ -217,43 +216,51 @@ class SoundDetailViewController: UIViewController {
     }
     
     func renderWave(documentID: String) {
-        let cachesFolderURL = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        let cachesFolderURL = try? FileManager.default.url(for: .cachesDirectory,
+                                                              in: .userDomainMask,
+                                                              appropriateFor: nil,
+                                                              create: false)
         let audioFileURL = cachesFolderURL?.appendingPathComponent("\(documentID).m4a")
         guard let localURL = audioFileURL else { return }
         
         DispatchQueue.main.async {
-            
             self.updateWaveformImages(localURL: localURL)
-            let waveformAnalyzer = WaveformAnalyzer(audioAssetURL: localURL)
-            waveformAnalyzer?.samples(count: 10) { samples in
-                print("sampled down to 10, results are \(samples ?? [])")
-            }
         }
     }
     
     private func updateWaveformImages(localURL: URL) {
-        // always uses background thread rendering
-        let waveformViewConfig = Waveform.Style.StripeConfig.init(color: UIColor(named: CommonUsage.scSuperLightBlue) ?? .green, width: 1.0, spacing: 1, lineCap: .round)
-        waveformImageDrawer.waveformImage(fromAudioAt: localURL,
-                                          with: Waveform.Configuration(size: self.waveformView.bounds.size,
-                                                                       backgroundColor: .clear,
-                                                                       style: .striped(waveformViewConfig) , dampening: nil,
-                                                                       position: .middle,
-                                                                       scale: 10.0,
-                                                                       verticalScalingFactor: 0.5, shouldAntialias: true), completionHandler: { image in
+        
+        let stripeConfig = DSWaveformImageWrapper.shared.configWaveformStripe(
+            color: UIColor(named: CommonUsage.scSuperLightBlue),
+            width: 1.0,
+            spacing: 1,
+            lineCap: .round)
+        
+        let waveformConfig = DSWaveformImageWrapper.shared.configWaveform(
+            waveformImageView: self.waveformView,
+            config: stripeConfig)
+        
+        self.waveformImageDrawer.waveformImage(fromAudioAt: localURL,
+                                               with: waveformConfig,
+                                               completionHandler: { image in
             DispatchQueue.main.async {
                 self.waveformView.image = image
             }
         })
         
-        let waveformProgressViewConfig = Waveform.Style.StripeConfig.init(color: UIColor(named: CommonUsage.scWhite) ?? .orange, width: 1.0, spacing: 1, lineCap: .round)
-        waveformImageDrawer.waveformImage(fromAudioAt: localURL,
-                                          with: Waveform.Configuration(size: self.waveformView.bounds.size,
-                                                                       backgroundColor: .clear,
-                                                                       style: .striped(waveformProgressViewConfig), dampening: nil,
-                                                                       position: .middle,
-                                                                       scale: 10.0,
-                                                                       verticalScalingFactor: 0.5, shouldAntialias: true), completionHandler: { image in
+        let progressStripeConfig = DSWaveformImageWrapper.shared.configWaveformStripe(
+            color: UIColor(named: CommonUsage.scWhite),
+            width: 1.0,
+            spacing: 1,
+            lineCap: .round)
+        
+        let progressWaveformConfig = DSWaveformImageWrapper.shared.configWaveform(
+            waveformImageView: self.waveformView,
+            config: progressStripeConfig)
+        
+        self.waveformImageDrawer.waveformImage(fromAudioAt: localURL,
+                                               with: progressWaveformConfig,
+                                               completionHandler: { image in
             DispatchQueue.main.async {
                 self.waveformProgressView.image = image
             }
@@ -272,19 +279,13 @@ class SoundDetailViewController: UIViewController {
     
     // MARK: - UI properties
     
-    private lazy var waveformView: WaveformImageView = {
-        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else {
-            return WaveformImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-        }
-        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
-        let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
-        let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
-        return waveformView
-    }()
+    let waveformView = DSWaveformImageWrapper.shared.createWaveformImageView(
+        frame: CGRect(x: 0,
+                      y: CommonUsage.screenHeight - CommonUsage.safeAreaHeight - CommonUsage.tabBarHeight - 180,
+                      width: CommonUsage.screenWidth,
+                      height: 100))
     
-        private lazy var commentButton: UIButton = {
+    private lazy var commentButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 20)
         let bigImage = UIImage(systemName: CommonUsage.SFSymbol.comment, withConfiguration: config)
@@ -356,7 +357,7 @@ class SoundDetailViewController: UIViewController {
         return button
     }()
     
-    // MARK: - conform to AudioPlayerUIProtocol
+    // MARK: - AudioPlayerProtocol
     
     lazy var playButton: UIButton = {
         let button = UIButton()
@@ -374,24 +375,15 @@ class SoundDetailViewController: UIViewController {
         return waveformProgressView
     }
     
-    lazy var waveformProgressView: WaveformImageView = {
-        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0,
-                                                                                                                                                                                   y: 0,
-                                                                                                                                                                                   width: 0,
-                                                                                                                                                                                   height: 0)) }
-        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
-        let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
-        let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
-        return waveformView
-    }()
-    
+    let waveformProgressView = DSWaveformImageWrapper.shared.createWaveformImageView(
+        frame: CGRect(x: 0,
+                      y: CommonUsage.screenHeight - CommonUsage.safeAreaHeight - CommonUsage.tabBarHeight - 180,
+                      width: CommonUsage.screenWidth,
+                      height: 100))
+
 }
 
-// MARK: - conform to AudioPlayerUIProtocol
-
-extension SoundDetailViewController: AudioPlayerUIProtocol {
+extension SoundDetailViewController: AudioPlayerProtocol {
     
     func updatePlayInfo(notification: Notification) {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }

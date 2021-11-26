@@ -146,7 +146,7 @@ class AudioPlayerVC: UIViewController {
     }
     
     @objc func playOrPause() {
-        manipulatePlayer()
+        togglePlayer()
     }
     
     @objc func updatePlayTime(notification: Notification) {
@@ -303,7 +303,7 @@ class AudioPlayerVC: UIViewController {
         return view
     }()
     
-    // MARK: - conform to AudioPlayerUIProtocol
+    // MARK: - AudioPlayerProtocol
     
     lazy var playButton: UIButton = {
         let button = UIButton()
@@ -323,9 +323,7 @@ class AudioPlayerVC: UIViewController {
     
 }
 
-// MARK: - conform to AudioPlayerUIProtocol
-
-extension AudioPlayerVC: AudioPlayerUIProtocol {
+extension AudioPlayerVC: AudioPlayerProtocol {
     
     func updatePlayInfo(notification: Notification) {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
