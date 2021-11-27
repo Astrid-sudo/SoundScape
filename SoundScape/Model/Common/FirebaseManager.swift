@@ -5,10 +5,63 @@
 //  Created by Astrid on 2021/10/21.
 //
 
+// swiftlint:disable file_length
+
 import Foundation
 import Firebase
 
-// swiftlint:disable file_length
+enum FirebaseCollection {
+    
+    case allAudioFiles
+    case comments(audioDocumentID: String)
+    
+    case allLocations
+    
+    case allUsers
+    case followedBy(userInfoDocumentID: String)
+    case following(userInfoDocumentID: String)
+    case myFavorite(userInfoDocumentID: String)
+    case profilePicture(userInfoDocumentID: String)
+    case blackList(userInfoDocumentID: String)
+    
+    var db: Firestore {
+        return Firestore.firestore()
+    }
+    
+    var reference: CollectionReference {
+        
+        switch self {
+            
+        case .allAudioFiles:
+            return  db.collection(CommonUsage.CollectionName.allAudioFiles)
+            
+        case .allLocations:
+            return db.collection(CommonUsage.CollectionName.allLocations)
+            
+        case .allUsers:
+            return  db.collection(CommonUsage.CollectionName.allUsers)
+            
+        case .comments(let audioDocumentID):
+            return db.collection(CommonUsage.CollectionName.allAudioFiles).document(audioDocumentID).collection(CommonUsage.CollectionName.comments)
+            
+        case .followedBy(let userInfoDocumentID):
+            return db.collection(CommonUsage.CollectionName.allUsers).document(userInfoDocumentID).collection("followedBy")
+            
+        case .following(let userInfoDocumentID):
+            return db.collection(CommonUsage.CollectionName.allUsers).document(userInfoDocumentID).collection("following")
+            
+        case .myFavorite(let userInfoDocumentID):
+            return db.collection(CommonUsage.CollectionName.allUsers).document(userInfoDocumentID).collection("myFavorite")
+            
+        case .profilePicture(let userInfoDocumentID):
+            return db.collection(CommonUsage.CollectionName.allUsers).document(userInfoDocumentID).collection("profilePicture")
+            
+        case .blackList(let userInfoDocumentID):
+            return db.collection(CommonUsage.CollectionName.allUsers).document(userInfoDocumentID).collection("blackList")
+        }
+    }
+    
+}
 
 class FirebaseManager {
     
@@ -27,10 +80,6 @@ class FirebaseManager {
     private var blackListListenser: ListenerRegistration?
     
     private let storage = Storage.storage().reference()
-    
-    private let allAudioCollectionRef = Firestore.firestore().collection(CommonUsage.CollectionName.allAudioFiles)
-    private let allUsersCollectionRef = Firestore.firestore().collection(CommonUsage.CollectionName.allUsers)
-    private let allLocationsCollectionRef = Firestore.firestore().collection(CommonUsage.CollectionName.allLocations)
     
     // MARK: - init / deinit
     
@@ -51,7 +100,7 @@ class FirebaseManager {
     
     func fetchPosts(completion: @escaping (Result<[SCPost], Error>) -> Void) {
         
-        allAudioCollectionRef.order(by: "createdTime").getDocuments { [weak self] snapshot, error in
+        FirebaseCollection.allAudioFiles.reference.order(by: "createdTime").getDocuments { snapshot, error in
             
             if let error = error {
                 completion(Result.failure(error))
@@ -71,7 +120,7 @@ class FirebaseManager {
     
     func checkPostsChange(completion: @escaping (Result<[SCPost], Error>) -> Void) {
         
-        postListener = allAudioCollectionRef.addSnapshotListener { snapshot, error in
+        postListener = FirebaseCollection.allAudioFiles.reference.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot else { return }
             snapshot.documentChanges.forEach { documentChange in
                 switch documentChange.type {
@@ -91,10 +140,9 @@ class FirebaseManager {
     
     func upload(localURL: URL, post: SCPost,
                 completion: @escaping () -> Void,
-                errorCompletion:@escaping (_ errorMessage:String) -> Void) {
+                errorCompletion:@escaping (_ errorMessage: String) -> Void) {
         
         var fullPost = post
-        
         let metadata = StorageMetadata()
         metadata.contentType = "audio/m4a"
         let audioString =  NSUUID().uuidString
@@ -118,7 +166,7 @@ class FirebaseManager {
                     return
                 }
                 
-                let document = self.allAudioCollectionRef.document(audioString)
+                let document = FirebaseCollection.allAudioFiles.reference.document(audioString)
                 
                 fullPost.audioURL = url
                 fullPost.createdTime = Timestamp(date: Date())
@@ -161,7 +209,7 @@ class FirebaseManager {
                               errorCompletion: @escaping (_ errorMessage:String) -> Void,
                               succeededCompletion: @escaping () -> Void) {
         
-        allAudioCollectionRef.document(documentID).delete() { error in
+        FirebaseCollection.allAudioFiles.reference.document(documentID).delete() { error in
             if let error = error {
                 errorCompletion(error.localizedDescription)
                 print("Error remove post in AllAudioCollection \(documentID), error: \(error)")
@@ -177,7 +225,7 @@ class FirebaseManager {
     private func deletePostInAllLocation(documentID: String,
                                          errorCompletion: @escaping (_ errorMessage:String) -> Void, succeededCompletion: @escaping () -> Void) {
         
-        allLocationsCollectionRef.document(documentID).delete() { error in
+        FirebaseCollection.allLocations.reference.document(documentID).delete() { error in
             if let error = error {
                 print("Error remove post \(documentID), error: \(error)")
                 errorCompletion(error.localizedDescription)
@@ -186,7 +234,6 @@ class FirebaseManager {
                 self.deleteAudioInStorage(documentID: documentID,
                                           errorCompletion: errorCompletion,
                                           succeededCompletion: succeededCompletion)
-                
             }
         }
     }
@@ -194,7 +241,6 @@ class FirebaseManager {
     private func deleteAudioInStorage(documentID: String,
                                       errorCompletion: @escaping (_ errorMessage:String) -> Void,
                                       succeededCompletion: @escaping () -> Void) {
-        
         let audioName = documentID + ".m4a"
         let audioReference = storage.child("\(audioName)")
         
@@ -214,7 +260,7 @@ class FirebaseManager {
                    userIDProvider: String,
                    completion: @escaping (Result<SCUser, Error>) -> Void) {
         
-        allUsersCollectionRef.whereField("userID", isEqualTo: userID).whereField("provider", isEqualTo: userIDProvider).getDocuments { snapshot, error in
+        FirebaseCollection.allUsers.reference.whereField("userID", isEqualTo: userID).whereField("provider", isEqualTo: userIDProvider).getDocuments { snapshot, error in
             
             if let error = error {
                 completion(Result.failure(error))
@@ -245,7 +291,7 @@ class FirebaseManager {
     
     func checkUsersInFirebase(userID: String, completion: @escaping (Result<SCUser, Error>) -> Void) {
         
-        let docRef = allUsersCollectionRef.document(userID)
+        let docRef = FirebaseCollection.allUsers.reference.document(userID)
         
         docRef.getDocument { (document, error) in
             
@@ -262,14 +308,20 @@ class FirebaseManager {
                 }
             } else {
                 print("Document does not exist")
-                completion(Result.success(SCUser(userID: "", provider: "", username: "", userEmail: "", userPic: nil, userProfileCover: nil, userInfoDoumentID: nil)))
+                completion(Result.success(SCUser(userID: "",
+                                                 provider: "",
+                                                 username: "",
+                                                 userEmail: "",
+                                                 userPic: nil,
+                                                 userProfileCover: nil,
+                                                 userInfoDoumentID: nil)))
             }
         }
     }
     
     func fetchUserInfoFromFirebase(userID: String, completion: @escaping (Result<SCUser, Error>) -> Void) {
         
-        let docRef = allUsersCollectionRef.document(userID)
+        let docRef = FirebaseCollection.allUsers.reference.document(userID)
         
         docRef.getDocument { (document, error) in
             
@@ -300,7 +352,7 @@ class FirebaseManager {
         userInfo.userInfoDoumentID = userID
         
         do {
-            try allUsersCollectionRef.document(userID).setData(from: userInfo)
+            try FirebaseCollection.allUsers.reference.document(userID).setData(from: userInfo)
         } catch {
             print(error)
         }
@@ -312,7 +364,7 @@ class FirebaseManager {
                             removeCompletion: @escaping () -> Void,
                             errorCompletion: @escaping (_ errorMessage:String) -> Void) {
         
-        let myFavoriteSubCollectionRef = allUsersCollectionRef.document(userProfileDocumentID).collection("myFavorite")
+        let myFavoriteSubCollectionRef = FirebaseCollection.myFavorite(userInfoDocumentID: userProfileDocumentID).reference
         
         myFavoriteSubCollectionRef.whereField("favoriteDocumentID", isEqualTo: documendID).getDocuments { snapshot, error in
             
@@ -358,9 +410,9 @@ class FirebaseManager {
     func fetchUserFavoriteList(userProfileDocumentID: String, completion: @escaping
                                (Result<[SCFavorite], Error>) -> Void)  {
         
-        let myFavoriteSubCollectionRef = allUsersCollectionRef.document(userProfileDocumentID).collection("myFavorite")
+        let myFavoriteSubCollectionRef = FirebaseCollection.myFavorite(userInfoDocumentID: userProfileDocumentID).reference
         
-        myFavoriteSubCollectionRef.getDocuments { [weak self] snapshot, error in
+        myFavoriteSubCollectionRef.getDocuments { snapshot, error in
             
             if let error = error {
                 completion(Result.failure(error))
@@ -380,7 +432,7 @@ class FirebaseManager {
     
     func checkFavoriteChange(userProfileDocumentID: String, completion: @escaping (Result<[SCFavorite], Error>) -> Void) {
         
-        let myFavoriteSubCollectionRef = allUsersCollectionRef.document(userProfileDocumentID).collection("myFavorite")
+        let myFavoriteSubCollectionRef = FirebaseCollection.myFavorite(userInfoDocumentID: userProfileDocumentID).reference
         
         favoriteListener = myFavoriteSubCollectionRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot else { return }
@@ -408,9 +460,9 @@ class FirebaseManager {
                           unfollowCompletion: @escaping () -> Void,
                           errorCompletion: @escaping (_ errorMessage:String) -> Void) {
         
-        let myFollowingSubCollectionRef = allUsersCollectionRef.document(loggedInUserInfoDocumentID).collection("following")
+        let myFollowingSubCollectionRef = FirebaseCollection.following(userInfoDocumentID: loggedInUserInfoDocumentID).reference
         
-        let othersFollowedBySubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("followedBy")
+        let othersFollowedBySubCollectionRef = FirebaseCollection.followedBy(userInfoDocumentID: userInfoDoumentID).reference
         
         myFollowingSubCollectionRef.whereField("userID", isEqualTo: userInfo.userID).whereField("provider", isEqualTo: userInfo.provider).getDocuments { snapshot, error in
             
@@ -468,7 +520,7 @@ class FirebaseManager {
                                       loggedInUserInfoDocumentID: String,
                                       loggedInUserInfo: SCFollow) {
         
-        let othersFollowedBySubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("followedBy")
+        let othersFollowedBySubCollectionRef = FirebaseCollection.followedBy(userInfoDocumentID: userInfoDoumentID).reference
         
         othersFollowedBySubCollectionRef.whereField("userID", isEqualTo: loggedInUserInfo.userID).whereField("provider", isEqualTo: loggedInUserInfo.provider).getDocuments { snapshot, error in
             
@@ -501,7 +553,8 @@ class FirebaseManager {
     
     func fetchFollowers(userInfoDoumentID: String, completion: @escaping (Result<[SCFollow], Error>) -> Void) {
         
-        let followedBySubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("followedBy")
+        let followedBySubCollectionRef = FirebaseCollection.followedBy(userInfoDocumentID: userInfoDoumentID).reference
+        
         
         followedBySubCollectionRef.getDocuments { [weak self] snapshot, error in
             
@@ -523,9 +576,9 @@ class FirebaseManager {
     
     func fetchFollowings(userInfoDoumentID: String, completion: @escaping (Result<[SCFollow], Error>) -> Void) {
         
-        let followingSubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("following")
+        let followingSubCollectionRef = FirebaseCollection.following(userInfoDocumentID: userInfoDoumentID).reference
         
-        followingSubCollectionRef.getDocuments { [weak self] snapshot, error in
+        followingSubCollectionRef.getDocuments { snapshot, error in
             
             if let error = error {
                 completion(Result.failure(error))
@@ -545,7 +598,7 @@ class FirebaseManager {
     
     func checkFollowersChange(userInfoDoumentID: String, completion: @escaping (Result<[SCFollow], Error>) -> Void) {
         
-        let followedBySubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("followedBy")
+        let followedBySubCollectionRef = FirebaseCollection.followedBy(userInfoDocumentID: userInfoDoumentID).reference
         
         followersListenser = followedBySubCollectionRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot else { return }
@@ -567,7 +620,7 @@ class FirebaseManager {
     
     func checkFollowingsChange(userInfoDoumentID: String, completion: @escaping (Result<[SCFollow], Error>) -> Void) {
         
-        let followingSubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("following")
+        let followingSubCollectionRef = FirebaseCollection.following(userInfoDocumentID: userInfoDoumentID).reference
         
         followingsListenser = followingSubCollectionRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot else { return }
@@ -636,7 +689,7 @@ class FirebaseManager {
         
         let db = Firestore.firestore()
         
-        let commentSubCollectionRef = db.collection(CommonUsage.CollectionName.allAudioFiles).document(documentID).collection(CommonUsage.CollectionName.comments)
+        let commentSubCollectionRef = FirebaseCollection.comments(audioDocumentID: documentID).reference
         
         commentSubCollectionRef.order(by:"createdTime").getDocuments { snapshot, error in
             
@@ -661,7 +714,7 @@ class FirebaseManager {
         
         let db = Firestore.firestore()
         
-        let commentSubCollectionRef = db.collection(CommonUsage.CollectionName.allAudioFiles).document(documentID).collection(CommonUsage.CollectionName.comments)
+        let commentSubCollectionRef = FirebaseCollection.comments(audioDocumentID: documentID).reference
         
         commentListenser = commentSubCollectionRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot else { return }
@@ -687,7 +740,8 @@ class FirebaseManager {
                              errorCompletion: @escaping (_ errorMessage:String) -> Void,
                              succeededCompletion: @escaping () -> Void) {
         
-        let profilePicSubCollection = allUsersCollectionRef.document(userDocumentID).collection("profilePicture")
+        let profilePicSubCollection = FirebaseCollection.profilePicture(userInfoDocumentID: userDocumentID).reference
+        
         let picture = SCPicture(picture: picString)
         do {
             try profilePicSubCollection.document(picType.rawValue).setData(from: picture)
@@ -700,7 +754,7 @@ class FirebaseManager {
     
     func fetchUserPicFromFirebase(userID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
         
-        let userPicDoc = allUsersCollectionRef.document(userID).collection("profilePicture").document("userPic")
+        let userPicDoc = FirebaseCollection.profilePicture(userInfoDocumentID: userID).reference.document("userPic")
         
         userPicDoc.getDocument { (document, error) in
             
@@ -726,7 +780,7 @@ class FirebaseManager {
     
     func fetchCoverPicFromFirebase(userID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
         
-        let coverPicDoc = allUsersCollectionRef.document(userID).collection("profilePicture").document("coverPic")
+        let coverPicDoc = FirebaseCollection.profilePicture(userInfoDocumentID: userID).reference.document("coverPic")
         
         coverPicDoc.getDocument { (document, error) in
             
@@ -752,7 +806,7 @@ class FirebaseManager {
     
     func checkUserPicChange(userInfoDoumentID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
         
-        let userPicRef = allUsersCollectionRef.document(userInfoDoumentID).collection("profilePicture").document("userPic")
+        let userPicRef = FirebaseCollection.profilePicture(userInfoDocumentID: userInfoDoumentID).reference.document("userPic")
         
         userPicListenser = userPicRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot,
@@ -765,7 +819,7 @@ class FirebaseManager {
     
     func checkCoverPicChange(userInfoDoumentID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
         
-        let coverPicRef = allUsersCollectionRef.document(userInfoDoumentID).collection("profilePicture").document("coverPic")
+        let coverPicRef = FirebaseCollection.profilePicture(userInfoDocumentID: userInfoDoumentID).reference.document("coverPic")
         
         coverPicListenser = coverPicRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot,
@@ -783,19 +837,18 @@ class FirebaseManager {
                                       errorCompletion:@escaping (_ errorMessage:String) -> Void) {
         
         do {
-            try allLocationsCollectionRef.document(audioDocumentID).setData(from: locationData)
+            try FirebaseCollection.allLocations.reference.document(audioDocumentID).setData(from: locationData)
             completion()
         } catch {
             errorCompletion(error.localizedDescription)
             print("Failed to upload locationData to allLocations collection \(error)")
         }
         
-        
     }
     
     func fetchLocationsFromFirebase(completion: @escaping (Result<[SCLocation], Error>) -> Void) {
         
-        allLocationsCollectionRef.getDocuments { [weak self] snapshot, error in
+        FirebaseCollection.allLocations.reference.getDocuments { [weak self] snapshot, error in
             
             if let error = error {
                 completion(Result.failure(error))
@@ -813,7 +866,8 @@ class FirebaseManager {
     }
     
     func checkLocationChange(completion: @escaping (Result<[SCLocation], Error>) -> Void) {
-        locationsListenser = allLocationsCollectionRef.addSnapshotListener{ snapshot, error in
+       
+        locationsListenser =  FirebaseCollection.allLocations.reference.addSnapshotListener{ snapshot, error in
             guard let snapshot = snapshot else { return }
             snapshot.documentChanges.forEach { documentChange in
                 switch documentChange.type {
@@ -835,7 +889,7 @@ class FirebaseManager {
     
     func addToBlackList(loggedInUserInfoDocumentID: String, toBeBlockedID: String, completion: (() -> Void)?) {
         
-        let myBlackListSubCollectionRef = allUsersCollectionRef.document(loggedInUserInfoDocumentID).collection("blackList")
+        let myBlackListSubCollectionRef = FirebaseCollection.blackList(userInfoDocumentID: loggedInUserInfoDocumentID).reference
         
         let user = SCBlockUser(userID: toBeBlockedID)
         
@@ -854,7 +908,7 @@ class FirebaseManager {
     func fetchUserBlackList(userProfileDocumentID: String, completion: @escaping
                             (Result<[SCBlockUser], Error>) -> Void)  {
         
-        let myBlackListSubCollectionRef = allUsersCollectionRef.document(userProfileDocumentID).collection("blackList")
+        let myBlackListSubCollectionRef =  FirebaseCollection.blackList(userInfoDocumentID: userProfileDocumentID).reference
         
         myBlackListSubCollectionRef.getDocuments { [weak self] snapshot, error in
             
@@ -876,7 +930,7 @@ class FirebaseManager {
     
     func checkBlackListChange(userInfoDoumentID: String, completion: @escaping (Result<[SCBlockUser], Error>) -> Void) {
         
-        let myBlackListSubCollectionRef = allUsersCollectionRef.document(userInfoDoumentID).collection("blackList")
+        let myBlackListSubCollectionRef =  FirebaseCollection.blackList(userInfoDocumentID: userInfoDoumentID).reference
         
         blackListListenser = myBlackListSubCollectionRef.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot else { return }
@@ -896,8 +950,7 @@ class FirebaseManager {
         }
     }
     
-    
-    
 }
+
 
 // swiftlint:enable file_length
