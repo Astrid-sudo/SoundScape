@@ -10,6 +10,10 @@
 import Foundation
 import Firebase
 
+struct FirebaseListenser {
+    var registration: ListenerRegistration?
+}
+
 enum FirebaseCollection {
     
     case allAudioFiles
@@ -60,8 +64,8 @@ enum FirebaseCollection {
             return db.collection(CommonUsage.CollectionName.allUsers).document(userInfoDocumentID).collection("blackList")
         }
     }
-    
 }
+
 
 class FirebaseManager {
     
@@ -69,15 +73,14 @@ class FirebaseManager {
     
     static let shared = FirebaseManager()
     
-    private var postListener: ListenerRegistration?
-    private var favoriteListener: ListenerRegistration?
-    private var followersListenser: ListenerRegistration?
-    private var followingsListenser: ListenerRegistration?
-    private var commentListenser: ListenerRegistration?
-    private var userPicListenser: ListenerRegistration?
-    private var coverPicListenser: ListenerRegistration?
-    private var locationsListenser: ListenerRegistration?
-    private var blackListListenser: ListenerRegistration?
+     var favoriteListener: ListenerRegistration?
+     var followersListenser: ListenerRegistration?
+     var followingsListenser: ListenerRegistration?
+     var commentListenser: ListenerRegistration?
+     var userPicListenser: ListenerRegistration?
+     var coverPicListenser: ListenerRegistration?
+     var locationsListenser: ListenerRegistration?
+     var blackListListenser: ListenerRegistration?
     
     private let storage = Storage.storage().reference()
     
@@ -86,7 +89,6 @@ class FirebaseManager {
     private init() {}
     
     deinit {
-        postListener?.remove()
         favoriteListener?.remove()
         followersListenser?.remove()
         followingsListenser?.remove()
@@ -97,46 +99,6 @@ class FirebaseManager {
     }
     
     // MARK: - post method
-    
-    func fetchPosts(completion: @escaping (Result<[SCPost], Error>) -> Void) {
-        
-        FirebaseCollection.allAudioFiles.reference.order(by: "createdTime").getDocuments { snapshot, error in
-            
-            if let error = error {
-                completion(Result.failure(error))
-                return
-            }
-            
-            if let snapshot = snapshot {
-                let posts = snapshot.documents.compactMap({ snapshot in
-                    try? snapshot.data(as: SCPost.self)
-                })
-                
-                completion(Result.success(posts.reversed()))
-                
-            }
-        }
-    }
-    
-    func checkPostsChange(completion: @escaping (Result<[SCPost], Error>) -> Void) {
-        
-        postListener = FirebaseCollection.allAudioFiles.reference.addSnapshotListener { snapshot, error in
-            guard let snapshot = snapshot else { return }
-            snapshot.documentChanges.forEach { documentChange in
-                switch documentChange.type {
-                case .added:
-                    self.fetchPosts(completion: completion)
-                    print("added")
-                case .modified:
-                    self.fetchPosts(completion: completion)
-                    print("modified")
-                case .removed:
-                    self.fetchPosts(completion: completion)
-                    print("removed")
-                }
-            }
-        }
-    }
     
     func upload(localURL: URL, post: SCPost,
                 completion: @escaping () -> Void,
@@ -407,6 +369,48 @@ class FirebaseManager {
         }
     }
     
+    func fetchCollectionData<T: Codable>(collectionType: FirebaseCollection,
+                                         completion: @escaping (Result<[T], Error>) -> Void) {
+        
+        switch collectionType {
+        
+        case .allAudioFiles:
+                
+            collectionType.reference.order(by: "createdTime", descending: true).getDocuments { snapshot, error in
+                    
+                    if let error = error {
+                        completion(Result.failure(error))
+                        return
+                    }
+                    
+                if let snapshot = snapshot {
+                        let data = snapshot.documents.compactMap({ snapshot in
+                            try? snapshot.data(as: T.self)
+                        })
+                        completion(Result.success(data))
+                    }
+                }
+            
+        default:
+            
+            collectionType.reference.getDocuments { snapshot, error in
+                
+                if let error = error {
+                    completion(Result.failure(error))
+                    return
+                }
+                
+                if let snapshot = snapshot {
+                    let data = snapshot.documents.compactMap({ snapshot in
+                        try? snapshot.data(as: T.self)
+                    })
+                    completion(Result.success(data))
+                }
+            }
+        }
+        
+    }
+    
     func fetchUserFavoriteList(userProfileDocumentID: String, completion: @escaping
                                (Result<[SCFavorite], Error>) -> Void)  {
         
@@ -428,6 +432,25 @@ class FirebaseManager {
                 
             }
         }
+    }
+    
+    func checkCollectionChange<T: Codable>(collectionType: FirebaseCollection,
+                                           completion: @escaping (Result<[T], Error>) -> Void) -> ListenerRegistration? {
+        
+        let listener = collectionType.reference.addSnapshotListener { [weak self] snapshot, error in
+            
+            guard let self = self,
+                  let snapshot = snapshot else { return }
+
+            snapshot.documentChanges.forEach { documentChange in
+                self.fetchCollectionData(collectionType: collectionType,
+                                         completion: completion)
+            }
+        }
+        
+        return listener
+        
+        
     }
     
     func checkFavoriteChange(userProfileDocumentID: String, completion: @escaping (Result<[SCFavorite], Error>) -> Void) {
