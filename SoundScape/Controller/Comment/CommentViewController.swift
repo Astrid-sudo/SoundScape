@@ -147,10 +147,7 @@ class CommentViewController: UIViewController {
     
     private func checkComment(from documentID: String) {
         
-        firebaseManager.checkCommentChange(from: documentID) { [weak self] result in
-            
-            guard let self = self else { return }
-            
+        _ = firebaseManager.checkCollectionChange(collectionType: .comments(audioDocumentID: documentID)) { (result: Result<[SCComment], Error>) in
             switch result {
                 
             case .success(let comments):

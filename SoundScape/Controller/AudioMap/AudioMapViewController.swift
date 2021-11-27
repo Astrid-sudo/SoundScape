@@ -188,9 +188,7 @@ class AudioMapViewController: UIViewController {
     }
     
     private func checkLocations() {
-        
-        firebaseManager.checkLocationChange { result in
-            
+        _ = firebaseManager.checkCollectionChange(collectionType: .allLocations) { (result: Result<[SCLocation], Error>) in
             switch result {
                 
             case .success(let locations):
@@ -202,6 +200,7 @@ class AudioMapViewController: UIViewController {
             }
         }
     }
+    
     
     private func filterOutAudioDocumentID() {
         
@@ -341,7 +340,6 @@ extension AudioMapViewController {
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
     }
-    
     
     private func addSearchBar() {
         navigationItem.titleView = searchBar

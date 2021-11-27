@@ -411,29 +411,6 @@ class FirebaseManager {
         
     }
     
-    func fetchUserFavoriteList(userProfileDocumentID: String, completion: @escaping
-                               (Result<[SCFavorite], Error>) -> Void)  {
-        
-        let myFavoriteSubCollectionRef = FirebaseCollection.myFavorite(userInfoDocumentID: userProfileDocumentID).reference
-        
-        myFavoriteSubCollectionRef.getDocuments { snapshot, error in
-            
-            if let error = error {
-                completion(Result.failure(error))
-                return
-            }
-            
-            if let snapshot = snapshot {
-                let posts = snapshot.documents.compactMap({ snapshot in
-                    try? snapshot.data(as: SCFavorite.self)
-                })
-                
-                completion(Result.success(posts))
-                
-            }
-        }
-    }
-    
     func checkCollectionChange<T: Codable>(collectionType: FirebaseCollection,
                                            completion: @escaping (Result<[T], Error>) -> Void) -> ListenerRegistration? {
         
@@ -451,28 +428,6 @@ class FirebaseManager {
         return listener
         
         
-    }
-    
-    func checkFavoriteChange(userProfileDocumentID: String, completion: @escaping (Result<[SCFavorite], Error>) -> Void) {
-        
-        let myFavoriteSubCollectionRef = FirebaseCollection.myFavorite(userInfoDocumentID: userProfileDocumentID).reference
-        
-        favoriteListener = myFavoriteSubCollectionRef.addSnapshotListener { snapshot, error in
-            guard let snapshot = snapshot else { return }
-            snapshot.documentChanges.forEach { documentChange in
-                switch documentChange.type {
-                case .added:
-                    self.fetchUserFavoriteList(userProfileDocumentID: userProfileDocumentID, completion: completion)
-                    print("favorite added")
-                case .modified:
-                    self.fetchUserFavoriteList(userProfileDocumentID: userProfileDocumentID, completion: completion)
-                    print("favorite modified")
-                case .removed:
-                    self.fetchUserFavoriteList(userProfileDocumentID: userProfileDocumentID, completion: completion)
-                    print("favorite removed")
-                }
-            }
-        }
     }
     
     func manipulateFollow(userInfoDoumentID: String,

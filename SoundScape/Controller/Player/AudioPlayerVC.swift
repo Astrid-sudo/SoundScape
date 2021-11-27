@@ -73,9 +73,7 @@ class AudioPlayerVC: UIViewController {
             return
         }
         
-        firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self] result in
-            
-            guard let self = self else { return }
+        _ = firebaseManager.checkCollectionChange(collectionType: .myFavorite(userInfoDocumentID: userProfileDocumentID)) { (result: Result<[SCFavorite], Error>) in
             
             switch result {
                 

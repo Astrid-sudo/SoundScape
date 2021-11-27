@@ -11,14 +11,12 @@ class CategoryViewController: UIViewController {
     
     // MARK: - properties
     
-//    private let remotePlayHelper = RemotePlayHelper.shared
-    
     private var category: AudioCategory?
     
     private var profileSection: ProfilePageSection?
     
     private var audioFiles = [SCPost]() {
-       
+        
         didSet {
             
             if category != nil {
@@ -27,7 +25,7 @@ class CategoryViewController: UIViewController {
             
             if profileSection != nil {
                 filterSection()
-
+                
             }
         }
     }
@@ -50,7 +48,7 @@ class CategoryViewController: UIViewController {
             if profileSection != nil {
                 filterSection()
             }
-
+            
             tableView.reloadData()
         }
     }
@@ -59,7 +57,7 @@ class CategoryViewController: UIViewController {
             if profileSection != nil {
                 filterSection()
             }
-
+            
             tableView.reloadData()
         }
     }
@@ -70,7 +68,7 @@ class CategoryViewController: UIViewController {
     // MARK: - UI properties
     
     let loadingAnimationView = LottieWrapper.shared.greyStripeLoadingView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
-
+    
     private lazy var headView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -98,7 +96,7 @@ class CategoryViewController: UIViewController {
         label.text = CommonUsage.Text.deleteAudioMessage
         return label
     }()
-
+    
     private lazy var tableView: UITableView = {
         let table = UITableView()
         table.dataSource = self
@@ -130,11 +128,11 @@ class CategoryViewController: UIViewController {
         setHeadViewTitle()
         
         if profileSection == .myAudio,
-            data.indices.contains(0),
+           data.indices.contains(0),
            data[0].authorID == SignInManager.shared.currentUserInfoFirebase?.userID {
             setDeleteHintLabel()
         }
-
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -165,12 +163,7 @@ class CategoryViewController: UIViewController {
             return
         }
         
-        firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self]
-            
-            result in
-            
-            guard let self = self else { return }
-            
+        _ = firebaseManager.checkCollectionChange(collectionType: .myFavorite(userInfoDocumentID: userProfileDocumentID)) { (result: Result<[SCFavorite], Error>) in
             switch result {
                 
             case .success(let scFavorites):
@@ -189,7 +182,7 @@ class CategoryViewController: UIViewController {
             print("OtherProfileVC: Cant get favorite")
             return
         }
-
+        
         firebaseManager.checkFollowingsChange(userInfoDoumentID: userProfileDocumentID) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -200,7 +193,7 @@ class CategoryViewController: UIViewController {
             }
         }
     }
-
+    
     private func addObserver() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateAllAudioFile),
@@ -241,7 +234,7 @@ class CategoryViewController: UIViewController {
                 for audioFile in audioFiles {
                     for following in followingList {
                         if audioFile.authorID == following.userID,
-                            audioFile.authIDProvider == following.provider {
+                           audioFile.authIDProvider == following.provider {
                             myFollowingsUserFiles.append(audioFile)
                         }
                     }
@@ -258,7 +251,7 @@ class CategoryViewController: UIViewController {
             } else {
                 favoriteList = userFavoriteDocumentIDs
             }
-
+            
             if let favoriteList = favoriteList {
                 var myFavoriteFiles = [SCPost]()
                 
@@ -281,7 +274,7 @@ class CategoryViewController: UIViewController {
             } else {
                 userID = displayUserID
             }
-
+            
             let myAudioFiles = audioFiles.filter({$0.authorID == userID})
             data = myAudioFiles
             
@@ -345,25 +338,25 @@ class CategoryViewController: UIViewController {
             self.loadingAnimationView.removeFromSuperview()
             SPAlertWrapper.shared.presentSPAlert(title: "Post deleted!", message: nil, preset: .done, completion: nil)}
     }
-
+    
     func popBlockAlert(toBeBlockedID: String) {
-       
-       let alert = UIAlertController(title: "Are you sure?",
-                                     message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
-                                     preferredStyle: .alert )
-       
-       let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
-           guard let self = self else { return }
-           self.blockThisUser(toBeBlockedID: toBeBlockedID)
-       }
-       
-       let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
-       
-       alert.addAction(cancelButton)
-       alert.addAction(okButton)
-       
-       present(alert, animated: true, completion: nil)
-   }
+        
+        let alert = UIAlertController(title: "Are you sure?",
+                                      message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
+                                      preferredStyle: .alert )
+        
+        let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
+            guard let self = self else { return }
+            self.blockThisUser(toBeBlockedID: toBeBlockedID)
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        
+        present(alert, animated: true, completion: nil)
+    }
     
     private func blockThisUser(toBeBlockedID: String) {
         
@@ -412,11 +405,11 @@ class CategoryViewController: UIViewController {
         view.addSubview(categoryTitleLabel)
         categoryTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-                        categoryTitleLabel.centerXAnchor.constraint(equalTo: headView.centerXAnchor),
-                        categoryTitleLabel.centerYAnchor.constraint(equalTo: headView.centerYAnchor)
+            categoryTitleLabel.centerXAnchor.constraint(equalTo: headView.centerXAnchor),
+            categoryTitleLabel.centerYAnchor.constraint(equalTo: headView.centerYAnchor)
         ])
     }
-
+    
     private func setTableView() {
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -508,16 +501,16 @@ extension CategoryViewController: UITableViewDelegate {
         
         if let remoteURL = data[indexPath.item].audioURL {
             AudioDownloadManager.shared.downloadRemoteURL(documentID: data[indexPath.item].documentID,
-                                                        remoteURL: remoteURL, completion: { localURL in
+                                                          remoteURL: remoteURL, completion: { localURL in
                 self.loadAudio(localURL: localURL, playInfo: playInfo)
             },
-            errorCompletion: { [weak self] errorMessage in
+                                                          errorCompletion: { [weak self] errorMessage in
                 guard let self = self else { return }
                 self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
             }
- )
+            )
         }
-
+        
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -541,13 +534,13 @@ extension CategoryViewController: UITableViewDelegate {
         
         if profileSection != nil {
             if profileSection == .myAudio,
-                data[0].authorID == SignInManager.shared.currentUserInfoFirebase?.userID {
+               data[0].authorID == SignInManager.shared.currentUserInfoFirebase?.userID {
                 
                 return UIContextMenuConfiguration(
                     identifier: identifier, previewProvider: nil) { _ in
                         // 3
                         let deleteAction = UIAction(title: "Delete this audio",
-                                                   image: nil) { [weak self] _ in
+                                                    image: nil) { [weak self] _ in
                             guard let self = self else { return }
                             self.popDeletePostAlert(documentID: self.data[row].documentID)
                         }
@@ -562,7 +555,7 @@ extension CategoryViewController: UITableViewDelegate {
         }
         
         if category != nil,
-            post.authorID != signInManager.currentUserInfoFirebase?.userID {
+           post.authorID != signInManager.currentUserInfoFirebase?.userID {
             
             return UIContextMenuConfiguration(
                 identifier: identifier, previewProvider: nil) { _ in

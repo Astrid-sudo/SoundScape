@@ -5,6 +5,8 @@
 //  Created by Astrid on 2021/10/31.
 //
 
+// swiftlint:disable file_length
+
 import UIKit
 import Photos
 
@@ -199,12 +201,7 @@ class OthersProfileViewController: UIViewController {
             return
         }
         
-        firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self]
-            
-            result in
-            
-            guard let self = self else { return }
-            
+        _ = firebaseManager.checkCollectionChange(collectionType: .myFavorite(userInfoDocumentID: userProfileDocumentID)) { (result: Result<[SCFavorite], Error>) in
             switch result {
                 
             case .success(let scFavorites):
@@ -216,7 +213,7 @@ class OthersProfileViewController: UIViewController {
             }
         }
     }
-    
+
     @objc func updateAllAudioFile() {
         fetchDataFromFirebase()
     }
@@ -780,6 +777,5 @@ extension OthersProfileViewController: AlertPresentableDelegate {
         popErrorAlert(title: "Failed to download audio", message: errorMessage)
     }
 
-    
 }
-
+// swiftlint:enable file_length
