@@ -124,12 +124,33 @@ class SignInManager {
         self.currentUserInfoFirebase = newUser
     }
     
+    //    func fetchUserInfoFromFirebase(userID: String) {
+    //
+    //        self.firebaseManager.fetchUserInfoFromFirebase(userID: userID) { [weak self] result in
+    //
+    //            guard let self = self else { return }
+    //
+    //            switch result {
+    //
+    //            case .success(let userInfo):
+    //
+    //                self.currentUserInfoFirebase = userInfo
+    //
+    //            case.failure(let error):
+    //                print("fetchUserInfo failed\(error)")
+    //                let errorMessage = error.localizedDescription
+    //                let userInfoKey = "UserInfo"
+    //                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
+    //
+    //                //Home VC will observe
+    //                NotificationCenter.default.post(name: .fetchLoginUserError, object: nil, userInfo: userInfo)
+    //            }
+    //        }
+    //    }
+    
     func fetchUserInfoFromFirebase(userID: String) {
         
-        self.firebaseManager.fetchUserInfoFromFirebase(userID: userID) { [weak self] result in
-            
-            guard let self = self else { return }
-            
+        self.firebaseManager.documentFetchData(documentType: .userInfoDoc(userInfoDocumentID: userID)) { (result: Result<SCUser, Error>)  in
             switch result {
                 
             case .success(let userInfo):
@@ -145,6 +166,7 @@ class SignInManager {
                 //Home VC will observe
                 NotificationCenter.default.post(name: .fetchLoginUserError, object: nil, userInfo: userInfo)
             }
+            
         }
     }
     

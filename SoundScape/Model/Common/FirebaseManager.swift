@@ -72,15 +72,20 @@ enum FirebaseDocument {
         return Firestore.firestore()
     }
 
+    case userInfoDoc(userInfoDocumentID: String)
     case userPicDoc(userInfoDocumentID: String)
     case userCoverDoc(userInfoDocumentID: String)
 
     var reference: DocumentReference {
         
         switch self {
-        case .userPicDoc(userInfoDocumentID: let userInfoDocumentID):
+        
+        case .userInfoDoc(let userInfoDocumentID):
+            return db.collection(CommonUsage.CollectionName.allUsers).document(userInfoDocumentID)
+            
+        case .userPicDoc(let userInfoDocumentID):
             return   db.collection(CommonUsage.CollectionName.allUsers).document(userInfoDocumentID).collection("profilePicture").document("userPic")
-        case .userCoverDoc(userInfoDocumentID: let userInfoDocumentID):
+        case .userCoverDoc(let userInfoDocumentID):
             return db.collection(CommonUsage.CollectionName.allUsers).document(userInfoDocumentID).collection("profilePicture").document("coverPic")
         }
     }
@@ -301,32 +306,6 @@ class FirebaseManager {
         }
     }
     
-    func fetchUserInfoFromFirebase(userID: String, completion: @escaping (Result<SCUser, Error>) -> Void) {
-        
-        let docRef = FirebaseCollection.allUsers.reference.document(userID)
-        
-        docRef.getDocument { (document, error) in
-            
-            if let error = error {
-                completion(Result.failure(error))
-                return
-            }
-            
-            if let document = document,
-               document.exists {
-                let user = try? document.data(as: SCUser.self)
-                if let user = user {
-                    completion(Result.success(user))
-                }
-                
-            } else {
-                
-                print("Document does not exist")
-                
-            }
-        }
-    }
-    
     func uploadUserToFirebase(userInfo: SCUser) {
         
         let userID = userInfo.userID
@@ -344,7 +323,7 @@ class FirebaseManager {
                             documendID: String,
                             addCompletion: @escaping () -> Void,
                             removeCompletion: @escaping () -> Void,
-                            errorCompletion: @escaping (_ errorMessage:String) -> Void) {
+                            errorCompletion: @escaping (_ errorMessage: String) -> Void) {
         
         let myFavoriteSubCollectionRef = FirebaseCollection.myFavorite(userInfoDocumentID: userProfileDocumentID).reference
         
