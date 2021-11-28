@@ -73,7 +73,7 @@ class AudioPlayerVC: UIViewController {
             return
         }
         
-        _ = firebaseManager.checkCollectionChange(collectionType: .myFavorite(userInfoDocumentID: userProfileDocumentID)) { (result: Result<[SCFavorite], Error>) in
+        _ = firebaseManager.collectionAddListener(collectionType: .myFavorite(userInfoDocumentID: userProfileDocumentID)) { (result: Result<[SCFavorite], Error>) in
             
             switch result {
                 

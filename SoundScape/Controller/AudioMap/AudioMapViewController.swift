@@ -79,7 +79,7 @@ class AudioMapViewController: UIViewController {
         didSet {
             for documentID in newAudioDocumentIDs {
                 
-                firebaseManager.fetchCollectionData(collectionType: .allAudioFiles) { (result: Result<[SCPost], Error>) in
+                firebaseManager.collectionfetchData(collectionType: .allAudioFiles) { (result: Result<[SCPost], Error>) in
                     switch result {
                         
                     case .success(let posts):
@@ -186,7 +186,7 @@ class AudioMapViewController: UIViewController {
     }
     
     private func checkLocations() {
-        _ = firebaseManager.checkCollectionChange(collectionType: .allLocations) { (result: Result<[SCLocation], Error>) in
+        _ = firebaseManager.collectionAddListener(collectionType: .allLocations) { (result: Result<[SCLocation], Error>) in
             switch result {
                 
             case .success(let locations):

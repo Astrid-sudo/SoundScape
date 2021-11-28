@@ -163,7 +163,7 @@ class CategoryViewController: UIViewController {
             return
         }
         
-        _ = firebaseManager.checkCollectionChange(collectionType: .myFavorite(userInfoDocumentID: userProfileDocumentID)) { (result: Result<[SCFavorite], Error>) in
+        _ = firebaseManager.collectionAddListener(collectionType: .myFavorite(userInfoDocumentID: userProfileDocumentID)) { (result: Result<[SCFavorite], Error>) in
             switch result {
                 
             case .success(let scFavorites):
@@ -181,7 +181,7 @@ class CategoryViewController: UIViewController {
             print("OtherProfileVC: Cant get favorite")
             return
         }
-        _ = firebaseManager.checkCollectionChange(collectionType: .following(userInfoDocumentID: userProfileDocumentID)) { (result: Result<[SCFollow], Error>) in
+        _ = firebaseManager.collectionAddListener(collectionType: .following(userInfoDocumentID: userProfileDocumentID)) { (result: Result<[SCFollow], Error>) in
             switch result {
             case .success(let followings):
                 self.othersFollowingList = followings

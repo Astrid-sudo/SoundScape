@@ -80,7 +80,7 @@ class AudioPostManager {
     }
     
     private func fetchDataFromFirebase() {
-        _ = firebaseManager.checkCollectionChange(collectionType: .allAudioFiles) { (result: Result<[SCPost], Error>) in
+        _ = firebaseManager.collectionAddListener(collectionType: .allAudioFiles) { (result: Result<[SCPost], Error>) in
             
             switch result {
             case .success(let posts):

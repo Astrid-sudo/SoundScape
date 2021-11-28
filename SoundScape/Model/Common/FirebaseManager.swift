@@ -25,8 +25,8 @@ enum FirebaseCollection {
     case followedBy(userInfoDocumentID: String)
     case following(userInfoDocumentID: String)
     case myFavorite(userInfoDocumentID: String)
-    case profilePicture(userInfoDocumentID: String)
     case blackList(userInfoDocumentID: String)
+    case profilePicture(userInfoDocumentID: String)
     
     var db: Firestore {
         return Firestore.firestore()
@@ -66,6 +66,26 @@ enum FirebaseCollection {
     }
 }
 
+enum FirebaseDocument {
+    
+    var db: Firestore {
+        return Firestore.firestore()
+    }
+
+    case userPicDoc(userInfoDocumentID: String)
+    case userCoverDoc(userInfoDocumentID: String)
+
+    var reference: DocumentReference {
+        
+        switch self {
+        case .userPicDoc(userInfoDocumentID: let userInfoDocumentID):
+            return   db.collection(CommonUsage.CollectionName.allUsers).document(userInfoDocumentID).collection("profilePicture").document("userPic")
+        case .userCoverDoc(userInfoDocumentID: let userInfoDocumentID):
+            return db.collection(CommonUsage.CollectionName.allUsers).document(userInfoDocumentID).collection("profilePicture").document("coverPic")
+        }
+    }
+}
+
 
 class FirebaseManager {
     
@@ -73,14 +93,14 @@ class FirebaseManager {
     
     static let shared = FirebaseManager()
     
-     var favoriteListener: ListenerRegistration?
-     var followersListenser: ListenerRegistration?
-     var followingsListenser: ListenerRegistration?
-     var commentListenser: ListenerRegistration?
-     var userPicListenser: ListenerRegistration?
-     var coverPicListenser: ListenerRegistration?
-     var locationsListenser: ListenerRegistration?
-     var blackListListenser: ListenerRegistration?
+    var favoriteListener: ListenerRegistration?
+    var followersListenser: ListenerRegistration?
+    var followingsListenser: ListenerRegistration?
+    var commentListenser: ListenerRegistration?
+    var userPicListenser: ListenerRegistration?
+    var coverPicListenser: ListenerRegistration?
+    var locationsListenser: ListenerRegistration?
+    var blackListListenser: ListenerRegistration?
     
     private let storage = Storage.storage().reference()
     
@@ -369,37 +389,45 @@ class FirebaseManager {
         }
     }
     
-    func fetchCollectionData<T: Codable>(collectionType: FirebaseCollection,
+    func collectionfetchData<T: Codable>(collectionType: FirebaseCollection,
                                          completion: @escaping (Result<[T], Error>) -> Void) {
         
         switch collectionType {
-        
+            
         case .allAudioFiles:
-                
             collectionType.reference.order(by: "createdTime", descending: true).getDocuments { snapshot, error in
-                    
-                    if let error = error {
-                        completion(Result.failure(error))
-                        return
-                    }
-                    
-                if let snapshot = snapshot {
-                        let data = snapshot.documents.compactMap({ snapshot in
-                            try? snapshot.data(as: T.self)
-                        })
-                        completion(Result.success(data))
-                    }
-                }
-            
-        default:
-            
-            collectionType.reference.getDocuments { snapshot, error in
-                
                 if let error = error {
                     completion(Result.failure(error))
                     return
                 }
-                
+                if let snapshot = snapshot {
+                    let data = snapshot.documents.compactMap({ snapshot in
+                        try? snapshot.data(as: T.self)
+                    })
+                    completion(Result.success(data))
+                }
+            }
+            
+        case .comments:
+            collectionType.reference.order(by: "createdTime", descending: false).getDocuments { snapshot, error in
+                if let error = error {
+                    completion(Result.failure(error))
+                    return
+                }
+                if let snapshot = snapshot {
+                    let data = snapshot.documents.compactMap({ snapshot in
+                        try? snapshot.data(as: T.self)
+                    })
+                    completion(Result.success(data))
+                }
+            }
+
+        default:
+            collectionType.reference.getDocuments { snapshot, error in
+                if let error = error {
+                    completion(Result.failure(error))
+                    return
+                }
                 if let snapshot = snapshot {
                     let data = snapshot.documents.compactMap({ snapshot in
                         try? snapshot.data(as: T.self)
@@ -408,25 +436,60 @@ class FirebaseManager {
                 }
             }
         }
-        
     }
     
-    func checkCollectionChange<T: Codable>(collectionType: FirebaseCollection,
-                                           completion: @escaping (Result<[T], Error>) -> Void) -> ListenerRegistration? {
+    func collectionAddListener<T: Codable>(collectionType: FirebaseCollection,
+                                           completion: @escaping (Result<[T],
+                                                                  Error>) -> Void) -> ListenerRegistration? {
         
         let listener = collectionType.reference.addSnapshotListener { [weak self] snapshot, error in
             
-            guard let self = self,
+            guard error == nil,
+                  let self = self,
                   let snapshot = snapshot else { return }
-
+            
             snapshot.documentChanges.forEach { documentChange in
-                self.fetchCollectionData(collectionType: collectionType,
+                self.collectionfetchData(collectionType: collectionType,
                                          completion: completion)
             }
         }
         
         return listener
         
+    }
+    
+    func documentFetchData<T: Codable>(documentType: FirebaseDocument,
+                                         completion: @escaping (Result<T, Error>) -> Void){
+        documentType.reference.getDocument { document, error in
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            
+            if let document = document,
+               document.exists {
+                let data = try? document.data(as: T.self)
+                if let data = data {
+                    completion(Result.success(data))
+                }
+                
+            } else {
+                
+                print("Document does not exist")
+                
+            }
+        }
+    }
+    
+    func documentAddListener<T: Codable>(documentType: FirebaseDocument,
+                                           completion: @escaping (Result<T,
+                                                                  Error>) -> Void) -> ListenerRegistration? {
+        let listener = documentType.reference.addSnapshotListener { snapshot, error in
+            guard let snapshot = snapshot,
+                  snapshot.exists else { return }
+            self.documentFetchData(documentType: documentType, completion: completion)
+        }
+        return listener
     }
     
     func manipulateFollow(userInfoDoumentID: String,
@@ -572,56 +635,6 @@ class FirebaseManager {
         }
     }
     
-    private func fetchComment(from documentID: String,
-                              completion: @escaping (Result<[SCComment], Error>) -> Void) {
-        
-        let db = Firestore.firestore()
-        
-        let commentSubCollectionRef = FirebaseCollection.comments(audioDocumentID: documentID).reference
-        
-        commentSubCollectionRef.order(by:"createdTime").getDocuments { snapshot, error in
-            
-            if let error = error {
-                completion(Result.failure(error))
-                return
-            }
-            
-            if let snapshot = snapshot {
-                let posts = snapshot.documents.compactMap({ snapshot in
-                    try? snapshot.data(as: SCComment.self)
-                })
-                
-                completion(Result.success(posts))
-                
-            }
-        }
-    }
-    
-    func checkCommentChange(from documentID: String,
-                            completion: @escaping (Result<[SCComment], Error>) -> Void) {
-        
-        let db = Firestore.firestore()
-        
-        let commentSubCollectionRef = FirebaseCollection.comments(audioDocumentID: documentID).reference
-        
-        commentListenser = commentSubCollectionRef.addSnapshotListener { snapshot, error in
-            guard let snapshot = snapshot else { return }
-            snapshot.documentChanges.forEach { documentChange in
-                switch documentChange.type {
-                case .added:
-                    self.fetchComment(from: documentID, completion: completion)
-                    print("comment added")
-                case .modified:
-                    self.fetchComment(from: documentID, completion: completion)
-                    print("comment modified")
-                case .removed:
-                    self.fetchComment(from: documentID, completion: completion)
-                    print("comment removed")
-                }
-            }
-        }
-    }
-    
     func uploadPicToFirebase(userDocumentID: String,
                              picString:String,
                              picType: PicType,
@@ -637,83 +650,6 @@ class FirebaseManager {
         } catch {
             errorCompletion(error.localizedDescription)
             print(error)
-        }
-    }
-    
-    func fetchUserPicFromFirebase(userID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
-        
-        let userPicDoc = FirebaseCollection.profilePicture(userInfoDocumentID: userID).reference.document("userPic")
-        
-        userPicDoc.getDocument { (document, error) in
-            
-            if let error = error {
-                completion(Result.failure(error))
-                return
-            }
-            
-            if let document = document,
-               document.exists {
-                let picture = try? document.data(as: SCPicture.self)
-                if let picture = picture {
-                    completion(Result.success(picture))
-                }
-                
-            } else {
-                
-                print("Document does not exist")
-                
-            }
-        }
-    }
-    
-    func fetchCoverPicFromFirebase(userID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
-        
-        let coverPicDoc = FirebaseCollection.profilePicture(userInfoDocumentID: userID).reference.document("coverPic")
-        
-        coverPicDoc.getDocument { (document, error) in
-            
-            if let error = error {
-                completion(Result.failure(error))
-                return
-            }
-            
-            if let document = document,
-               document.exists {
-                let picture = try? document.data(as: SCPicture.self)
-                if let picture = picture {
-                    completion(Result.success(picture))
-                }
-                
-            } else {
-                
-                print("Document does not exist")
-                
-            }
-        }
-    }
-    
-    func checkUserPicChange(userInfoDoumentID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
-        
-        let userPicRef = FirebaseCollection.profilePicture(userInfoDocumentID: userInfoDoumentID).reference.document("userPic")
-        
-        userPicListenser = userPicRef.addSnapshotListener { snapshot, error in
-            guard let snapshot = snapshot,
-                  snapshot.exists else { return }
-            
-            self.fetchUserPicFromFirebase(userID: userInfoDoumentID, completion: completion)
-            
-        }
-    }
-    
-    func checkCoverPicChange(userInfoDoumentID: String, completion: @escaping (Result<SCPicture, Error>) -> Void) {
-        
-        let coverPicRef = FirebaseCollection.profilePicture(userInfoDocumentID: userInfoDoumentID).reference.document("coverPic")
-        
-        coverPicListenser = coverPicRef.addSnapshotListener { snapshot, error in
-            guard let snapshot = snapshot,
-                  snapshot.exists else { return }
-            
-            self.fetchCoverPicFromFirebase(userID: userInfoDoumentID, completion: completion)
         }
     }
     
@@ -734,45 +670,6 @@ class FirebaseManager {
         
     }
     
-    func fetchLocationsFromFirebase(completion: @escaping (Result<[SCLocation], Error>) -> Void) {
-        
-        FirebaseCollection.allLocations.reference.getDocuments { [weak self] snapshot, error in
-            
-            if let error = error {
-                completion(Result.failure(error))
-                return
-            }
-            
-            if let snapshot = snapshot {
-                let locations = snapshot.documents.compactMap({ snapshot in
-                    try? snapshot.data(as: SCLocation.self)
-                })
-                
-                completion(Result.success(locations))
-            }
-        }
-    }
-    
-    func checkLocationChange(completion: @escaping (Result<[SCLocation], Error>) -> Void) {
-       
-        locationsListenser =  FirebaseCollection.allLocations.reference.addSnapshotListener{ snapshot, error in
-            guard let snapshot = snapshot else { return }
-            snapshot.documentChanges.forEach { documentChange in
-                switch documentChange.type {
-                case .added:
-                    self.fetchLocationsFromFirebase(completion: completion)
-                    print("location added")
-                case .modified:
-                    self.fetchLocationsFromFirebase(completion: completion)
-                    print("location modified")
-                case .removed:
-                    self.fetchLocationsFromFirebase(completion: completion)
-                    print("location removed")
-                }
-            }
-        }
-    }
-    
     // MARK: - Black List
     
     func addToBlackList(loggedInUserInfoDocumentID: String, toBeBlockedID: String, completion: (() -> Void)?) {
@@ -790,51 +687,6 @@ class FirebaseManager {
         } catch {
             
             print("Failed to add black list")
-        }
-    }
-    
-    func fetchUserBlackList(userProfileDocumentID: String, completion: @escaping
-                            (Result<[SCBlockUser], Error>) -> Void)  {
-        
-        let myBlackListSubCollectionRef =  FirebaseCollection.blackList(userInfoDocumentID: userProfileDocumentID).reference
-        
-        myBlackListSubCollectionRef.getDocuments { [weak self] snapshot, error in
-            
-            if let error = error {
-                completion(Result.failure(error))
-                return
-            }
-            
-            if let snapshot = snapshot {
-                let users = snapshot.documents.compactMap({ snapshot in
-                    try? snapshot.data(as: SCBlockUser.self)
-                })
-                
-                completion(Result.success(users))
-                
-            }
-        }
-    }
-    
-    func checkBlackListChange(userInfoDoumentID: String, completion: @escaping (Result<[SCBlockUser], Error>) -> Void) {
-        
-        let myBlackListSubCollectionRef =  FirebaseCollection.blackList(userInfoDocumentID: userInfoDoumentID).reference
-        
-        blackListListenser = myBlackListSubCollectionRef.addSnapshotListener { snapshot, error in
-            guard let snapshot = snapshot else { return }
-            snapshot.documentChanges.forEach { documentChange in
-                switch documentChange.type {
-                case .added:
-                    self.fetchUserBlackList(userProfileDocumentID: userInfoDoumentID, completion: completion)
-                    print("Blocked users added")
-                case .modified:
-                    self.fetchUserBlackList(userProfileDocumentID: userInfoDoumentID, completion: completion)
-                    print("Blocked users modified")
-                case .removed:
-                    self.fetchUserBlackList(userProfileDocumentID: userInfoDoumentID, completion: completion)
-                    print("Blocked users removed")
-                }
-            }
         }
     }
     
