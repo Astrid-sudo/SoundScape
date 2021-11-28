@@ -419,8 +419,6 @@ class CategoryViewController: UIViewController {
     
     private func setHeadViewTitle() {
         
-        headView.image = UIImage(named: CommonUsage.audioImage2)
-        
         if let category = category {
             categoryTitleLabel.text = category.rawValue
             

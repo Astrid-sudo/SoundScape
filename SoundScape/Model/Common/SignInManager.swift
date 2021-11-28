@@ -124,30 +124,6 @@ class SignInManager {
         self.currentUserInfoFirebase = newUser
     }
     
-    //    func fetchUserInfoFromFirebase(userID: String) {
-    //
-    //        self.firebaseManager.fetchUserInfoFromFirebase(userID: userID) { [weak self] result in
-    //
-    //            guard let self = self else { return }
-    //
-    //            switch result {
-    //
-    //            case .success(let userInfo):
-    //
-    //                self.currentUserInfoFirebase = userInfo
-    //
-    //            case.failure(let error):
-    //                print("fetchUserInfo failed\(error)")
-    //                let errorMessage = error.localizedDescription
-    //                let userInfoKey = "UserInfo"
-    //                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-    //
-    //                //Home VC will observe
-    //                NotificationCenter.default.post(name: .fetchLoginUserError, object: nil, userInfo: userInfo)
-    //            }
-    //        }
-    //    }
-    
     func fetchUserInfoFromFirebase(userID: String) {
         
         self.firebaseManager.documentFetchData(documentType: .userInfoDoc(userInfoDocumentID: userID)) { (result: Result<SCUser, Error>)  in
@@ -237,25 +213,6 @@ class SignInManager {
         }
     }
     
-    //    func checkUserPicFromFirebase() {
-    //
-    //        guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
-    //
-    //        self.firebaseManager.checkUserPicChange(userInfoDoumentID: userID) { result in
-    //            switch result {
-    //            case .success(let picture):
-    //                self.currentUserPic = picture.picture
-    //            case .failure(let error):
-    //                let errorMessage = error.localizedDescription
-    //                let userInfoKey = "UserInfo"
-    //                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-    //
-    //                //Profile VC will observe
-    //                NotificationCenter.default.post(name: .failedFetchUserProfilePic, object: nil, userInfo: userInfo)
-    //            }
-    //        }
-    //    }
-    
     func checkUserPicFromFirebase() {
         
         guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
@@ -275,24 +232,6 @@ class SignInManager {
         }
     }
     
-    
-    //    func fetchUserPicFromFirebase() {
-    //        guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
-    //        firebaseManager.fetchUserPicFromFirebase(userID: userID) { result in
-    //            switch result {
-    //            case .success(let picture):
-    //                self.currentUserPic = picture.picture
-    //            case .failure(let error):
-    //                let errorMessage = error.localizedDescription
-    //                let userInfoKey = "UserInfo"
-    //                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-    //
-    //                // Profile VC will observe
-    //                NotificationCenter.default.post(name: .failedFetchUserProfilePic, object: nil, userInfo: userInfo)
-    //            }
-    //        }
-    //    }
-    
     func fetchUserPicFromFirebase() {
         guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
         firebaseManager.documentFetchData(documentType: .userPicDoc(userInfoDocumentID: userID)) { (result: Result<SCPicture, Error>)  in
@@ -309,26 +248,6 @@ class SignInManager {
             }
         }
     }
-    
-    
-    //    func checkCoverPicFromFirebase() {
-    //
-    //        guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
-    //
-    //        self.firebaseManager.checkCoverPicChange(userInfoDoumentID: userID) { result in
-    //            switch result {
-    //            case .success(let picture):
-    //                self.currentUserCover = picture.picture
-    //            case .failure(let error):
-    //                let errorMessage = error.localizedDescription
-    //                let userInfoKey = "UserInfo"
-    //                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-    //
-    //                // Profile VC will observe
-    //                NotificationCenter.default.post(name: .failedFetchUserCoverPic, object: nil, userInfo: userInfo)
-    //            }
-    //        }
-    //    }
     
     func checkCoverPicFromFirebase() {
         
@@ -347,24 +266,6 @@ class SignInManager {
             }
         }
     }
-    
-    
-    //    func fetchCoverPicFromFirebase() {
-    //        guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
-    //        firebaseManager.fetchCoverPicFromFirebase(userID: userID) { result in
-    //            switch result {
-    //            case .success(let picture):
-    //                self.currentUserCover = picture.picture
-    //            case .failure(let error):
-    //                let errorMessage = error.localizedDescription
-    //                let userInfoKey = "UserInfo"
-    //                let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-    //
-    //                //Profile VC will observe
-    //                NotificationCenter.default.post(name: .failedFetchUserCoverPic, object: nil, userInfo: userInfo)
-    //            }
-    //        }
-    //    }
     
     func fetchCoverPicFromFirebase() {
         guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
