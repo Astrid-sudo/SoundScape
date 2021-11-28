@@ -177,18 +177,14 @@ class CategoryViewController: UIViewController {
     }
     
     private func fetchAmountOfFollows() {
-        
         guard let userProfileDocumentID = displayUserID else {
             print("OtherProfileVC: Cant get favorite")
             return
         }
-        
-        firebaseManager.checkFollowingsChange(userInfoDoumentID: userProfileDocumentID) { [weak self] result in
-            guard let self = self else { return }
+        _ = firebaseManager.checkCollectionChange(collectionType: .following(userInfoDocumentID: userProfileDocumentID)) { (result: Result<[SCFollow], Error>) in
             switch result {
             case .success(let followings):
                 self.othersFollowingList = followings
-                
             case .failure(let error): print(error)
             }
         }

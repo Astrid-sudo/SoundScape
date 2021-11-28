@@ -149,29 +149,31 @@ class OthersProfileViewController: UIViewController {
     private func fetchAmountOfFollows() {
         guard let userWillDisplay = userWillDisplay,
               let userInfoDoumentID = userWillDisplay.userInfoDoumentID else { return }
-        firebaseManager.checkFollowersChange(userInfoDoumentID: userInfoDoumentID) { [weak self] result in
-            guard let self = self else { return }
+        checkFollowersChange(userInfoDoumentID: userInfoDoumentID)
+        checkFollowingsChange(userInfoDoumentID: userInfoDoumentID)
+    }
+    
+    private func checkFollowersChange(userInfoDoumentID: String) {
+        _ = firebaseManager.checkCollectionChange(collectionType: .followedBy(userInfoDocumentID: userInfoDoumentID)) { (result: Result<[SCFollow], Error>) in
             switch result {
             case .success(let followers):
-                
                 self.numbersOfFollowers = followers.count
-                
-            case .failure(let error): print(error)
-            }
-        }
-        
-        firebaseManager.checkFollowingsChange(userInfoDoumentID: userInfoDoumentID) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let followings):
-                self.numbersOfFollowings = followings.count
-                self.othersFollowingList = followings
-                
             case .failure(let error): print(error)
             }
         }
     }
     
+    private func checkFollowingsChange(userInfoDoumentID: String) {
+        _ = firebaseManager.checkCollectionChange(collectionType: .following(userInfoDocumentID: userInfoDoumentID)) { (result: Result<[SCFollow], Error>) in
+            switch result {
+            case .success(let followings):
+                self.numbersOfFollowings = followings.count
+                self.othersFollowingList = followings
+            case .failure(let error): print(error)
+            }
+        }
+    }
+
     private func fetchUserInfo() {
         
         guard let userID = idWillDisplay?.userID,

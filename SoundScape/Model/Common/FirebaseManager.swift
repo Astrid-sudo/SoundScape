@@ -427,7 +427,6 @@ class FirebaseManager {
         
         return listener
         
-        
     }
     
     func manipulateFollow(userInfoDoumentID: String,
@@ -524,95 +523,6 @@ class FirebaseManager {
                             print("You've been successfully removed from others followedBy!")
                         }
                     }
-                }
-            }
-        }
-    }
-    
-    func fetchFollowers(userInfoDoumentID: String, completion: @escaping (Result<[SCFollow], Error>) -> Void) {
-        
-        let followedBySubCollectionRef = FirebaseCollection.followedBy(userInfoDocumentID: userInfoDoumentID).reference
-        
-        
-        followedBySubCollectionRef.getDocuments { [weak self] snapshot, error in
-            
-            if let error = error {
-                completion(Result.failure(error))
-                return
-            }
-            
-            if let snapshot = snapshot {
-                let followers = snapshot.documents.compactMap({ snapshot in
-                    try? snapshot.data(as: SCFollow.self)
-                })
-                
-                completion(Result.success(followers))
-                
-            }
-        }
-    }
-    
-    func fetchFollowings(userInfoDoumentID: String, completion: @escaping (Result<[SCFollow], Error>) -> Void) {
-        
-        let followingSubCollectionRef = FirebaseCollection.following(userInfoDocumentID: userInfoDoumentID).reference
-        
-        followingSubCollectionRef.getDocuments { snapshot, error in
-            
-            if let error = error {
-                completion(Result.failure(error))
-                return
-            }
-            
-            if let snapshot = snapshot {
-                let followings = snapshot.documents.compactMap({ snapshot in
-                    try? snapshot.data(as: SCFollow.self)
-                })
-                
-                completion(Result.success(followings))
-                
-            }
-        }
-    }
-    
-    func checkFollowersChange(userInfoDoumentID: String, completion: @escaping (Result<[SCFollow], Error>) -> Void) {
-        
-        let followedBySubCollectionRef = FirebaseCollection.followedBy(userInfoDocumentID: userInfoDoumentID).reference
-        
-        followersListenser = followedBySubCollectionRef.addSnapshotListener { snapshot, error in
-            guard let snapshot = snapshot else { return }
-            snapshot.documentChanges.forEach { documentChange in
-                switch documentChange.type {
-                case .added:
-                    self.fetchFollowers(userInfoDoumentID: userInfoDoumentID, completion: completion)
-                    print("followers added")
-                case .modified:
-                    self.fetchFollowers(userInfoDoumentID: userInfoDoumentID, completion: completion)
-                    print("followers modified")
-                case .removed:
-                    self.fetchFollowers(userInfoDoumentID: userInfoDoumentID, completion: completion)
-                    print("followers removed")
-                }
-            }
-        }
-    }
-    
-    func checkFollowingsChange(userInfoDoumentID: String, completion: @escaping (Result<[SCFollow], Error>) -> Void) {
-        
-        let followingSubCollectionRef = FirebaseCollection.following(userInfoDocumentID: userInfoDoumentID).reference
-        
-        followingsListenser = followingSubCollectionRef.addSnapshotListener { snapshot, error in
-            guard let snapshot = snapshot else { return }
-            snapshot.documentChanges.forEach { documentChange in
-                switch documentChange.type {
-                case .added:
-                    self.fetchFollowings(userInfoDoumentID: userInfoDoumentID, completion: completion)
-                    print("followings added")
-                case .modified:
-                    self.fetchFollowings(userInfoDoumentID: userInfoDoumentID, completion: completion)
-                    print("followings modified")
-                case .removed:
-                    self.fetchFollowings(userInfoDoumentID: userInfoDoumentID, completion: completion)
-                    print("followings removed")
                 }
             }
         }

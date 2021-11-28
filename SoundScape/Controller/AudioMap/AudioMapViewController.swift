@@ -31,8 +31,6 @@ class AudioMapViewController: UIViewController {
     
     var audioTitle: String?
     
-    //    let remotePlayHelper = RemotePlayHelper.shared
-    
     var tappedMarker = GMSMarker()
     
     var scInfoWindow = SCMapInfoWindow()
