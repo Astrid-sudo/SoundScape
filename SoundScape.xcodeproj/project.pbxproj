@@ -10,6 +10,7 @@
 		0130CC1600F3AB0D61D15930 /* Pods_SoundScape.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D1F5476A787CCE1C926A2EA /* Pods_SoundScape.framework */; };
 		560DE84D27300B1200FFD240 /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560DE84C27300B1200FFD240 /* CommentViewController.swift */; };
 		560DE8502730113600FFD240 /* CommentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560DE84F2730113600FFD240 /* CommentTableViewCell.swift */; };
+		5616D0BD2753B60F00D9C9B3 /* FirebaseManager+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5616D0BC2753B60F00D9C9B3 /* FirebaseManager+Extension.swift */; };
 		5630FE23272E1AA2003A38FB /* FirebaseDataStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5630FE22272E1AA2003A38FB /* FirebaseDataStructure.swift */; };
 		5630FE25272E1C54003A38FB /* SignInManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5630FE24272E1C54003A38FB /* SignInManager.swift */; };
 		5630FE27272EB5D7003A38FB /* OthersProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5630FE26272EB5D7003A38FB /* OthersProfileViewController.swift */; };
@@ -81,6 +82,7 @@
 		33696CC8AD27A37242783EC7 /* Pods-SoundScape.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SoundScape.release.xcconfig"; path = "Target Support Files/Pods-SoundScape/Pods-SoundScape.release.xcconfig"; sourceTree = "<group>"; };
 		560DE84C27300B1200FFD240 /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
 		560DE84F2730113600FFD240 /* CommentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTableViewCell.swift; sourceTree = "<group>"; };
+		5616D0BC2753B60F00D9C9B3 /* FirebaseManager+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FirebaseManager+Extension.swift"; sourceTree = "<group>"; };
 		5630FE22272E1AA2003A38FB /* FirebaseDataStructure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseDataStructure.swift; sourceTree = "<group>"; };
 		5630FE24272E1C54003A38FB /* SignInManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInManager.swift; sourceTree = "<group>"; };
 		5630FE26272EB5D7003A38FB /* OthersProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OthersProfileViewController.swift; sourceTree = "<group>"; };
@@ -414,6 +416,7 @@
 			isa = PBXGroup;
 			children = (
 				565ABC022721595B00D4596E /* FirebaseManager.swift */,
+				5616D0BC2753B60F00D9C9B3 /* FirebaseManager+Extension.swift */,
 				565C9C2C271E79E700189B85 /* Common.swift */,
 				5630FE22272E1AA2003A38FB /* FirebaseDataStructure.swift */,
 				5630FE24272E1C54003A38FB /* SignInManager.swift */,
@@ -717,6 +720,7 @@
 				56C55790274F891100CFB548 /* DSWaveformImageWrapper.swift in Sources */,
 				56AF84AE274641A200C94B0A /* LottieWrapper.swift in Sources */,
 				565C9C2F271E8D6900189B85 /* SCTabBarController.swift in Sources */,
+				5616D0BD2753B60F00D9C9B3 /* FirebaseManager+Extension.swift in Sources */,
 				564C79FA272C2180005EEA53 /* CategoryTableViewCell.swift in Sources */,
 				56C05AAF2736A829009D029C /* SCMapInfoWindow.swift in Sources */,
 			);
