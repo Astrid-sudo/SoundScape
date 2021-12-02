@@ -43,8 +43,12 @@ class LAEUViewController: UIViewController {
         return web
     }()
     
-    let webLoadingView = LottieWrapper.shared.blueStripeLoadingView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
-    
+    let webLoadingView = LottieWrapper.shared.createLottieAnimationView(lottieType: .blueStripeLoading,
+                                                                        frame: CGRect(x: 0,
+                                                                                      y: 0,
+                                                                                      width: CommonUsage.screenWidth,
+                                                                                      height: CommonUsage.screenHeight))
+
 }
 
 // MARK: - conform to WKNavigationDelegate

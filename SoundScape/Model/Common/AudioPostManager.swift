@@ -41,7 +41,7 @@ class AudioPostManager {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-
+    
     // MARK: - method
     
     private func addObserver() {
@@ -62,9 +62,9 @@ class AudioPostManager {
                 let shouldDisplayPost = allAudioFiles.filter({$0.authorID != id })
                 shouldDisplayPosts.append(contentsOf: shouldDisplayPost)
             }
-           
+            
             filteredAudioFiles = shouldDisplayPosts
-
+            
         } else {
             
             filteredAudioFiles = allAudioFiles
@@ -74,11 +74,9 @@ class AudioPostManager {
     @objc func currentUserBlacklistChange() {
         currentUserBlacklist = SignInManager.shared.currentUserBlacklist
     }
-
+    
     private func fetchDataFromFirebase() {
-        
-        firebaseManager.checkPostsChange { [weak self] result in
-            guard let self = self else { return }
+        _ = firebaseManager.collectionAddListener(collectionType: .allAudioFiles) { (result: Result<[SCPost], Error>) in
             
             switch result {
             case .success(let posts):
@@ -89,13 +87,13 @@ class AudioPostManager {
                 let errorMessage = error.localizedDescription
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-
+                
                 //Home VC will observe
                 NotificationCenter.default.post(name: .fetchAudioPostError, object: nil, userInfo: userInfo)
             }
         }
-        
     }
+    
 }
 
 // MARK: - extention Notification
@@ -104,4 +102,3 @@ extension Notification.Name {
     static let allAudioPostChange = Notification.Name("allAudioPostChange")
     static let fetchAudioPostError = Notification.Name("fetchAudioPostError")
 }
-    

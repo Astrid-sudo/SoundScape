@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Lottie
 
 class CommentViewController: UIViewController {
     
@@ -37,15 +36,7 @@ class CommentViewController: UIViewController {
     var newAuthorIDs = Set<String>() {
         didSet {
             for newAuthorId in newAuthorIDs {
-                firebaseManager.fetchUserPicFromFirebase(userID: newAuthorId) { [weak self] result in
-                    guard let self = self else { return }
-                    switch result {
-                    case .success(let picture):
-                        self.userPicCache[newAuthorId] = picture.picture
-                    case .failure(let error):
-                        print("Failed to fetch \(newAuthorId)'s picString \(error)")
-                    }
-                }
+                fetchUserPicFromFirebase(userID: newAuthorId)
             }
         }
     }
@@ -100,7 +91,8 @@ class CommentViewController: UIViewController {
         currentUserImageView.image = UIImage(data: data)
     }
     
-    deinit {
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -147,10 +139,7 @@ class CommentViewController: UIViewController {
     
     private func checkComment(from documentID: String) {
         
-        firebaseManager.checkCommentChange(from: documentID) { [weak self] result in
-            
-            guard let self = self else { return }
-            
+        _ = firebaseManager.collectionAddListener(collectionType: .comments(audioDocumentID: documentID)) { (result: Result<[SCComment], Error>) in
             switch result {
                 
             case .success(let comments):
@@ -269,11 +258,28 @@ class CommentViewController: UIViewController {
     
     private func deleteComment(commentID: String) {
         guard let audioDocumentID = currentPlayingDocumentID else { return }
-        firebaseManager.deleteComment(audioDocumentID: audioDocumentID, commentDocumentID: commentID) { [weak self] errorMessage in
+        firebaseManager.deleteComment(audioDocumentID: audioDocumentID,
+                                      commentDocumentID: commentID) { [weak self] errorMessage in
             guard let self = self else { return }
             self.popErrorAlert(title: "Failed to delete comment", message: errorMessage)
         } successedCompletion: {
-            SPAlertWrapper.shared.presentSPAlert(title: "Comment deleted!", message: nil, preset: .done, completion: nil)
+            SPAlertWrapper.shared.presentSPAlert(title: "Comment deleted!",
+                                                 message: nil,
+                                                 preset: .done,
+                                                 completion: nil)
+        }
+    }
+    
+    private func fetchUserPicFromFirebase(userID: String) {
+        firebaseManager.documentFetchData(documentType:
+                                                .userPicDoc(userInfoDocumentID: userID)) { (result:
+                                                                                                Result<SCPicture, Error>) in
+            switch result {
+            case .success(let picture):
+                self.userPicCache[userID] = picture.picture
+            case .failure(let error):
+                print("Failed to fetch \(userID)'s picString \(error)")
+            }
         }
     }
     
@@ -348,15 +354,12 @@ class CommentViewController: UIViewController {
         return button
     }()
     
-    private lazy var animationView: AnimationView = {
-        let animationView = AnimationView(name: "lf30_editor_r2yecdir")
-        animationView.frame = CGRect(x: 0, y: 100, width: 400, height: 400)
-        animationView.center = view.center
-        animationView.contentMode = .scaleAspectFill
-        animationView.loopMode = .loop
-        return animationView
-    }()
-    
+    private let animationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .commentLoading,
+                                                                               frame: CGRect(x: 0,
+                                                                                             y: 100,
+                                                                                             width: 400,
+                                                                                             height: 400))
+
     private lazy var emptyTextViewConstraint = NSLayoutConstraint()
     private lazy var fullTextViewConstraint = NSLayoutConstraint()
     

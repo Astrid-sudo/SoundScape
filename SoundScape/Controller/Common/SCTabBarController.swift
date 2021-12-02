@@ -21,7 +21,7 @@ class SCTabBarController: UITabBarController {
     
 //    var soundDetailVC: SoundDetailVC?
     
-    var soundDetailVC: ProSoundDetailViewController?
+    var soundDetailVC: SoundDetailViewController?
 
     
     // MARK: - life cycle
@@ -65,7 +65,7 @@ class SCTabBarController: UITabBarController {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 //        guard let vc = storyboard.instantiateViewController(withIdentifier: "SoundDetailVC") as? SoundDetailVC else { return }
         
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "ProSoundDetailViewController") as? ProSoundDetailViewController else { return }
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "SoundDetailViewController") as? SoundDetailViewController else { return }
 
 
         self.soundDetailVC = vc

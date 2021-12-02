@@ -1,50 +1,289 @@
 //
-//  ProSoundDetailViewController.swift
+//  SoundDetailViewController.swift
 //  SoundScape
 //
 //  Created by Astrid on 2021/11/14.
 //
 
 import UIKit
-import DSWaveformImage
 
-class ProSoundDetailViewController: UIViewController {
+class SoundDetailViewController: UIViewController {
+    
+    // MARK: - properties
+    
+    private let waveformImageDrawer = DSWaveformImageWrapper.shared.initWaveformImageDrawer()
+    
+    weak var delegate: DetailPageShowableDelegate?
+    
+    private var authorIdentity: UserIdentity?
+    
+    private var nowPlayingDocumentID: String? {
+        didSet {
+            guard let nowPlayingDocumentID = nowPlayingDocumentID else { return }
+            renderWave(documentID: nowPlayingDocumentID)
+            setBlockButton()
+        }
+    }
+    
+    // MARK: - life cycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        addObserver()
+        setBackgroundImage()
+        setBackgroundView()
+        setWaveformView()
+        setWaveformProgressView()
+        setAuthorButton()
+        setTitleLabel()
+        setTextView()
+        setLeaveButton()
+        setCommentButton()
+        setPlayButton()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    // MARK: - action
+    
+    @objc func block() {
+        popBlockAlert()
+    }
+    
+    @objc func presentCommentPage(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let commentViewController = storyboard.instantiateViewController(withIdentifier: String(describing: CommentViewController.self)) as? CommentViewController else { return }
+        commentViewController.currentPlayingDocumentID = nowPlayingDocumentID
+        present(commentViewController, animated: true)
+    }
+    
+    @objc func goAuthorPage() {
+        
+        guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
+        
+        scTabBarController.selectedIndex = 0
+        
+        guard let homeVC = scTabBarController.viewControllers?[0].children[0] as? HomeVC else { return }
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let othersProfileViewController = storyboard.instantiateViewController(withIdentifier: String(describing: OthersProfileViewController.self)) as? OthersProfileViewController,
+              let authorIdentity = self.authorIdentity  else { return }
+        
+        othersProfileViewController.idWillDisplay = authorIdentity
+        
+        homeVC.navigationController?.pushViewController(othersProfileViewController, animated: true)
+        
+        guard let leave = delegate?.leaveDetailPage else { return }
+        caDisplayLink?.invalidate()
+        
+        AudioPlayerWindow.shared.makeSmallFrame()
+        AudioPlayerWindow.shared.showVC()
+        
+        leave()
+        
+    }
+    
+    @objc func leaveDetailPage() {
+        guard let leave = delegate?.leaveDetailPage else { return }
+        caDisplayLink?.invalidate()
+        AudioPlayerWindow.shared.makeSmallFrame()
+        AudioPlayerWindow.shared.showVC()
+        
+        leave()
+    }
+    
+    @objc func playOrPause() {
+        togglePlayer()
+    }
+    
+    @objc func audioPlayHelperError() {
+        popErrorAlert(title: "Audio player errer", message: "Please terminate SoundScape_ and try again.")
+    }
+    
+    @objc func updateTime(notification: Notification) {
+        updatePlaybackTime(notification: notification)
+    }
+    
+    @objc func changeButtImage() {
+        changeButtonImage()
+    }
+    
+    @objc func updateInfo(notification: Notification) {
+        updatePlayInfo(notification: notification)
+    }
+    
+    // MARK: - method
+    
+    private func setBlockButton() {
+        
+        if let authorID = authorIdentity?.userID,
+           authorID != SignInManager.shared.currentUserInfoFirebase?.userID {
+            
+            DispatchQueue.main.async {
+                self.view.addSubview(self.blockButton)
+                self.blockButton.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    self.blockButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -16),
+                    self.blockButton.centerYAnchor.constraint(equalTo: self.titleLabel.centerYAnchor),
+                    self.blockButton.widthAnchor.constraint(equalToConstant: 50)
+                ])
+                self.blockButton.isHidden = false
+            }
+            
+        } else {
+            
+            DispatchQueue.main.async {
+                self.blockButton.isHidden = true
+            }
+        }
+    }
+    
+    private func backToHome() {
+        guard let leave = delegate?.leaveDetailPage else { return }
+        caDisplayLink?.invalidate()
+        AudioPlayerWindow.shared.makeSmallFrame()
+        AudioPlayerWindow.shared.showVC()
+        leave()
+        
+        navigationController?.popToRootViewController(animated: true)
+        guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
+        scTabBarController.selectedIndex = 0
+    }
+    
+    private func popBlockAlert() {
+        let alert = UIAlertController(title: "Are you sure?",
+                                      message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
+                                      preferredStyle: .alert )
+        
+        let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
+            guard let self = self else { return }
+            self.blockUser()
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func blockUser() {
+        guard let currentUserDocID = SignInManager.shared.currentUserInfoFirebase?.userInfoDoumentID,
+              let  blockUser = authorIdentity?.userID else { return }
+        
+        FirebaseManager.shared.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
+                                              toBeBlockedID: blockUser,
+                                              completion: backToHome)
+    }
+    
+    private func setWaveformView() {
+        view.addSubview(waveformView)
+    }
+    
+    private func setWaveformProgressView() {
+        view.addSubview(waveformProgressView)
+    }
+    
+    private func addObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateInfo),
+                                               name: .playingAudioChange,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(changeButtImage),
+                                               name: .didStateChange,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateTime),
+                                               name: .didCurrentTimeChange,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(changeButtImage),
+                                               name: .didItemPlayToEndTime,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(audioPlayHelperError),
+                                               name: .audioPlayHelperError,
+                                               object: nil)
+        
+    }
+    
+    func renderWave(documentID: String) {
+        let cachesFolderURL = try? FileManager.default.url(for: .cachesDirectory,
+                                                              in: .userDomainMask,
+                                                              appropriateFor: nil,
+                                                              create: false)
+        let audioFileURL = cachesFolderURL?.appendingPathComponent("\(documentID).m4a")
+        guard let localURL = audioFileURL else { return }
+        
+        DispatchQueue.main.async {
+            self.updateWaveformImages(localURL: localURL)
+        }
+    }
+    
+    private func updateWaveformImages(localURL: URL) {
+        
+        let stripeConfig = DSWaveformImageWrapper.shared.configWaveformStripe(
+            color: UIColor(named: CommonUsage.scSuperLightBlue),
+            width: 1.0,
+            spacing: 1,
+            lineCap: .round)
+        
+        let waveformConfig = DSWaveformImageWrapper.shared.configWaveform(
+            waveformImageView: self.waveformView,
+            config: stripeConfig)
+        
+        self.waveformImageDrawer.waveformImage(fromAudioAt: localURL,
+                                               with: waveformConfig,
+                                               completionHandler: { image in
+            DispatchQueue.main.async {
+                self.waveformView.image = image
+            }
+        })
+        
+        let progressStripeConfig = DSWaveformImageWrapper.shared.configWaveformStripe(
+            color: UIColor(named: CommonUsage.scWhite),
+            width: 1.0,
+            spacing: 1,
+            lineCap: .round)
+        
+        let progressWaveformConfig = DSWaveformImageWrapper.shared.configWaveform(
+            waveformImageView: self.waveformView,
+            config: progressStripeConfig)
+        
+        self.waveformImageDrawer.waveformImage(fromAudioAt: localURL,
+                                               with: progressWaveformConfig,
+                                               completionHandler: { image in
+            DispatchQueue.main.async {
+                self.waveformProgressView.image = image
+            }
+        })
+    }
+    
+    private func updateProgressWaveform(_ progress: Double) {
+        let fullRect = waveformProgressView.bounds
+        let newWidth = Double(fullRect.size.width) * progress
+        let maskLayer = CAShapeLayer()
+        let maskRect = CGRect(x: 0.0, y: 0, width: newWidth, height: Double(fullRect.size.height))
+        let path = CGPath(rect: maskRect, transform: nil)
+        maskLayer.path = path
+        waveformProgressView.layer.mask = maskLayer
+    }
     
     // MARK: - UI properties
     
-    // swiftlint:disable line_length
-    
-    private lazy var waveformView: WaveformImageView = {
-        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) }
-        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
-        let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
-        let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
-        return waveformView
-    }()
-    
-    private lazy var waveformProgressView: WaveformImageView = {
-        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return WaveformImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) }
-        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
-        let waveformViewY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - 180
-        let waveformView = WaveformImageView(frame: CGRect(x: 0, y: waveformViewY, width: CommonUsage.screenWidth, height: 100))
-        return waveformView
-    }()
-    
-    // swiftlint:enable line_length
-    
-    private lazy var playButton: UIButton = {
-        let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 32)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
-        button.setImage(bigImage, for: .normal)
-        button.tintColor = .white
-        button.addTarget(self, action: #selector(manipulatePlayer), for: .touchUpInside)
-        return button
-    }()
+    let waveformView = DSWaveformImageWrapper.shared.createWaveformImageView(
+        frame: CGRect(x: 0,
+                      y: CommonUsage.screenHeight - CommonUsage.safeAreaHeight - CommonUsage.tabBarHeight - 180,
+                      width: CommonUsage.screenWidth,
+                      height: 100))
     
     private lazy var commentButton: UIButton = {
         let button = UIButton()
@@ -77,7 +316,6 @@ class ProSoundDetailViewController: UIViewController {
         let label = UILabel()
         label.textColor = UIColor(named: CommonUsage.scWhite)
         label.font = UIFont(name: CommonUsage.fontSemibold, size: 18)
-        
         label.textAlignment = .left
         return label
     }()
@@ -119,342 +357,52 @@ class ProSoundDetailViewController: UIViewController {
         return button
     }()
     
-    // MARK: - properties
+    // MARK: - AudioPlayerProtocol
     
-    private let waveformImageDrawer = WaveformImageDrawer()
+    lazy var playButton: UIButton = {
+        let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 32)
+        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
+        button.setImage(bigImage, for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(playOrPause), for: .touchUpInside)
+        return button
+    }()
     
-    var audioHelper = AudioPlayHelper.shared
+    var caDisplayLink: CADisplayLink?
     
-    var displayLink: CADisplayLink?
-    
-    var fileNameCount = 300
-    
-    weak var delegate: DetailPageShowableDelegate?
-    
-//    let remotePlayerHelper = RemotePlayHelper.shared
-    
-    var authorIdentity: UserIdentity?
-    
-    var nowPlayingDocumentID: String? {
-        didSet {
-            guard let nowPlayingDocumentID = nowPlayingDocumentID else { return }
-            renderWave(documentID: nowPlayingDocumentID)
-            setBlockButton()
-        }
+    var progressView: UIView {
+        return waveformProgressView
     }
     
-    // MARK: - life cycle
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        addObserver()
-        setBackgroundImage()
-        setBackgroundView()
-        setWaveformView()
-        setWaveformProgressView()
-        setAuthorButton()
-        setTitleLabel()
-        setTextView()
-        setLeaveButton()
-        setCommentButton()
-        setPlayButton()
-    }
-    
-    // MARK: - deinit
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    // MARK: - action
-    
-    @objc func block() {
-        popBlockAlert()
-    }
-    
-    @objc func presentCommentPage(_ sender: UIButton) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let commentViewController = storyboard.instantiateViewController(withIdentifier: String(describing: CommentViewController.self)) as? CommentViewController else { return }
-        commentViewController.currentPlayingDocumentID = nowPlayingDocumentID
-        present(commentViewController, animated: true)
-    }
-    
-    @objc func goAuthorPage() {
-        
-        guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
-        
-        scTabBarController.selectedIndex = 0
-        
-        guard let homeVC = scTabBarController.viewControllers?[0].children[0] as? HomeVC else { return }
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let othersProfileViewController = storyboard.instantiateViewController(withIdentifier: String(describing: OthersProfileViewController.self)) as? OthersProfileViewController,
-              let authorIdentity = self.authorIdentity  else { return }
-        
-        othersProfileViewController.idWillDisplay = authorIdentity
-        
-        homeVC.navigationController?.pushViewController(othersProfileViewController, animated: true)
-        
-        guard let leave = delegate?.leaveDetailPage else { return }
-        displayLink?.invalidate()
-        
-        AudioPlayerWindow.shared.makeSmallFrame()
-        AudioPlayerWindow.shared.showVC()
-        
-        leave()
-        
-    }
-    
-    @objc func leaveDetailPage() {
-        guard let leave = delegate?.leaveDetailPage else { return }
-        displayLink?.invalidate()
-        AudioPlayerWindow.shared.makeSmallFrame()
-        AudioPlayerWindow.shared.showVC()
-        
-        leave()
-    }
-    
-    @objc func manipulatePlayer() {
-        
-        if AudioPlayHelper.shared.isPlaying {
-            AudioPlayHelper.shared.pause()
-        } else {
-            AudioPlayHelper.shared.play()
-        }
-        
-    }
-    
-    // MARK: - method
-    
-    private func setBlockButton() {
-        
-        if let authorID = authorIdentity?.userID,
-           authorID != SignInManager.shared.currentUserInfoFirebase?.userID {
-            
-            DispatchQueue.main.async {
-                self.view.addSubview(self.blockButton)
-                self.blockButton.translatesAutoresizingMaskIntoConstraints = false
-                NSLayoutConstraint.activate([
-                    self.blockButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -16),
-                    self.blockButton.centerYAnchor.constraint(equalTo: self.titleLabel.centerYAnchor),
-                    self.blockButton.widthAnchor.constraint(equalToConstant: 50)
-                ])
-                self.blockButton.isHidden = false
+    let waveformProgressView = DSWaveformImageWrapper.shared.createWaveformImageView(
+        frame: CGRect(x: 0,
+                      y: CommonUsage.screenHeight - CommonUsage.safeAreaHeight - CommonUsage.tabBarHeight - 180,
+                      width: CommonUsage.screenWidth,
+                      height: 100))
 
-            }
+}
 
-        } else {
-            
-            DispatchQueue.main.async {
-                self.blockButton.isHidden = true
-            }
-        }
-    }
+extension SoundDetailViewController: AudioPlayerProtocol {
     
-    private func backToHome() {
-        
-        guard let leave = delegate?.leaveDetailPage else { return }
-        displayLink?.invalidate()
-        AudioPlayerWindow.shared.makeSmallFrame()
-        AudioPlayerWindow.shared.showVC()
-        leave()
-
-        navigationController?.popToRootViewController(animated: true)
-        guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
-        scTabBarController.selectedIndex = 0
-    }
-
-    
-    private func popBlockAlert() {
-        
-        let alert = UIAlertController(title: "Are you sure?",
-                                      message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
-                                      preferredStyle: .alert )
-        
-        let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
-            guard let self = self else { return }
-            self.blockUser()
-        }
-        
-        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
-        
-        alert.addAction(cancelButton)
-        alert.addAction(okButton)
-        
-        present(alert, animated: true, completion: nil)
-        
-    }
-
-    
-    private func blockUser() {
-        
-        guard let currentUserDocID = SignInManager.shared.currentUserInfoFirebase?.userInfoDoumentID,
-              let  blockUser = authorIdentity?.userID else { return }
-        
-        FirebaseManager.shared.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
-                                       toBeBlockedID: blockUser,
-                                              completion: backToHome)
-    }
-
-    
-    private func setWaveformView() {
-        view.addSubview(waveformView)
-    }
-    
-    private func setWaveformProgressView() {
-        view.addSubview(waveformProgressView)
-    }
-    
-    func addObserver() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updatePlayInfo),
-                                               name: .playingAudioChange,
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(changeButtImage),
-                                               name: .didStateChange,
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updatePlaybackTime),
-                                               name: .didCurrentTimeChange,
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(changeButtImage),
-                                               name: .didItemPlayToEndTime,
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(audioPlayHelperError),
-                                               name: .audioPlayHelperError,
-                                               object: nil)
-        
-    }
-    
-    @objc func audioPlayHelperError() {
-        popErrorAlert(title: "Audio player errer", message: "Please terminate SoundScape_ and try again.")
-    }
-    
-    func renderWave(documentID: String) {
-        let cachesFolderURL = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-        let audioFileURL = cachesFolderURL?.appendingPathComponent("\(documentID).m4a")
-        guard let localURL = audioFileURL else { return }
-        
-        DispatchQueue.main.async {
-            
-            self.updateWaveformImages(localURL: localURL)
-            let waveformAnalyzer = WaveformAnalyzer(audioAssetURL: localURL)
-            waveformAnalyzer?.samples(count: 10) { samples in
-                print("sampled down to 10, results are \(samples ?? [])")
-            }
-        }
-        
-    }
-    
-    @objc func updatePlaybackTime(notification: Notification) {
-        
-        guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
-        let currentTime = playProgress.currentTime
-        let duration = playProgress.duration
-        let timeProgress = currentTime / duration
-        
-        updateProgressWaveform(timeProgress)
-        
-    }
-    
-    @objc func changeButtImage() {
-        
-        if AudioPlayHelper.shared.isPlaying {
-            DispatchQueue.main.async {
-                            let config = UIImage.SymbolConfiguration(pointSize: 32)
-                            let bigImage = UIImage(systemName: CommonUsage.SFSymbol.pause, withConfiguration: config)
-                self.playButton.setImage(bigImage, for: .normal)
-            }
-        }
-        
-        if !AudioPlayHelper.shared.isPlaying {
-            DispatchQueue.main.async {
-                let config = UIImage.SymbolConfiguration(pointSize: 32)
-                let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
-                self.playButton.setImage(bigImage, for: .normal)
-            }
-        }
-    }
-    
-    @objc func updatePlayInfo(notification: Notification) {
+    func updatePlayInfo(notification: Notification) {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
-        
         DispatchQueue.main.async {
             self.titleLabel.text = nowPlayingInfo.title
             self.backgroundImageView.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
             self.authorButton.setTitle(nowPlayingInfo.author, for: .normal)
             self.contentTextView.text = nowPlayingInfo.content
         }
-        
-        authorIdentity = UserIdentity(userID: nowPlayingInfo.authorUserID, userIDProvider: nowPlayingInfo.authorAccountProvider)
+        authorIdentity = UserIdentity(userID: nowPlayingInfo.authorUserID,
+                                      userIDProvider: nowPlayingInfo.authorAccountProvider)
         nowPlayingDocumentID = nowPlayingInfo.documentID
-    }
-    
-    private func updateWaveformImages(localURL: URL) {
-        // always uses background thread rendering
-        
-        let waveformViewConfig = Waveform.Style.StripeConfig.init(color: UIColor(named: CommonUsage.scSuperLightBlue) ?? .green, width: 1.0, spacing: 1, lineCap: .round)
-        waveformImageDrawer.waveformImage(fromAudioAt: localURL,
-                                          with: Waveform.Configuration(size: self.waveformView.bounds.size,
-                                                                       backgroundColor: .clear,
-                                                                       style: .striped(waveformViewConfig) , dampening: nil,
-                                                                       position: .middle,
-                                                                       scale: 10.0,
-                                                                       verticalScalingFactor: 0.5, shouldAntialias: true), completionHandler: { image in
-            DispatchQueue.main.async {
-                self.waveformView.image = image
-            }
-        })
-        
-        let waveformProgressViewConfig = Waveform.Style.StripeConfig.init(color: UIColor(named: CommonUsage.scWhite) ?? .orange, width: 1.0, spacing: 1, lineCap: .round)
-        waveformImageDrawer.waveformImage(fromAudioAt: localURL,
-                                          with: Waveform.Configuration(size: self.waveformView.bounds.size,
-                                                                       backgroundColor: .clear,
-                                                                       style: .striped(waveformProgressViewConfig), dampening: nil,
-                                                                       position: .middle,
-                                                                       scale: 10.0,
-                                                                       verticalScalingFactor: 0.5, shouldAntialias: true), completionHandler: { image in
-            DispatchQueue.main.async {
-                self.waveformProgressView.image = image
-            }
-        })
-    }
-    
-    private func updateProgressWaveform(_ progress: Double) {
-        let fullRect = waveformProgressView.bounds
-        let newWidth = Double(fullRect.size.width) * progress
-        let maskLayer = CAShapeLayer()
-        let maskRect = CGRect(x: 0.0, y: 0, width: newWidth, height: Double(fullRect.size.height))
-        let path = CGPath(rect: maskRect, transform: nil)
-        maskLayer.path = path
-        waveformProgressView.layer.mask = maskLayer
-    }
-    
-    func updateUI() {
-        
-        displayLink = CADisplayLink(target: self, selector: #selector(updatePlaybackTime))
-        displayLink?.add(to: RunLoop.main, forMode: .common)
-        
-        if audioHelper.isPlaying == true {
-            
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.pause), for: .normal)
-            
-        } else {
-            
-            playButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.play), for: .normal)
-        }
     }
     
 }
 
-extension ProSoundDetailViewController {
+// MARK: - UI method
+
+extension SoundDetailViewController {
     
     private func setBackgroundImage() {
         view.addSubview(backgroundImageView)

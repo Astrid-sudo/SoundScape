@@ -36,8 +36,12 @@ class HomeVC: UIViewController {
         return table
     }()
     
-    let loadingAnimationView = LottieWrapper.shared.greyStripeLoadingView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
-    
+    let loadingAnimationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
+                                                                              frame: CGRect(x: 0,
+                                                                                            y: 0,
+                                                                                            width: CommonUsage.screenWidth,
+                                                                                            height: CommonUsage.screenHeight))
+
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -49,7 +53,8 @@ class HomeVC: UIViewController {
         setViewBackgroundcolor()
     }
     
-    deinit {
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
     }
     
