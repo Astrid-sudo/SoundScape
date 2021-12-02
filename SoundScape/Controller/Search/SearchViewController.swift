@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Lottie
 
 class SearchViewController: UIViewController {
     
@@ -111,15 +110,6 @@ class SearchViewController: UIViewController {
     }
     
     // MARK: - UI Properties
-    
-    private lazy var animationView: AnimationView = {
-        let animationView = AnimationView(name: "74194-sleepy-sleep")
-        animationView.frame = CGRect(x: 0, y: 100, width: 100, height: 100)
-        animationView.center = view.center
-        animationView.contentMode = .scaleAspectFill
-        animationView.loopMode = .loop
-        return animationView
-    }()
     
     private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
