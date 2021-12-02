@@ -8,13 +8,29 @@
 import Foundation
 import AVFoundation
 
+struct PlayInfo {
+    let title: String
+    let author: String
+    let content: String
+    let duration: Double
+    let documentID: String
+    let authorUserID: String
+    let audioImageNumber: Int
+    let authorAccountProvider: String
+}
+
+struct PlayProgress {
+    let currentTime: Double
+    let duration: Double
+}
+
 class AudioPlayHelper: NSObject {
     
     // MARK: - properties
     
     static let shared = AudioPlayHelper()
     
-    var audioPlayer: AVAudioPlayer?
+    private var audioPlayer: AVAudioPlayer?
     
     var displayLink: CADisplayLink?
     
@@ -30,10 +46,19 @@ class AudioPlayHelper: NSObject {
     
     var currentTime: Double {
         
-        guard let audioPlayer = audioPlayer else {
-            return 0.0
+        set {
+            audioPlayer?.currentTime = newValue
+            postNotification()
         }
-        return audioPlayer.currentTime
+        
+        get {
+            guard let audioPlayer = audioPlayer else {
+                return 0.0
+            }
+            return audioPlayer.currentTime
+        }
+        
+        
     }
     
     var duration: Double {
@@ -57,13 +82,12 @@ class AudioPlayHelper: NSObject {
             } catch {
                 print("fail to create AVAudioPlayer")
                 NotificationCenter.default.post(name: .audioPlayHelperError, object: nil, userInfo: nil)
-
                 
             }
             
             let userInfoKey = "UserInfo"
-            let userInfo: [AnyHashable: Any] = [userInfoKey: url]
-            NotificationCenter.default.post(name: .remoteURLDidSelect, object: nil, userInfo: userInfo)
+            let userInfo: [AnyHashable: Any] = [userInfoKey: duration]
+            NotificationCenter.default.post(name: .didItemDurationChange, object: nil, userInfo: userInfo)
             
         }
     }
@@ -72,7 +96,6 @@ class AudioPlayHelper: NSObject {
         didSet {
             
             guard let currentPlayInfo = currentPlayInfo else { return }
-            
             let userInfoKey = "UserInfo"
             let userInfo: [AnyHashable: Any] = [userInfoKey: currentPlayInfo]
             NotificationCenter.default.post(name: .playingAudioChange, object: nil, userInfo: userInfo)
@@ -88,22 +111,10 @@ class AudioPlayHelper: NSObject {
     // MARK: - method
     
     @objc func postNotification() {
-        
-        if let currentPlayInfo = currentPlayInfo {
-            
-            let playProgress = PlayProgress(currentTime: currentTime, duration: currentPlayInfo.duration)
-            let userInfoKey = "UserInfo"
-            let userInfo: [AnyHashable: Any] = [userInfoKey: playProgress]
-            
-            NotificationCenter.default.post(name: .didCurrentTimeChange, object: nil, userInfo: userInfo)
-            
-        } else { // play audio from local url (EditVC will get this Notification)
-            
-            let userInfoKey = "UserInfo"
-            let userInfo: [AnyHashable: Any] = [userInfoKey: currentTime]
-            NotificationCenter.default.post(name: .didCurrentTimeChange, object: nil, userInfo: userInfo)
-        }
-
+        let playProgress = PlayProgress(currentTime: currentTime, duration: duration)
+        let userInfoKey = "UserInfo"
+        let userInfo: [AnyHashable: Any] = [userInfoKey: playProgress]
+        NotificationCenter.default.post(name: .didCurrentTimeChange, object: nil, userInfo: userInfo)
     }
     
     func play() {
@@ -131,33 +142,18 @@ class AudioPlayHelper: NSObject {
     }
     
     func seek(position: Double) {
-        audioPlayer?.currentTime = position
-    }
-    
-    func limitCurrentTime(head: Double, tail: Double) {
-        
-        guard let audioPlayer = audioPlayer else { return }
-        
-        if audioPlayer.currentTime < head {
-            if isPlaying == true {
-                pause()
-            }
-            seek(position: head)
-        }
-        
-        if audioPlayer.currentTime > tail {
-            if isPlaying == true {
-                pause()
-            }
-            seek(position: head)
-        }
+        currentTime = position * duration
+        print(audioPlayer?.currentTime)
+        print(currentTime)
     }
     
     func setPlayInfo(playInfo: PlayInfo) {
         currentPlayInfo = playInfo
     }
-
+    
 }
+
+// MARK: - conform to AVAudioPlayerDelegate
 
 extension AudioPlayHelper: AVAudioPlayerDelegate {
     
@@ -166,6 +162,8 @@ extension AudioPlayHelper: AVAudioPlayerDelegate {
         NotificationCenter.default.post(name: .didItemPlayToEndTime, object: nil, userInfo: nil)
     }
 }
+
+// MARK: - extension Notification.Name
 
 extension Notification.Name {
     static let audioPlayHelperUpdateTime = Notification.Name("audioPlayHelperUpdateTime")

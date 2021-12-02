@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import AVFoundation
 
 struct CommonUsage {
     
@@ -15,6 +16,15 @@ struct CommonUsage {
     static let base: CGFloat = 375
     static var ratio: CGFloat {
         return screenWidth / base
+    }
+    
+    static let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
+    
+    static var tabBarHeight: CGFloat {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return 0 }
+        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
+        return tabBarHeight
     }
     
     static var audioImages: [UIImage?] = [UIImage(named: CommonUsage.animalDog),
@@ -40,14 +50,7 @@ struct CommonUsage {
     static let font = "PingFang TC"
     static let fontSemibold = "PingFangTC-Semibold"
     
-    static let fakeMap = "fakeMap"
-    static let audioImage = "audioImage"
-    static let audioImage2 = "audioImage2"
-    static let profileCover = "profileCover"
-    static let profileCover2 = "profileCover2"
-    static let profileCover3 = "profileCover3"
     static let profileCover4 = "profileCover4"
-    static let profileCover5 = "profileCover5"
     static let yeh1024 = "yeh1024"
     static let launchScreen1 = "launchScreen1"
     
@@ -144,13 +147,22 @@ struct CommonUsage {
         static let loading = "loading..."
     }
     
-    struct CollectionName {
-        static let allUsers = "AllUsers"
-        static let allAudioFiles = "AllAudioFiles"
-        static let allLocations = "AllLocations"
-        static let comments = "Comments"
-    }
+}
+
+struct Constant {
+    static let allUsers = "AllUsers"
+    static let allAudioFiles = "AllAudioFiles"
+    static let allLocations = "AllLocations"
+    static let comments = "Comments"
+    static let followedBy = "followedBy"
+    static let following = "following"
+    static let myFavorite = "myFavorite"
+    static let profilePicture = "profilePicture"
+    static let blackList = "blackList"
+    static let userPic = "userPic"
+    static let coverPic = "coverPic"
     
+    static let createdTime = "createdTime"
 }
 
 extension UITextField {
@@ -175,16 +187,6 @@ extension UIView {
         let img = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return img
-    }
-}
-
-extension UIImageView {
-    func applyBlurEffect() {
-        let blurEffect = UIBlurEffect(style: .regular)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.frame = bounds
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        addSubview(blurEffectView)
     }
 }
 
@@ -224,4 +226,13 @@ extension UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
+}
+
+extension Notification.Name {
+    static let playingAudioChange = Notification.Name("playingAudioChange")
+    static let didItemPlayToEndTime = Notification.Name("didItemPlayToEndTime")
+    static let didCurrentTimeChange = Notification.Name("didCurrentTimeChange")
+    static let didStateChange = Notification.Name("didStateChange")
+    static let remoteURLDidSelect = Notification.Name("remoteURLDidSelect")
+    static let didItemDurationChange = Notification.Name("didItemDurationChange")
 }

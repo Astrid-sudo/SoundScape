@@ -7,12 +7,15 @@
 
 import UIKit
 import UniformTypeIdentifiers
-import Lottie
 
 class CreateAudioVC: UIViewController {
-    
-    let animationView = AnimationView(name: "lf30_editor_nhixegma")
-    
+
+    private let animationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .waveformBounce,
+                                                                               frame: CGRect(x: 0,
+                                                                                             y: 100,
+                                                                                             width: CommonUsage.screenWidth,
+                                                                                             height: 200))
+
     private lazy var recordButton: UIButton = {
         let button = UIButton()
         button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
@@ -54,8 +57,8 @@ class CreateAudioVC: UIViewController {
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         animationView.stop()
     }
     
@@ -77,10 +80,9 @@ class CreateAudioVC: UIViewController {
     @objc func goRecordPage() {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let recordVC = storyboard.instantiateViewController(withIdentifier: String(describing: RecordVC.self)) as? RecordVC else { return }
-        
+        guard let recordVC = storyboard.instantiateViewController(withIdentifier:
+                                                                    RecordVC.reuseIdentifier) as? RecordVC else { return }
         navigationController?.pushViewController(recordVC, animated: true)
-        
     }
     
     // MARK: - method
@@ -96,9 +98,6 @@ class CreateAudioVC: UIViewController {
     }
 
     private func addLottie() {
-        animationView.frame = CGRect(x: 0, y: 100, width: CommonUsage.screenWidth, height: 200)
-        animationView.contentMode = .scaleAspectFill
-        animationView.loopMode = .loop
         view.addSubview(animationView)
     }
     
@@ -113,7 +112,6 @@ class CreateAudioVC: UIViewController {
         ])
     }
 
-    
     private func setRecordButton() {
         view.addSubview(recordButton)
         recordButton.translatesAutoresizingMaskIntoConstraints = false
@@ -124,7 +122,6 @@ class CreateAudioVC: UIViewController {
             recordButton.heightAnchor.constraint(equalToConstant: 48)
         ])
     }
-    
     
 }
 
@@ -138,6 +135,7 @@ extension CreateAudioVC: UIDocumentPickerDelegate {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             guard let editVC = storyboard.instantiateViewController(withIdentifier: "EditVC") as? EditVC else { return }
             editVC.selectedFileURL = url
+            editVC.originDuraion = AudioPlayHelper.shared.duration
             navigationController?.pushViewController(editVC, animated: true)
         }
     }

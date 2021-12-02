@@ -1,5 +1,5 @@
 //
-//  RemoteAudioManager.swift
+//  AudioDownloadManager.swift
 //  SoundScape
 //
 //  Created by Astrid on 2021/11/16.
@@ -7,9 +7,9 @@
 
 import UIKit
 
-class RemoteAudioManager {
+class AudioDownloadManager {
     
-    static let shared = RemoteAudioManager()
+    static let shared = AudioDownloadManager()
     
     private init() {}
     

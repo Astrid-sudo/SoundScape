@@ -8,8 +8,7 @@
 import Foundation
 import AVFoundation
 
-protocol PlayRecoredStateChangableDelegate: AnyObject {
-    func didFinishPlaying()
+protocol RecordingUpdatableDelegate: AnyObject {
     func updateTimeAndPower(currentTime: TimeInterval, power: Float)
 }
 
@@ -26,12 +25,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     
     var audioRecorder: AVAudioRecorder?
    
-    var audioPlayer: AVAudioPlayer? {
-        didSet {
-            audioPlayer?.delegate = self
-        }
-    }
-    
     var isRecording = false
     
     var isPlaying = false
@@ -40,7 +33,7 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     
     var duration: Double?
     
-    weak var delegate: PlayRecoredStateChangableDelegate?
+    weak var delegate: RecordingUpdatableDelegate?
     
     var displayLink: CADisplayLink?
     
@@ -49,10 +42,9 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     private override init() {
         super.init()
         
-        //init an audio recorder
+        // init an audio recorder
         let filename = "User.m4a"
         let path = NSHomeDirectory() + "/Documents/" + filename
-        //        let url = URL(fileURLWithPath: path)
         self.url = URL(fileURLWithPath: path)
         let recordSettings: [String: Any] = [
             AVEncoderAudioQualityKey: AVAudioQuality.min.rawValue,
@@ -75,7 +67,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     // MARK: - method
     
     func settingAudioSession(toMode mode: AudioSessionMode) {
-        audioPlayer?.stop()
         
         let session = AVAudioSession.sharedInstance()
         do {
@@ -90,21 +81,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
             print(error.localizedDescription)
         }
     }
-    
-    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
-        
-        if flag == true {
-            do {
-                audioPlayer = try AVAudioPlayer(contentsOf: recorder.url)
-                self.duration = audioPlayer?.duration
-                print(duration)
-
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-    }
-    
     
      func checkAudioPermission(grantedCompletion: @escaping() -> Void,
                                notGrantedCompletion: @escaping() -> Void) {
@@ -138,28 +114,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         return url
     }
     
-    func playRecordedSound() {
-        if isRecording == false {
-            audioPlayer?.play()
-             isPlaying = true
-        }
-    }
-    
-    func pausePlayRecorded() {
-        if isRecording == false {
-            audioPlayer?.pause()
-             isPlaying = false
-        }
-    }
-    
-    func stopPlaying() {
-        if isRecording == false {
-            audioPlayer?.stop()
-            isPlaying = false
-            audioPlayer?.currentTime = 0
-        }
-    }
-    
     @objc func updateTimeAndPower() {
         
         guard let audioRecorder = audioRecorder else {
@@ -174,11 +128,4 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         
     }
     
-}
-
-extension AudioRecordHelper: AVAudioPlayerDelegate {
-    
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        delegate?.didFinishPlaying()
-    }
 }

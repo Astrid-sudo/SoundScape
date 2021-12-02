@@ -31,8 +31,6 @@ class AudioMapViewController: UIViewController {
     
     var audioTitle: String?
     
-//    let remotePlayHelper = RemotePlayHelper.shared
-    
     var tappedMarker = GMSMarker()
     
     var scInfoWindow = SCMapInfoWindow()
@@ -80,17 +78,15 @@ class AudioMapViewController: UIViewController {
     var newAudioDocumentIDs = Set<String>() {
         didSet {
             for documentID in newAudioDocumentIDs {
-                firebaseManager.fetchPosts { [weak self] result in
-                    
-                    guard let self = self else { return }
-                    
+                
+                firebaseManager.collectionfetchData(collectionType: .allAudioFiles) { (result: Result<[SCPost], Error>) in
                     switch result {
                         
                     case .success(let posts):
                         let audioPost = posts.filter({$0.documentID == documentID}).first
                         self.audioPostCache[documentID] = audioPost
-                        
                         self.makeMarker()
+                        
                     case .failure(let error):
                         print("Cant fetch new SCPost \(error)")
                     }
@@ -153,9 +149,6 @@ class AudioMapViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
-    }
-    
-    deinit {
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -190,9 +183,7 @@ class AudioMapViewController: UIViewController {
     }
     
     private func checkLocations() {
-        
-        firebaseManager.checkLocationChange { result in
-            
+        _ = firebaseManager.collectionAddListener(collectionType: .allLocations) { (result: Result<[SCLocation], Error>) in
             switch result {
                 
             case .success(let locations):
@@ -204,6 +195,7 @@ class AudioMapViewController: UIViewController {
             }
         }
     }
+    
     
     private func filterOutAudioDocumentID() {
         
@@ -344,7 +336,6 @@ extension AudioMapViewController {
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
     }
     
-    
     private func addSearchBar() {
         navigationItem.titleView = searchBar
         navigationItem.titleView?.tintColor = UIColor(named: CommonUsage.scWhite)
@@ -360,7 +351,6 @@ extension AudioMapViewController {
             pinLoactionButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             pinLoactionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
         ])
-        
     }
     
     private func setTableView() {
@@ -375,13 +365,13 @@ extension AudioMapViewController {
     }
     
     func setMapHintLabel() {
-       view.addSubview(mapNoticeLabel)
+        view.addSubview(mapNoticeLabel)
         mapNoticeLabel.translatesAutoresizingMaskIntoConstraints = false
-       NSLayoutConstraint.activate([
-           mapNoticeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-           mapNoticeLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32)
-       ])
-   }
+        NSLayoutConstraint.activate([
+            mapNoticeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            mapNoticeLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32)
+        ])
+    }
     
     private func setMap() {
         view.addSubview(mapView)
@@ -489,11 +479,11 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
                                 authorAccountProvider: post.authIDProvider)
         
         if let remoteURL = post.audioURL {
-            RemoteAudioManager.shared.downloadRemoteURL(documentID: post.documentID,
-                                                        remoteURL: remoteURL, completion: { localURL in
+            AudioDownloadManager.shared.downloadRemoteURL(documentID: post.documentID,
+                                                          remoteURL: remoteURL, completion: { localURL in
                 self.loadAudio(localURL: localURL, playInfo: playInfo)
             },
-                                                        errorCompletion: { [weak self] errorMessage in
+                                                          errorCompletion: { [weak self] errorMessage in
                 guard let self = self else { return }
                 self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
             }

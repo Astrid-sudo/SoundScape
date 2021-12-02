@@ -62,7 +62,7 @@ class SignInManager {
             NotificationCenter.default.post(name: .currentUserBlacklistChange, object: nil, userInfo: nil)
         }
     }
-
+    
     private init() {}
     
     // MARK: - real user method
@@ -104,10 +104,10 @@ class SignInManager {
                 let errorMessage = error.localizedDescription
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-
+                
                 //Home VC will observe
                 NotificationCenter.default.post(name: .fetchLoginUserError, object: nil, userInfo: userInfo)
-
+                
             }
         }
     }
@@ -126,10 +126,7 @@ class SignInManager {
     
     func fetchUserInfoFromFirebase(userID: String) {
         
-        self.firebaseManager.fetchUserInfoFromFirebase(userID: userID) { [weak self] result in
-           
-            guard let self = self else { return }
-            
+        self.firebaseManager.documentFetchData(documentType: .userInfoDoc(userInfoDocumentID: userID)) { (result: Result<SCUser, Error>)  in
             switch result {
                 
             case .success(let userInfo):
@@ -141,20 +138,19 @@ class SignInManager {
                 let errorMessage = error.localizedDescription
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-
+                
                 //Home VC will observe
                 NotificationCenter.default.post(name: .fetchLoginUserError, object: nil, userInfo: userInfo)
             }
+            
         }
     }
     
     private func checkUserFavoriteList() {
-        
-        guard let userProfileDocumentID = currentUserInfoFirebase?.userInfoDoumentID else { return }
-        firebaseManager.checkFavoriteChange(userProfileDocumentID: userProfileDocumentID) { [weak self]
-            result in
-            
-            guard let self = self else { return }
+        guard let currentUserInfoDocumentID = currentUserInfoFirebase?.userInfoDoumentID else {
+            print("SignInManager: Failed to get currentUserInfoDocumentID. ")
+            return }
+        _ = firebaseManager.collectionAddListener(collectionType: .myFavorite(userInfoDocumentID: currentUserInfoDocumentID)) { (result: Result<[SCFavorite], Error>) in
             
             switch result {
                 
@@ -166,10 +162,9 @@ class SignInManager {
                 let errorMessage = error.localizedDescription
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-
+                
                 //Home VC will observe
                 NotificationCenter.default.post(name: .failedFetchFavorite, object: nil, userInfo: userInfo)
-                
             }
         }
     }
@@ -178,18 +173,18 @@ class SignInManager {
         guard let currentUserInfoDocumentID = currentUserInfoFirebase?.userInfoDoumentID else {
             print("SignInManager: Failed to get currentUserInfoDocumentID. ")
             return }
-        firebaseManager.checkFollowingsChange(userInfoDoumentID: currentUserInfoDocumentID) { [weak self] result in
-            guard let self = self else { return }
+        _ = firebaseManager.collectionAddListener(collectionType: .following(userInfoDocumentID: currentUserInfoDocumentID)) { (result: Result<[SCFollow], Error>) in
+            
             switch result {
-            case .success(let followings):
+            case .success(let followers):
                 
-                self.currentUserFollowingList = followings
+                self.currentUserFollowingList = followers
                 
             case .failure(let error):
                 let errorMessage = error.localizedDescription
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-
+                
                 //Home VC will observe
                 NotificationCenter.default.post(name: .failedFetchFollowingList, object: nil, userInfo: userInfo)
             }
@@ -200,8 +195,8 @@ class SignInManager {
         guard let currentUserInfoDocumentID = currentUserInfoFirebase?.userInfoDoumentID else {
             print("SignInManager: Failed to get currentUserInfoDocumentID. ")
             return }
-        firebaseManager.checkFollowersChange(userInfoDoumentID: currentUserInfoDocumentID) { [weak self] result in
-            guard let self = self else { return }
+        _ = firebaseManager.collectionAddListener(collectionType: .followedBy(userInfoDocumentID: currentUserInfoDocumentID)) { (result: Result<[SCFollow], Error>) in
+            
             switch result {
             case .success(let followers):
                 
@@ -211,7 +206,7 @@ class SignInManager {
                 let errorMessage = error.localizedDescription
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-
+                
                 //Home VC will observe
                 NotificationCenter.default.post(name: .failedFetchFollowerList, object: nil, userInfo: userInfo)
             }
@@ -222,7 +217,7 @@ class SignInManager {
         
         guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
         
-        self.firebaseManager.checkUserPicChange(userInfoDoumentID: userID) { result in
+        firebaseManager.documentAddListener(documentType: .userPicDoc(userInfoDocumentID: userID)) { (result: Result<SCPicture, Error>) in
             switch result {
             case .success(let picture):
                 self.currentUserPic = picture.picture
@@ -230,7 +225,7 @@ class SignInManager {
                 let errorMessage = error.localizedDescription
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-
+                
                 //Profile VC will observe
                 NotificationCenter.default.post(name: .failedFetchUserProfilePic, object: nil, userInfo: userInfo)
             }
@@ -239,7 +234,7 @@ class SignInManager {
     
     func fetchUserPicFromFirebase() {
         guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
-        firebaseManager.fetchUserPicFromFirebase(userID: userID) { result in
+        firebaseManager.documentFetchData(documentType: .userPicDoc(userInfoDocumentID: userID)) { (result: Result<SCPicture, Error>)  in
             switch result {
             case .success(let picture):
                 self.currentUserPic = picture.picture
@@ -247,7 +242,7 @@ class SignInManager {
                 let errorMessage = error.localizedDescription
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-
+                
                 // Profile VC will observe
                 NotificationCenter.default.post(name: .failedFetchUserProfilePic, object: nil, userInfo: userInfo)
             }
@@ -257,8 +252,7 @@ class SignInManager {
     func checkCoverPicFromFirebase() {
         
         guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
-        
-        self.firebaseManager.checkCoverPicChange(userInfoDoumentID: userID) { result in
+        firebaseManager.documentAddListener(documentType: .userCoverDoc(userInfoDocumentID: userID)) { (result: Result<SCPicture, Error>)  in
             switch result {
             case .success(let picture):
                 self.currentUserCover = picture.picture
@@ -266,7 +260,7 @@ class SignInManager {
                 let errorMessage = error.localizedDescription
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-
+                
                 // Profile VC will observe
                 NotificationCenter.default.post(name: .failedFetchUserCoverPic, object: nil, userInfo: userInfo)
             }
@@ -275,7 +269,7 @@ class SignInManager {
     
     func fetchCoverPicFromFirebase() {
         guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
-        firebaseManager.fetchCoverPicFromFirebase(userID: userID) { result in
+        firebaseManager.documentFetchData(documentType: .userCoverDoc(userInfoDocumentID: userID)) { (result: Result<SCPicture, Error>)  in
             switch result {
             case .success(let picture):
                 self.currentUserCover = picture.picture
@@ -283,16 +277,17 @@ class SignInManager {
                 let errorMessage = error.localizedDescription
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-
+                
                 //Profile VC will observe
                 NotificationCenter.default.post(name: .failedFetchUserCoverPic, object: nil, userInfo: userInfo)
             }
         }
     }
     
+    
     func checkBlackListFromFirebase() {
         guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
-        firebaseManager.checkBlackListChange(userInfoDoumentID: userID) { result in
+        _ = firebaseManager.collectionAddListener(collectionType: .blackList(userInfoDocumentID: userID)) { (result: Result<[SCBlockUser], Error>) in
             switch result {
             case .success(let users):
                 self.currentUserBlacklist = users
@@ -300,13 +295,13 @@ class SignInManager {
                 let errorMessage = error.localizedDescription
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
-
+                
                 //Home VC will observe
                 NotificationCenter.default.post(name: .failedFetchBlackList, object: nil, userInfo: userInfo)
             }
         }
     }
-
+    
 }
 
 extension Notification.Name {
