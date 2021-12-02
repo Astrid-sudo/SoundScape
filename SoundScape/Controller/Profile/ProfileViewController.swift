@@ -103,9 +103,8 @@ class ProfileViewController: UIViewController {
         setTableView()
     }
     
-    // MARK: - deinit
-    
-    deinit {
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -574,7 +573,7 @@ extension ProfileViewController: ProfileCellDelegate {
     func blockThisUser() {
     }
     
-    func manipulateFollow() {
+    func toggleFollow() {
     }
     
     func goSettingPage() {

@@ -49,7 +49,8 @@ class HomeVC: UIViewController {
         setViewBackgroundcolor()
     }
     
-    deinit {
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
     }
     

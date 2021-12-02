@@ -100,7 +100,8 @@ class OthersProfileViewController: UIViewController {
         setBackgroundColor()
     }
     
-    deinit {
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -672,7 +673,7 @@ extension OthersProfileViewController: ProfileCellDelegate {
         popBlockAlert()
     }
     
-    func manipulateFollow() {
+    func toggleFollow() {
         guard let userWillDisplay = userWillDisplay,
               let userInfoDoumentID = userWillDisplay.userInfoDoumentID,
               let loggedInUserInfo = signInManager.currentUserInfoFirebase,

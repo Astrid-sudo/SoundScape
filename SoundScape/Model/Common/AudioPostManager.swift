@@ -36,14 +36,10 @@ class AudioPostManager {
     private  init () {
         addObserver()
         fetchDataFromFirebase()
-        print("AudioPostManager init")
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
-        print("AudioPostManager deinit")
-
-        
     }
     
     // MARK: - method

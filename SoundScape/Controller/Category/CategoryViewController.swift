@@ -143,9 +143,6 @@ class CategoryViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.navigationBar.isHidden = false
-    }
-    
-    deinit {
         NotificationCenter.default.removeObserver(self)
     }
     

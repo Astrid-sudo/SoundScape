@@ -9,7 +9,7 @@ import UIKit
 
 protocol ProfileCellDelegate: AnyObject {
     func blockThisUser()
-    func manipulateFollow()
+    func toggleFollow()
     func goSettingPage()
     func pressSelectImage(selectedPicButton: PicType)
 }
@@ -117,7 +117,7 @@ class ProfileTableViewCell: UITableViewCell {
     private lazy var followButton: UIButton = {
         let button = UIButton()
         button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
-        button.addTarget(self, action: #selector(manipulateFollow), for: .touchUpInside)
+        button.addTarget(self, action: #selector(toggleFollow), for: .touchUpInside)
         button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
         button.layer.cornerRadius = 15
         button.setTitle(CommonUsage.Text.follow, for: .normal)
@@ -191,8 +191,8 @@ class ProfileTableViewCell: UITableViewCell {
         delegate?.blockThisUser()
     }
     
-    @objc func manipulateFollow() {
-        delegate?.manipulateFollow()
+    @objc func toggleFollow() {
+        delegate?.toggleFollow()
     }
     
     @objc func goSettingPage() {

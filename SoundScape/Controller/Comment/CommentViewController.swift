@@ -102,7 +102,8 @@ class CommentViewController: UIViewController {
         currentUserImageView.image = UIImage(data: data)
     }
     
-    deinit {
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
     }
     
