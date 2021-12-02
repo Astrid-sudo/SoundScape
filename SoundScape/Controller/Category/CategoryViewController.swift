@@ -67,7 +67,8 @@ class CategoryViewController: UIViewController {
     let signInManager = SignInManager.shared
     // MARK: - UI properties
     
-    let loadingAnimationView = LottieWrapper.shared.greyStripeLoadingView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
+    let loadingAnimationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
+                                                                              frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
     
     private lazy var headView: UIImageView = {
         let imageView = UIImageView()
@@ -143,9 +144,6 @@ class CategoryViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.navigationBar.isHidden = false
-    }
-    
-    deinit {
         NotificationCenter.default.removeObserver(self)
     }
     

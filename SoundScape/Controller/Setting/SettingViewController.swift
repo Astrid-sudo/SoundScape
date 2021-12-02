@@ -52,7 +52,8 @@ class SettingViewController: UIViewController {
         return table
     }()
     
-    private let animationView = LottieWrapper.shared.womanWalkingAnimationView(frame: CGRect(x: 0,
+    private let animationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .womanWalking,
+                                                                               frame: CGRect(x: 0,
                                                                                              y: 80,
                                                                                              width: CommonUsage.screenWidth,
                                                                                              height: CommonUsage.screenHeight / 3))

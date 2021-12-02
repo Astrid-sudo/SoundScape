@@ -74,8 +74,12 @@ class ProfileViewController: UIViewController {
     
     // MARK: - UI properties
     
-    let loadingAnimationView = LottieWrapper.shared.greyStripeLoadingView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
-    
+    let loadingAnimationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
+                                                                              frame: CGRect(x: 0,
+                                                                                            y: 0,
+                                                                                            width: CommonUsage.screenWidth,
+                                                                                            height: CommonUsage.screenHeight))
+
     private lazy var tableView: UITableView = {
         let table = UITableView()
         table.dataSource = self
@@ -103,9 +107,8 @@ class ProfileViewController: UIViewController {
         setTableView()
     }
     
-    // MARK: - deinit
-    
-    deinit {
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -574,7 +577,7 @@ extension ProfileViewController: ProfileCellDelegate {
     func blockThisUser() {
     }
     
-    func manipulateFollow() {
+    func toggleFollow() {
     }
     
     func goSettingPage() {

@@ -88,8 +88,12 @@ class OthersProfileViewController: UIViewController {
     
     var selectedPicButton = PicType.coverPic
     
-    let loadingAnimationView = LottieWrapper.shared.greyStripeLoadingView(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
-    
+    let loadingAnimationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
+                                                                              frame: CGRect(x: 0,
+                                                                                            y: 0,
+                                                                                            width: CommonUsage.screenWidth,
+                                                                                            height: CommonUsage.screenHeight))
+
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -100,7 +104,8 @@ class OthersProfileViewController: UIViewController {
         setBackgroundColor()
     }
     
-    deinit {
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -418,7 +423,6 @@ class OthersProfileViewController: UIViewController {
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
         
-        
         switch profilePageType {
         case .otherUser:
             navigationItem.title = userWillDisplay.username
@@ -672,7 +676,7 @@ extension OthersProfileViewController: ProfileCellDelegate {
         popBlockAlert()
     }
     
-    func manipulateFollow() {
+    func toggleFollow() {
         guard let userWillDisplay = userWillDisplay,
               let userInfoDoumentID = userWillDisplay.userInfoDoumentID,
               let loggedInUserInfo = signInManager.currentUserInfoFirebase,

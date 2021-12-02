@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Lottie
 
 class CommentViewController: UIViewController {
     
@@ -38,19 +37,9 @@ class CommentViewController: UIViewController {
         didSet {
             for newAuthorId in newAuthorIDs {
                 fetchUserPicFromFirebase(userID: newAuthorId)
-//                firebaseManager.fetchUserPicFromFirebase(userID: newAuthorId) { [weak self] result in
-//                    guard let self = self else { return }
-//                    switch result {
-//                    case .success(let picture):
-//                        self.userPicCache[newAuthorId] = picture.picture
-//                    case .failure(let error):
-//                        print("Failed to fetch \(newAuthorId)'s picString \(error)")
-//                    }
-//                }
             }
         }
     }
-    
     
     var authorsIDSet = Set<String>() {
         didSet {
@@ -102,7 +91,8 @@ class CommentViewController: UIViewController {
         currentUserImageView.image = UIImage(data: data)
     }
     
-    deinit {
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -364,15 +354,12 @@ class CommentViewController: UIViewController {
         return button
     }()
     
-    private lazy var animationView: AnimationView = {
-        let animationView = AnimationView(name: "lf30_editor_r2yecdir")
-        animationView.frame = CGRect(x: 0, y: 100, width: 400, height: 400)
-        animationView.center = view.center
-        animationView.contentMode = .scaleAspectFill
-        animationView.loopMode = .loop
-        return animationView
-    }()
-    
+    private let animationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .commentLoading,
+                                                                               frame: CGRect(x: 0,
+                                                                                             y: 100,
+                                                                                             width: 400,
+                                                                                             height: 400))
+
     private lazy var emptyTextViewConstraint = NSLayoutConstraint()
     private lazy var fullTextViewConstraint = NSLayoutConstraint()
     

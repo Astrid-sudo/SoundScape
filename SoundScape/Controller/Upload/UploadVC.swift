@@ -234,8 +234,12 @@ class UploadVC: UIViewController {
         return button
     }()
     
-     let animationView = LottieWrapper.shared.greyStripeLoadingView(frame: CGRect(x: 0, y: 100, width: 400, height: 400))
-    
+    let animationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
+                                                                       frame: CGRect(x: 0,
+                                                                                     y: 100,
+                                                                                     width: 400,
+                                                                                     height: 400))
+
      lazy var searchPlaceButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
