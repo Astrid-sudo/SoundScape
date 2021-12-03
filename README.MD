@@ -1,4 +1,4 @@
-<h2 align="center"># SoundScape_  </h2>  
+<h2 align="center">#SoundScape_  </h2>  
 <p align="center">
 <img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/SoundScape__Icon.png?raw=true" width="200" height="200"/>
 </p>
@@ -12,7 +12,7 @@
 
 ## Table of Contents
 * [Features](#Features)
-* [Technical Highlights](#TechnicalHighlights)
+* [TechnicalHighlights](#TechnicalHighlights)
 * [Libraries](#Libraries)
 * [ReleaseNotes](#ReleaseNotes)
 * [Contact](#contact)
