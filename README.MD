@@ -2,8 +2,8 @@
 <p align="center">
 <img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/SoundScape__Icon.png?raw=true" width="200" height="200"/>
 </p>
-<h2 align="center">Capture landscape by sound. </h2>			
-<h3 align="center">An audio focused social media. With SoundScape_, users can upload audio files, share the story of the audio, and mark the location where the audio recorded.</p>
+<h2 align="center">Capture landscape by sound.<br>An audio focused social media. </h2>			
+<h4 align="center">With SoundScape_, users can upload audio files, share the story of the audio, and mark the location where the audio recorded.</p>
 <br>
 
 <p align="center"><a href="https://apps.apple.com/tw/app/soundscape/id1591896646">
