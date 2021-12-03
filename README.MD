@@ -4,7 +4,7 @@
  An audio focused social media. With SoundScape_, users can upload audio files, share the story of the audio, and mark the location where the audio  recorded.
 
 <p align="center"><a href="https://apps.apple.com/tw/app/soundscape/id1591896646">
-<img src="https://i.imgur.com/X9tPvTS.png" width="120" height="40"/>
+<img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/SoundScape__Icon.png?raw=true" width="120" height="40"/>
 </a></p>
 
 ## Table of Contents
@@ -21,18 +21,32 @@
 
 ##### SoundScape Wall
  >Display all soundscape by category.
- 
+  <p>
+<img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/soundscape%20wall.png?raw=true" width="200" height="400"/>
+</p>
 ##### Search page
  >Search soundscape by title, author, or content. Allow filtering results by categories. 
+  <p>
+<img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/search.png?raw=true"width="200" height="400"/>
+</p>
  
 ##### Upload audio
  >Enable record or select audio file for uploading to SoundScape_.
- 
+  <p>
+<img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/record.png?raw=true" width="200" height="400"/>
+<img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/upload.png?raw=true" width="200" height="400"/>
+</p>
 ##### SoundScape_ Map
  >Roaming on map to feel what does it 'hear like' to be there.
+ <p>
+<img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/soundscape.png?raw=true" width="200" height="400"/>
+</p>
  
 ##### Profile
  >A place can view all soundscape you've uploaded, your favorite soundscape, and the soundscape upload by your following users.
+ <p>
+<img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/profile.png?raw=true" width="200" height="400"/>
+</p>
  
 ## Technical Highlights
 - Implemented OOP and MVC to keep code maintainable and simple.
