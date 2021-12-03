@@ -14,6 +14,7 @@
 * [Features](#Features)
 * [TechnicalHighlights](#TechnicalHighlights)
 * [Libraries](#Libraries)
+* [Requirement](#Requirement)
 * [ReleaseNotes](#ReleaseNotes)
 * [Contact](#contact)
 ## Features
@@ -72,6 +73,10 @@
 - [lottie-ios](https://github.com/airbnb/lottie-ios)
 - [IQKeyboardManagerSwift](https://github.com/hackiftekhar/IQKeyboardManager)
 - [SwiftLint](https://github.com/realm/SwiftLint)
+## Requirement
+- Xcode 13.0
+- Swift 5.0
+- iOS 14.0
 
 ## ReleaseNotes
 | Version | Date | Description                                                                                     |
