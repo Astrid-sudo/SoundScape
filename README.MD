@@ -53,7 +53,7 @@
 <img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/profile.png?raw=true" width="200" height="400"/>
 </p>
  
-## Technical Highlights
+## TechnicalHighlights
 - Implemented OOP and MVC to keep code maintainable and simple.
 - Encapsulated player behavior by protocol in order to follow low coupling principle.
 - Customized a player above the tab bar with AVAudioPlayer and CADisplayLink, which can keep playing audio across different tabs to allow users play audio instantly.
@@ -73,7 +73,7 @@
 - [IQKeyboardManagerSwift](https://github.com/hackiftekhar/IQKeyboardManager)
 - [SwiftLint](https://github.com/realm/SwiftLint)
 
-## Release Notes
+## ReleaseNotes
 | Version | Date | Description                                                                                     |
 | :-------| :----|:------------------------------------------------------------------------------------------------|
 | 1.0.2   | 2021.11.22 | Improved performance. |
