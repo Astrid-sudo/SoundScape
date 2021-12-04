@@ -25,32 +25,32 @@
 
 ##### SoundScape Wall
  >Display all soundscape by category.
-  <p>
+ <p align="center">
 <img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/soundscape%20wall.png?raw=true" width="200" height="400"/>
 </p>
 
 ##### Search page
  >Search soundscape by title, author, or content. Allow filtering results by categories. 
-  <p>
+  <p align="center">
 <img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/search.png?raw=true"width="200" height="400"/>
 </p>
  
 ##### Upload audio
  >Enable record or select audio file for uploading to SoundScape_.
-  <p>
+  <p align="center">
 <img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/record.png?raw=true" width="200" height="400"/>
 <img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/upload.png?raw=true" width="200" height="400"/>
 </p>
 
 ##### SoundScape_ Map
  >Roaming on map to feel what does it 'hear like' to be there.
- <p>
+ <p align="center">
 <img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/soundscape.png?raw=true" width="200" height="400"/>
 </p>
  
 ##### Profile
  >A place can view all soundscape you've uploaded, your favorite soundscape, and the soundscape upload by your following users.
- <p>
+ <p align="center">
 <img src="https://github.com/Astrid-sudo/SoundScape/blob/main/SoundScape/Screenshots/profile.png?raw=true" width="200" height="400"/>
 </p>
  
