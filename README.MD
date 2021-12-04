@@ -16,7 +16,7 @@
 * [Libraries](#Libraries)
 * [Requirement](#Requirement)
 * [ReleaseNotes](#ReleaseNotes)
-* [Contact](#contact)
+* [Contact](#Contact)
 ## Features
 - Record and Upload Audio: Grab your iPhone and share the unique soundscape anytime, anywhere.
 - SoundScape_  Map: Roaming on Google Map to explore soundscape from different area in the world.
