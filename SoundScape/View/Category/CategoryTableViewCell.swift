@@ -9,10 +9,6 @@ import UIKit
 
 class CategoryTableViewCell: UITableViewCell {
     
-    // MARK: - properties
-    
-    static let reuseIdentifier = String(describing: CategoryTableViewCell.self)
-    
     // MARK: - UI properties
     
     lazy var titlelabel: UILabel = {
@@ -44,7 +40,6 @@ class CategoryTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = UIColor(named: CommonUsage.scBlue)
         setImageView()
         setTitlelabel()
         setAuthorLabel()
@@ -55,6 +50,10 @@ class CategoryTableViewCell: UITableViewCell {
     }
     
     // MARK: - config UI method
+    
+    private func setBackgroundColor() {
+        backgroundColor = UIColor(named: CommonUsage.scBlue)
+    }
     
     private func setImageView() {
         contentView.addSubview(theImageView)

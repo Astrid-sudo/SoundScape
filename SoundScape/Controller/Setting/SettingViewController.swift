@@ -106,9 +106,10 @@ class SettingViewController: UIViewController {
         navigationItem.title = CommonUsage.Text.settings
         navigationController?.navigationBar.barTintColor = UIColor(named: CommonUsage.scBlue)
         let font = UIFont(name: CommonUsage.fontBungee, size: 28)
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: font,
-                                                                   NSAttributedString.Key.foregroundColor: UIColor(named: CommonUsage.scWhite)]
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
+        navigationController?.navigationBar.titleTextAttributes =
+        [NSAttributedString.Key.font: font,
+         NSAttributedString.Key.foregroundColor: UIColor(named: CommonUsage.scWhite)]
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self, action: #selector(backToLastPage))
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
         navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
     }

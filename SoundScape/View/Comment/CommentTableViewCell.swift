@@ -9,10 +9,6 @@ import UIKit
 
 class CommentTableViewCell: UITableViewCell {
     
-    // MARK: - properties
-    
-    static let reuseIdentifier = String(describing: CommentTableViewCell.self)
-    
     // MARK: - UI properties
     
     private lazy var wholeStackView: UIStackView = {

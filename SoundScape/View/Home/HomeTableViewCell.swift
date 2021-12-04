@@ -17,10 +17,7 @@ class HomeTableViewCell: UITableViewCell {
     
     // MARK: - properties
     
-    static let reuseIdentifier = String(describing: HomeTableViewCell.self)
-    
     var firebaseData = [SCPost]() {
-        
         didSet {
             collectionView.reloadData()
         }
@@ -149,10 +146,10 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         
         if let remoteURL = firebaseData[indexPath.item].audioURL {
             AudioDownloadManager.shared.downloadRemoteURL(documentID: firebaseData[indexPath.item].documentID,
-                                                        remoteURL: remoteURL, completion: { localURL in
+                                                          remoteURL: remoteURL, completion: { localURL in
                 self.loadAudio(localURL: localURL, playInfo: playInfo)
             },
-                                                        errorCompletion: { errorMessage in
+                                                          errorCompletion: { errorMessage in
                 self.delegate?.popErrorAlert(errorMessage: errorMessage)
             }
             )

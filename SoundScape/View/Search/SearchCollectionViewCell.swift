@@ -9,10 +9,6 @@ import UIKit
 
 class SearchCollectionViewCell: UICollectionViewCell {
     
-    // MARK: - properties
-    
-    static let reuseIdentifier = String(describing: SearchCollectionViewCell.self)
-    
     // MARK: - UI properties
     
     private lazy var textLabel: UILabel = {

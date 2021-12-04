@@ -18,8 +18,6 @@ protocol PressPassableDelegate: AnyObject {
 
 class HomeTableViewHeader: UITableViewHeaderFooterView {
     
-    static let reuseIdentifier = String(describing: HomeTableViewHeader.self)
-    
     private var section: Int?
     
     weak var delegate: PressPassableDelegate?

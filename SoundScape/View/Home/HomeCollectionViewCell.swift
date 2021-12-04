@@ -9,8 +9,6 @@ import UIKit
 
 class HomeCollectionViewCell: UICollectionViewCell {
     
-    static let reuseIdentifier = String(describing: HomeCollectionViewCell.self)
-    
     // MARK: - UI properties
     
     private lazy var audioImage: UIImageView = {

@@ -5,13 +5,11 @@
 //  Created by Astrid on 2021/10/19.
 //
 
-
 // swiftlint:disable file_length
 
 import UIKit
 import GoogleMaps
 import CoreLocation
-import JGProgressHUD
 
 class UploadVC: UIViewController {
     
@@ -293,23 +291,7 @@ class UploadVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         askUserLocation()
-        setNavigationBar()
-        setScrollView()
-        setTitleLabel()
-        setTitleTextField()
-        setDescriptionLabel()
-        setDescriptionTextView()
-        setCategoryLabel()
-        setCategoryCollectionView()
-        setAudioImageLabel()
-        setImageCollectionView()
-        setMapLabel()
-        setMapHintLabel()
-        setViewUnderMap()
-        setMapView()
-        setUploadButton()
-        setViewBackgroundColor()
-        setSearchPlaceButton()
+        configLayout()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -377,6 +359,26 @@ class UploadVC: UIViewController {
         default:
             break
         }
+    }
+    
+    private func configLayout() {
+        setNavigationBar()
+        setScrollView()
+        setTitleLabel()
+        setTitleTextField()
+        setDescriptionLabel()
+        setDescriptionTextView()
+        setCategoryLabel()
+        setCategoryCollectionView()
+        setAudioImageLabel()
+        setImageCollectionView()
+        setMapLabel()
+        setMapHintLabel()
+        setViewUnderMap()
+        setMapView()
+        setUploadButton()
+        setViewBackgroundColor()
+        setSearchPlaceButton()
     }
     
     // MARK: - action

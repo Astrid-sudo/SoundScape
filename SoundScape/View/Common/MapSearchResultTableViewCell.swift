@@ -9,10 +9,6 @@ import UIKit
 
 class MapSearchResultTableViewCell: UITableViewCell {
     
-    // MARK: - properties
-    
-    static let reuseIdentifier = String(describing: MapSearchResultTableViewCell.self)
-    
     // MARK: - UI properties
     
     lazy var titleLabel: UILabel = {

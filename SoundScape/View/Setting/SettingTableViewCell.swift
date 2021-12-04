@@ -9,10 +9,6 @@ import UIKit
 
 class SettingTableViewCell: UITableViewCell {
     
-    // MARK: - properties
-    
-    static let reuseIdentifier = String(describing: SettingTableViewCell.self)
-    
     // MARK: - UI properties
     
     lazy var label: UILabel = {

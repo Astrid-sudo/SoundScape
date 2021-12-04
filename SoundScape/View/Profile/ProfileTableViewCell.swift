@@ -18,8 +18,6 @@ class ProfileTableViewCell: UITableViewCell {
     
     // MARK: - properties
     
-    static let reuseIdentifier = String(describing: ProfileTableViewCell.self)
-    
     weak var delegate: ProfileCellDelegate?
     
     // MARK: - UI properties

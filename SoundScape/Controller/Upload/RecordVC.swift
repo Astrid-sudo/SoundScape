@@ -10,9 +10,7 @@ import UIKit
 class RecordVC: UIViewController {
     
     // MARK: - properties
-    
-    static let reuseIdentifier = String(describing: RecordVC.self)
-    
+
     private let audioRecordHelper = AudioRecordHelper.shared
     
     private let waveformImageDrawer = DSWaveformImageWrapper.shared.initWaveformImageDrawer()

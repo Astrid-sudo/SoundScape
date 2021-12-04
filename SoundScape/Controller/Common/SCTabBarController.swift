@@ -13,17 +13,12 @@ class SCTabBarController: UITabBarController {
     
     // MARK: - UI properties
     
-    static let reuseIdentifier = String(describing: SCTabBarController.self)
-    
     private var dontShowDetailConstraint = NSLayoutConstraint()
     
     private var showDetailConstraint = NSLayoutConstraint()
     
-//    var soundDetailVC: SoundDetailVC?
-    
     var soundDetailVC: SoundDetailViewController?
 
-    
     // MARK: - life cycle
     
     override func viewDidLoad() {

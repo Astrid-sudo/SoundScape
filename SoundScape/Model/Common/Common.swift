@@ -236,3 +236,22 @@ extension Notification.Name {
     static let remoteURLDidSelect = Notification.Name("remoteURLDidSelect")
     static let didItemDurationChange = Notification.Name("didItemDurationChange")
 }
+
+protocol ReuseID {}
+protocol CellReuseID: ReuseID {}
+protocol StoryboardID: ReuseID {}
+
+extension ReuseID {
+
+  static var reuseIdentifier: String {
+    get{
+      String(describing: self)
+    }
+  }
+}
+
+extension UICollectionReusableView: CellReuseID {}
+extension UITableViewCell: CellReuseID {}
+extension UITableViewHeaderFooterView: CellReuseID {}
+extension UIViewController: StoryboardID {}
+

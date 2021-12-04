@@ -8,11 +8,7 @@
 import UIKit
 
 class SearchTableViewCell: UITableViewCell {
-    
-    // MARK: - properties
-    
-    static let reuseIdentifier = String(describing: SearchTableViewCell.self)
-    
+
     // MARK: - UI properties
     
     lazy var titleLabel: UILabel = {
