@@ -50,26 +50,26 @@ class SignInViewController: UIViewController {
     
     private lazy var appNamelabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scRed)
+        label.textColor = UIColor(named: Constant.scRed)
         label.layer.cornerRadius = 10
         label.textAlignment = .center
-        label.font = UIFont(name: CommonUsage.fontBungee, size: 40)
-        label.text = CommonUsage.Text.appName
+        label.font = UIFont(name: Constant.fontBungee, size: 40)
+        label.text = Constant.Text.appName
         return label
     }()
     
     private lazy var noticeLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textColor = UIColor(named: Constant.scWhite)
         label.textAlignment = .center
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 12)
-        label.text = CommonUsage.Text.logInNotice
+        label.font = UIFont(name: Constant.fontSemibold, size: 12)
+        label.text = Constant.Text.logInNotice
         return label
     }()
     
     private lazy var viewPolicyButton: UIButton = {
         let button = UIButton()
-        button.setTitle(CommonUsage.Text.privacyPolicy, for: .normal)
+        button.setTitle(Constant.Text.privacyPolicy, for: .normal)
         button.setTitleColor(.systemBlue, for: .normal)
         button.addTarget(self, action: #selector(presentPolicy), for: .touchUpInside)
         return button
@@ -77,19 +77,19 @@ class SignInViewController: UIViewController {
     
     private lazy var andLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textColor = UIColor(named: Constant.scWhite)
         label.textAlignment = .center
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 12)
-        label.text = CommonUsage.Text.and
+        label.font = UIFont(name: Constant.fontSemibold, size: 12)
+        label.text = Constant.Text.and
         return label
     }()
     
     private lazy var LAEUButton: UIButton = {
         let button = UIButton()
-        button.setTitle(CommonUsage.Text.laeuButton, for: .normal)
+        button.setTitle(Constant.Text.laeuButton, for: .normal)
         button.setTitleColor(.systemBlue, for: .normal)
         button.addTarget(self, action: #selector(presentLAEU), for: .touchUpInside)
-        button.titleLabel?.font = UIFont(name: CommonUsage.font, size: 10)
+        button.titleLabel?.font = UIFont(name: Constant.font, size: 10)
         return button
     }()
 
@@ -116,7 +116,7 @@ class SignInViewController: UIViewController {
 extension SignInViewController {
     
     private func setBackgroundColor() {
-        view.backgroundColor = UIColor(named: CommonUsage.logInBlue)
+        view.backgroundColor = UIColor(named: Constant.logInBlue)
     }
     
     private func setAppImageView() {

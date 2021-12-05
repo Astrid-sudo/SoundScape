@@ -42,7 +42,7 @@ class SettingViewController: UIViewController {
     
     private lazy var tableView: UITableView = {
         let table = UITableView()
-        table.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        table.backgroundColor = UIColor(named: Constant.scBlue)
         table.dataSource = self
         table.delegate = self
         table.allowsSelection = true
@@ -55,8 +55,8 @@ class SettingViewController: UIViewController {
     private let animationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .womanWalking,
                                                                                frame: CGRect(x: 0,
                                                                                              y: 80,
-                                                                                             width: CommonUsage.screenWidth,
-                                                                                             height: CommonUsage.screenHeight / 3))
+                                                                                             width: UIProperties.screenWidth,
+                                                                                             height: UIProperties.screenHeight / 3))
     
     // MARK: - action
     
@@ -97,21 +97,21 @@ class SettingViewController: UIViewController {
     // MARK: - UI method
     
     private func setBackgroundColor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        view.backgroundColor = UIColor(named: Constant.scBlue)
     }
     
     private func setNavigationBar() {
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationController?.navigationBar.shadowImage = UIImage()
-        navigationItem.title = CommonUsage.Text.settings
-        navigationController?.navigationBar.barTintColor = UIColor(named: CommonUsage.scBlue)
-        let font = UIFont(name: CommonUsage.fontBungee, size: 28)
+        navigationItem.title = Constant.Text.settings
+        navigationController?.navigationBar.barTintColor = UIColor(named: Constant.scBlue)
+        let font = UIFont(name: Constant.fontBungee, size: 28)
         navigationController?.navigationBar.titleTextAttributes =
         [NSAttributedString.Key.font: font,
-         NSAttributedString.Key.foregroundColor: UIColor(named: CommonUsage.scWhite)]
+         NSAttributedString.Key.foregroundColor: UIColor(named: Constant.scWhite)]
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self, action: #selector(backToLastPage))
-        navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
-        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: Constant.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: Constant.scWhite)
     }
     
     private func setTableView() {

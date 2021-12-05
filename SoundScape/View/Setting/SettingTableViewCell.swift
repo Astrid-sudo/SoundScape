@@ -13,7 +13,7 @@ class SettingTableViewCell: UITableViewCell {
     
     lazy var label: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textColor = UIColor(named: Constant.scWhite)
         label.textAlignment = .left
         return label
     }()
@@ -22,7 +22,7 @@ class SettingTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = UIColor(named: CommonUsage.scBlue)
+        backgroundColor = UIColor(named: Constant.scBlue)
         setLabel()
     }
     

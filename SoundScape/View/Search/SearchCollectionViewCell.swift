@@ -13,8 +13,8 @@ class SearchCollectionViewCell: UICollectionViewCell {
     
     private lazy var textLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        label.textColor = UIColor(named: Constant.scWhite)
+        label.backgroundColor = UIColor(named: Constant.scLightBlue)
         label.layer.cornerRadius = 20
         label.textAlignment = .center
         label.clipsToBounds = true
@@ -52,11 +52,11 @@ class SearchCollectionViewCell: UICollectionViewCell {
     }
     
     func setLabelColorRed() {
-        textLabel.backgroundColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        textLabel.backgroundColor = UIColor(named: Constant.scSuperLightBlue)
     }
     
     func setLabelColorGreen() {
-        textLabel.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        textLabel.backgroundColor = UIColor(named: Constant.scLightBlue)
     }
 
 }

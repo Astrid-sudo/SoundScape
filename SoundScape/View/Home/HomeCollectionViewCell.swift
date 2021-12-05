@@ -24,7 +24,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.textColor = .white
         label.textAlignment = .left
-        label.font = UIFont(name: CommonUsage.font, size: 14)
+        label.font = UIFont(name: Constant.font, size: 14)
         return label
     }()
     
@@ -32,7 +32,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.textColor = .white
         label.textAlignment = .left
-        label.font = UIFont(name: CommonUsage.font, size: 12)
+        label.font = UIFont(name: Constant.font, size: 12)
         return label
     }()
     
@@ -40,7 +40,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = UIColor(named: CommonUsage.scBlue)
+        backgroundColor = UIColor(named: Constant.scBlue)
         setAudioImage()
         setAudioTitleLabel()
         setAuthorNameLabel()
@@ -87,7 +87,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     }
     
     func setCell(imageNumber: Int, audioTitle: String, author: String) {
-        audioImage.image = CommonUsage.audioImages[imageNumber]
+        audioImage.image = UIProperties.audioImages[imageNumber]
         audioTitleLabel.text = audioTitle
         authorNameLabel.text = author
     }
@@ -100,7 +100,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     
     func setImageBorder() {
         audioImage.layer.borderWidth = 5
-        audioImage.layer.borderColor = UIColor(named: CommonUsage.scRed)?.cgColor
+        audioImage.layer.borderColor = UIColor(named: Constant.scRed)?.cgColor
     }
     
     func removeImageBorder() {

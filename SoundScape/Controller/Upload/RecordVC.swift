@@ -22,15 +22,15 @@ class RecordVC: UIViewController {
         label.textColor = .white
         label.textAlignment = .left
         label.numberOfLines = 0
-        label.font = UIFont(name: CommonUsage.font, size: 14)
-        label.text = CommonUsage.Text.audioLengthNoticeWhenRecord
+        label.font = UIFont(name: Constant.font, size: 14)
+        label.text = Constant.Text.audioLengthNoticeWhenRecord
         return label
     }()
     
     private lazy var goEditButton: UIButton = {
         let button = UIButton()
-        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
-        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
+        button.backgroundColor = UIColor(named: Constant.scLightBlue)
         button.layer.cornerRadius = 10
         button.setTitle("Finish recording", for: .normal)
         button.addTarget(self, action: #selector(pushToNext), for: .touchUpInside)
@@ -41,23 +41,23 @@ class RecordVC: UIViewController {
     private let waveformLiveView = DSWaveformImageWrapper.shared.createWaveformLiveView(
         frame: CGRect(x: 0,
                       y: 0,
-                      width: CommonUsage.screenWidth,
+                      width: UIProperties.screenWidth,
                       height: 100))
     
     private lazy var recordTimeLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        label.textColor = UIColor(named: Constant.scSuperLightBlue)
         label.textAlignment = .left
-        label.font = UIFont(name: CommonUsage.font, size: 40)
+        label.font = UIFont(name: Constant.font, size: 40)
         label.text = "00:0.0"
         return label
     }()
     
     private lazy var recordAgainLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        label.textColor = UIColor(named: Constant.scSuperLightBlue)
         label.textAlignment = .left
-        label.text = CommonUsage.Text.recordAgain
+        label.text = Constant.Text.recordAgain
         label.isHidden = true
         return label
     }()
@@ -65,9 +65,9 @@ class RecordVC: UIViewController {
     private lazy var recordButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 30)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.record, withConfiguration: config)
+        let bigImage = UIImage(systemName: Constant.SFSymbol.record, withConfiguration: config)
         button.setImage(bigImage, for: .normal)
-        button.tintColor = UIColor(named: CommonUsage.scRed)
+        button.tintColor = UIColor(named: Constant.scRed)
         button.addTarget(self, action: #selector(manipulaterecord), for: .touchUpInside)
         button.isHidden = true
         return button
@@ -86,21 +86,21 @@ class RecordVC: UIViewController {
         setRecordTimeLabel()
         setRecordAgainLabel()
         audioRecordHelper.delegate = self
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        view.backgroundColor = UIColor(named: Constant.scBlue)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         let stripeConfig = DSWaveformImageWrapper.shared.configWaveformStripe(
-            color: UIColor(named: CommonUsage.scWhite),
+            color: UIColor(named: Constant.scWhite),
             width: 3,
             spacing: 3.5,
             lineCap: .butt)
         
         waveformLiveView.configuration = waveformLiveView.configuration.with(
             size: self.waveformLiveView.bounds.size,
-            backgroundColor: UIColor(named: CommonUsage.scBlue),
+            backgroundColor: UIColor(named: Constant.scBlue),
             style: .striped(stripeConfig),
             dampening: nil,
             position: .middle,
@@ -135,9 +135,9 @@ class RecordVC: UIViewController {
                                                            style: .plain,
                                                            target: self,
                                                            action: #selector(backToLastPage))
-        navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
-        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
-        navigationItem.title = CommonUsage.Text.record
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: Constant.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: Constant.scWhite)
+        navigationItem.title = Constant.Text.record
     }
     
     private func setGoEditButton() {
@@ -185,7 +185,7 @@ class RecordVC: UIViewController {
         recordTimeLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             recordTimeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                                     constant: (CommonUsage.screenWidth - 99) / 2 ),
+                                                     constant: (UIProperties.screenWidth - 99) / 2 ),
             recordTimeLabel.bottomAnchor.constraint(equalTo: recordButton.topAnchor, constant: -24)
         ])
     }
@@ -224,13 +224,13 @@ class RecordVC: UIViewController {
         if audioRecordHelper.isRecording == false {
             
             let config = UIImage.SymbolConfiguration(pointSize: 30)
-            let bigImage = UIImage(systemName: CommonUsage.SFSymbol.stopRecord, withConfiguration: config)
+            let bigImage = UIImage(systemName: Constant.SFSymbol.stopRecord, withConfiguration: config)
             recordButton.setImage(bigImage, for: .normal)
             
         } else {
             
             let config = UIImage.SymbolConfiguration(pointSize: 30)
-            let bigImage = UIImage(systemName: CommonUsage.SFSymbol.record, withConfiguration: config)
+            let bigImage = UIImage(systemName: Constant.SFSymbol.record, withConfiguration: config)
             recordButton.setImage(bigImage, for: .normal)
             
         }

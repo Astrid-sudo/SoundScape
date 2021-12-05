@@ -29,7 +29,7 @@ class HomeTableViewCell: UITableViewCell {
     
     let firebaseManager = FirebaseManager.shared
     
-    let signInManager = SignInManager.shared
+    let loggedInUserManager = LoggedInUserManager.shared
     
     weak var delegate: AlertPresentableDelegate?
     
@@ -43,7 +43,7 @@ class HomeTableViewCell: UITableViewCell {
         layout.minimumLineSpacing = 0
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        collectionView.backgroundColor = UIColor(named: Constant.scBlue)
         collectionView.bounces = true
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -56,8 +56,8 @@ class HomeTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = UIColor(named: CommonUsage.scBlue)
-        tintColor =  UIColor(named: CommonUsage.scBlue)
+        backgroundColor = UIColor(named: Constant.scBlue)
+        tintColor =  UIColor(named: Constant.scBlue)
         setCollectionView()
     }
     
@@ -165,7 +165,7 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         let post = firebaseData[index]
         let authorID = post.authorID
         
-        if authorID != signInManager.currentUserInfoFirebase?.userID {
+        if authorID != loggedInUserManager.currentUserInfoFirebase?.userID {
             // 封鎖作者
             return UIContextMenuConfiguration(
                 identifier: identifier, previewProvider: nil) { _ in

@@ -29,7 +29,7 @@ class PrivacyPolicyViewController: UIViewController {
     // MARK: - method
     
     private func loadURL() {
-        if let url = URL(string: CommonUsage.privacyPolicyURL) {
+        if let url = URL(string: Constant.privacyPolicyURL) {
             let request = URLRequest(url: url)
             webView.load(request)
         }
@@ -46,8 +46,8 @@ class PrivacyPolicyViewController: UIViewController {
     let webLoadingView = LottieWrapper.shared.createLottieAnimationView(lottieType: .blueStripeLoading,
                                                                         frame: CGRect(x: 0,
                                                                                       y: 0,
-                                                                                      width: CommonUsage.screenWidth,
-                                                                                      height: CommonUsage.screenHeight))
+                                                                                      width: UIProperties.screenWidth,
+                                                                                      height: UIProperties.screenHeight))
 
 }
 

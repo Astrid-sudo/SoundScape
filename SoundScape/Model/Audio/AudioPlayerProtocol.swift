@@ -45,11 +45,11 @@ extension AudioPlayerProtocol {
     // UI
     
     var playButtonImagePlay: UIImage? {
-        UIImage(systemName: CommonUsage.SFSymbol.play)
+        UIImage(systemName: Constant.SFSymbol.play)
     }
     
     var playButtonImagePause: UIImage? {
-        UIImage(systemName: CommonUsage.SFSymbol.pause)
+        UIImage(systemName: Constant.SFSymbol.pause)
     }
     
     // method

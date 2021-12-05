@@ -26,7 +26,7 @@ class OthersProfileViewController: UIViewController {
         }
     }
     
-    let signInManager = SignInManager.shared
+    let signInManager = LoggedInUserManager.shared
     
     var idWillDisplay: UserIdentity?
     
@@ -91,8 +91,8 @@ class OthersProfileViewController: UIViewController {
     let loadingAnimationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
                                                                               frame: CGRect(x: 0,
                                                                                             y: 0,
-                                                                                            width: CommonUsage.screenWidth,
-                                                                                            height: CommonUsage.screenHeight))
+                                                                                            width: UIProperties.screenWidth,
+                                                                                            height: UIProperties.screenHeight))
 
     // MARK: - life cycle
     
@@ -413,22 +413,22 @@ class OthersProfileViewController: UIViewController {
     // MARK: - config UI method
     
     private func setBackgroundColor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        view.backgroundColor = UIColor(named: Constant.scBlue)
     }
     
     private func setNavigationBar() {
         guard let userWillDisplay = userWillDisplay else { return }
         navigationController?.isNavigationBarHidden = false
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
-        navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
-        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: Constant.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: Constant.scWhite)
         
         switch profilePageType {
         case .otherUser:
             navigationItem.title = userWillDisplay.username
             
         case .loggInUser:
-            navigationItem.title = CommonUsage.Text.myProfile
+            navigationItem.title = Constant.Text.myProfile
             
         }
         
@@ -466,10 +466,10 @@ extension OthersProfileViewController: UITableViewDataSource {
               let profileDataCell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.reuseIdentifier) as? ProfileTableViewCell,
               let userWillDisplay = userWillDisplay else { return UITableViewCell() }
         
-        cell.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        cell.backgroundColor = UIColor(named: Constant.scBlue)
         cell.delegate = self
         
-        profileDataCell.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        profileDataCell.backgroundColor = UIColor(named: Constant.scBlue)
         
         switch indexPath.section {
             
@@ -738,31 +738,6 @@ extension OthersProfileViewController: UIImagePickerControllerDelegate & UINavig
     
 }
 
-extension UIImage {
-    var scaledToSafeUploadSize: UIImage? {
-        let maxImageSideLength: CGFloat = 480
-        
-        let largerSide: CGFloat = max(size.width, size.height)
-        let ratioScale: CGFloat = largerSide > maxImageSideLength ? largerSide / maxImageSideLength : 1
-        let newImageSize = CGSize(
-            width: size.width / ratioScale,
-            height: size.height / ratioScale)
-        
-        return image(scaledTo: newImageSize)
-    }
-    
-    func image(scaledTo size: CGSize) -> UIImage? {
-        defer {
-            UIGraphicsEndImageContext()
-        }
-        
-        UIGraphicsBeginImageContextWithOptions(size, true, 0)
-        draw(in: CGRect(origin: .zero, size: size))
-        
-        return UIGraphicsGetImageFromCurrentImageContext()
-    }
-}
-
 extension OthersProfileViewController: AlertPresentableDelegate {
     
     func popBlockAlert(toBeBlockedID: String) {
@@ -792,7 +767,6 @@ extension OthersProfileViewController: AlertPresentableDelegate {
         
         let okButton = UIAlertAction(title: "Delete", style: .destructive) {[weak self] _ in
             guard let self = self else { return }
-            
             self.deletePost(documentID: documentID)
         }
         

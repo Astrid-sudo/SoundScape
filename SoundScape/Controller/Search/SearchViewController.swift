@@ -114,30 +114,30 @@ class SearchViewController: UIViewController {
     private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.backgroundImage = UIImage()
-        searchBar.barTintColor = UIColor(named: CommonUsage.scLightBlue)
+        searchBar.barTintColor = UIColor(named: Constant.scLightBlue)
         searchBar.layer.cornerRadius = 10
-        searchBar.placeholder = CommonUsage.Text.search
+        searchBar.placeholder = Constant.Text.search
         searchBar.delegate = self
-        searchBar.searchTextField.textColor = UIColor(named: CommonUsage.scWhite)
+        searchBar.searchTextField.textColor = UIColor(named: Constant.scWhite)
         searchBar.showsCancelButton = true
         return searchBar
     }()
     
     private lazy var categoryTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 18)
+        label.textColor = UIColor(named: Constant.scWhite)
+        label.font = UIFont(name: Constant.fontSemibold, size: 18)
         label.textAlignment = .left
-        label.text = CommonUsage.Text.category
+        label.text = Constant.Text.category
         return label
     }()
     
     private lazy var searchResultTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 18)
+        label.textColor = UIColor(named: Constant.scWhite)
+        label.font = UIFont(name: Constant.fontSemibold, size: 18)
         label.textAlignment = .left
-        label.text = CommonUsage.Text.searchResult
+        label.text = Constant.Text.searchResult
         return label
     }()
     
@@ -176,7 +176,7 @@ class SearchViewController: UIViewController {
     
     private lazy var noResultImage: UIImageView = {
        let imageView = UIImageView()
-        imageView.image = CommonUsage.audioImages[4]
+        imageView.image = UIProperties.audioImages[4]
         imageView.contentMode = .scaleAspectFit
         imageView.layer.cornerRadius = 10
         imageView.clipsToBounds = true
@@ -185,16 +185,16 @@ class SearchViewController: UIViewController {
     
     private lazy var noResultLabel: UILabel = {
         let label = UILabel()
-        label.text = CommonUsage.Text.noResultTitle
-        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.text = Constant.Text.noResultTitle
+        label.textColor = UIColor(named: Constant.scWhite)
         return label
     }()
     
     private lazy var hintLabel: UILabel = {
         let label = UILabel()
-        label.text = CommonUsage.Text.searchHintLabel
-        label.textColor = UIColor(named: CommonUsage.scGray)
-        label.font = UIFont(name: CommonUsage.font, size: 12)
+        label.text = Constant.Text.searchHintLabel
+        label.textColor = UIColor(named: Constant.scGray)
+        label.font = UIFont(name: Constant.font, size: 12)
         return label
     }()
     
@@ -208,7 +208,7 @@ class SearchViewController: UIViewController {
     // MARK: - UI method
     
     private func setViewBackgroundColor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        view.backgroundColor = UIColor(named: Constant.scBlue)
     }
     
     private func setSearchBar() {

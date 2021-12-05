@@ -72,7 +72,7 @@ class AudioPostManager {
     }
     
     @objc func currentUserBlacklistChange() {
-        currentUserBlacklist = SignInManager.shared.currentUserBlacklist
+        currentUserBlacklist = LoggedInUserManager.shared.currentUserBlacklist
     }
     
     private func fetchDataFromFirebase() {

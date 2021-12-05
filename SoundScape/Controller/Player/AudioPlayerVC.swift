@@ -11,7 +11,7 @@ class AudioPlayerVC: UIViewController {
     
     // MARK: - properties
     
-    private let signInManager = SignInManager.shared
+    private let loggedInUserManager = LoggedInUserManager.shared
     
     private let firebaseManager = FirebaseManager.shared
     
@@ -68,7 +68,7 @@ class AudioPlayerVC: UIViewController {
     // MARK: - method
     
     private func fetchUserFavoriteList() {
-        guard let userProfileDocumentID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else {
+        guard let userProfileDocumentID = loggedInUserManager.currentUserInfoFirebase?.userInfoDoumentID else {
             print("AudioPlayerVC: Cant get favorite before login")
             return
         }
@@ -104,7 +104,7 @@ class AudioPlayerVC: UIViewController {
         NSLayoutConstraint.activate([
             soundDetailVC.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             soundDetailVC.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            soundDetailVC.view.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight),
+            soundDetailVC.view.heightAnchor.constraint(equalToConstant: UIProperties.screenHeight),
             dontShowDetailConstraint
         ])
         
@@ -112,19 +112,19 @@ class AudioPlayerVC: UIViewController {
     }
     
     private func fillFavoriteButton() {
-        favoriteButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.heart), for: .normal)
-        favoriteButton.tintColor = UIColor(named: CommonUsage.scYellow)
+        favoriteButton.setImage(UIImage(systemName: Constant.SFSymbol.heart), for: .normal)
+        favoriteButton.tintColor = UIColor(named: Constant.scYellow)
     }
     
     private func emptyFavoriteButton() {
-        favoriteButton.setImage(UIImage(systemName: CommonUsage.SFSymbol.heartEmpty), for: .normal)
-        favoriteButton.tintColor = UIColor(named: CommonUsage.scYellow)
+        favoriteButton.setImage(UIImage(systemName: Constant.SFSymbol.heartEmpty), for: .normal)
+        favoriteButton.tintColor = UIColor(named: Constant.scYellow)
     }
     
     // MARK: - action
     
     @objc func manipulateFavorite() {
-        guard let userProfileDocumentID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else {
+        guard let userProfileDocumentID = loggedInUserManager.currentUserInfoFirebase?.userInfoDoumentID else {
             print("Cant addToFavorite before loggin")
             return
         }
@@ -230,19 +230,19 @@ class AudioPlayerVC: UIViewController {
     
     func resetAudioPlayerUI(audioTitle: String, audioImageNumber: Int) {
         audioTitleLabel.text = audioTitle
-        authorLabel.text = CommonUsage.Text.loading
+        authorLabel.text = Constant.Text.loading
         updateProgressWaveform(0)
         indicatorView.startAnimating()
         indicatorView.isHidden = false
         playButton.isHidden = true
-        audioImage.image = CommonUsage.audioImages[audioImageNumber]
+        audioImage.image = UIProperties.audioImages[audioImageNumber]
     }
     
     // MARK: - UI properties
     
     private lazy var baseView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        view.backgroundColor = UIColor(named: Constant.scLightBlue)
         return view
     }()
     
@@ -251,31 +251,31 @@ class AudioPlayerVC: UIViewController {
         image.layer.cornerRadius = 10
         image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
-        image.image = UIImage(named: CommonUsage.launchScreen1)
+        image.image = UIImage(named: Constant.launchScreen1)
         return image
     }()
     
     private lazy var audioTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
-        label.font = UIFont(name: CommonUsage.font, size: 15)
+        label.font = UIFont(name: Constant.font, size: 15)
         label.textAlignment = .left
-        label.text = CommonUsage.Text.loading
+        label.text = Constant.Text.loading
         return label
     }()
     
     private lazy var authorLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
-        label.font = UIFont(name: CommonUsage.font, size: 12)
+        label.font = UIFont(name: Constant.font, size: 12)
         label.textAlignment = .left
         return label
     }()
     
     private lazy var favoriteButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.heartEmpty), for: .normal)
-        button.tintColor = UIColor(named: CommonUsage.scYellow)
+        button.setImage(UIImage(systemName: Constant.SFSymbol.heartEmpty), for: .normal)
+        button.tintColor = UIColor(named: Constant.scYellow)
         button.addTarget(self, action: #selector(manipulateFavorite), for: .touchUpInside)
         return button
     }()
@@ -295,7 +295,7 @@ class AudioPlayerVC: UIViewController {
     
     private lazy var indicatorView: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView(style: .medium )
-        view.color = UIColor(named: CommonUsage.scWhite)
+        view.color = UIColor(named: Constant.scWhite)
         view.hidesWhenStopped = true
         view.isHidden = true
         return view
@@ -313,7 +313,7 @@ class AudioPlayerVC: UIViewController {
     
     lazy var progressView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: CommonUsage.scOrange)
+        view.backgroundColor = UIColor(named: Constant.scOrange)
         return view
     }()
     
@@ -329,7 +329,7 @@ extension AudioPlayerVC: AudioPlayerProtocol {
             self.audioTitleLabel.text = nowPlayingInfo.title
             self.authorLabel.text = nowPlayingInfo.author
             self.nowPlayDocumentID = nowPlayingInfo.documentID
-            self.audioImage.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
+            self.audioImage.image = UIProperties.audioImages[nowPlayingInfo.audioImageNumber]
             self.manipulateFavoriteImage()
             self.indicatorView.stopAnimating()
             self.playButton.isHidden = false
@@ -373,7 +373,7 @@ extension AudioPlayerVC: DetailPageShowableDelegate {
 extension AudioPlayerVC {
     
     private func setviewBackgroundcolor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scGreen)
+        view.backgroundColor = UIColor(named: Constant.scGreen)
     }
     
     private func setupBaseVew() {

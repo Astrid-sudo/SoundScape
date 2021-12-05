@@ -64,11 +64,11 @@ class CategoryViewController: UIViewController {
     
     let firebaseManager = FirebaseManager.shared
     
-    let signInManager = SignInManager.shared
+    let signInManager = LoggedInUserManager.shared
     // MARK: - UI properties
     
     let loadingAnimationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
-                                                                              frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight))
+                                                                              frame: CGRect(x: 0, y: 0, width: UIProperties.screenWidth, height: UIProperties.screenHeight))
     
     private lazy var headView: UIImageView = {
         let imageView = UIImageView()
@@ -80,21 +80,21 @@ class CategoryViewController: UIViewController {
     
     private lazy var categoryTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scLightBlue)
+        label.textColor = UIColor(named: Constant.scLightBlue)
         label.textAlignment = .left
         label.adjustsFontSizeToFitWidth = true
-        label.font = UIFont(name: CommonUsage.fontBungee, size: 40)
+        label.font = UIFont(name: Constant.fontBungee, size: 40)
         label.numberOfLines = 0
         return label
     }()
     
     private lazy var deleteHintLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textColor = UIColor(named: Constant.scWhite)
         label.textAlignment = .left
         label.adjustsFontSizeToFitWidth = true
         label.numberOfLines = 0
-        label.text = CommonUsage.Text.deleteAudioMessage
+        label.text = Constant.Text.deleteAudioMessage
         return label
     }()
     
@@ -105,7 +105,7 @@ class CategoryViewController: UIViewController {
         table.allowsSelection = true
         table.separatorStyle = .none
         table.showsVerticalScrollIndicator = false
-        table.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        table.backgroundColor = UIColor(named: Constant.scBlue)
         table.register(CategoryTableViewCell.self, forCellReuseIdentifier: CategoryTableViewCell.reuseIdentifier)
         return table
     }()
@@ -130,7 +130,7 @@ class CategoryViewController: UIViewController {
         
         if profileSection == .myAudio,
            data.indices.contains(0),
-           data[0].authorID == SignInManager.shared.currentUserInfoFirebase?.userID {
+           data[0].authorID == LoggedInUserManager.shared.currentUserInfoFirebase?.userID {
             setDeleteHintLabel()
         }
         
@@ -218,7 +218,7 @@ class CategoryViewController: UIViewController {
             var followingList: [SCFollow]?
             
             if displayUserID == nil {
-                followingList = SignInManager.shared.currentUserFollowingList
+                followingList = LoggedInUserManager.shared.currentUserFollowingList
             } else {
                 followingList = othersFollowingList
             }
@@ -241,7 +241,7 @@ class CategoryViewController: UIViewController {
             var favoriteList: [String]?
             
             if displayUserID == nil {
-                favoriteList = SignInManager.shared.currentUserFavoriteDocumentIDs
+                favoriteList = LoggedInUserManager.shared.currentUserFavoriteDocumentIDs
             } else {
                 favoriteList = userFavoriteDocumentIDs
             }
@@ -264,7 +264,7 @@ class CategoryViewController: UIViewController {
             var userID: String?
             
             if displayUserID == nil {
-                userID = SignInManager.shared.currentUserInfoFirebase?.userID
+                userID = LoggedInUserManager.shared.currentUserInfoFirebase?.userID
             } else {
                 userID = displayUserID
             }
@@ -363,7 +363,7 @@ class CategoryViewController: UIViewController {
     // MARK: - config UI method
     
     private func setViewBackgroundColor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        view.backgroundColor = UIColor(named: Constant.scBlue)
     }
     
     private func setHeadView() {
@@ -373,7 +373,7 @@ class CategoryViewController: UIViewController {
             headView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             headView.topAnchor.constraint(equalTo: view.topAnchor),
-            headView.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight / 3.5)
+            headView.heightAnchor.constraint(equalToConstant: UIProperties.screenHeight / 3.5)
         ])
     }
     
@@ -422,22 +422,22 @@ class CategoryViewController: UIViewController {
             
             switch category {
             case .nature:
-                headView.image = CommonUsage.audioImages[8]
+                headView.image = UIProperties.audioImages[8]
                 
             case .meaningful:
-                headView.image = CommonUsage.audioImages[6]
+                headView.image = UIProperties.audioImages[6]
                 
             case .unique:
-                headView.image = CommonUsage.audioImages[3]
+                headView.image = UIProperties.audioImages[3]
                 
             case .city:
-                headView.image = CommonUsage.audioImages[9]
+                headView.image = UIProperties.audioImages[9]
                 
             case .animal:
-                headView.image = CommonUsage.audioImages[1]
+                headView.image = UIProperties.audioImages[1]
                 
             case .other:
-                headView.image = CommonUsage.audioImages[11]
+                headView.image = UIProperties.audioImages[11]
                 
             }
             
@@ -445,8 +445,8 @@ class CategoryViewController: UIViewController {
         
         if let profileSection = profileSection {
             categoryTitleLabel.text = profileSection.rawValue
-            categoryTitleLabel.textColor = UIColor(named: CommonUsage.scWhite)
-            headView.image = CommonUsage.audioImages[12]
+            categoryTitleLabel.textColor = UIColor(named: Constant.scWhite)
+            headView.image = UIProperties.audioImages[12]
         }
     }
     
@@ -526,7 +526,7 @@ extension CategoryViewController: UITableViewDelegate {
         
         if profileSection != nil {
             if profileSection == .myAudio,
-               data[0].authorID == SignInManager.shared.currentUserInfoFirebase?.userID {
+               data[0].authorID == LoggedInUserManager.shared.currentUserInfoFirebase?.userID {
                 
                 return UIContextMenuConfiguration(
                     identifier: identifier, previewProvider: nil) { _ in

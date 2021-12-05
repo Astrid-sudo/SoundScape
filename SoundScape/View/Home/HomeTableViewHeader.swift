@@ -27,15 +27,15 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
     private lazy var categoryLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 18)
+        label.font = UIFont(name: Constant.fontSemibold, size: 18)
         label.textAlignment = .left
         return label
     }()
     
     private lazy var goToCategoryButt: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.right), for: .normal)
-        button.tintColor = UIColor(named: CommonUsage.scWhite)
+        button.setImage(UIImage(systemName: Constant.SFSymbol.right), for: .normal)
+        button.tintColor = UIColor(named: Constant.scWhite)
         return button
     }()
     
@@ -49,7 +49,7 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
         
-        tintColor = UIColor(named: CommonUsage.scBlue)
+        tintColor = UIColor(named: Constant.scBlue)
         setLabel()
         setButton()
         setBackgroundButton()

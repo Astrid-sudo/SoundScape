@@ -13,16 +13,16 @@ class SearchTableViewCell: UITableViewCell {
     
     lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.font, size: 18)
+        label.textColor = UIColor(named: Constant.scWhite)
+        label.font = UIFont(name: Constant.font, size: 18)
         label.textAlignment = .left
         return label
     }()
     
     lazy var authorLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.font, size: 12)
+        label.textColor = UIColor(named: Constant.scWhite)
+        label.font = UIFont(name: Constant.font, size: 12)
         label.textAlignment = .left
         return label
     }()
@@ -37,7 +37,7 @@ class SearchTableViewCell: UITableViewCell {
     
     private lazy var favoriteButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.heart), for: .normal)
+        button.setImage(UIImage(systemName: Constant.SFSymbol.heart), for: .normal)
         button.tintColor = .red
         button.isHidden = true
         return button
@@ -101,7 +101,7 @@ class SearchTableViewCell: UITableViewCell {
     func setContent(title: String, author: String, imageNumber: Int) {
         titleLabel.text = title
         authorLabel.text = author
-        theImageView.image = CommonUsage.audioImages[imageNumber]
+        theImageView.image = UIProperties.audioImages[imageNumber]
     }
     
 }

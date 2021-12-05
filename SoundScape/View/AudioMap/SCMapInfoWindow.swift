@@ -24,7 +24,7 @@ class SCMapInfoWindow: UIView {
     
     private lazy var titlelabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textColor = UIColor(named: Constant.scWhite)
         label.textAlignment = .left
         label.numberOfLines = 0
         label.minimumScaleFactor = 0.01
@@ -33,7 +33,7 @@ class SCMapInfoWindow: UIView {
     
     private lazy var authorNamelabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textColor = UIColor(named: Constant.scWhite)
         label.textAlignment = .left
         label.numberOfLines = 0
         label.minimumScaleFactor = 0.01
@@ -51,11 +51,11 @@ class SCMapInfoWindow: UIView {
     // MARK: - init
     
     init() {
-        super.init(frame: CGRect(x: 0, y: 0, width: CommonUsage.screenWidth - 100, height: 50))
-        self.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        super.init(frame: CGRect(x: 0, y: 0, width: UIProperties.screenWidth - 100, height: 50))
+        self.backgroundColor = UIColor(named: Constant.scLightBlue)
         self.layer.cornerRadius = 10
         self.layer.borderWidth = 0.5
-        self.layer.borderColor = UIColor(named: CommonUsage.scGray)?.cgColor
+        self.layer.borderColor = UIColor(named: Constant.scGray)?.cgColor
         setHeadphoneImageView()
         setButton()
         setTitleLabel()
@@ -120,7 +120,7 @@ class SCMapInfoWindow: UIView {
     func setMapMarkerIcon(title: String?, authorName: String?, audioImageNumber: Int) {
         titlelabel.text = title
         authorNamelabel.text = authorName
-        audioImage.image = CommonUsage.audioImages[audioImageNumber]
+        audioImage.image = UIProperties.audioImages[audioImageNumber]
     }
     
 }

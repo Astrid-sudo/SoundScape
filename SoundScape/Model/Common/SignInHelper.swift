@@ -160,7 +160,7 @@ extension SignInHelper: ASAuthorizationControllerDelegate {
                     
                     print("--------Sucessfully SignIn to firebase--------")
                     
-                    SignInManager.shared.checkUserInFirebase(userID: authResult.user.uid,
+                    LoggedInUserManager.shared.checkUserInFirebase(userID: authResult.user.uid,
                                                              userProvider: authResult.credential?.provider ?? "dont know" ,
                                                              userEmail: authResult.user.email ,
                                                              userName: userName)

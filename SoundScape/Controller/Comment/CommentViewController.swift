@@ -11,7 +11,7 @@ class CommentViewController: UIViewController {
     
     let firebaseManager = FirebaseManager.shared
     
-    let signInManager = SignInManager.shared
+    let signInManager = LoggedInUserManager.shared
     
     var currentPlayingDocumentID: String? {
         didSet {
@@ -292,18 +292,18 @@ class CommentViewController: UIViewController {
         table.allowsSelection = false
         table.separatorStyle = .none
         table.showsVerticalScrollIndicator = false
-        table.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        table.backgroundColor = UIColor(named: Constant.scBlue)
         table.register(CommentTableViewCell.self, forCellReuseIdentifier: CommentTableViewCell.reuseIdentifier)
         return table
     }()
     
     private lazy var commentTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textColor = UIColor(named: Constant.scWhite)
         label.textAlignment = .center
-        label.font = UIFont(name: CommonUsage.font, size: 24)
+        label.font = UIFont(name: Constant.font, size: 24)
         label.numberOfLines = 0
-        label.text = CommonUsage.Text.comments
+        label.text = Constant.Text.comments
         label.backgroundColor = .clear
         return label
     }()
@@ -311,7 +311,7 @@ class CommentViewController: UIViewController {
     private lazy var dismissButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 25)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.chevronDown, withConfiguration: config)
+        let bigImage = UIImage(systemName: Constant.SFSymbol.chevronDown, withConfiguration: config)
         button.setImage(bigImage, for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(dismissCommentViewController), for: .touchUpInside)
@@ -321,7 +321,7 @@ class CommentViewController: UIViewController {
     lazy var currentUserImageView: UIImageView = {
         let image = UIImageView()
         image.layer.masksToBounds = true
-        image.image = UIImage(named: CommonUsage.yeh1024)
+        image.image = UIImage(named: Constant.yeh1024)
         image.contentMode = .scaleAspectFill
         return image
     }()
@@ -329,12 +329,12 @@ class CommentViewController: UIViewController {
     private lazy var commentTextView: UITextView = {
         let textView = UITextView()
         textView.textColor = .white
-        textView.font = UIFont(name: CommonUsage.font, size: 15)
+        textView.font = UIFont(name: Constant.font, size: 15)
         textView.textAlignment = .left
         textView.isEditable = true
         textView.isSelectable = true
         textView.isScrollEnabled = false
-        textView.backgroundColor = UIColor(named: CommonUsage.scGray)
+        textView.backgroundColor = UIColor(named: Constant.scGray)
         textView.layer.cornerRadius = 10
         textView.delegate = self
         textView.textContainer.maximumNumberOfLines = 8
@@ -346,9 +346,9 @@ class CommentViewController: UIViewController {
     private lazy var sendButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 25)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.paperplaneFill, withConfiguration: config)
+        let bigImage = UIImage(systemName: Constant.SFSymbol.paperplaneFill, withConfiguration: config)
         button.setImage(bigImage, for: .normal)
-        button.tintColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        button.tintColor = UIColor(named: Constant.scSuperLightBlue)
         button.addTarget(self, action: #selector(addComment), for: .touchUpInside)
         button.isHidden = true
         return button
@@ -449,7 +449,7 @@ extension CommentViewController: UITableViewDelegate {
 extension CommentViewController {
     
     private func setViewbackgroundColor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        view.backgroundColor = UIColor(named: Constant.scLightBlue)
     }
     
     private func setCommentTitleLabel() {
@@ -506,8 +506,8 @@ extension CommentViewController {
     }
     
     private func setCommentPlaceHolder() {
-        commentTextView.text = CommonUsage.Text.addComment
-        commentTextView.textColor = UIColor(named: CommonUsage.scWhite)
+        commentTextView.text = Constant.Text.addComment
+        commentTextView.textColor = UIColor(named: Constant.scWhite)
     }
     
     private func addSendButton() {
@@ -531,9 +531,9 @@ extension CommentViewController {
 extension CommentViewController: UITextViewDelegate {
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == UIColor(named: CommonUsage.scWhite) {
+        if textView.textColor == UIColor(named: Constant.scWhite) {
             textView.text = nil
-            textView.textColor = UIColor(named: CommonUsage.scBlue)
+            textView.textColor = UIColor(named: Constant.scBlue)
         }
     }
     
@@ -548,8 +548,8 @@ extension CommentViewController: UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty || textView.text == "" {
-            textView.text = CommonUsage.Text.addComment
-            textView.textColor = UIColor(named: CommonUsage.scWhite)
+            textView.text = Constant.Text.addComment
+            textView.textColor = UIColor(named: Constant.scWhite)
             sendButton.isHidden = true
             fullTextViewConstraint.isActive = false
             emptyTextViewConstraint.isActive = true

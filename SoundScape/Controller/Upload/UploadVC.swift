@@ -17,7 +17,7 @@ class UploadVC: UIViewController {
     
     var backFromBigMap = false
     
-    let signInmanager = SignInManager.shared
+    let loggedInUserManager = LoggedInUserManager.shared
     
     let firebasemanager = FirebaseManager.shared
     
@@ -36,7 +36,7 @@ class UploadVC: UIViewController {
                                                       longitude: pinnedLocation.longitude, zoom: 15)
             mapMarker.title = titleTextField.text
             mapMarker.position = pinnedLocation
-            mapMarker.snippet = signInmanager.currentUserInfoFirebase?.username
+            mapMarker.snippet = loggedInUserManager.currentUserInfoFirebase?.username
             mapMarker.map = mapView
             mapView.selectedMarker = mapMarker
         }
@@ -84,11 +84,11 @@ class UploadVC: UIViewController {
     
      lazy var mapNoticeLabel: UILabel = {
         let label = UILabel()
-         label.textColor = UIColor(named: CommonUsage.scGray)
+         label.textColor = UIColor(named: Constant.scGray)
         label.textAlignment = .left
         label.numberOfLines = 0
-        label.font = UIFont(name: CommonUsage.font, size: 12)
-        label.text = CommonUsage.Text.pinOnMapHint
+        label.font = UIFont(name: Constant.font, size: 12)
+        label.text = Constant.Text.pinOnMapHint
         return label
     }()
     
@@ -100,14 +100,14 @@ class UploadVC: UIViewController {
         scrollView.zoomScale = 1.0
         scrollView.minimumZoomScale = 1.0
         scrollView.maximumZoomScale = 1.0
-        scrollView.contentSize = CGSize(width: CommonUsage.screenWidth, height: CommonUsage.screenHeight * 1.5)
+        scrollView.contentSize = CGSize(width: UIProperties.screenWidth, height: UIProperties.screenHeight * 1.5)
         scrollView.backgroundColor = .clear
         return scrollView
     }()
     
      lazy var mapMarker: GMSMarker = {
         var marker = GMSMarker(position: currentLocation ?? defaultLocation)
-        marker.icon = GMSMarker.markerImage(with: UIColor(named: CommonUsage.scRed))
+        marker.icon = GMSMarker.markerImage(with: UIColor(named: Constant.scRed))
         marker.map = mapView
         return marker
     }()
@@ -115,45 +115,45 @@ class UploadVC: UIViewController {
      lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
+        label.font = UIFont(name: Constant.fontSemibold, size: 15)
         label.textAlignment = .left
-        label.text = CommonUsage.Text.title
+        label.text = Constant.Text.title
         return label
     }()
     
      lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
+        label.font = UIFont(name: Constant.fontSemibold, size: 15)
         label.textAlignment = .left
-        label.text = CommonUsage.Text.description
+        label.text = Constant.Text.description
         return label
     }()
     
      lazy var categoryLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
+        label.font = UIFont(name: Constant.fontSemibold, size: 15)
         label.textAlignment = .left
-        label.text = CommonUsage.Text.category
+        label.text = Constant.Text.category
         return label
     }()
     
       lazy var mapLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
+        label.font = UIFont(name: Constant.fontSemibold, size: 15)
         label.textAlignment = .left
-        label.text = CommonUsage.Text.pinOnMap
+        label.text = Constant.Text.pinOnMap
         return label
     }()
     
       lazy var audioImageLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.white
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 15)
+        label.font = UIFont(name: Constant.fontSemibold, size: 15)
         label.textAlignment = .left
-        label.text = CommonUsage.Text.audioImage
+        label.text = Constant.Text.audioImage
         return label
     }()
     
@@ -176,7 +176,7 @@ class UploadVC: UIViewController {
         textView.layer.borderColor = UIColor.white.cgColor
         textView.layer.cornerRadius = 10
         textView.textColor = .white
-        textView.font = UIFont(name: CommonUsage.font, size: 15)
+        textView.font = UIFont(name: Constant.font, size: 15)
         textView.textAlignment = .left
         textView.isEditable = true
         textView.isSelectable = true
@@ -187,7 +187,7 @@ class UploadVC: UIViewController {
     
      lazy var viewUndermap: UIView = {
         let view = UIView()
-        view.layer.borderColor = UIColor(named: CommonUsage.scWhite)?.cgColor
+        view.layer.borderColor = UIColor(named: Constant.scWhite)?.cgColor
         view.layer.borderWidth = 0.5
         view.layer.cornerRadius = 10
         return view
@@ -224,8 +224,8 @@ class UploadVC: UIViewController {
     
      lazy var uploadButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
-        button.setTitle(CommonUsage.Text.upload, for: .normal)
+        button.backgroundColor = UIColor(named: Constant.scLightBlue)
+        button.setTitle(Constant.Text.upload, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(upload), for: .touchUpInside)
         button.layer.cornerRadius = 10
@@ -240,10 +240,10 @@ class UploadVC: UIViewController {
 
      lazy var searchPlaceButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
-        button.setTitle(CommonUsage.Text.searchPlace, for: .normal)
-        button.titleLabel?.font = UIFont(name: CommonUsage.font, size: 14)
-        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.backgroundColor = UIColor(named: Constant.scLightBlue)
+        button.setTitle(Constant.Text.searchPlace, for: .normal)
+        button.titleLabel?.font = UIFont(name: Constant.font, size: 14)
+        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
         button.addTarget(self, action: #selector(presentBigMap), for: .touchUpInside)
         button.layer.cornerRadius = 10
         return button
@@ -412,9 +412,9 @@ class UploadVC: UIViewController {
         }
         
         var post = SCPost(documentID: "",
-                          authorID: signInmanager.currentUserInfoFirebase?.userID ?? "No signIn",
-                          authIDProvider: signInmanager.currentUserInfoFirebase?.provider ?? "No signIn",
-                          authorName: signInmanager.currentUserInfoFirebase?.username ?? "No signIn",
+                          authorID: loggedInUserManager.currentUserInfoFirebase?.userID ?? "No signIn",
+                          authIDProvider: loggedInUserManager.currentUserInfoFirebase?.provider ?? "No signIn",
+                          authorName: loggedInUserManager.currentUserInfoFirebase?.username ?? "No signIn",
                           title: title, content: content,
                           createdTime: nil, lastEditedTime: nil,
                           audioURL: nil,
@@ -498,7 +498,7 @@ extension UploadVC: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         mapMarker.title = titleTextField.text
-        mapMarker.snippet = signInmanager.currentUserInfoFirebase?.username
+        mapMarker.snippet = loggedInUserManager.currentUserInfoFirebase?.username
         mapView.selectedMarker = mapMarker
     }
     
@@ -527,7 +527,7 @@ extension UploadVC: UICollectionViewDataSource {
         }
         
         if collectionView == audioImageCollectionView {
-            return CommonUsage.audioImages.count
+            return UIProperties.audioImages.count
         }
         
         return 1
@@ -551,7 +551,7 @@ extension UploadVC: UICollectionViewDataSource {
         if collectionView == audioImageCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeCollectionViewCell.reuseIdentifier,
                                                                 for: indexPath) as? HomeCollectionViewCell else { return UICollectionViewCell() }
-            cell.setCellImage(image: CommonUsage.audioImages[indexPath.item])
+            cell.setCellImage(image: UIProperties.audioImages[indexPath.item])
             
             if indexPath == selectedImageIndex {
                 cell.setImageBorder()

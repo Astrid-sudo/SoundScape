@@ -11,7 +11,7 @@ import UIKit
     // MARK: - UI method
     
      func setViewBackgroundColor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        view.backgroundColor = UIColor(named: Constant.scBlue)
     }
     
      func setNavigationBar() {
@@ -19,9 +19,9 @@ import UIKit
                                                            style: .plain,
                                                            target: self,
                                                            action: #selector(backToLastPage))
-        navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
-        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
-        navigationItem.title = CommonUsage.Text.upload
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: Constant.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: Constant.scWhite)
+        navigationItem.title = Constant.Text.upload
     }
     
      func setScrollView() {
@@ -50,7 +50,7 @@ import UIKit
         NSLayoutConstraint.activate([
             titleTextField.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
             titleTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
-            titleTextField.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32)
+            titleTextField.widthAnchor.constraint(equalToConstant: UIProperties.screenWidth - 32)
         ])
     }
     
@@ -70,7 +70,7 @@ import UIKit
             descriptionTextView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor,
                                                          constant: 16),
             descriptionTextView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 16),
-            descriptionTextView.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32)
+            descriptionTextView.widthAnchor.constraint(equalToConstant: UIProperties.screenWidth - 32)
         ])
     }
     
@@ -88,7 +88,7 @@ import UIKit
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             collectionView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            collectionView.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth ),
+            collectionView.widthAnchor.constraint(equalToConstant: UIProperties.screenWidth ),
             collectionView.topAnchor.constraint(equalTo: categoryLabel.bottomAnchor, constant: 16),
             collectionView.heightAnchor.constraint(equalToConstant: 50)
         ])
@@ -109,7 +109,7 @@ import UIKit
         audioImageCollectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             audioImageCollectionView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            audioImageCollectionView.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth),
+            audioImageCollectionView.widthAnchor.constraint(equalToConstant: UIProperties.screenWidth),
             audioImageCollectionView.topAnchor.constraint(equalTo: audioImageLabel.bottomAnchor, constant: 8),
             audioImageCollectionView.heightAnchor.constraint(equalToConstant: 150)
         ])
@@ -138,7 +138,7 @@ import UIKit
         viewUndermap.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             viewUndermap.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            viewUndermap.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32),
+            viewUndermap.widthAnchor.constraint(equalToConstant: UIProperties.screenWidth - 32),
             viewUndermap.topAnchor.constraint(equalTo: mapLabel.bottomAnchor, constant: 16),
             viewUndermap.heightAnchor.constraint(equalToConstant: 180)
         ])
@@ -149,7 +149,7 @@ import UIKit
         mapView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             mapView.leadingAnchor.constraint(equalTo: viewUndermap.leadingAnchor),
-            mapView.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32),
+            mapView.widthAnchor.constraint(equalToConstant: UIProperties.screenWidth - 32),
             mapView.topAnchor.constraint(equalTo: viewUndermap.topAnchor),
             mapView.bottomAnchor.constraint(equalTo: viewUndermap.bottomAnchor)
         ])
@@ -160,7 +160,7 @@ import UIKit
         uploadButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             uploadButton.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            uploadButton.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 32),
+            uploadButton.widthAnchor.constraint(equalToConstant: UIProperties.screenWidth - 32),
             uploadButton.topAnchor.constraint(equalTo: viewUndermap.bottomAnchor, constant: 8),
             uploadButton.heightAnchor.constraint(equalToConstant: 50),
             uploadButton.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -4)

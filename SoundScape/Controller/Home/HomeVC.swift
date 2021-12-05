@@ -13,7 +13,7 @@ class HomeVC: UIViewController {
     
     let firebaseManager = FirebaseManager.shared
     
-    let signInManager = SignInManager.shared
+    let loggedInUserManager = LoggedInUserManager.shared
     
     var audioFiles = [SCPost]() {
         didSet {
@@ -39,8 +39,8 @@ class HomeVC: UIViewController {
     let loadingAnimationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
                                                                               frame: CGRect(x: 0,
                                                                                             y: 0,
-                                                                                            width: CommonUsage.screenWidth,
-                                                                                            height: CommonUsage.screenHeight))
+                                                                                            width: UIProperties.screenWidth,
+                                                                                            height: UIProperties.screenHeight))
 
     // MARK: - life cycle
     
@@ -61,17 +61,17 @@ class HomeVC: UIViewController {
     // MARK: - config UI method
     
     private func setViewBackgroundcolor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        view.backgroundColor = UIColor(named: Constant.scBlue)
     }
     
     private func setNavigationBar() {
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for:UIBarMetrics.default)
         navigationController?.navigationBar.shadowImage = UIImage()
-        navigationItem.title = CommonUsage.Text.appName
-        navigationController?.navigationBar.barTintColor = UIColor(named: CommonUsage.scBlue)
-        let font = UIFont(name: CommonUsage.fontBungee, size: 28)
+        navigationItem.title = Constant.Text.appName
+        navigationController?.navigationBar.barTintColor = UIColor(named: Constant.scBlue)
+        let font = UIFont(name: Constant.fontBungee, size: 28)
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: font,
-                                                                   NSAttributedString.Key.foregroundColor: UIColor(named: CommonUsage.scWhite)]
+                                                                   NSAttributedString.Key.foregroundColor: UIColor(named: Constant.scWhite)]
     }
     
     private func setTableView() {
@@ -164,7 +164,7 @@ class HomeVC: UIViewController {
     
     private func blockThisUser(toBeBlockedID: String) {
         
-        guard let currentUserDocID = signInManager.currentUserInfoFirebase?.userInfoDoumentID else { return }
+        guard let currentUserDocID = loggedInUserManager.currentUserInfoFirebase?.userInfoDoumentID else { return }
         
         firebaseManager.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
                                        toBeBlockedID: toBeBlockedID, completion: nil)
@@ -205,7 +205,7 @@ extension HomeVC: UITableViewDataSource {
         }
         
         let filteredFiles = audioFiles.filter({$0.category == AudioCategory.allCases[indexPath.section].rawValue})
-        cell.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        cell.backgroundColor = UIColor(named: Constant.scBlue)
         cell.delegate = self
         cell.firebaseData = filteredFiles
         cell.category = AudioCategory.allCases[indexPath.item].rawValue

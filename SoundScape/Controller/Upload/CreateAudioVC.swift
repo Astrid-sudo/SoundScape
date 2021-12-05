@@ -13,26 +13,26 @@ class CreateAudioVC: UIViewController {
     private let animationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .waveformBounce,
                                                                                frame: CGRect(x: 0,
                                                                                              y: 100,
-                                                                                             width: CommonUsage.screenWidth,
+                                                                                             width: UIProperties.screenWidth,
                                                                                              height: 200))
 
     private lazy var recordButton: UIButton = {
         let button = UIButton()
-        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
         button.addTarget(self, action: #selector(goRecordPage), for: .touchUpInside)
-        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        button.backgroundColor = UIColor(named: Constant.scLightBlue)
         button.layer.cornerRadius = 15
-        button.setTitle(CommonUsage.Text.record, for: .normal)
+        button.setTitle(Constant.Text.record, for: .normal)
         return button
     }()
     
     private lazy var selectFileButton: UIButton = {
         let button = UIButton()
-        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
         button.addTarget(self, action: #selector(selectDocument), for: .touchUpInside)
-        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        button.backgroundColor = UIColor(named: Constant.scLightBlue)
         button.layer.cornerRadius = 15
-        button.setTitle(CommonUsage.Text.selectFile, for: .normal)
+        button.setTitle(Constant.Text.selectFile, for: .normal)
         return button
     }()
 
@@ -40,7 +40,7 @@ class CreateAudioVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        view.backgroundColor = UIColor(named: Constant.scBlue)
         setNavigationBar()
         addLottie()
         setSelectFileButton()
@@ -90,11 +90,11 @@ class CreateAudioVC: UIViewController {
     private func setNavigationBar() {
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationController?.navigationBar.shadowImage = UIImage()
-        navigationItem.title = CommonUsage.Text.upload
-        navigationController?.navigationBar.barTintColor = UIColor(named: CommonUsage.scBlue)
-        let font = UIFont(name: CommonUsage.fontBungee, size: 28)
+        navigationItem.title = Constant.Text.upload
+        navigationController?.navigationBar.barTintColor = UIColor(named: Constant.scBlue)
+        let font = UIFont(name: Constant.fontBungee, size: 28)
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: font,
-                                                                   NSAttributedString.Key.foregroundColor: UIColor(named: CommonUsage.scWhite)]
+                                                                   NSAttributedString.Key.foregroundColor: UIColor(named: Constant.scWhite)]
     }
 
     private func addLottie() {

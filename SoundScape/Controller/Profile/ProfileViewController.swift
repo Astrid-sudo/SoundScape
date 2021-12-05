@@ -30,7 +30,7 @@ class ProfileViewController: UIViewController {
     
     // MARK: - properties
     
-    let signInManager = SignInManager.shared
+    let signInManager = LoggedInUserManager.shared
     
     let firebaseManager = FirebaseManager.shared
     
@@ -77,8 +77,8 @@ class ProfileViewController: UIViewController {
     let loadingAnimationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
                                                                               frame: CGRect(x: 0,
                                                                                             y: 0,
-                                                                                            width: CommonUsage.screenWidth,
-                                                                                            height: CommonUsage.screenHeight))
+                                                                                            width: UIProperties.screenWidth,
+                                                                                            height: UIProperties.screenHeight))
 
     private lazy var tableView: UITableView = {
         let table = UITableView()
@@ -115,17 +115,17 @@ class ProfileViewController: UIViewController {
     // MARK: - config UI method
     
     private func setBackgroundColor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        view.backgroundColor = UIColor(named: Constant.scBlue)
     }
     
     private func setNavigationBar() {
-        navigationItem.title = CommonUsage.Text.myProfile
+        navigationItem.title = Constant.Text.myProfile
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationController?.navigationBar.shadowImage = UIImage()
-        navigationController?.navigationBar.barTintColor = UIColor(named: CommonUsage.scBlue)
-        let font = UIFont(name: CommonUsage.fontBungee, size: 28)
+        navigationController?.navigationBar.barTintColor = UIColor(named: Constant.scBlue)
+        let font = UIFont(name: Constant.fontBungee, size: 28)
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: font,
-                                                                   NSAttributedString.Key.foregroundColor: UIColor(named: CommonUsage.scWhite)]
+                                                                   NSAttributedString.Key.foregroundColor: UIColor(named: Constant.scWhite)]
     }
     
     private func setTableView() {
@@ -339,9 +339,9 @@ extension ProfileViewController: UITableViewDataSource {
               let profileBlankCell = tableView.dequeueReusableCell(withIdentifier: ProfileBlankTableViewCell.reuseIdentifier) as? ProfileBlankTableViewCell,
               let logginUser = signInManager.currentUserInfoFirebase else { return UITableViewCell() }
         
-        cell.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        cell.backgroundColor = UIColor(named: Constant.scBlue)
         cell.delegate = self
-        profileDataCell.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        profileDataCell.backgroundColor = UIColor(named: Constant.scBlue)
         
         switch indexPath.section {
             

@@ -24,8 +24,8 @@ class SCTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
-        tabBar.barTintColor = UIColor(named: CommonUsage.scBlue)
-        tabBar.tintColor = UIColor(named: CommonUsage.scWhite)
+        tabBar.barTintColor = UIColor(named: Constant.scBlue)
+        tabBar.tintColor = UIColor(named: Constant.scWhite)
     }
     
     // MARK: - method
@@ -76,7 +76,7 @@ class SCTabBarController: UITabBarController {
       NSLayoutConstraint.activate([
         soundDetailVC.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
         soundDetailVC.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        soundDetailVC.view.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight),
+        soundDetailVC.view.heightAnchor.constraint(equalToConstant: UIProperties.screenHeight),
         dontShowDetailConstraint
       ])
       

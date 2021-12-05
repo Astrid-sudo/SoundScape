@@ -21,7 +21,7 @@ class EditVC: UIViewController {
     
     var trimHeadTime: Double {
         guard let originDuraion = originDuraion else { return 0.0 }
-        return (trimHeadViewX - 21) / (CommonUsage.screenWidth - 32) * originDuraion
+        return (trimHeadViewX - 21) / (UIProperties.screenWidth - 32) * originDuraion
     }
     
     var trimTailTime: Double {
@@ -30,7 +30,7 @@ class EditVC: UIViewController {
     }
     
     var sliderCenterX: CGFloat {
-        CGFloat(slider.value / slider.maximumValue) * (CommonUsage.screenWidth - 32)
+        CGFloat(slider.value / slider.maximumValue) * (UIProperties.screenWidth - 32)
     }
     
     var originDuraion: Double? {
@@ -146,7 +146,7 @@ class EditVC: UIViewController {
             guard let self = self else { return }
             
             let stripeConfig = self.dSWaveformImageWrapper.configWaveformStripe(
-                color: UIColor(named: CommonUsage.scWhite),
+                color: UIColor(named: Constant.scWhite),
                 width: 2,
                 spacing: 2,
                 lineCap: .butt)
@@ -277,7 +277,7 @@ class EditVC: UIViewController {
                                     y: slider.center.y - 55,
                                     width: 60,
                                     height: 110)
-        trimTailView.frame = CGRect(x: CommonUsage.screenWidth - 75,
+        trimTailView.frame = CGRect(x: UIProperties.screenWidth - 75,
                                     y: slider.center.y - 55,
                                     width: 60,
                                     height: 110)
@@ -292,8 +292,8 @@ class EditVC: UIViewController {
     private lazy var goUploadPageButton: UIButton = {
         let button = UIButton()
         button.setTitle("Go upload", for: .normal)
-        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
-        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
+        button.backgroundColor = UIColor(named: Constant.scLightBlue)
         button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(goUpload), for: .touchUpInside)
         return button
@@ -302,14 +302,14 @@ class EditVC: UIViewController {
     let waveformImageView = DSWaveformImageWrapper.shared.createWaveformImageView(
         frame: CGRect(x: 0,
                       y: 0,
-                      width: CommonUsage.screenWidth,
+                      width: UIProperties.screenWidth,
                       height: 100))
 
     private lazy var trimButton: UIButton = {
         let button = UIButton()
         button.setTitle("TRIM", for: .normal)
-        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
-        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
+        button.backgroundColor = UIColor(named: Constant.scLightBlue)
         button.addTarget(self, action: #selector(trim), for: .touchUpInside)
         button.layer.cornerRadius = 15
         return button
@@ -319,7 +319,7 @@ class EditVC: UIViewController {
         let label = UILabel()
         label.textColor = .white
         label.textAlignment = .center
-        label.font = UIFont(name: CommonUsage.font, size: 30)
+        label.font = UIFont(name: Constant.font, size: 30)
         label.text = "00:0.0"
         return label
     }()
@@ -328,7 +328,7 @@ class EditVC: UIViewController {
         let label = UILabel()
         label.textColor = .white
         label.textAlignment = .left
-        label.font = UIFont(name: CommonUsage.font, size: 20)
+        label.font = UIFont(name: Constant.font, size: 20)
         label.text = "Duration"
         return label
     }()
@@ -337,7 +337,7 @@ class EditVC: UIViewController {
         let label = UILabel()
         label.textColor = .white
         label.textAlignment = .left
-        label.font = UIFont(name: CommonUsage.font, size: 20)
+        label.font = UIFont(name: Constant.font, size: 20)
         return label
     }()
     
@@ -346,8 +346,8 @@ class EditVC: UIViewController {
         label.textColor = .white
         label.textAlignment = .left
         label.numberOfLines = 0
-        label.font = UIFont(name: CommonUsage.font, size: 14)
-        label.text = CommonUsage.Text.audioLengthNotice
+        label.font = UIFont(name: Constant.font, size: 14)
+        label.text = Constant.Text.audioLengthNotice
         return label
     }()
     
@@ -399,13 +399,13 @@ class EditVC: UIViewController {
     
     private lazy var trimHeadPreciseView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        view.backgroundColor = UIColor(named: Constant.scSuperLightBlue)
         return view
     }()
     
     private lazy var trimTailPreciseView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        view.backgroundColor = UIColor(named: Constant.scSuperLightBlue)
         return view
     }()
     
@@ -417,13 +417,13 @@ class EditVC: UIViewController {
                                                            style: .plain,
                                                            target: self,
                                                            action: #selector(backToLastPage))
-        navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
-        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
-        navigationItem.title = CommonUsage.Text.trim
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: Constant.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: Constant.scWhite)
+        navigationItem.title = Constant.Text.trim
     }
     
     private func setBackgroundviewColor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        view.backgroundColor = UIColor(named: Constant.scBlue)
     }
     
     private func setGoUploadPageButton() {
@@ -486,7 +486,7 @@ class EditVC: UIViewController {
         NSLayoutConstraint.activate([
             currentTimeLabel.topAnchor.constraint(equalTo: playButton.bottomAnchor, constant: 8),
             currentTimeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor,
-                                                      constant: (CommonUsage.screenWidth - 62) / 2 )
+                                                      constant: (UIProperties.screenWidth - 62) / 2 )
         ])
     }
     
@@ -528,7 +528,7 @@ class EditVC: UIViewController {
     
     private func setTrimTailView() {
         view.addSubview(trimTailView)
-        trimTailView.frame = CGRect(x: CommonUsage.screenWidth - 75,
+        trimTailView.frame = CGRect(x: UIProperties.screenWidth - 75,
                                     y: slider.center.y - 55,
                                     width: 60,
                                     height: 110)
@@ -557,7 +557,7 @@ class EditVC: UIViewController {
     lazy var playButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 32)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play,
+        let bigImage = UIImage(systemName: Constant.SFSymbol.play,
                                withConfiguration: config)
         button.setImage(bigImage, for: .normal)
         button.tintColor = .white
@@ -568,11 +568,11 @@ class EditVC: UIViewController {
     var caDisplayLink: CADisplayLink?
     
     var progressView: UIView {
-        let waveformViewY = CommonUsage.screenHeight - CommonUsage.safeAreaHeight - CommonUsage.tabBarHeight - 180
+        let waveformViewY = UIProperties.screenHeight - UIProperties.safeAreaHeight - UIProperties.tabBarHeight - 180
         let waveformView = DSWaveformImageWrapper.shared.createWaveformImageView(
             frame: CGRect(x: 0,
                           y: waveformViewY,
-                          width: CommonUsage.screenWidth,
+                          width: UIProperties.screenWidth,
                           height: 100))
         return waveformView
     }

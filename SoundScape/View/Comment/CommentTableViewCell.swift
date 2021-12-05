@@ -24,7 +24,7 @@ class CommentTableViewCell: UITableViewCell {
         let image = UIImageView()
         image.layer.cornerRadius = 25
         image.layer.masksToBounds = true
-        image.image = UIImage(named: CommonUsage.yeh1024)
+        image.image = UIImage(named: Constant.yeh1024)
         image.contentMode = .scaleAspectFill
         return image
     }()
@@ -33,7 +33,7 @@ class CommentTableViewCell: UITableViewCell {
         let image = UIImageView()
         image.layer.cornerRadius = 25
         image.layer.masksToBounds = true
-        image.image = UIImage(named: CommonUsage.yeh1024)
+        image.image = UIImage(named: Constant.yeh1024)
         return image
     }()
     
@@ -48,29 +48,29 @@ class CommentTableViewCell: UITableViewCell {
     
     private lazy var messageLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textColor = UIColor(named: Constant.scWhite)
         label.layer.cornerRadius = 10
         label.numberOfLines = 0
         label.textAlignment = .left
         label.baselineAdjustment = .alignBaselines
         label.autoresizesSubviews = false
-        label.font = UIFont(name: CommonUsage.font, size: 16)
+        label.font = UIFont(name: Constant.font, size: 16)
         return label
     }()
     
     private lazy var commentInfoLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textColor = UIColor(named: Constant.scWhite)
         label.layer.cornerRadius = 10
         label.textAlignment = .left
-        label.font = UIFont(name: CommonUsage.font, size: 12)
+        label.font = UIFont(name: Constant.font, size: 12)
         label.numberOfLines = 0
         return label
     }()
     
     private lazy var backgroundGrayView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        view.backgroundColor = UIColor(named: Constant.scLightBlue)
         view.layer.cornerRadius = 10.0
         return view
     }()
@@ -79,7 +79,7 @@ class CommentTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = UIColor(named: CommonUsage.scBlue)
+        backgroundColor = UIColor(named: Constant.scBlue)
         setImagesConstraint()
         setCommentStackView()
         pinBackground(backgroundGrayView, to: commentStackView)
@@ -160,13 +160,3 @@ class CommentTableViewCell: UITableViewCell {
     
 }
 
-extension UIView {
-    func pin(to view: UIView) {
-        NSLayoutConstraint.activate([
-            leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            topAnchor.constraint(equalTo: view.topAnchor),
-            bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-    }
-}

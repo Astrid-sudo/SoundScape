@@ -119,7 +119,7 @@ class SoundDetailViewController: UIViewController {
     private func setBlockButton() {
         
         if let authorID = authorIdentity?.userID,
-           authorID != SignInManager.shared.currentUserInfoFirebase?.userID {
+           authorID != LoggedInUserManager.shared.currentUserInfoFirebase?.userID {
             
             DispatchQueue.main.async {
                 self.view.addSubview(self.blockButton)
@@ -171,7 +171,7 @@ class SoundDetailViewController: UIViewController {
     }
     
     private func blockUser() {
-        guard let currentUserDocID = SignInManager.shared.currentUserInfoFirebase?.userInfoDoumentID,
+        guard let currentUserDocID = LoggedInUserManager.shared.currentUserInfoFirebase?.userInfoDoumentID,
               let  blockUser = authorIdentity?.userID else { return }
         
         FirebaseManager.shared.addToBlackList(loggedInUserInfoDocumentID: currentUserDocID,
@@ -231,7 +231,7 @@ class SoundDetailViewController: UIViewController {
     private func updateWaveformImages(localURL: URL) {
         
         let stripeConfig = DSWaveformImageWrapper.shared.configWaveformStripe(
-            color: UIColor(named: CommonUsage.scSuperLightBlue),
+            color: UIColor(named: Constant.scSuperLightBlue),
             width: 1.0,
             spacing: 1,
             lineCap: .round)
@@ -249,7 +249,7 @@ class SoundDetailViewController: UIViewController {
         })
         
         let progressStripeConfig = DSWaveformImageWrapper.shared.configWaveformStripe(
-            color: UIColor(named: CommonUsage.scWhite),
+            color: UIColor(named: Constant.scWhite),
             width: 1.0,
             spacing: 1,
             lineCap: .round)
@@ -281,14 +281,14 @@ class SoundDetailViewController: UIViewController {
     
     let waveformView = DSWaveformImageWrapper.shared.createWaveformImageView(
         frame: CGRect(x: 0,
-                      y: CommonUsage.screenHeight - CommonUsage.safeAreaHeight - CommonUsage.tabBarHeight - 180,
-                      width: CommonUsage.screenWidth,
+                      y: UIProperties.screenHeight - UIProperties.safeAreaHeight - UIProperties.tabBarHeight - 180,
+                      width: UIProperties.screenWidth,
                       height: 100))
     
     private lazy var commentButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 20)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.comment, withConfiguration: config)
+        let bigImage = UIImage(systemName: Constant.SFSymbol.comment, withConfiguration: config)
         button.setImage(bigImage, for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(presentCommentPage), for: .touchUpInside)
@@ -298,7 +298,7 @@ class SoundDetailViewController: UIViewController {
     private lazy var leaveButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 20)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.chevronDown, withConfiguration: config)
+        let bigImage = UIImage(systemName: Constant.SFSymbol.chevronDown, withConfiguration: config)
         button.setImage(bigImage, for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(leaveDetailPage), for: .touchUpInside)
@@ -308,14 +308,14 @@ class SoundDetailViewController: UIViewController {
     private lazy var authorButton: UIButton = {
         let button = UIButton()
         button.addTarget(self, action: #selector(goAuthorPage), for: .touchUpInside)
-        button.titleLabel?.font = UIFont(name: CommonUsage.fontBungee, size: 24)
+        button.titleLabel?.font = UIFont(name: Constant.fontBungee, size: 24)
         return button
     }()
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 18)
+        label.textColor = UIColor(named: Constant.scWhite)
+        label.font = UIFont(name: Constant.fontSemibold, size: 18)
         label.textAlignment = .left
         return label
     }()
@@ -323,7 +323,7 @@ class SoundDetailViewController: UIViewController {
     private lazy var contentTextView: UITextView = {
         let textView = UITextView()
         textView.textColor = .white
-        textView.font = UIFont(name: CommonUsage.font, size: 14)
+        textView.font = UIFont(name: Constant.font, size: 14)
         textView.textAlignment = .left
         textView.isEditable = false
         textView.isSelectable = false
@@ -348,11 +348,11 @@ class SoundDetailViewController: UIViewController {
     
     private lazy var blockButton: UIButton = {
         let button = UIButton()
-        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
         button.addTarget(self, action: #selector(block), for: .touchUpInside)
-        button.backgroundColor = UIColor(named: CommonUsage.scGray)
+        button.backgroundColor = UIColor(named: Constant.scGray)
         button.layer.cornerRadius = 15
-        button.setTitle(CommonUsage.Text.block, for: .normal)
+        button.setTitle(Constant.Text.block, for: .normal)
         button.isHidden = true
         return button
     }()
@@ -362,7 +362,7 @@ class SoundDetailViewController: UIViewController {
     lazy var playButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 32)
-        let bigImage = UIImage(systemName: CommonUsage.SFSymbol.play, withConfiguration: config)
+        let bigImage = UIImage(systemName: Constant.SFSymbol.play, withConfiguration: config)
         button.setImage(bigImage, for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(playOrPause), for: .touchUpInside)
@@ -377,8 +377,8 @@ class SoundDetailViewController: UIViewController {
     
     let waveformProgressView = DSWaveformImageWrapper.shared.createWaveformImageView(
         frame: CGRect(x: 0,
-                      y: CommonUsage.screenHeight - CommonUsage.safeAreaHeight - CommonUsage.tabBarHeight - 180,
-                      width: CommonUsage.screenWidth,
+                      y: UIProperties.screenHeight - UIProperties.safeAreaHeight - UIProperties.tabBarHeight - 180,
+                      width: UIProperties.screenWidth,
                       height: 100))
 
 }
@@ -389,7 +389,7 @@ extension SoundDetailViewController: AudioPlayerProtocol {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
         DispatchQueue.main.async {
             self.titleLabel.text = nowPlayingInfo.title
-            self.backgroundImageView.image = CommonUsage.audioImages[nowPlayingInfo.audioImageNumber]
+            self.backgroundImageView.image = UIProperties.audioImages[nowPlayingInfo.audioImageNumber]
             self.authorButton.setTitle(nowPlayingInfo.author, for: .normal)
             self.contentTextView.text = nowPlayingInfo.content
         }

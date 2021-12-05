@@ -33,13 +33,13 @@ class AudioPlayerWindow {
         let tabBarHeight = sCTabBarController.tabBar.frame.size.height
 
 
-        let windowSmallSizeY = CommonUsage.screenHeight - safeAreaHeight - tabBarHeight - windowSmallSizeHeight + 1
+        let windowSmallSizeY = UIProperties.screenHeight - safeAreaHeight - tabBarHeight - windowSmallSizeHeight + 1
         return windowSmallSizeY
     }()
     
-    private lazy var windowSmallFrame: CGRect = CGRect(x: 0, y: windowSmallSizeY, width: CommonUsage.screenWidth, height: windowSmallSizeHeight)
+    private lazy var windowSmallFrame: CGRect = CGRect(x: 0, y: windowSmallSizeY, width: UIProperties.screenWidth, height: windowSmallSizeHeight)
     
-    private let windowFullFrame: CGRect = CGRect(x: 0, y: 0, width: CommonUsage.screenWidth, height: CommonUsage.screenHeight)
+    private let windowFullFrame: CGRect = CGRect(x: 0, y: 0, width: UIProperties.screenWidth, height: UIProperties.screenHeight)
 
     // MARK: - properties
     

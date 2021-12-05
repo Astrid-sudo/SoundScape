@@ -22,7 +22,7 @@ class ProfileBlankTableViewCell: UITableViewCell {
     lazy var theImageView: UIImageView = {
         let image = UIImageView()
         image.layer.masksToBounds = true
-        image.image = UIImage(named: CommonUsage.launchScreen1)
+        image.image = UIImage(named: Constant.launchScreen1)
         image.contentMode = .scaleAspectFill
         return image
     }()
@@ -31,7 +31,7 @@ class ProfileBlankTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = UIColor(named: CommonUsage.scGreen)
+        backgroundColor = UIColor(named: Constant.scGreen)
         setLabel()
         setImageView()
     }

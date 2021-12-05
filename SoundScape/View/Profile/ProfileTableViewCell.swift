@@ -26,7 +26,7 @@ class ProfileTableViewCell: UITableViewCell {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
-        image.image = UIImage(named: CommonUsage.profileCover4)
+        image.image = UIImage(named: Constant.profileCover4)
         return image
     }()
     
@@ -34,25 +34,25 @@ class ProfileTableViewCell: UITableViewCell {
         let image = UIImageView()
         image.contentMode = .scaleToFill
         image.clipsToBounds = true
-        image.layer.cornerRadius = CommonUsage.screenHeight / 10
+        image.layer.cornerRadius = UIProperties.screenHeight / 10
         image.layer.borderWidth = 3
-        image.layer.borderColor = UIColor(named: CommonUsage.scBlue)?.cgColor
-        image.image = UIImage(named: CommonUsage.yeh1024)
+        image.layer.borderColor = UIColor(named: Constant.scBlue)?.cgColor
+        image.image = UIImage(named: Constant.yeh1024)
         return image
     }()
     
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 24)
+        label.textColor = UIColor(named: Constant.scWhite)
+        label.font = UIFont(name: Constant.fontSemibold, size: 24)
         label.textAlignment = .center
         return label
     }()
     
     private lazy var followersNumberLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 14)
+        label.textColor = UIColor(named: Constant.scWhite)
+        label.font = UIFont(name: Constant.fontSemibold, size: 14)
         label.textAlignment = .left
         label.text = "0"
         return label
@@ -60,17 +60,17 @@ class ProfileTableViewCell: UITableViewCell {
     
     private lazy var followersTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scGray)
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 10)
+        label.textColor = UIColor(named: Constant.scGray)
+        label.font = UIFont(name: Constant.fontSemibold, size: 10)
         label.textAlignment = .left
-        label.text = CommonUsage.Text.followers
+        label.text = Constant.Text.followers
         return label
     }()
     
     private lazy var followingsNumberLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 14)
+        label.textColor = UIColor(named: Constant.scWhite)
+        label.font = UIFont(name: Constant.fontSemibold, size: 14)
         label.textAlignment = .left
         label.text = "0"
         return label
@@ -78,10 +78,10 @@ class ProfileTableViewCell: UITableViewCell {
     
     private lazy var followingsTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scGray)
-        label.font = UIFont(name: CommonUsage.fontSemibold, size: 10)
+        label.textColor = UIColor(named: Constant.scGray)
+        label.font = UIFont(name: Constant.fontSemibold, size: 10)
         label.textAlignment = .left
-        label.text = CommonUsage.Text.followings
+        label.text = Constant.Text.followings
         return label
     }()
     
@@ -114,41 +114,41 @@ class ProfileTableViewCell: UITableViewCell {
     
     private lazy var followButton: UIButton = {
         let button = UIButton()
-        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
         button.addTarget(self, action: #selector(toggleFollow), for: .touchUpInside)
-        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        button.backgroundColor = UIColor(named: Constant.scLightBlue)
         button.layer.cornerRadius = 15
-        button.setTitle(CommonUsage.Text.follow, for: .normal)
+        button.setTitle(Constant.Text.follow, for: .normal)
         button.isHidden = true
         return button
     }()
     
     private lazy var settingButton: UIButton = {
         let button = UIButton()
-        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
         button.addTarget(self, action: #selector(goSettingPage), for: .touchUpInside)
-        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        button.backgroundColor = UIColor(named: Constant.scLightBlue)
         button.layer.cornerRadius = 15
-        button.setTitle(CommonUsage.Text.settings, for: .normal)
+        button.setTitle(Constant.Text.settings, for: .normal)
         button.isHidden = true
         return button
     }()
     
     private lazy var blockButton: UIButton = {
         let button = UIButton()
-        button.setTitleColor(UIColor(named: CommonUsage.scWhite), for: .normal)
+        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
         button.addTarget(self, action: #selector(block), for: .touchUpInside)
-        button.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        button.backgroundColor = UIColor(named: Constant.scLightBlue)
         button.layer.cornerRadius = 15
-        button.setTitle(CommonUsage.Text.block, for: .normal)
+        button.setTitle(Constant.Text.block, for: .normal)
         button.isHidden = true
         return button
     }()
     
     private lazy var changeUserPicButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.photo), for: .normal)
-        button.tintColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        button.setImage(UIImage(systemName: Constant.SFSymbol.photo), for: .normal)
+        button.tintColor = UIColor(named: Constant.scSuperLightBlue)
         button.addTarget(self, action: #selector(selectUserImage), for: .touchUpInside)
         button.isHidden = true
         return button
@@ -156,8 +156,8 @@ class ProfileTableViewCell: UITableViewCell {
     
     private lazy var changeCoverPicButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: CommonUsage.SFSymbol.photo), for: .normal)
-        button.tintColor = UIColor(named: CommonUsage.scSuperLightBlue)
+        button.setImage(UIImage(systemName: Constant.SFSymbol.photo), for: .normal)
+        button.tintColor = UIColor(named: Constant.scSuperLightBlue)
         button.addTarget(self, action: #selector(selectCoverImage), for: .touchUpInside)
         button.isHidden = true
         return button
@@ -216,7 +216,7 @@ class ProfileTableViewCell: UITableViewCell {
             coverImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             coverImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             coverImageView.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor),
-            coverImageView.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight / 4)
+            coverImageView.heightAnchor.constraint(equalToConstant: UIProperties.screenHeight / 4)
         ])
     }
     
@@ -226,9 +226,9 @@ class ProfileTableViewCell: UITableViewCell {
         NSLayoutConstraint.activate([
             userImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             userImageView.centerYAnchor.constraint(equalTo: coverImageView.bottomAnchor,
-                                                   constant: -CommonUsage.screenHeight / 16),
-            userImageView.widthAnchor.constraint(equalToConstant: CommonUsage.screenHeight / 5),
-            userImageView.heightAnchor.constraint(equalToConstant: CommonUsage.screenHeight / 5)
+                                                   constant: -UIProperties.screenHeight / 16),
+            userImageView.widthAnchor.constraint(equalToConstant: UIProperties.screenHeight / 5),
+            userImageView.heightAnchor.constraint(equalToConstant: UIProperties.screenHeight / 5)
         ])
     }
     
@@ -360,13 +360,13 @@ class ProfileTableViewCell: UITableViewCell {
 
     
      func makeButtonFollowed() {
-        followButton.setTitle(CommonUsage.Text.unfollow, for: .normal)
-        followButton.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        followButton.setTitle(Constant.Text.unfollow, for: .normal)
+        followButton.backgroundColor = UIColor(named: Constant.scLightBlue)
     }
     
      func makeButtonUnFollow() {
-        followButton.setTitle(CommonUsage.Text.follow, for: .normal)
-        followButton.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        followButton.setTitle(Constant.Text.follow, for: .normal)
+        followButton.backgroundColor = UIColor(named: Constant.scLightBlue)
     }
 
 }

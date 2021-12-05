@@ -1,5 +1,5 @@
 //
-//  SignInManager.swift
+//  LoggedInUserManager.swift
 //  SoundScape
 //
 //  Created by Astrid on 2021/10/31.
@@ -7,11 +7,11 @@
 
 import Foundation
 
-class SignInManager {
+class LoggedInUserManager {
     
     let firebaseManager = FirebaseManager.shared
     
-    static let shared = SignInManager()
+    static let shared = LoggedInUserManager()
     
     var currentUserInfoFirebase: SCUser? {
         
@@ -148,7 +148,7 @@ class SignInManager {
     
     private func checkUserFavoriteList() {
         guard let currentUserInfoDocumentID = currentUserInfoFirebase?.userInfoDoumentID else {
-            print("SignInManager: Failed to get currentUserInfoDocumentID. ")
+            print("LoggedInUserManager: Failed to get currentUserInfoDocumentID. ")
             return }
         _ = firebaseManager.collectionAddListener(collectionType: .myFavorite(userInfoDocumentID: currentUserInfoDocumentID)) { (result: Result<[SCFavorite], Error>) in
             
@@ -158,7 +158,7 @@ class SignInManager {
                 self.currentUserFavoriteDocumentIDs = scFavorites.map({$0.favoriteDocumentID})
                 
             case .failure(let error):
-                print("SignInManager: Failed to get favoriteDocumentID \(error)")
+                print("LoggedInUserManager: Failed to get favoriteDocumentID \(error)")
                 let errorMessage = error.localizedDescription
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
@@ -171,7 +171,7 @@ class SignInManager {
     
     private func checkCurrentUserFollowingList() {
         guard let currentUserInfoDocumentID = currentUserInfoFirebase?.userInfoDoumentID else {
-            print("SignInManager: Failed to get currentUserInfoDocumentID. ")
+            print("LoggedInUserManager: Failed to get currentUserInfoDocumentID. ")
             return }
         _ = firebaseManager.collectionAddListener(collectionType: .following(userInfoDocumentID: currentUserInfoDocumentID)) { (result: Result<[SCFollow], Error>) in
             
@@ -193,7 +193,7 @@ class SignInManager {
     
     private func checkCurrentUserFollowerList() {
         guard let currentUserInfoDocumentID = currentUserInfoFirebase?.userInfoDoumentID else {
-            print("SignInManager: Failed to get currentUserInfoDocumentID. ")
+            print("LoggedInUserManager: Failed to get currentUserInfoDocumentID. ")
             return }
         _ = firebaseManager.collectionAddListener(collectionType: .followedBy(userInfoDocumentID: currentUserInfoDocumentID)) { (result: Result<[SCFollow], Error>) in
             

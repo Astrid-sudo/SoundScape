@@ -23,7 +23,7 @@ class AudioMapViewController: UIViewController {
     
     // MARK: - properties
     
-    let signInmanager = SignInManager.shared
+    let signInmanager = LoggedInUserManager.shared
     
     var audioMapType = AudioMapType.browseMap
     
@@ -160,7 +160,7 @@ class AudioMapViewController: UIViewController {
     }
     
     private func setBackgroundcolor() {
-        view.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        view.backgroundColor = UIColor(named: Constant.scBlue)
     }
     
     private func addObserver() {
@@ -179,7 +179,7 @@ class AudioMapViewController: UIViewController {
     }
     
     private func fetchBlacklist() {
-        currentUserBlacklist = SignInManager.shared.currentUserBlacklist
+        currentUserBlacklist = LoggedInUserManager.shared.currentUserBlacklist
     }
     
     private func checkLocations() {
@@ -245,7 +245,7 @@ class AudioMapViewController: UIViewController {
         let table = UITableView()
         table.dataSource = self
         table.delegate = self
-        table.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        table.backgroundColor = UIColor(named: Constant.scBlue)
         table.allowsSelection = true
         table.separatorStyle = .singleLine
         table.register(MapSearchResultTableViewCell.self, forCellReuseIdentifier: MapSearchResultTableViewCell.reuseIdentifier)
@@ -256,12 +256,12 @@ class AudioMapViewController: UIViewController {
     private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.backgroundImage = UIImage()
-        searchBar.barTintColor = UIColor(named: CommonUsage.scWhite)
-        searchBar.placeholder = CommonUsage.Text.searchPlace
+        searchBar.barTintColor = UIColor(named: Constant.scWhite)
+        searchBar.placeholder = Constant.Text.searchPlace
         searchBar.delegate = self
-        searchBar.searchTextField.textColor = UIColor(named: CommonUsage.scWhite)
+        searchBar.searchTextField.textColor = UIColor(named: Constant.scWhite)
         searchBar.showsCancelButton = true
-        searchBar.tintColor = UIColor(named: CommonUsage.scWhite)
+        searchBar.tintColor = UIColor(named: Constant.scWhite)
         return searchBar
     }()
     
@@ -291,23 +291,23 @@ class AudioMapViewController: UIViewController {
     
     private lazy var searchResultMarker: GMSMarker = {
         var marker = GMSMarker(position: searchedLocation ?? defaultLocation)
-        marker.icon = GMSMarker.markerImage(with: UIColor(named: CommonUsage.scLightBlue))
+        marker.icon = GMSMarker.markerImage(with: UIColor(named: Constant.scLightBlue))
         return marker
     }()
     
     private lazy var pinMarker: GMSMarker = {
         var marker = GMSMarker(position: currentLocation ?? defaultLocation)
-        marker.icon = GMSMarker.markerImage(with: UIColor(named: CommonUsage.scRed))
+        marker.icon = GMSMarker.markerImage(with: UIColor(named: Constant.scRed))
         marker.map = mapView
         return marker
     }()
     
     lazy var pinLoactionButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(named: CommonUsage.scWhite)
-        button.setTitle(CommonUsage.Text.finish, for: .normal)
-        button.titleLabel?.font = UIFont(name: CommonUsage.fontSemibold, size: 14)
-        button.setTitleColor(UIColor(named: CommonUsage.scBlue), for: .normal)
+        button.backgroundColor = UIColor(named: Constant.scWhite)
+        button.setTitle(Constant.Text.finish, for: .normal)
+        button.titleLabel?.font = UIFont(name: Constant.fontSemibold, size: 14)
+        button.setTitleColor(UIColor(named: Constant.scBlue), for: .normal)
         button.addTarget(self, action: #selector(backToLastPage), for: .touchUpInside)
         button.layer.cornerRadius = 10
         return button
@@ -315,11 +315,11 @@ class AudioMapViewController: UIViewController {
     
     lazy var mapNoticeLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: CommonUsage.scWhite)
+        label.textColor = UIColor(named: Constant.scWhite)
         label.textAlignment = .left
         label.numberOfLines = 0
-        label.font = UIFont(name: CommonUsage.font, size: 20)
-        label.text = CommonUsage.Text.pinOnMapHint
+        label.font = UIFont(name: Constant.font, size: 20)
+        label.text = Constant.Text.pinOnMapHint
         return label
     }()
     
@@ -332,21 +332,21 @@ extension AudioMapViewController {
     private func setNavigationBar() {
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
-        navigationItem.leftBarButtonItem?.image = UIImage(systemName: CommonUsage.SFSymbol.back)
-        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: CommonUsage.scWhite)
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: Constant.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: Constant.scWhite)
     }
     
     private func addSearchBar() {
         navigationItem.titleView = searchBar
-        navigationItem.titleView?.tintColor = UIColor(named: CommonUsage.scWhite)
-        navigationItem.titleView?.backgroundColor = UIColor(named: CommonUsage.scBlue)
+        navigationItem.titleView?.tintColor = UIColor(named: Constant.scWhite)
+        navigationItem.titleView?.backgroundColor = UIColor(named: Constant.scBlue)
     }
     
     private func setPinLoactionButton() {
         view.addSubview(pinLoactionButton)
         pinLoactionButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            pinLoactionButton.widthAnchor.constraint(equalToConstant: CommonUsage.screenWidth - 76),
+            pinLoactionButton.widthAnchor.constraint(equalToConstant: UIProperties.screenWidth - 76),
             pinLoactionButton.heightAnchor.constraint(equalToConstant: 41),
             pinLoactionButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             pinLoactionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)

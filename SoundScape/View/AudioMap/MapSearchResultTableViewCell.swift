@@ -14,7 +14,7 @@ class MapSearchResultTableViewCell: UITableViewCell {
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.textColor = UIColor(named: CommonUsage.scGray)
+        label.textColor = UIColor(named: Constant.scGray)
         label.numberOfLines = 0
         return label
     }()
@@ -22,7 +22,7 @@ class MapSearchResultTableViewCell: UITableViewCell {
     lazy var subTitleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.textColor = UIColor(named: CommonUsage.scGray)
+        label.textColor = UIColor(named: Constant.scGray)
         label.numberOfLines = 0
         return label
     }()
@@ -43,9 +43,9 @@ class MapSearchResultTableViewCell: UITableViewCell {
     // MARK: - config UI method
     
     private func setBackgroundcolor() {
-        backgroundColor = UIColor(named: CommonUsage.scBlue)
+        backgroundColor = UIColor(named: Constant.scBlue)
         let bgColorView = UIView()
-        bgColorView.backgroundColor = UIColor(named: CommonUsage.scLightBlue)
+        bgColorView.backgroundColor = UIColor(named: Constant.scLightBlue)
         selectedBackgroundView = bgColorView
     }
     

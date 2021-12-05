@@ -1,47 +1,13 @@
 //
-//  Common.swift
+//  Constant.swift
 //  SoundScape
 //
 //  Created by Astrid on 2021/10/19.
 //
 
 import Foundation
-import UIKit
-import AVFoundation
 
-struct CommonUsage {
-    
-    static let screenWidth = UIScreen.main.bounds.width
-    static let screenHeight = UIScreen.main.bounds.height
-    static let base: CGFloat = 375
-    static var ratio: CGFloat {
-        return screenWidth / base
-    }
-    
-    static let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
-    
-    static var tabBarHeight: CGFloat {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return 0 }
-        let tabBarHeight = sCTabBarController.tabBar.frame.size.height
-        return tabBarHeight
-    }
-    
-    static var audioImages: [UIImage?] = [UIImage(named: CommonUsage.animalDog),
-                                          UIImage(named: CommonUsage.animalCat),
-                                          UIImage(named: CommonUsage.animalCatPaw),
-                                          UIImage(named: CommonUsage.animalDuck),
-                                          UIImage(named: CommonUsage.city),
-                                          UIImage(named: CommonUsage.meaningfulCake),
-                                          UIImage(named: CommonUsage.meaningfulFlower),
-                                          UIImage(named: CommonUsage.meaningfulWine),
-                                          UIImage(named: CommonUsage.natureMountain),
-                                          UIImage(named: CommonUsage.natureOcean),
-                                          UIImage(named: CommonUsage.natureRiver),
-                                          UIImage(named: CommonUsage.uniqueRice),
-                                          UIImage(named: CommonUsage.untitledArtwork),
-                                          UIImage(named: CommonUsage.cityCafe)
-    ]
+struct Constant {
     
     static let privacyPolicyURL = "https://www.privacypolicies.com/live/441a63bf-7dcb-427a-8f2c-c13a9a69e488"
     static let LAEUURL = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
@@ -72,17 +38,13 @@ struct CommonUsage {
     static let scDarkGreen = "scDarkGreen"
     static let scGreen = "scGreen"
     static let scLightGreen = "scLightGreen"
-    
     static let scBlue = "scBlue"
     static let scLightBlue = "scLightBlue"
     static let scSuperLightBlue = "scSuperLightBlue"
-    
     static let scDarkYellow = "scDarkYellow"
     static let scYellow = "scYellow"
-    
     static let scOrange = "scOrange"
     static let scRed = "scRed"
-    
     static let scWhite = "scWhite"
     static let scGray = "scGray"
     
@@ -147,13 +109,9 @@ struct CommonUsage {
         static let loading = "loading..."
     }
     
-}
-
-struct Constant {
     static let allUsers = "AllUsers"
     static let allAudioFiles = "AllAudioFiles"
     static let allLocations = "AllLocations"
-    static let comments = "Comments"
     static let followedBy = "followedBy"
     static let following = "following"
     static let myFavorite = "myFavorite"
@@ -161,97 +119,7 @@ struct Constant {
     static let blackList = "blackList"
     static let userPic = "userPic"
     static let coverPic = "coverPic"
-    
     static let createdTime = "createdTime"
+    static let comments = "Comments"
 }
-
-extension UITextField {
-    
-    func setLeftPaddingPoints(amount: CGFloat) {
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
-        self.leftView = paddingView
-        self.leftViewMode = .always
-    }
-    
-    func setRightPaddingPoints(amount: CGFloat) {
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
-        self.rightView = paddingView
-        self.rightViewMode = .always
-    }
-}
-
-extension UIView {
-    func snapshot() -> UIImage? {
-        UIGraphicsBeginImageContextWithOptions(self.bounds.size, true, UIScreen.main.scale)
-        self.layer.render(in: UIGraphicsGetCurrentContext()!)
-        let img = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return img
-    }
-}
-
-extension CGFloat {
-    
-    var adjusted: CGFloat {
-        
-        return self * CommonUsage.ratio
-    }
-}
-
-extension Double {
-    
-    var adjusted: CGFloat {
-        
-        return CGFloat(self) * CommonUsage.ratio
-    }
-}
-extension Int {
-    
-    var adjusted: CGFloat {
-        
-        return CGFloat(self) * CommonUsage.ratio
-    }
-}
-
-extension UIViewController {
-    
-    func popErrorAlert(title: String?, message: String?) {
-        
-        let alert = UIAlertController(title: title,
-                                      message: message,
-                                      preferredStyle: .alert )
-        
-        let okButton = UIAlertAction(title: "OK", style: .cancel)
-        alert.addAction(okButton)
-        present(alert, animated: true, completion: nil)
-    }
-    
-}
-
-extension Notification.Name {
-    static let playingAudioChange = Notification.Name("playingAudioChange")
-    static let didItemPlayToEndTime = Notification.Name("didItemPlayToEndTime")
-    static let didCurrentTimeChange = Notification.Name("didCurrentTimeChange")
-    static let didStateChange = Notification.Name("didStateChange")
-    static let remoteURLDidSelect = Notification.Name("remoteURLDidSelect")
-    static let didItemDurationChange = Notification.Name("didItemDurationChange")
-}
-
-protocol ReuseID {}
-protocol CellReuseID: ReuseID {}
-protocol StoryboardID: ReuseID {}
-
-extension ReuseID {
-
-  static var reuseIdentifier: String {
-    get{
-      String(describing: self)
-    }
-  }
-}
-
-extension UICollectionReusableView: CellReuseID {}
-extension UITableViewCell: CellReuseID {}
-extension UITableViewHeaderFooterView: CellReuseID {}
-extension UIViewController: StoryboardID {}
 
