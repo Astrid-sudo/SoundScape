@@ -54,7 +54,7 @@ class SoundDetailViewController: UIViewController {
     
     @objc func presentCommentPage(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let commentViewController = storyboard.instantiateViewController(withIdentifier: String(describing: CommentViewController.self)) as? CommentViewController else { return }
+        guard let commentViewController = storyboard.instantiateViewController(withIdentifier: CommentViewController.reuseIdentifier) as? CommentViewController else { return }
         commentViewController.currentPlayingDocumentID = nowPlayingDocumentID
         present(commentViewController, animated: true)
     }
@@ -65,10 +65,10 @@ class SoundDetailViewController: UIViewController {
         
         scTabBarController.selectedIndex = 0
         
-        guard let homeVC = scTabBarController.viewControllers?[0].children[0] as? HomeVC else { return }
+        guard let homeVC = scTabBarController.viewControllers?[0].children[0] as? HomeViewController else { return }
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let othersProfileViewController = storyboard.instantiateViewController(withIdentifier: String(describing: OthersProfileViewController.self)) as? OthersProfileViewController,
+        guard let othersProfileViewController = storyboard.instantiateViewController(withIdentifier: OthersProfileViewController.reuseIdentifier) as? OthersProfileViewController,
               let authorIdentity = self.authorIdentity  else { return }
         
         othersProfileViewController.idWillDisplay = authorIdentity

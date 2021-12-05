@@ -7,7 +7,7 @@
 
 import UIKit
 
-class RecordVC: UIViewController {
+class RecordViewController: UIViewController {
     
     // MARK: - properties
 
@@ -247,7 +247,7 @@ class RecordVC: UIViewController {
               }
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let editVC = storyboard.instantiateViewController(withIdentifier: "EditVC") as? EditVC else { return }
+        guard let editVC = storyboard.instantiateViewController(withIdentifier: EditViewController.reuseIdentifier) as? EditViewController else { return }
         
         let filename = "User.m4a"
         let path = NSHomeDirectory() + "/Documents/" + filename
@@ -263,7 +263,7 @@ class RecordVC: UIViewController {
 
 // MARK: - conform to PlayRecoredStateChangableDelegate
 
-extension RecordVC: RecordingUpdatableDelegate {
+extension RecordViewController: RecordingUpdatableDelegate {
     
     func updateTimeAndPower(currentTime: TimeInterval, power: Float) {
         let current = String(describing: currentTime).dropLast(13)

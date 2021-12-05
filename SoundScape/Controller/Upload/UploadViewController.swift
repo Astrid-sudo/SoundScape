@@ -1,5 +1,5 @@
 //
-//  UploadVC.swift
+//  UploadViewController.swift
 //  SoundScape
 //
 //  Created by Astrid on 2021/10/19.
@@ -11,7 +11,7 @@ import UIKit
 import GoogleMaps
 import CoreLocation
 
-class UploadVC: UIViewController {
+class UploadViewController: UIViewController {
     
     // MARK: - properties
     
@@ -445,7 +445,7 @@ class UploadVC: UIViewController {
     @objc func presentBigMap() {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let audioMapVC = storyboard.instantiateViewController(withIdentifier: String(describing: AudioMapViewController.self)) as? AudioMapViewController else { return }
+        guard let audioMapVC = storyboard.instantiateViewController(withIdentifier: AudioMapViewController.reuseIdentifier) as? AudioMapViewController else { return }
         
         audioMapVC.audioMapType = .pinOnMap
         
@@ -461,7 +461,7 @@ class UploadVC: UIViewController {
 
 // MARK: - conform to CLLocationManagerDelegate
 
-extension UploadVC: CLLocationManagerDelegate {
+extension UploadViewController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let updatedLocation: CLLocation = locations[0] as CLLocation
@@ -484,7 +484,7 @@ extension UploadVC: CLLocationManagerDelegate {
 
 // MARK: - conform to GMSMapViewDelegate
 
-extension UploadVC: GMSMapViewDelegate {
+extension UploadViewController: GMSMapViewDelegate {
     
     func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
         pinnedLocation = coordinate
@@ -494,7 +494,7 @@ extension UploadVC: GMSMapViewDelegate {
 
 // MARK: - conform to UITextFieldDelegate
 
-extension UploadVC: UITextFieldDelegate {
+extension UploadViewController: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         mapMarker.title = titleTextField.text
@@ -506,7 +506,7 @@ extension UploadVC: UITextFieldDelegate {
 
 // MARK: - conform to LocationCoordinatePassableDelegate
 
-extension UploadVC: LocationCoordinatePassableDelegate {
+extension UploadViewController: LocationCoordinatePassableDelegate {
     
     func displayPinOnSmallMap(locationFromBigMap: CLLocationCoordinate2D?) {
         pinnedLocation = locationFromBigMap
@@ -518,7 +518,7 @@ extension UploadVC: LocationCoordinatePassableDelegate {
 
 // MARK: - conform to UICollectionViewDataSource
 
-extension UploadVC: UICollectionViewDataSource {
+extension UploadViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
@@ -569,7 +569,7 @@ extension UploadVC: UICollectionViewDataSource {
 
 // MARK: - conform to UICollectionViewDelegate
 
-extension UploadVC: UICollectionViewDelegate {
+extension UploadViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
@@ -605,7 +605,7 @@ extension UploadVC: UICollectionViewDelegate {
 
 // MARK: - conform to UICollectionViewDelegateFlowLayout
 
-extension UploadVC: UICollectionViewDelegateFlowLayout {
+extension UploadViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)

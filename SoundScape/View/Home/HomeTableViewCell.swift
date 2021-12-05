@@ -130,7 +130,7 @@ extension HomeTableViewCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("\(category),didSelect \(indexPath), url: \(firebaseData[indexPath.item].audioURL)")
         
-        guard let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerVC else { return }
+        guard let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerViewController else { return }
         audioPlayerVC.resetAudioPlayerUI(audioTitle: firebaseData[indexPath.item].title,
                                          audioImageNumber: firebaseData[indexPath.item].imageNumber)
         AudioPlayerWindow.shared.show()

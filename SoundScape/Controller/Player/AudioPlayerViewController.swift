@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AudioPlayerVC: UIViewController {
+class AudioPlayerViewController: UIViewController {
     
     // MARK: - properties
     
@@ -89,7 +89,7 @@ class AudioPlayerVC: UIViewController {
     
     private func addDetailPage() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "SoundDetailViewController") as? SoundDetailViewController else { return }
+        guard let vc = storyboard.instantiateViewController(withIdentifier: SoundDetailViewController.reuseIdentifier) as? SoundDetailViewController else { return }
         
         self.soundDetailVC = vc
         guard let soundDetailVC = soundDetailVC else { return }
@@ -321,7 +321,7 @@ class AudioPlayerVC: UIViewController {
     
 }
 
-extension AudioPlayerVC: AudioPlayerProtocol {
+extension AudioPlayerViewController: AudioPlayerProtocol {
     
     func updatePlayInfo(notification: Notification) {
         guard let nowPlayingInfo = notification.userInfo?["UserInfo"] as? PlayInfo else { return }
@@ -341,7 +341,7 @@ extension AudioPlayerVC: AudioPlayerProtocol {
 
 // MARK: - conform to DetailPageShowableDelegate
 
-extension AudioPlayerVC: DetailPageShowableDelegate {
+extension AudioPlayerViewController: DetailPageShowableDelegate {
     
     func showDetailPage() {
         guard let soundDetailVC = soundDetailVC else { return }
@@ -370,7 +370,7 @@ extension AudioPlayerVC: DetailPageShowableDelegate {
 
 // MARK: - config UI method
 
-extension AudioPlayerVC {
+extension AudioPlayerViewController {
     
     private func setviewBackgroundcolor() {
         view.backgroundColor = UIColor(named: Constant.scGreen)

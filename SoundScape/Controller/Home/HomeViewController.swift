@@ -1,5 +1,5 @@
 //
-//  HomeVC.swift
+//  HomeViewController.swift
 //  SoundScape
 //
 //  Created by Astrid on 2021/10/22.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HomeVC: UIViewController {
+class HomeViewController: UIViewController {
     
     // MARK: - properties
     
@@ -190,7 +190,7 @@ class HomeVC: UIViewController {
 
 // MARK: - conform to UITableViewDataSource
 
-extension HomeVC: UITableViewDataSource {
+extension HomeViewController: UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
         AudioCategory.allCases.count
@@ -216,7 +216,7 @@ extension HomeVC: UITableViewDataSource {
 
 // MARK: - conform to UITableViewDelegate
 
-extension HomeVC: UITableViewDelegate {
+extension HomeViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomeTableViewHeader.reuseIdentifier) as? HomeTableViewHeader else { return UIView() }
@@ -252,7 +252,7 @@ extension HomeVC: UITableViewDelegate {
 
 // MARK: - conform to PressPassableDelegate
 
-extension HomeVC: PressPassableDelegate {
+extension HomeViewController: PressPassableDelegate {
     
     func goSectionPage(from section: Int, sectionPageType: SectionPageType) {
         
@@ -268,7 +268,7 @@ extension HomeVC: PressPassableDelegate {
         }
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
+        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: CategoryViewController.reuseIdentifier) as? CategoryViewController else { return }
         
         categoryPage.config(category: category)
         navigationController?.pushViewController(categoryPage, animated: true)
@@ -276,7 +276,7 @@ extension HomeVC: PressPassableDelegate {
     
     func goCategoryPage() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
+        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: CategoryViewController.reuseIdentifier) as? CategoryViewController else { return }
         
         navigationController?.pushViewController(categoryPage, animated: true)
     }
@@ -285,7 +285,7 @@ extension HomeVC: PressPassableDelegate {
 
 // MARK: - conform to AlertPresentableDelegate
 
-extension HomeVC: AlertPresentableDelegate {
+extension HomeViewController: AlertPresentableDelegate {
     
     func popBlockAlert(toBeBlockedID: String) {
        

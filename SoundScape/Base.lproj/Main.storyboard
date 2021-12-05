@@ -7,14 +7,13 @@
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
-        <capability name="UIMenu" message="Requires Xcode 11 or later." minToolsVersion="11.0" requiredIntegratedClassName="UICommandDiff"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--HomeVC-->
+        <!--Home View Controller-->
         <scene sceneID="ddv-Xb-y80">
             <objects>
-                <viewController id="7TY-AA-rZL" customClass="HomeVC" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="7TY-AA-rZL" customClass="HomeViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="VIE-k6-gFS">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -27,10 +26,10 @@
             </objects>
             <point key="canvasLocation" x="-317" y="1625"/>
         </scene>
-        <!--Create AudioVC-->
+        <!--Create Audio View Controller-->
         <scene sceneID="j1U-B4-N7Q">
             <objects>
-                <viewController storyboardIdentifier="CreateAudioVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="aSM-Zi-js2" customClass="CreateAudioVC" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CreateAudioVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="aSM-Zi-js2" customClass="CreateAudioViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ViH-y6-qpk">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -43,10 +42,10 @@
             </objects>
             <point key="canvasLocation" x="506" y="1625"/>
         </scene>
-        <!--UploadVC-->
+        <!--Upload View Controller-->
         <scene sceneID="EiT-Yl-d3A">
             <objects>
-                <viewController storyboardIdentifier="UploadVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="rLH-UQ-4w1" customClass="UploadVC" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="UploadViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="rLH-UQ-4w1" customClass="UploadViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="zPS-Mb-eQT">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -104,138 +103,6 @@
             </objects>
             <point key="canvasLocation" x="2216" y="2314"/>
         </scene>
-        <!--Test EditVC-->
-        <scene sceneID="21I-gY-GuF">
-            <objects>
-                <viewController storyboardIdentifier="TestEditVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="ng3-eR-Xx5" customClass="TestEditVC" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="4cK-aS-gqT">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="14" translatesAutoresizingMaskIntoConstraints="NO" id="i0H-AI-uKo" userLabel="startStackView">
-                                <rect key="frame" x="0.0" y="144" width="414" height="34"/>
-                                <subviews>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0Oc-Be-lv3">
-                                        <rect key="frame" x="0.0" y="0.0" width="71.5" height="34"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=":" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wuy-zg-SK6">
-                                        <rect key="frame" x="85.5" y="0.0" width="71.5" height="34"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="C9d-rE-E7c">
-                                        <rect key="frame" x="171" y="0.0" width="72" height="34"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=":" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wxe-pF-Fh8">
-                                        <rect key="frame" x="257" y="0.0" width="71.5" height="34"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ddb-2b-chj">
-                                        <rect key="frame" x="342.5" y="0.0" width="71.5" height="34"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
-                                </subviews>
-                            </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="14" translatesAutoresizingMaskIntoConstraints="NO" id="Pi3-GQ-df1" userLabel="sendStackView">
-                                <rect key="frame" x="0.0" y="278" width="414" height="34"/>
-                                <subviews>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gzY-so-1iq">
-                                        <rect key="frame" x="0.0" y="0.0" width="71.5" height="34"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=":" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i7Q-Ck-9Ua">
-                                        <rect key="frame" x="85.5" y="0.0" width="71.5" height="34"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="K2h-83-c5s">
-                                        <rect key="frame" x="171" y="0.0" width="72" height="34"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=":" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1uM-u8-EXY">
-                                        <rect key="frame" x="257" y="0.0" width="71.5" height="34"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2sU-dU-YEg">
-                                        <rect key="frame" x="342.5" y="0.0" width="71.5" height="34"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
-                                </subviews>
-                            </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GQa-i8-5LQ">
-                                <rect key="frame" x="0.0" y="412" width="414" height="31"/>
-                                <color key="backgroundColor" red="0.49264252479999998" green="0.63731132270000002" blue="0.68134038799999996" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="TRIM!"/>
-                                <connections>
-                                    <action selector="trimAudioAction:" destination="ng3-eR-Xx5" eventType="touchUpInside" id="ml3-Mu-UEC"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1eU-Qv-4Ec">
-                                <rect key="frame" x="0.0" y="543" width="414" height="31"/>
-                                <color key="backgroundColor" red="0.92156862750000001" green="0.50237911940000002" blue="0.49802672860000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Play Trimmed Audio"/>
-                                <connections>
-                                    <action selector="playTrimmedAudio" destination="ng3-eR-Xx5" eventType="touchUpInside" id="98q-Yh-xxh"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" showsMenuAsPrimaryAction="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Pc-BB-sfO">
-                                <rect key="frame" x="176" y="696" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <menu key="menu" id="nTC-E3-Iat">
-                                    <children>
-                                        <command title="Item 1" id="QTY-CU-zpL"/>
-                                        <command title="Item 2" id="Qtz-TP-kl0"/>
-                                    </children>
-                                </menu>
-                                <state key="normal" title="Button"/>
-                            </button>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="DYi-bc-hVf"/>
-                        <color key="backgroundColor" systemColor="systemBrownColor"/>
-                        <constraints>
-                            <constraint firstItem="i0H-AI-uKo" firstAttribute="top" secondItem="DYi-bc-hVf" secondAttribute="top" constant="100" id="6K4-2j-uwQ"/>
-                            <constraint firstItem="DYi-bc-hVf" firstAttribute="trailing" secondItem="GQa-i8-5LQ" secondAttribute="trailing" id="BmW-X3-hLD"/>
-                            <constraint firstItem="GQa-i8-5LQ" firstAttribute="top" secondItem="Pi3-GQ-df1" secondAttribute="bottom" constant="100" id="Qxb-1h-G7G"/>
-                            <constraint firstItem="Pi3-GQ-df1" firstAttribute="top" secondItem="i0H-AI-uKo" secondAttribute="bottom" constant="100" id="W5Q-4A-eWm"/>
-                            <constraint firstItem="i0H-AI-uKo" firstAttribute="leading" secondItem="DYi-bc-hVf" secondAttribute="leading" id="Y5k-2f-HPy"/>
-                            <constraint firstItem="1eU-Qv-4Ec" firstAttribute="top" secondItem="GQa-i8-5LQ" secondAttribute="bottom" constant="100" id="Zjd-YQ-7Ui"/>
-                            <constraint firstItem="DYi-bc-hVf" firstAttribute="trailing" secondItem="1eU-Qv-4Ec" secondAttribute="trailing" id="gY7-qR-Js6"/>
-                            <constraint firstItem="1eU-Qv-4Ec" firstAttribute="leading" secondItem="DYi-bc-hVf" secondAttribute="leading" id="gnk-9x-cgm"/>
-                            <constraint firstItem="GQa-i8-5LQ" firstAttribute="leading" secondItem="DYi-bc-hVf" secondAttribute="leading" id="kdE-Sp-4vD"/>
-                            <constraint firstItem="DYi-bc-hVf" firstAttribute="trailing" secondItem="Pi3-GQ-df1" secondAttribute="trailing" id="mi3-z0-H6X"/>
-                            <constraint firstItem="DYi-bc-hVf" firstAttribute="trailing" secondItem="i0H-AI-uKo" secondAttribute="trailing" id="r6U-Q5-hvy"/>
-                            <constraint firstItem="Pi3-GQ-df1" firstAttribute="leading" secondItem="DYi-bc-hVf" secondAttribute="leading" id="wjl-ZE-JJn"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="finalSecondsTimeTextField" destination="2sU-dU-YEg" id="1tm-Wq-wG6"/>
-                        <outlet property="finalTimeHoursTextField" destination="gzY-so-1iq" id="wDf-oM-oVV"/>
-                        <outlet property="finalTimeMinutesTextField" destination="K2h-83-c5s" id="S6j-rK-2xd"/>
-                        <outlet property="startTimeHoursTextfield" destination="0Oc-Be-lv3" id="aQF-6M-gD8"/>
-                        <outlet property="startTimeMinutesTextField" destination="C9d-rE-E7c" id="Xck-Ya-hI7"/>
-                        <outlet property="startTimeSecondsTextField" destination="ddb-2b-chj" id="mUp-h6-SQf"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="utT-4V-wcc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3535" y="1667"/>
-        </scene>
         <!--Profile View Controller-->
         <scene sceneID="1Vr-kE-THn">
             <objects>
@@ -251,10 +118,10 @@
             </objects>
             <point key="canvasLocation" x="2216" y="1637"/>
         </scene>
-        <!--RecordVC-->
+        <!--Record View Controller-->
         <scene sceneID="KCO-hM-psp">
             <objects>
-                <viewController storyboardIdentifier="RecordVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="oqK-vV-JW6" customClass="RecordVC" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RecordViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="oqK-vV-JW6" customClass="RecordViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="pd1-A7-3wq">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -400,10 +267,10 @@
             </objects>
             <point key="canvasLocation" x="2215.9420289855075" y="877.90178571428567"/>
         </scene>
-        <!--EditVC-->
+        <!--Edit View Controller-->
         <scene sceneID="Gv9-5P-XDj">
             <objects>
-                <viewController storyboardIdentifier="EditVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="T31-Hm-kMm" customClass="EditVC" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="EditViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="T31-Hm-kMm" customClass="EditViewController" customModule="SoundScape" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="pem-ZW-qc2">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -503,9 +370,6 @@
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemBrownColor">
-            <color red="0.63529411764705879" green="0.51764705882352946" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

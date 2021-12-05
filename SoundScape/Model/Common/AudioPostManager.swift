@@ -95,10 +95,3 @@ class AudioPostManager {
     }
     
 }
-
-// MARK: - extention Notification
-
-extension Notification.Name {
-    static let allAudioPostChange = Notification.Name("allAudioPostChange")
-    static let fetchAudioPostError = Notification.Name("fetchAudioPostError")
-}

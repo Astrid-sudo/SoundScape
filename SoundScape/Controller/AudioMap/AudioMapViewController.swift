@@ -463,7 +463,7 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
     
     func pushSoundDetailPage() {
         guard let post = tappedMarker.userData as? SCPost,
-              let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerVC else { return }
+              let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerViewController else { return }
         audioPlayerVC.resetAudioPlayerUI(audioTitle: post.title,
                                          audioImageNumber: post.imageNumber)
         

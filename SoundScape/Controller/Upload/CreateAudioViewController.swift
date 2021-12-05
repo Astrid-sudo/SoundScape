@@ -1,5 +1,5 @@
 //
-//  CreateAudioVC.swift
+//  CreateAudioViewController.swift
 //  SoundScape
 //
 //  Created by Astrid on 2021/10/19.
@@ -8,7 +8,7 @@
 import UIKit
 import UniformTypeIdentifiers
 
-class CreateAudioVC: UIViewController {
+class CreateAudioViewController: UIViewController {
 
     private let animationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .waveformBounce,
                                                                                frame: CGRect(x: 0,
@@ -81,7 +81,7 @@ class CreateAudioVC: UIViewController {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let recordVC = storyboard.instantiateViewController(withIdentifier:
-                                                                    RecordVC.reuseIdentifier) as? RecordVC else { return }
+                                                                    RecordViewController.reuseIdentifier) as? RecordViewController else { return }
         navigationController?.pushViewController(recordVC, animated: true)
     }
     
@@ -127,13 +127,13 @@ class CreateAudioVC: UIViewController {
 
 // MARK: - conform to UIDocumentPickerDelegate
 
-extension CreateAudioVC: UIDocumentPickerDelegate {
+extension CreateAudioViewController: UIDocumentPickerDelegate {
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         
         if let url = urls.last {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            guard let editVC = storyboard.instantiateViewController(withIdentifier: "EditVC") as? EditVC else { return }
+            guard let editVC = storyboard.instantiateViewController(withIdentifier: EditViewController.reuseIdentifier) as? EditViewController else { return }
             editVC.selectedFileURL = url
             editVC.originDuraion = AudioPlayHelper.shared.duration
             navigationController?.pushViewController(editVC, animated: true)

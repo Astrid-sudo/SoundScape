@@ -68,7 +68,7 @@ class SettingViewController: UIViewController {
     
     private func navigateToSignInPage() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let signInViewController = storyboard.instantiateViewController(withIdentifier: String(describing: SignInViewController.self)) as? SignInViewController else { return }
+        guard let signInViewController = storyboard.instantiateViewController(withIdentifier: SignInViewController.reuseIdentifier) as? SignInViewController else { return }
         navigationController?.pushViewController(signInViewController, animated: true)
     }
     
@@ -160,7 +160,7 @@ extension SettingViewController: UITableViewDelegate {
         if indexPath.row == 0 {
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            guard let privacyPolicyVC = storyboard.instantiateViewController(withIdentifier: String(describing: PrivacyPolicyViewController.self)) as? PrivacyPolicyViewController else { return }
+            guard let privacyPolicyVC = storyboard.instantiateViewController(withIdentifier: PrivacyPolicyViewController.reuseIdentifier) as? PrivacyPolicyViewController else { return }
             
             navigationController?.pushViewController(privacyPolicyVC, animated: true)
             

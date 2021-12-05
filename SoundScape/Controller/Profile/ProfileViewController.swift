@@ -582,7 +582,7 @@ extension ProfileViewController: ProfileCellDelegate {
     
     func goSettingPage() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let settingViewController = storyboard.instantiateViewController(withIdentifier: String(describing: SettingViewController.self)) as? SettingViewController else { return }
+        guard let settingViewController = storyboard.instantiateViewController(withIdentifier: SettingViewController.reuseIdentifier) as? SettingViewController else { return }
         navigationController?.pushViewController(settingViewController, animated: true)
     }
     

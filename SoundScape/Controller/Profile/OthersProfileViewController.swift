@@ -632,7 +632,7 @@ extension OthersProfileViewController: PressPassableDelegate {
     func goSectionPage(from section: Int, sectionPageType: SectionPageType) {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController,
+        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: CategoryViewController.reuseIdentifier) as? CategoryViewController,
               let displayUserID = userWillDisplay?.userID else { return }
         
         switch section {
@@ -661,7 +661,7 @@ extension OthersProfileViewController: PressPassableDelegate {
     
     func goCategoryPage() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: String(describing: CategoryViewController.self)) as? CategoryViewController else { return }
+        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: CategoryViewController.reuseIdentifier) as? CategoryViewController else { return }
         
         navigationController?.pushViewController(categoryPage, animated: true)
     }
@@ -697,7 +697,7 @@ extension OthersProfileViewController: ProfileCellDelegate {
     
     func goSettingPage() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let settingViewController = storyboard.instantiateViewController(withIdentifier: String(describing: SettingViewController.self)) as? SettingViewController else { return }
+        guard let settingViewController = storyboard.instantiateViewController(withIdentifier: SettingViewController.reuseIdentifier) as? SettingViewController else { return }
         navigationController?.pushViewController(settingViewController, animated: true)
     }
     

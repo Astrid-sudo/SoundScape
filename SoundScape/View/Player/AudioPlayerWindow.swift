@@ -20,7 +20,7 @@ class AudioPlayerWindow {
     
     var window: UIWindow?
     
-    let vc = AudioPlayerVC()
+    let vc = AudioPlayerViewController()
     
     weak var delegate: DetailPageShowableDelegate?
     

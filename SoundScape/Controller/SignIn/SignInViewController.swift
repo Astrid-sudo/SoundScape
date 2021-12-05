@@ -97,14 +97,14 @@ class SignInViewController: UIViewController {
     
     @objc func presentPolicy() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let policyVc = storyboard.instantiateViewController(withIdentifier: String(describing: PrivacyPolicyViewController.self)) as? PrivacyPolicyViewController else { return }
+        guard let policyVc = storyboard.instantiateViewController(withIdentifier: PrivacyPolicyViewController.reuseIdentifier) as? PrivacyPolicyViewController else { return }
         
         present(policyVc, animated: true, completion: nil)
     }
     
     @objc func presentLAEU() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let lAEUViewController = storyboard.instantiateViewController(withIdentifier: String(describing: LAEUViewController.self)) as? LAEUViewController else { return }
+        guard let lAEUViewController = storyboard.instantiateViewController(withIdentifier: LAEUViewController.reuseIdentifier) as? LAEUViewController else { return }
         
         present(lAEUViewController, animated: true, completion: nil)
     }

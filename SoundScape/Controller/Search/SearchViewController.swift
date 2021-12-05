@@ -379,7 +379,7 @@ extension SearchViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        guard let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerVC else { return }
+        guard let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerViewController else { return }
         audioPlayerVC.resetAudioPlayerUI(audioTitle: resultAudioFiles[indexPath.item].title,
                                          audioImageNumber: resultAudioFiles[indexPath.item].imageNumber)
         AudioPlayerWindow.shared.show()

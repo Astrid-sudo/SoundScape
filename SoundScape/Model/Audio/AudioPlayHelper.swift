@@ -162,11 +162,3 @@ extension AudioPlayHelper: AVAudioPlayerDelegate {
         NotificationCenter.default.post(name: .didItemPlayToEndTime, object: nil, userInfo: nil)
     }
 }
-
-// MARK: - extension Notification.Name
-
-extension Notification.Name {
-    static let audioPlayHelperUpdateTime = Notification.Name("audioPlayHelperUpdateTime")
-    static let audioPlayHelperDidPlayEnd = Notification.Name("audioPlayHelperDidPlayEnd")
-    static let audioPlayHelperError = Notification.Name("audioPlayHelperError")
-}

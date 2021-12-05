@@ -1,5 +1,5 @@
 //
-//  UploadVC + extension.swift
+//  UploadViewController + extension.swift
 //  SoundScape
 //
 //  Created by Astrid on 2021/11/20.
@@ -7,7 +7,7 @@
 
 import UIKit
 
- extension UploadVC {
+ extension UploadViewController {
     // MARK: - UI method
     
      func setViewBackgroundColor() {

@@ -303,19 +303,3 @@ class LoggedInUserManager {
     }
     
 }
-
-extension Notification.Name {
-    static let currentUserFavDocIDChange = Notification.Name("currentUserFavDocIDChange")
-    static let currentUserFollowingsChange = Notification.Name("currentUserFollowingsChange")
-    static let currentUserFollowersChange = Notification.Name("currentUserFollowersChange")
-    static let currentUserPicChange = Notification.Name("currentUserPicChange")
-    static let currentUserCoverChange = Notification.Name("currentUserCoverChange")
-    static let currentUserBlacklistChange = Notification.Name("currentUserBlacklistChange")
-    static let fetchLoginUserError = Notification.Name("fetchLoginUserError")
-    static let failedFetchFavorite = Notification.Name("failedFetchFavorite")
-    static let failedFetchFollowingList = Notification.Name("failedFetchFollowingList")
-    static let failedFetchFollowerList = Notification.Name("failedFetchFollowerList")
-    static let failedFetchUserProfilePic = Notification.Name("failedFetchUserProfilePic")
-    static let failedFetchUserCoverPic = Notification.Name("failedFetchUserCoverPic")
-    static let failedFetchBlackList = Notification.Name("failedFetchBlackList")
-}

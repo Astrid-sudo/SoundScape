@@ -1,5 +1,5 @@
 //
-//  EditVC.swift
+//  EditViewController.swift
 //  SoundScape
 //
 //  Created by Astrid on 2021/10/23.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class EditVC: UIViewController {
+class EditViewController: UIViewController {
     
     // MARK: - properties
     
@@ -255,7 +255,7 @@ class EditVC: UIViewController {
     
     @objc func goUpload() {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            guard let uploadVC = storyboard.instantiateViewController(withIdentifier: "UploadVC") as? UploadVC else { return }
+        guard let uploadVC = storyboard.instantiateViewController(withIdentifier: UploadViewController.reuseIdentifier) as? UploadViewController else { return }
             uploadVC.selectedFileURL = selectedFileURL
             uploadVC.selectedFileDuration = originDuraion
             navigationController?.pushViewController(uploadVC, animated: true)
@@ -579,7 +579,7 @@ class EditVC: UIViewController {
 
 }
 
-extension EditVC: AudioPlayerProtocol {
+extension EditViewController: AudioPlayerProtocol {
     
     @objc func updatePlaybackTime(notification: Notification) {
         guard let playProgress = notification.userInfo?["UserInfo"] as? PlayProgress else { return }
@@ -599,7 +599,7 @@ extension EditVC: AudioPlayerProtocol {
 
 // MARK: - EditAudioManagerDelegate
 
-extension EditVC: EditAudioManagerDelegate {
+extension EditViewController: EditAudioManagerDelegate {
     
     func didExport(to url: URL) {
         selectedFileURL = url
