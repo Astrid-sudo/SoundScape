@@ -105,7 +105,7 @@ class LoggedInUserManager {
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
                 
-                //Home VC will observe
+                // Home VC will observe
                 NotificationCenter.default.post(name: .fetchLoginUserError, object: nil, userInfo: userInfo)
                 
             }
@@ -125,7 +125,7 @@ class LoggedInUserManager {
     }
     
     func fetchUserInfoFromFirebase(userID: String) {
-        
+        // swiftlint:disable line_length
         self.firebaseManager.documentFetchData(documentType: .userInfoDoc(userInfoDocumentID: userID)) { (result: Result<SCUser, Error>)  in
             switch result {
                 
@@ -139,7 +139,7 @@ class LoggedInUserManager {
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
                 
-                //Home VC will observe
+                // Home VC will observe
                 NotificationCenter.default.post(name: .fetchLoginUserError, object: nil, userInfo: userInfo)
             }
             
@@ -163,7 +163,7 @@ class LoggedInUserManager {
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
                 
-                //Home VC will observe
+                // Home VC will observe
                 NotificationCenter.default.post(name: .failedFetchFavorite, object: nil, userInfo: userInfo)
             }
         }
@@ -185,7 +185,7 @@ class LoggedInUserManager {
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
                 
-                //Home VC will observe
+                // Home VC will observe
                 NotificationCenter.default.post(name: .failedFetchFollowingList, object: nil, userInfo: userInfo)
             }
         }
@@ -207,7 +207,7 @@ class LoggedInUserManager {
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
                 
-                //Home VC will observe
+                // Home VC will observe
                 NotificationCenter.default.post(name: .failedFetchFollowerList, object: nil, userInfo: userInfo)
             }
         }
@@ -226,7 +226,7 @@ class LoggedInUserManager {
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
                 
-                //Profile VC will observe
+                // Profile VC will observe
                 NotificationCenter.default.post(name: .failedFetchUserProfilePic, object: nil, userInfo: userInfo)
             }
         }
@@ -278,12 +278,11 @@ class LoggedInUserManager {
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
                 
-                //Profile VC will observe
+                // Profile VC will observe
                 NotificationCenter.default.post(name: .failedFetchUserCoverPic, object: nil, userInfo: userInfo)
             }
         }
     }
-    
     
     func checkBlackListFromFirebase() {
         guard let userID = currentUserInfoFirebase?.userInfoDoumentID else { return }
@@ -296,10 +295,11 @@ class LoggedInUserManager {
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
                 
-                //Home VC will observe
+                // Home VC will observe
                 NotificationCenter.default.post(name: .failedFetchBlackList, object: nil, userInfo: userInfo)
             }
         }
     }
-    
+    // swiftlint:enable line_length
+
 }

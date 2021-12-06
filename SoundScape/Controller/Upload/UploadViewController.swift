@@ -5,8 +5,6 @@
 //  Created by Astrid on 2021/10/19.
 //
 
-// swiftlint:disable file_length
-
 import UIKit
 import GoogleMaps
 import CoreLocation
@@ -31,18 +29,11 @@ class UploadViewController: UIViewController {
     
     var pinnedLocation: CLLocationCoordinate2D? {
         didSet {
-            guard let pinnedLocation = pinnedLocation else { return }
-            mapView.camera = GMSCameraPosition.camera(withLatitude: pinnedLocation.latitude,
-                                                      longitude: pinnedLocation.longitude, zoom: 15)
-            mapMarker.title = titleTextField.text
-            mapMarker.position = pinnedLocation
-            mapMarker.snippet = loggedInUserManager.currentUserInfoFirebase?.username
-            mapMarker.map = mapView
-            mapView.selectedMarker = mapMarker
+            pinMarkerOnMap()
         }
     }
     
-     lazy var myLocation: CLLocationManager = {
+    lazy var myLocation: CLLocationManager = {
         let location = CLLocationManager()
         location.delegate = self
         location.distanceFilter = kCLLocationAccuracyNearestTenMeters
@@ -50,22 +41,23 @@ class UploadViewController: UIViewController {
         return location
     }()
     
-     var selectedCategoryIndex: IndexPath? {
+    var selectedCategoryIndex: IndexPath? {
         didSet {
             
             if let oldValue = oldValue {
                 if let cell = collectionView.cellForItem(at: oldValue) as? SearchCollectionViewCell {
-                    cell.setLabelColorGreen()
+                    cell.setLabelColorLightBlue()
                 }
             }
-            
+            // swiftlint:disable line_length
             guard let selectedCategoryIndex = selectedCategoryIndex,
                   let cell = collectionView.cellForItem(at: selectedCategoryIndex) as? SearchCollectionViewCell else { return }
-            cell.setLabelColorRed()
+            // swiftlint:enable line_length
+            cell.setLabelColorSupLightBlue()
         }
     }
     
-     var selectedImageIndex: IndexPath? {
+    var selectedImageIndex: IndexPath? {
         didSet {
             
             if let oldValue = oldValue {
@@ -79,212 +71,6 @@ class UploadViewController: UIViewController {
             cell.setImageBorder()
         }
     }
-    
-    // MARK: - UI properties
-    
-     lazy var mapNoticeLabel: UILabel = {
-        let label = UILabel()
-         label.textColor = UIColor(named: Constant.scGray)
-        label.textAlignment = .left
-        label.numberOfLines = 0
-        label.font = UIFont(name: Constant.font, size: 12)
-        label.text = Constant.Text.pinOnMapHint
-        return label
-    }()
-    
-     lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.isScrollEnabled = true
-        scrollView.isDirectionalLockEnabled = true
-        scrollView.showsVerticalScrollIndicator = true
-        scrollView.zoomScale = 1.0
-        scrollView.minimumZoomScale = 1.0
-        scrollView.maximumZoomScale = 1.0
-        scrollView.contentSize = CGSize(width: UIProperties.screenWidth, height: UIProperties.screenHeight * 1.5)
-        scrollView.backgroundColor = .clear
-        return scrollView
-    }()
-    
-     lazy var mapMarker: GMSMarker = {
-        var marker = GMSMarker(position: currentLocation ?? defaultLocation)
-        marker.icon = GMSMarker.markerImage(with: UIColor(named: Constant.scRed))
-        marker.map = mapView
-        return marker
-    }()
-    
-     lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor.white
-        label.font = UIFont(name: Constant.fontSemibold, size: 15)
-        label.textAlignment = .left
-        label.text = Constant.Text.title
-        return label
-    }()
-    
-     lazy var descriptionLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor.white
-        label.font = UIFont(name: Constant.fontSemibold, size: 15)
-        label.textAlignment = .left
-        label.text = Constant.Text.description
-        return label
-    }()
-    
-     lazy var categoryLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor.white
-        label.font = UIFont(name: Constant.fontSemibold, size: 15)
-        label.textAlignment = .left
-        label.text = Constant.Text.category
-        return label
-    }()
-    
-      lazy var mapLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor.white
-        label.font = UIFont(name: Constant.fontSemibold, size: 15)
-        label.textAlignment = .left
-        label.text = Constant.Text.pinOnMap
-        return label
-    }()
-    
-      lazy var audioImageLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor.white
-        label.font = UIFont(name: Constant.fontSemibold, size: 15)
-        label.textAlignment = .left
-        label.text = Constant.Text.audioImage
-        return label
-    }()
-    
-     lazy var titleTextField: UITextField = {
-        let textField = UITextField()
-        textField.borderStyle = .roundedRect
-        textField.textColor = .white
-        textField.layer.borderWidth = 1.0
-        textField.layer.borderColor = UIColor.white.cgColor
-        textField.layer.cornerRadius = 10
-        textField.textAlignment = .left
-        textField.backgroundColor = .clear
-        textField.delegate = self
-        return textField
-    }()
-    
-     lazy var descriptionTextView: UITextView = {
-        let textView = UITextView()
-        textView.layer.borderWidth = 1
-        textView.layer.borderColor = UIColor.white.cgColor
-        textView.layer.cornerRadius = 10
-        textView.textColor = .white
-        textView.font = UIFont(name: Constant.font, size: 15)
-        textView.textAlignment = .left
-        textView.isEditable = true
-        textView.isSelectable = true
-        textView.isScrollEnabled = false
-        textView.backgroundColor = .clear
-        return textView
-    }()
-    
-     lazy var viewUndermap: UIView = {
-        let view = UIView()
-        view.layer.borderColor = UIColor(named: Constant.scWhite)?.cgColor
-        view.layer.borderWidth = 0.5
-        view.layer.cornerRadius = 10
-        return view
-    }()
-    
-     lazy var mapView: GMSMapView = {
-        let mapView = GMSMapView()
-        let posision = pinnedLocation ?? currentLocation ?? defaultLocation
-        let camera = GMSCameraPosition.camera(withLatitude: posision.latitude,
-                                              longitude: posision.longitude, zoom: 15.0)
-        mapView.delegate = self
-        mapView.camera = camera
-        mapView.layer.cornerRadius = 10
-        do {
-            if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
-                mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
-            } else {
-                NSLog("Unable to find style.json")
-            }
-        } catch {
-            NSLog("One or more of the map styles failed to load. \(error)")
-        }
-        
-        if backFromBigMap {
-            mapView.settings.myLocationButton = false
-            mapView.isMyLocationEnabled = false
-        } else {
-            mapView.settings.myLocationButton = true
-            mapView.isMyLocationEnabled = true
-        }
-        
-        return mapView
-    }()
-    
-     lazy var uploadButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = UIColor(named: Constant.scLightBlue)
-        button.setTitle(Constant.Text.upload, for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.addTarget(self, action: #selector(upload), for: .touchUpInside)
-        button.layer.cornerRadius = 10
-        return button
-    }()
-    
-    let animationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
-                                                                       frame: CGRect(x: 0,
-                                                                                     y: 100,
-                                                                                     width: 400,
-                                                                                     height: 400))
-
-     lazy var searchPlaceButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = UIColor(named: Constant.scLightBlue)
-        button.setTitle(Constant.Text.searchPlace, for: .normal)
-        button.titleLabel?.font = UIFont(name: Constant.font, size: 14)
-        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
-        button.addTarget(self, action: #selector(presentBigMap), for: .touchUpInside)
-        button.layer.cornerRadius = 10
-        return button
-    }()
-    
-     lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 100, height: 30)
-        layout.minimumInteritemSpacing = 0
-        layout.minimumLineSpacing = 0
-        
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.bounces = true
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.allowsMultipleSelection = false
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.backgroundColor = .clear
-        collectionView.register(SearchCollectionViewCell.self,
-                                forCellWithReuseIdentifier: SearchCollectionViewCell.reuseIdentifier)
-        return collectionView
-    }()
-    
-     lazy var audioImageCollectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 150, height: 150)
-        layout.minimumInteritemSpacing = 0
-        layout.minimumLineSpacing = 0
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .clear
-        collectionView.bounces = true
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.allowsMultipleSelection = false
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.register(HomeCollectionViewCell.self,
-                                forCellWithReuseIdentifier: HomeCollectionViewCell.reuseIdentifier)
-        return collectionView
-    }()
     
     // MARK: - life cycle
     
@@ -317,15 +103,11 @@ class UploadViewController: UIViewController {
     
     // MARK: - method
     
-    private func addLottie() {
-        view.addSubview(animationView)
-        animationView.play()
-    }
-    
     private func backToHome() {
         navigationController?.popToRootViewController(animated: true)
         animationView.removeFromSuperview()
         SPAlertWrapper.shared.presentSPAlert(title: "Post added!", message: nil, preset: .done, completion: nil)
+        // swiftlint:disable line_length
         guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
         scTabBarController.selectedIndex = 0
     }
@@ -339,7 +121,6 @@ class UploadViewController: UIViewController {
     }
     
     private func askUserLocation() {
-        
         switch CLLocationManager.authorizationStatus() {
         case .notDetermined:
             myLocation.requestWhenInUseAuthorization() // First time lanch app need to get authorize from user
@@ -360,25 +141,17 @@ class UploadViewController: UIViewController {
             break
         }
     }
+    // swiftlint:enable line_length
     
-    private func configLayout() {
-        setNavigationBar()
-        setScrollView()
-        setTitleLabel()
-        setTitleTextField()
-        setDescriptionLabel()
-        setDescriptionTextView()
-        setCategoryLabel()
-        setCategoryCollectionView()
-        setAudioImageLabel()
-        setImageCollectionView()
-        setMapLabel()
-        setMapHintLabel()
-        setViewUnderMap()
-        setMapView()
-        setUploadButton()
-        setViewBackgroundColor()
-        setSearchPlaceButton()
+    private func pinMarkerOnMap() {
+        guard let pinnedLocation = pinnedLocation else { return }
+        mapView.camera = GMSCameraPosition.camera(withLatitude: pinnedLocation.latitude,
+                                                  longitude: pinnedLocation.longitude, zoom: 15)
+        mapMarker.title = titleTextField.text
+        mapMarker.position = pinnedLocation
+        mapMarker.snippet = loggedInUserManager.currentUserInfoFirebase?.username
+        mapMarker.map = mapView
+        mapView.selectedMarker = mapMarker
     }
     
     // MARK: - action
@@ -436,16 +209,19 @@ class UploadViewController: UIViewController {
                 guard let self = self else { return }
                 self.animationView.stop()
                 self.animationView.removeFromSuperview()
+                // swiftlint:disable line_length
                 self.popErrorAlert(title: "Failed to upload audio. Please terminate SoundScape_ and try again.", message: errorMessage)
+                // swiftlint:enable line_length
             }
-            
         }
     }
     
     @objc func presentBigMap() {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        // swiftlint:disable line_length
         guard let audioMapVC = storyboard.instantiateViewController(withIdentifier: AudioMapViewController.reuseIdentifier) as? AudioMapViewController else { return }
+        // swiftlint:enable line_length
         
         audioMapVC.audioMapType = .pinOnMap
         
@@ -457,160 +233,211 @@ class UploadViewController: UIViewController {
         
     }
     
-}
-
-// MARK: - conform to CLLocationManagerDelegate
-
-extension UploadViewController: CLLocationManagerDelegate {
+    // MARK: - UI properties
     
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let updatedLocation: CLLocation = locations[0] as CLLocation
-        print("\(updatedLocation.coordinate.latitude)")
-        print(", \(updatedLocation.coordinate.longitude)")
-        
-        currentLocation = CLLocationCoordinate2D(latitude: updatedLocation.coordinate.latitude,
-                                                 longitude: updatedLocation.coordinate.longitude)
-        
-        guard let currentLocation = currentLocation else { return }
-        
-        if backFromBigMap == false {
-            mapView.camera = GMSCameraPosition.camera(withLatitude: currentLocation.latitude,
-                                                      longitude: currentLocation.longitude,
-                                                      zoom: 15)
-        }
-    }
+    lazy var mapNoticeLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: Constant.scGray)
+        label.textAlignment = .left
+        label.numberOfLines = 0
+        label.font = UIFont(name: Constant.font, size: 12)
+        label.text = Constant.Text.pinOnMapHint
+        return label
+    }()
     
-}
-
-// MARK: - conform to GMSMapViewDelegate
-
-extension UploadViewController: GMSMapViewDelegate {
+    lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.isScrollEnabled = true
+        scrollView.isDirectionalLockEnabled = true
+        scrollView.showsVerticalScrollIndicator = true
+        scrollView.zoomScale = 1.0
+        scrollView.minimumZoomScale = 1.0
+        scrollView.maximumZoomScale = 1.0
+        scrollView.contentSize = CGSize(width: UIProperties.screenWidth, height: UIProperties.screenHeight * 1.5)
+        scrollView.backgroundColor = .clear
+        return scrollView
+    }()
     
-    func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
-        pinnedLocation = coordinate
-    }
+    lazy var mapMarker: GMSMarker = {
+        var marker = GMSMarker(position: currentLocation ?? defaultLocation)
+        marker.icon = GMSMarker.markerImage(with: UIColor(named: Constant.scRed))
+        marker.map = mapView
+        return marker
+    }()
     
-}
-
-// MARK: - conform to UITextFieldDelegate
-
-extension UploadViewController: UITextFieldDelegate {
+    lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor.white
+        label.font = UIFont(name: Constant.fontSemibold, size: 15)
+        label.textAlignment = .left
+        label.text = Constant.Text.title
+        return label
+    }()
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        mapMarker.title = titleTextField.text
-        mapMarker.snippet = loggedInUserManager.currentUserInfoFirebase?.username
-        mapView.selectedMarker = mapMarker
-    }
+    lazy var descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor.white
+        label.font = UIFont(name: Constant.fontSemibold, size: 15)
+        label.textAlignment = .left
+        label.text = Constant.Text.description
+        return label
+    }()
     
-}
-
-// MARK: - conform to LocationCoordinatePassableDelegate
-
-extension UploadViewController: LocationCoordinatePassableDelegate {
+    lazy var categoryLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor.white
+        label.font = UIFont(name: Constant.fontSemibold, size: 15)
+        label.textAlignment = .left
+        label.text = Constant.Text.category
+        return label
+    }()
     
-    func displayPinOnSmallMap(locationFromBigMap: CLLocationCoordinate2D?) {
-        pinnedLocation = locationFromBigMap
-        mapView.isMyLocationEnabled = false
-        backFromBigMap = true
-    }
+    lazy var mapLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor.white
+        label.font = UIFont(name: Constant.fontSemibold, size: 15)
+        label.textAlignment = .left
+        label.text = Constant.Text.pinOnMap
+        return label
+    }()
     
-}
-
-// MARK: - conform to UICollectionViewDataSource
-
-extension UploadViewController: UICollectionViewDataSource {
+    lazy var audioImageLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor.white
+        label.font = UIFont(name: Constant.fontSemibold, size: 15)
+        label.textAlignment = .left
+        label.text = Constant.Text.audioImage
+        return label
+    }()
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        if collectionView == self.collectionView {
-            return  AudioCategory.allCases.count
-        }
-        
-        if collectionView == audioImageCollectionView {
-            return UIProperties.audioImages.count
-        }
-        
-        return 1
-    }
+    lazy var titleTextField: UITextField = {
+        let textField = UITextField()
+        textField.borderStyle = .roundedRect
+        textField.textColor = .white
+        textField.layer.borderWidth = 1.0
+        textField.layer.borderColor = UIColor.white.cgColor
+        textField.layer.cornerRadius = 10
+        textField.textAlignment = .left
+        textField.backgroundColor = .clear
+        textField.delegate = self
+        return textField
+    }()
     
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        if collectionView == self.collectionView {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchCollectionViewCell.reuseIdentifier,
-                                                                for: indexPath) as? SearchCollectionViewCell else { return UICollectionViewCell()}
-            cell.setContent(content: AudioCategory.allCases[indexPath.item].rawValue)
-            if indexPath == selectedCategoryIndex {
-                cell.setLabelColorRed()
+    lazy var descriptionTextView: UITextView = {
+        let textView = UITextView()
+        textView.layer.borderWidth = 1
+        textView.layer.borderColor = UIColor.white.cgColor
+        textView.layer.cornerRadius = 10
+        textView.textColor = .white
+        textView.font = UIFont(name: Constant.font, size: 15)
+        textView.textAlignment = .left
+        textView.isEditable = true
+        textView.isSelectable = true
+        textView.isScrollEnabled = false
+        textView.backgroundColor = .clear
+        return textView
+    }()
+    
+    lazy var viewUndermap: UIView = {
+        let view = UIView()
+        view.layer.borderColor = UIColor(named: Constant.scWhite)?.cgColor
+        view.layer.borderWidth = 0.5
+        view.layer.cornerRadius = 10
+        return view
+    }()
+    
+    lazy var mapView: GMSMapView = {
+        let mapView = GMSMapView()
+        let posision = pinnedLocation ?? currentLocation ?? defaultLocation
+        let camera = GMSCameraPosition.camera(withLatitude: posision.latitude,
+                                              longitude: posision.longitude, zoom: 15.0)
+        mapView.delegate = self
+        mapView.camera = camera
+        mapView.layer.cornerRadius = 10
+        do {
+            if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
+                mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
             } else {
-                cell.setLabelColorGreen()
+                NSLog("Unable to find style.json")
             }
-            return cell
+        } catch {
+            NSLog("One or more of the map styles failed to load. \(error)")
         }
         
-        if collectionView == audioImageCollectionView {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeCollectionViewCell.reuseIdentifier,
-                                                                for: indexPath) as? HomeCollectionViewCell else { return UICollectionViewCell() }
-            cell.setCellImage(image: UIProperties.audioImages[indexPath.item])
-            
-            if indexPath == selectedImageIndex {
-                cell.setImageBorder()
-            } else {
-                cell.removeImageBorder()
-            }
-            
-            return cell
+        if backFromBigMap {
+            mapView.settings.myLocationButton = false
+            mapView.isMyLocationEnabled = false
+        } else {
+            mapView.settings.myLocationButton = true
+            mapView.isMyLocationEnabled = true
         }
         
-        return UICollectionViewCell()
-    }
+        return mapView
+    }()
+    
+    lazy var uploadButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = UIColor(named: Constant.scLightBlue)
+        button.setTitle(Constant.Text.upload, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.addTarget(self, action: #selector(upload), for: .touchUpInside)
+        button.layer.cornerRadius = 10
+        return button
+    }()
+    
+    let animationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
+                                                                       frame: CGRect(x: 0,
+                                                                                     y: 100,
+                                                                                     width: 400,
+                                                                                     height: 400))
+    
+    lazy var searchPlaceButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = UIColor(named: Constant.scLightBlue)
+        button.setTitle(Constant.Text.searchPlace, for: .normal)
+        button.titleLabel?.font = UIFont(name: Constant.font, size: 14)
+        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
+        button.addTarget(self, action: #selector(presentBigMap), for: .touchUpInside)
+        button.layer.cornerRadius = 10
+        return button
+    }()
+    
+    lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.itemSize = CGSize(width: 100, height: 30)
+        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 0
+        
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.bounces = true
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.allowsMultipleSelection = false
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.backgroundColor = .clear
+        collectionView.register(SearchCollectionViewCell.self,
+                                forCellWithReuseIdentifier: SearchCollectionViewCell.reuseIdentifier)
+        return collectionView
+    }()
+    
+    lazy var audioImageCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.itemSize = CGSize(width: 150, height: 150)
+        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 0
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.bounces = true
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.allowsMultipleSelection = false
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.register(HomeCollectionViewCell.self,
+                                forCellWithReuseIdentifier: HomeCollectionViewCell.reuseIdentifier)
+        return collectionView
+    }()
     
 }
-
-// MARK: - conform to UICollectionViewDelegate
-
-extension UploadViewController: UICollectionViewDelegate {
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        if collectionView == self.collectionView {
-            
-            if let selectedCategoryIndex = selectedCategoryIndex {
-                collectionView.deselectItem(at: selectedCategoryIndex, animated: true)
-            }
-            selectedCategoryIndex = indexPath
-        }
-        
-        if collectionView == audioImageCollectionView {
-            guard let cell = collectionView.cellForItem(at: indexPath) as? HomeCollectionViewCell else { return }
-            selectedImageIndex = indexPath
-        }
-        
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        
-        if collectionView == self.collectionView {
-            guard let cell = collectionView.cellForItem(at: indexPath) as? SearchCollectionViewCell else { return }
-            cell.setLabelColorGreen()
-        }
-        
-        if collectionView == audioImageCollectionView {
-            guard let cell = collectionView.cellForItem(at: indexPath) as? HomeCollectionViewCell else { return }
-            cell.removeImageBorder()
-        }
-    }
-    
-}
-
-// MARK: - conform to UICollectionViewDelegateFlowLayout
-
-extension UploadViewController: UICollectionViewDelegateFlowLayout {
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-    }
-    
-}
-// swiftlint:enable file_length
 

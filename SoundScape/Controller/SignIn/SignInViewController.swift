@@ -38,9 +38,23 @@ class SignInViewController: UIViewController {
         signInHelper.performAppleSignIn()
     }
     
+    @objc func presentPolicy() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let policyVc = storyboard.instantiateViewController(withIdentifier: PrivacyPolicyViewController.reuseIdentifier) as? PrivacyPolicyViewController else { return }
+        
+        present(policyVc, animated: true, completion: nil)
+    }
+    
+    @objc func presentLAEU() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let lAEUViewController = storyboard.instantiateViewController(withIdentifier: LAEUViewController.reuseIdentifier) as? LAEUViewController else { return }
+        
+        present(lAEUViewController, animated: true, completion: nil)
+    }
+    
     // MARK: - UI properties
     
-    lazy var appImageView: UIImageView = {
+    private lazy var appImageView: UIImageView = {
         let image = UIImageView()
         image.layer.cornerRadius = 25
         image.layer.masksToBounds = true
@@ -93,22 +107,6 @@ class SignInViewController: UIViewController {
         return button
     }()
 
-    // MARK: - action
-    
-    @objc func presentPolicy() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let policyVc = storyboard.instantiateViewController(withIdentifier: PrivacyPolicyViewController.reuseIdentifier) as? PrivacyPolicyViewController else { return }
-        
-        present(policyVc, animated: true, completion: nil)
-    }
-    
-    @objc func presentLAEU() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let lAEUViewController = storyboard.instantiateViewController(withIdentifier: LAEUViewController.reuseIdentifier) as? LAEUViewController else { return }
-        
-        present(lAEUViewController, animated: true, completion: nil)
-    }
-    
 }
 
 // MARK: - extension UI method

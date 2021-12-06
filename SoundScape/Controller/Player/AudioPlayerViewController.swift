@@ -73,6 +73,7 @@ class AudioPlayerViewController: UIViewController {
             return
         }
         
+        // swiftlint:disable line_length
         _ = firebaseManager.collectionAddListener(collectionType: .myFavorite(userInfoDocumentID: userProfileDocumentID)) { (result: Result<[SCFavorite], Error>) in
             
             switch result {
@@ -86,11 +87,14 @@ class AudioPlayerViewController: UIViewController {
             }
         }
     }
+    // swiftlint:enable line_length
     
     private func addDetailPage() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        // swiftlint:disable line_length
         guard let vc = storyboard.instantiateViewController(withIdentifier: SoundDetailViewController.reuseIdentifier) as? SoundDetailViewController else { return }
-        
+        // swiftlint:enable line_length
+
         self.soundDetailVC = vc
         guard let soundDetailVC = soundDetailVC else { return }
         soundDetailVC.delegate = self
@@ -134,7 +138,7 @@ class AudioPlayerViewController: UIViewController {
         }
         
         firebaseManager.manipulateFavorite(userProfileDocumentID: userProfileDocumentID,
-                                           documendID: nowPlayDocumentID,
+                                           documentID: nowPlayDocumentID,
                                            addCompletion: fillFavoriteButton,
                                            removeCompletion: emptyFavoriteButton) { [weak self] errorMessage in
             guard let self = self else { return }
@@ -339,7 +343,7 @@ extension AudioPlayerViewController: AudioPlayerProtocol {
     
 }
 
-// MARK: - conform to DetailPageShowableDelegate
+// MARK: - DetailPageShowableDelegate
 
 extension AudioPlayerViewController: DetailPageShowableDelegate {
     
@@ -368,7 +372,7 @@ extension AudioPlayerViewController: DetailPageShowableDelegate {
     
 }
 
-// MARK: - config UI method
+// MARK: - UI method
 
 extension AudioPlayerViewController {
     

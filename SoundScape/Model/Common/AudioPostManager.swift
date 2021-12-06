@@ -88,7 +88,7 @@ class AudioPostManager {
                 let userInfoKey = "UserInfo"
                 let userInfo: [AnyHashable: Any] = [userInfoKey: errorMessage]
                 
-                //Home VC will observe
+                // Home VC will observe
                 NotificationCenter.default.post(name: .fetchAudioPostError, object: nil, userInfo: userInfo)
             }
         }

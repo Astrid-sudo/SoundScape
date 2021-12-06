@@ -8,9 +8,7 @@
 import UIKit
 
 class SCTabBarController: UITabBarController {
-    
-    // MARK: - properties
-    
+
     // MARK: - UI properties
     
     private var dontShowDetailConstraint = NSLayoutConstraint()
@@ -31,7 +29,6 @@ class SCTabBarController: UITabBarController {
     // MARK: - method
     
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-      
         if item.tag == 2 && AudioPlayHelper.shared.isPlaying {
             popStopPlayingAlert()
      }
@@ -58,8 +55,9 @@ class SCTabBarController: UITabBarController {
     private func addDetailPage() {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        // swiftlint:disable line_length
         guard let vc = storyboard.instantiateViewController(withIdentifier: SoundDetailViewController.reuseIdentifier) as? SoundDetailViewController else { return }
-
+        // swiftlint:enable line_length
 
         self.soundDetailVC = vc
         guard let soundDetailVC = soundDetailVC else { return }
@@ -83,10 +81,10 @@ class SCTabBarController: UITabBarController {
 
 }
 
-// MARK: - conform to UITabBarControllerDelegate
+// MARK: - UITabBarControllerDelegate
 
 extension SCTabBarController: UITabBarControllerDelegate {
-
+    // swiftlint:disable line_length
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
       guard let viewControllers = self.viewControllers else { return true }
 
@@ -103,8 +101,10 @@ extension SCTabBarController: UITabBarControllerDelegate {
       return true
     }
 }
+// swiftlint:enable line_length
 
-// MARK: - conform to DetailPageShowableDelegate
+
+// MARK: - DetailPageShowableDelegate
 
 extension SCTabBarController: DetailPageShowableDelegate {
     

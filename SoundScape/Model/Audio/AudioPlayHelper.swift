@@ -46,11 +46,6 @@ class AudioPlayHelper: NSObject {
     
     var currentTime: Double {
         
-        set {
-            audioPlayer?.currentTime = newValue
-            postNotification()
-        }
-        
         get {
             guard let audioPlayer = audioPlayer else {
                 return 0.0
@@ -58,6 +53,10 @@ class AudioPlayHelper: NSObject {
             return audioPlayer.currentTime
         }
         
+        set {
+            audioPlayer?.currentTime = newValue
+            postNotification()
+        }
         
     }
     
@@ -88,13 +87,11 @@ class AudioPlayHelper: NSObject {
             let userInfoKey = "UserInfo"
             let userInfo: [AnyHashable: Any] = [userInfoKey: duration]
             NotificationCenter.default.post(name: .didItemDurationChange, object: nil, userInfo: userInfo)
-            
         }
     }
     
     var currentPlayInfo: PlayInfo? {
         didSet {
-            
             guard let currentPlayInfo = currentPlayInfo else { return }
             let userInfoKey = "UserInfo"
             let userInfo: [AnyHashable: Any] = [userInfoKey: currentPlayInfo]
@@ -143,8 +140,6 @@ class AudioPlayHelper: NSObject {
     
     func seek(position: Double) {
         currentTime = position * duration
-        print(audioPlayer?.currentTime)
-        print(currentTime)
     }
     
     func setPlayInfo(playInfo: PlayInfo) {
@@ -153,7 +148,7 @@ class AudioPlayHelper: NSObject {
     
 }
 
-// MARK: - conform to AVAudioPlayerDelegate
+// MARK: - AVAudioPlayerDelegate
 
 extension AudioPlayHelper: AVAudioPlayerDelegate {
     

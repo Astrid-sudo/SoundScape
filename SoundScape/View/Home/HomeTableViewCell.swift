@@ -33,25 +33,6 @@ class HomeTableViewCell: UITableViewCell {
     
     weak var delegate: AlertPresentableDelegate?
     
-    // MARK: - UI properties
-    
-    private lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 150, height: 150)
-        layout.minimumInteritemSpacing = 0
-        layout.minimumLineSpacing = 0
-        
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = UIColor(named: Constant.scBlue)
-        collectionView.bounces = true
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.allowsMultipleSelection = false
-        collectionView.showsHorizontalScrollIndicator = false
-        return collectionView
-    }()
-    
     // MARK: - init
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -80,21 +61,24 @@ class HomeTableViewCell: UITableViewCell {
         delegate?.popDeletePostAlert(documentID: documentID)
     }
     
-    // MARK: - config UI method
+    // MARK: - UI properties
     
-    private func setCollectionView() {
-        contentView.addSubview(collectionView)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            collectionView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            collectionView.heightAnchor.constraint(equalToConstant: 168)
-        ])
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.itemSize = CGSize(width: 150, height: 150)
+        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 0
         
-        collectionView.register(HomeCollectionViewCell.self,
-                                forCellWithReuseIdentifier: HomeCollectionViewCell.reuseIdentifier)
-    }
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = UIColor(named: Constant.scBlue)
+        collectionView.bounces = true
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.allowsMultipleSelection = false
+        collectionView.showsHorizontalScrollIndicator = false
+        return collectionView
+    }()
     
 }
 
@@ -109,9 +93,7 @@ extension HomeTableViewCell: UICollectionViewDataSource {
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         // swiftlint:disable line_length
-        
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeCollectionViewCell.reuseIdentifier, for: indexPath) as? HomeCollectionViewCell else { return UICollectionViewCell() }
-        
         // swiftlint:enable line_length
         
         cell.setCell(imageNumber: firebaseData[indexPath.item].imageNumber,
@@ -128,7 +110,6 @@ extension HomeTableViewCell: UICollectionViewDataSource {
 extension HomeTableViewCell: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("\(category),didSelect \(indexPath), url: \(firebaseData[indexPath.item].audioURL)")
         
         guard let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerViewController else { return }
         audioPlayerVC.resetAudioPlayerUI(audioTitle: firebaseData[indexPath.item].title,
@@ -166,10 +147,10 @@ extension HomeTableViewCell: UICollectionViewDelegate {
         let authorID = post.authorID
         
         if authorID != loggedInUserManager.currentUserInfoFirebase?.userID {
-            // 封鎖作者
+            // block author
             return UIContextMenuConfiguration(
                 identifier: identifier, previewProvider: nil) { _ in
-                    // 3
+                    
                     let blockAction = UIAction(title: "Block this user",
                                                image: nil) { _ in
                         self.popBlockAlert(toBeBlockedID: authorID)
@@ -180,12 +161,12 @@ extension HomeTableViewCell: UICollectionViewDelegate {
                 }
             
         } else {
-            //            刪除post
+            // delete post
             let audioDocumentID = post.documentID
             
             return UIContextMenuConfiguration(
                 identifier: identifier, previewProvider: nil) { _ in
-                    // 3
+                    
                     let deleteAction = UIAction(title: "Delete this post",
                                                 image: nil) { _ in
                         self.popDeletePostAlert(documentID: audioDocumentID)
@@ -207,6 +188,26 @@ extension HomeTableViewCell: UICollectionViewDelegateFlowLayout {
                         layout collectionViewLayout: UICollectionViewLayout,
                         insetForSectionAt section: Int) -> UIEdgeInsets {
         UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+    }
+    
+}
+
+// MARK: - configUI method
+
+extension HomeTableViewCell {
+    
+    private func setCollectionView() {
+        contentView.addSubview(collectionView)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            collectionView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            collectionView.heightAnchor.constraint(equalToConstant: 168)
+        ])
+        
+        collectionView.register(HomeCollectionViewCell.self,
+                                forCellWithReuseIdentifier: HomeCollectionViewCell.reuseIdentifier)
     }
     
 }

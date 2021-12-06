@@ -24,31 +24,10 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
     
     var presentInPage: SectionPageType?
     
-    private lazy var categoryLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: Constant.fontSemibold, size: 18)
-        label.textAlignment = .left
-        return label
-    }()
-    
-    private lazy var goToCategoryButt: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: Constant.SFSymbol.right), for: .normal)
-        button.tintColor = UIColor(named: Constant.scWhite)
-        return button
-    }()
-    
-    private lazy var backgroundButton: UIButton = {
-        let button = UIButton()
-        button.addTarget(self, action: #selector(pressBackgroundButton), for: .touchUpInside)
-        return button
-    }()
     // MARK: - init
     
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
-        
         tintColor = UIColor(named: Constant.scBlue)
         setLabel()
         setButton()
@@ -71,6 +50,39 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
     
     // MARK: - method
     
+    func config(section: Int, content: String) {
+        self.section = section
+        categoryLabel.text = content
+    }
+    
+    // MARK: - UI properties
+    
+    private lazy var categoryLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.font = UIFont(name: Constant.fontSemibold, size: 18)
+        label.textAlignment = .left
+        return label
+    }()
+    
+    private lazy var goToCategoryButt: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: Constant.SFSymbol.right), for: .normal)
+        button.tintColor = UIColor(named: Constant.scWhite)
+        return button
+    }()
+    
+    private lazy var backgroundButton: UIButton = {
+        let button = UIButton()
+        button.addTarget(self, action: #selector(pressBackgroundButton), for: .touchUpInside)
+        return button
+    }()
+    
+}
+
+// MARK: - UI method
+
+extension HomeTableViewHeader {
     private func setLabel() {
         contentView.addSubview(categoryLabel)
         categoryLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -99,12 +111,6 @@ class HomeTableViewHeader: UITableViewHeaderFooterView {
             backgroundButton.heightAnchor.constraint(equalTo: contentView.heightAnchor),
             backgroundButton.widthAnchor.constraint(equalTo: contentView.widthAnchor)
         ])
-        
-    }
-    
-    func config(section: Int, content: String) {
-        self.section = section
-        categoryLabel.text = content
     }
     
 }

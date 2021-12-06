@@ -9,15 +9,6 @@ import UIKit
 
 class SettingTableViewCell: UITableViewCell {
     
-    // MARK: - UI properties
-    
-    lazy var label: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor(named: Constant.scWhite)
-        label.textAlignment = .left
-        return label
-    }()
-    
     // MARK: - init
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -30,7 +21,26 @@ class SettingTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - config UI method
+    // MARK: - method
+    
+    func configCell(content: String) {
+        label.text = content
+    }
+    
+    // MARK: - UI properties
+    
+    lazy var label: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: Constant.scWhite)
+        label.textAlignment = .left
+        return label
+    }()
+    
+}
+
+// MARK: - UI method
+
+extension SettingTableViewCell {
     
     private func setLabel() {
         contentView.addSubview(label)
@@ -42,9 +52,5 @@ class SettingTableViewCell: UITableViewCell {
             label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
         ])
     }
-    
-    func configCell(content: String) {
-        label.text = content
-    }
-    
+
 }

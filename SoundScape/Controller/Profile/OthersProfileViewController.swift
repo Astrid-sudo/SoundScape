@@ -5,8 +5,6 @@
 //  Created by Astrid on 2021/10/31.
 //
 
-// swiftlint:disable file_length
-
 import UIKit
 import Photos
 
@@ -44,43 +42,43 @@ class OthersProfileViewController: UIViewController {
     
     let firebaseManager = FirebaseManager.shared
     
-    private var allAudioFiles = [SCPost]() {
+    var allAudioFiles = [SCPost]() {
         didSet {
             tableView.reloadData()
         }
     }
     
-    private var userFavoriteDocumentIDs: [String]? {
+    var userFavoriteDocumentIDs: [String]? {
         didSet {
             tableView.reloadData()
         }
     }
     
-    private var numbersOfFollowers: Int? {
+    var numbersOfFollowers: Int? {
         didSet {
             tableView.reloadData()
         }
     }
     
-    private var numbersOfFollowings: Int? {
+    var numbersOfFollowings: Int? {
         didSet {
             tableView.reloadData()
         }
     }
     
-    private var othersFollowingList: [SCFollow]? {
+    var othersFollowingList: [SCFollow]? {
         didSet {
             tableView.reloadData()
         }
     }
     
-    private var otherUserPic: String? {
+    var otherUserPic: String? {
         didSet {
             tableView.reloadData()
         }
     }
     
-    private var otherUserCover: String? {
+    var otherUserCover: String? {
         didSet {
             tableView.reloadData()
         }
@@ -88,12 +86,6 @@ class OthersProfileViewController: UIViewController {
     
     var selectedPicButton = PicType.coverPic
     
-    let loadingAnimationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
-                                                                              frame: CGRect(x: 0,
-                                                                                            y: 0,
-                                                                                            width: UIProperties.screenWidth,
-                                                                                            height: UIProperties.screenHeight))
-
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -140,16 +132,14 @@ class OthersProfileViewController: UIViewController {
         
     }
     
-    private func makeButtonFollowed() {
-        
-        guard let profileCell = tableView.cellForRow(at:
-                                                        IndexPath(row: 0, section: 0)) as? ProfileTableViewCell else { return }
+    func makeButtonFollowed() {
+        // swiftlint:disable line_length
+        guard let profileCell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ProfileTableViewCell else { return }
         profileCell.makeButtonFollowed()
     }
     
-    private func makeButtonUnFollow() {
-        guard let profileCell = tableView.cellForRow(at:
-                                                        IndexPath(row: 0, section: 0)) as? ProfileTableViewCell else { return }
+    func makeButtonUnFollow() {
+        guard let profileCell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ProfileTableViewCell else { return }
         profileCell.makeButtonUnFollow()
     }
     
@@ -161,10 +151,7 @@ class OthersProfileViewController: UIViewController {
     }
     
     private func checkFollowersChange(userInfoDoumentID: String) {
-        _ = firebaseManager.collectionAddListener(collectionType:
-                                                        .followedBy(userInfoDocumentID:
-                                                                        userInfoDoumentID)) { (result:
-                                                                                                Result<[SCFollow], Error>) in
+        _ = firebaseManager.collectionAddListener(collectionType: .followedBy(userInfoDocumentID: userInfoDoumentID)) { (result: Result<[SCFollow], Error>) in
             switch result {
             case .success(let followers):
                 self.numbersOfFollowers = followers.count
@@ -174,9 +161,7 @@ class OthersProfileViewController: UIViewController {
     }
     
     private func checkFollowingsChange(userInfoDoumentID: String) {
-        _ = firebaseManager.collectionAddListener(collectionType:
-                                                        .following(userInfoDocumentID: userInfoDoumentID)) { (result:
-                                                                                                                Result<[SCFollow], Error>) in
+        _ = firebaseManager.collectionAddListener(collectionType: .following(userInfoDocumentID: userInfoDoumentID)) { (result: Result<[SCFollow], Error>) in
             switch result {
             case .success(let followings):
                 self.numbersOfFollowings = followings.count
@@ -215,10 +200,7 @@ class OthersProfileViewController: UIViewController {
             return
         }
         
-        _ = firebaseManager.collectionAddListener(collectionType:
-                                                        .myFavorite(userInfoDocumentID:
-                                                                        userProfileDocumentID)) { (result:
-                                                                                                    Result<[SCFavorite], Error>) in
+        _ = firebaseManager.collectionAddListener(collectionType: .myFavorite(userInfoDocumentID: userProfileDocumentID)) { (result: Result<[SCFavorite], Error>) in
             switch result {
                 
             case .success(let scFavorites):
@@ -239,6 +221,7 @@ class OthersProfileViewController: UIViewController {
         allAudioFiles = AudioPostManager.shared.filteredAudioFiles
     }
     
+    // swiftlint:disable line_length
     private func fetchUserPicFromFirebase() {
         guard let userID = userWillDisplay?.userInfoDoumentID else { return }
         firebaseManager.documentFetchData(documentType:
@@ -253,10 +236,12 @@ class OthersProfileViewController: UIViewController {
             }
         }
     }
+    // swiftlint:enable line_length
     
     private func checkUserPicFromFirebase() {
         guard let userID = userWillDisplay?.userInfoDoumentID else { return }
-        firebaseManager.documentAddListener(documentType: .userPicDoc(userInfoDocumentID: userID)) { (result: Result<SCPicture, Error>) in
+        // swiftlint:disable line_length
+        _ = firebaseManager.documentAddListener(documentType: .userPicDoc(userInfoDocumentID: userID)) { (result: Result<SCPicture, Error>) in
             switch result {
             case .success(let picture):
                 self.otherUserPic = picture.picture
@@ -265,28 +250,24 @@ class OthersProfileViewController: UIViewController {
             }
         }
     }
+    // swiftlint:enable line_length
     
     private func fetchUserCoverFromFirebase() {
         guard let userID = userWillDisplay?.userInfoDoumentID else { return }
-        firebaseManager.documentFetchData(documentType:
-                                                .userCoverDoc(userInfoDocumentID:
-                                                                userID)) { (result:
-                                                                                Result<SCPicture, Error>) in
-            switch result {
-            case .success(let picture):
-                self.otherUserCover = picture.picture
-            case .failure(let error):
-                print(error)
+        firebaseManager
+            .documentFetchData(documentType: .userCoverDoc(userInfoDocumentID: userID)) { (result: Result<SCPicture, Error>) in
+                switch result {
+                case .success(let picture):
+                    self.otherUserCover = picture.picture
+                case .failure(let error):
+                    print(error)
+                }
             }
-        }
     }
     
     private func checkUserCoverFromFirebase() {
         guard let userID = userWillDisplay?.userInfoDoumentID else { return }
-        firebaseManager.documentAddListener(documentType:
-                                                    .userCoverDoc(userInfoDocumentID:
-                                                                    userID)) { (result:
-                                                                                    Result<SCPicture, Error>) in
+        _ = firebaseManager.documentAddListener(documentType: .userCoverDoc(userInfoDocumentID: userID)) { (result: Result<SCPicture, Error>) in
             switch result {
             case .success(let picture):
                 self.otherUserCover = picture.picture
@@ -318,8 +299,10 @@ class OthersProfileViewController: UIViewController {
     
     private func backToHome() {
         navigationController?.popToRootViewController(animated: true)
+        // swiftlint:disable line_length
         guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
         scTabBarController.selectedIndex = 0
+        // swiftlint:enable line_length
     }
     
     private func blockUser() {
@@ -360,6 +343,17 @@ class OthersProfileViewController: UIViewController {
         AudioPlayHelper.shared.setPlayInfo(playInfo: playInfo)
     }
     
+    func setTableView() {
+        view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+    }
+    
     // MARK: - image method
     
     func pressSelectImage(selectedPicButton: PicType) {
@@ -377,8 +371,7 @@ class OthersProfileViewController: UIViewController {
         
     }
     
-    private func sendPhoto(_ image: UIImage) {
-        
+    func sendPhoto(_ image: UIImage) {
         guard let userDocumentID = signInManager.currentUserInfoFirebase?.userInfoDoumentID,
               let  compressedImage = image.jpegData(compressionQuality: 0.15) else { return }
         let imageBase64String = compressedImage.base64EncodedString()
@@ -410,263 +403,14 @@ class OthersProfileViewController: UIViewController {
         return table
     }()
     
-    // MARK: - config UI method
-    
-    private func setBackgroundColor() {
-        view.backgroundColor = UIColor(named: Constant.scBlue)
-    }
-    
-    private func setNavigationBar() {
-        guard let userWillDisplay = userWillDisplay else { return }
-        navigationController?.isNavigationBarHidden = false
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
-        navigationItem.leftBarButtonItem?.image = UIImage(systemName: Constant.SFSymbol.back)
-        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: Constant.scWhite)
-        
-        switch profilePageType {
-        case .otherUser:
-            navigationItem.title = userWillDisplay.username
-            
-        case .loggInUser:
-            navigationItem.title = Constant.Text.myProfile
-            
-        }
-        
-    }
-    
-    private func setTableView() {
-        view.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-    }
-    
+    let loadingAnimationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
+                                                                              frame: CGRect(x: 0,
+                                                                                            y: 0,
+                                                                                            width: UIProperties.screenWidth,
+                                                                                            height: UIProperties.screenHeight))
 }
+// swiftlint:enable line_length
 
-// MARK: - conform to UITableViewDataSource
-
-extension OthersProfileViewController: UITableViewDataSource {
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        ProfilePageSection.allCases.count + 1
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        1
-    }
-    
-    // swiftlint:disable cyclomatic_complexity
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell,
-              let profileDataCell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.reuseIdentifier) as? ProfileTableViewCell,
-              let userWillDisplay = userWillDisplay else { return UITableViewCell() }
-        
-        cell.backgroundColor = UIColor(named: Constant.scBlue)
-        cell.delegate = self
-        
-        profileDataCell.backgroundColor = UIColor(named: Constant.scBlue)
-        
-        switch indexPath.section {
-            
-        case 0:
-            profileDataCell.delegate = self
-            
-            switch profilePageType {
-            case .loggInUser:
-                
-                profileDataCell.configMyProfilecell(userData: userWillDisplay,
-                                                    followers: numbersOfFollowers,
-                                                    followings: numbersOfFollowings,
-                                                    userPic: otherUserPic,
-                                                    coverPic: otherUserCover)
-                
-            case.otherUser:
-                
-                profileDataCell.configcell(userData: userWillDisplay,
-                                           followers: numbersOfFollowers,
-                                           followings: numbersOfFollowings,
-                                           userPic: otherUserPic,
-                                           coverPic: otherUserCover)
-                
-                if let currentUserFollowingsID = signInManager.currentUserFollowingList?.map({$0.userID}) {
-                    if currentUserFollowingsID.contains(userWillDisplay.userID) {
-                        profileDataCell.makeButtonFollowed()
-                    }
-                }
-                
-            }
-            
-            return profileDataCell
-            
-        case 1:
-            guard let followings = othersFollowingList else {
-                print("OtherProfilePage cant get othersFollowingList")
-                return ProfileBlankTableViewCell()
-            }
-            
-            var myFollowingsUserFiles = [SCPost]()
-            for audioFile in allAudioFiles {
-                for folloing in followings {
-                    if audioFile.authorID == folloing.userID,
-                       audioFile.authIDProvider == folloing.provider {
-                        myFollowingsUserFiles.append(audioFile)
-                    }
-                }
-            }
-            
-            guard !myFollowingsUserFiles.isEmpty else {
-                return ProfileBlankTableViewCell()
-            }
-            
-            cell.firebaseData = myFollowingsUserFiles
-            cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
-            return cell
-            
-        case 2:
-            
-            guard let userFavoriteDocumentIDs = userFavoriteDocumentIDs else {
-                print("ProfilePage cant get userFavoriteDocumentIDs")
-                return ProfileBlankTableViewCell()
-            }
-            
-            var myFavoriteFiles = [SCPost]()
-            
-            for audioFile in allAudioFiles {
-                for favorite in userFavoriteDocumentIDs {
-                    if audioFile.documentID == favorite {
-                        myFavoriteFiles.append(audioFile)
-                    }
-                }
-            }
-            
-            guard !myFavoriteFiles.isEmpty else {
-                return ProfileBlankTableViewCell()
-            }
-            
-            cell.firebaseData = myFavoriteFiles
-            cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
-            return cell
-            
-        case 3:
-            let myAudioFiles = allAudioFiles.filter({$0.authorName == userWillDisplay.username})
-            
-            guard !myAudioFiles.isEmpty else {
-                return ProfileBlankTableViewCell()
-            }
-            
-            cell.firebaseData = myAudioFiles
-            cell.profileSection = ProfilePageSection.allCases[indexPath.section - 1]
-            return cell
-            
-        default:
-            let filteredFiles = allAudioFiles.filter({$0.category == AudioCategory.allCases[indexPath.section].rawValue})
-            cell.firebaseData = filteredFiles
-            cell.category = AudioCategory.allCases[indexPath.item].rawValue
-            return cell
-            
-        }
-    }
-    
-    // swiftlint:enable cyclomatic_complexity
-    
-}
-
-// MARK: - conform to UITableViewDelegate
-
-extension OthersProfileViewController: UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        
-        if section == 0 {
-            return nil
-        } else {
-            guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomeTableViewHeader.reuseIdentifier) as? HomeTableViewHeader else { return UIView()}
-            headerView.presentInPage = .profileSection
-            headerView.delegate = self
-            headerView.config(section: section, content: ProfilePageSection.allCases[section - 1].rawValue)
-            return headerView
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        
-        if section == 0 {
-            return 0
-        } else {
-            return 50
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        300
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
-        if indexPath == IndexPath(row: 0, section: 3) {
-            
-            return 230
-            
-        } else if indexPath == IndexPath(row: 0, section: 0) {
-            
-            return 250
-            
-        } else {
-            
-            return 168
-            
-        }
-    }
-    
-}
-
-// MARK: - conform to PressPassableDelegate
-
-extension OthersProfileViewController: PressPassableDelegate {
-    
-    func goSectionPage(from section: Int, sectionPageType: SectionPageType) {
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: CategoryViewController.reuseIdentifier) as? CategoryViewController,
-              let displayUserID = userWillDisplay?.userID else { return }
-        
-        switch section {
-            
-        case 1:
-            
-            let section = ProfilePageSection.allCases[section - 1]
-            categoryPage.config(profileSection: section, displayUserID: displayUserID)
-            
-        case 2:
-            
-            let section = ProfilePageSection.allCases[section - 1]
-            categoryPage.config(profileSection: section, displayUserID: displayUserID)
-            
-        case 3:
-            
-            let section = ProfilePageSection.allCases[section - 1]
-            categoryPage.config(profileSection: section, displayUserID: displayUserID)
-            
-        default:
-            break
-        }
-        
-        navigationController?.pushViewController(categoryPage, animated: true)
-    }
-    
-    func goCategoryPage() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let categoryPage = storyboard.instantiateViewController(withIdentifier: CategoryViewController.reuseIdentifier) as? CategoryViewController else { return }
-        
-        navigationController?.pushViewController(categoryPage, animated: true)
-    }
-    
-}
 
 // MARK: - conform to ProfileCellDelegate
 
@@ -697,43 +441,10 @@ extension OthersProfileViewController: ProfileCellDelegate {
     
     func goSettingPage() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        // swiftlint:disable line_length
         guard let settingViewController = storyboard.instantiateViewController(withIdentifier: SettingViewController.reuseIdentifier) as? SettingViewController else { return }
+        // swiftlint:enable line_length
         navigationController?.pushViewController(settingViewController, animated: true)
-    }
-    
-}
-
-// MARK: - conform to UIImagePickerControllerDelegate & UINavigationControllerDelegate
-
-extension OthersProfileViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        
-        picker.dismiss(animated: true)
-        
-        // 1
-        if let asset = info[.phAsset] as? PHAsset {
-            let size = CGSize(width: 500, height: 500)
-            PHImageManager.default().requestImage(
-                for: asset,
-                   targetSize: size,
-                   contentMode: .aspectFit,
-                   options: nil
-            ) { result, _ in
-                guard let image = result else {
-                    return
-                }
-                self.sendPhoto(image)
-            }
-            
-            // 2
-        } else if let image = info[.originalImage] as? UIImage {
-            sendPhoto(image)
-        }
-    }
-    
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        picker.dismiss(animated: true)
     }
     
 }
@@ -741,11 +452,11 @@ extension OthersProfileViewController: UIImagePickerControllerDelegate & UINavig
 extension OthersProfileViewController: AlertPresentableDelegate {
     
     func popBlockAlert(toBeBlockedID: String) {
-        
+        // swiftlint:disable line_length
         let alert = UIAlertController(title: "Are you sure?",
                                       message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
                                       preferredStyle: .alert )
-        
+        // swiftlint:enable line_length
         let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
             guard let self = self else { return }
             self.blockThisUser(toBeBlockedID: toBeBlockedID)
@@ -783,4 +494,3 @@ extension OthersProfileViewController: AlertPresentableDelegate {
     }
     
 }
-// swiftlint:enable file_length

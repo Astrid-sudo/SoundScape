@@ -48,10 +48,9 @@ class LAEUViewController: UIViewController {
                                                                                       y: 0,
                                                                                       width: UIProperties.screenWidth,
                                                                                       height: UIProperties.screenHeight))
-
 }
 
-// MARK: - conform to WKNavigationDelegate
+// MARK: - WKNavigationDelegate
 
 extension LAEUViewController: WKNavigationDelegate {
     
@@ -73,7 +72,7 @@ extension LAEUViewController: WKNavigationDelegate {
     
 }
 
-// MARK: - config UI method
+// MARK: - UI method
 
 extension LAEUViewController {
     

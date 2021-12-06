@@ -17,8 +17,10 @@ class AudioDownloadManager {
                            remoteURL: URL,
                            completion: @escaping (_ localURL: URL) -> Void,
                            errorCompletion: @escaping (_ errorMessage: String) -> Void) {
-        
+        // swiftlint:disable line_length
         let cachesFolderURL = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        // swiftlint:enable line_length
+
         let audioFileURL = cachesFolderURL?.appendingPathComponent("\(documentID).m4a")
         guard let localURL = audioFileURL else {
             errorCompletion("Cant find this audio file.")
@@ -30,7 +32,7 @@ class AudioDownloadManager {
             completion(localURL)
             return }
         
-        let task = URLSession.shared.downloadTask(with: remoteURL) { downloadedURL, urlResponse, error in
+        let task = URLSession.shared.downloadTask(with: remoteURL) { downloadedURL, _, error in
             
             if let error = error {
                 errorCompletion(error.localizedDescription)
@@ -45,7 +47,9 @@ class AudioDownloadManager {
     }
     
     private func localFileExists(documentID: String) -> Bool {
+        // swiftlint:disable line_length
          let cachesFolderURL = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        // swiftlint:enable line_length
          let audioFileURL = cachesFolderURL?.appendingPathComponent("\(documentID).m4a")
          guard let localURL = audioFileURL else { return false }
         if FileManager.default.fileExists(atPath: localURL.path) {

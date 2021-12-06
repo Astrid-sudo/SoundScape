@@ -83,7 +83,7 @@ extension FirebaseManager {
     }
     
     func manipulateFavorite(userProfileDocumentID: String,
-                            documendID: String,
+                            documentID: String,
                             addCompletion: @escaping () -> Void,
                             removeCompletion: @escaping () -> Void,
                             errorCompletion: @escaping (_ errorMessage: String) -> Void) {
@@ -93,11 +93,10 @@ extension FirebaseManager {
             .reference
         
         myFavoriteSubCollectionRef.whereField("favoriteDocumentID",
-                                              isEqualTo: documendID)
+                                              isEqualTo: documentID)
             .getDocuments { snapshot, error in
                 
                 if let error = error {
-                    print("Failed to fetch myFavorite collection \(error)")
                     errorCompletion(error.localizedDescription)
                     return
                 }
@@ -105,9 +104,9 @@ extension FirebaseManager {
                 if let snapshot = snapshot {
                     
                     if snapshot.documents.isEmpty {
-                        let favorite = SCFavorite(favoriteDocumentID: documendID)
+                        let favorite = SCFavorite(favoriteDocumentID: documentID)
                         do {
-                            try myFavoriteSubCollectionRef.addDocument(from: favorite)
+                            try _ = myFavoriteSubCollectionRef.addDocument(from: favorite)
                             addCompletion()
                         } catch {
                             errorCompletion(error.localizedDescription)
@@ -123,10 +122,8 @@ extension FirebaseManager {
                         
                         myFavoriteSubCollectionRef.document(refDocumentID).delete() { error in
                             if let error = error {
-                                print("Error removing favorite: \(error)")
                                 errorCompletion(error.localizedDescription)
                             } else {
-                                print("Document successfully removed favorite!")
                                 removeCompletion()
                             }
                         }
@@ -141,7 +138,7 @@ extension FirebaseManager {
                           loggedInUserInfo: SCFollow,
                           followCompletion: @escaping () -> Void,
                           unfollowCompletion: @escaping () -> Void,
-                          errorCompletion: @escaping (_ errorMessage:String) -> Void) {
+                          errorCompletion: @escaping (_ errorMessage: String) -> Void) {
         
         let myFollowingSubCollectionRef = FirebaseCollection
             .following(userInfoDocumentID: loggedInUserInfoDocumentID).reference
@@ -157,7 +154,6 @@ extension FirebaseManager {
                 
                 if let error = error {
                     errorCompletion(error.localizedDescription)
-                    print("Failed to fetch myFollowing subCollection collection \(error)")
                     return
                 }
                 
@@ -194,9 +190,7 @@ extension FirebaseManager {
                             
                             if let error = error {
                                 errorCompletion(error.localizedDescription)
-                                print("Error removing favorite: \(error)")
                             } else {
-                                print("Person successfully removed from loggedIn's following!")
                                 unfollowCompletion()
                                 self.removeFollowersDocID(userInfoDoumentID: userInfoDoumentID,
                                                           userInfo: userInfo,
@@ -214,40 +208,40 @@ extension FirebaseManager {
                                       loggedInUserInfoDocumentID: String,
                                       loggedInUserInfo: SCFollow) {
         
-        let othersFollowedBySubCollectionRef = FirebaseCollection.followedBy(userInfoDocumentID: userInfoDoumentID).reference
+        let othersFollowedByCollection = FirebaseCollection.followedBy(userInfoDocumentID: userInfoDoumentID).reference
         
-        othersFollowedBySubCollectionRef.whereField("userID",
-                                                    isEqualTo:
-                                                        loggedInUserInfo.userID)
+        othersFollowedByCollection.whereField("userID",
+                                              isEqualTo:
+                                                loggedInUserInfo.userID)
             .whereField("provider",
                         isEqualTo: loggedInUserInfo.provider)
             .getDocuments { snapshot, error in
-            
-            if let error = error {
-                print("Failed to fetch othersFollowedBy subcollection \(error)")
-                return
-            }
-            
-            if let snapshot = snapshot {
                 
-                if snapshot.documents.isEmpty {
-                    print("FirebaseManager: You were no on his followedBy list")
-                } else {
+                if let error = error {
+                    print("Failed to fetch othersFollowedBy subcollection \(error)")
+                    return
+                }
+                
+                if let snapshot = snapshot {
                     
-                    guard let meInOthersCollection = snapshot.documents.first?.documentID else {
-                        print("failed to get meInOthersCollection ref")
-                        return
-                    }
-                    othersFollowedBySubCollectionRef.document(meInOthersCollection).delete() { error in
-                        if let error = error {
-                            print("Error removing you from ex friend: \(error)")
-                        } else {
-                            print("You've been successfully removed from others followedBy!")
+                    if snapshot.documents.isEmpty {
+                        print("FirebaseManager: You were no on his followedBy list")
+                    } else {
+                        
+                        guard let meInOthersCollection = snapshot.documents.first?.documentID else {
+                            print("failed to get meInOthersCollection ref")
+                            return
+                        }
+                        othersFollowedByCollection.document(meInOthersCollection).delete() { error in
+                            if let error = error {
+                                print("Error removing you from ex friend: \(error)")
+                            } else {
+                                print("You've been successfully removed from others followedBy!")
+                            }
                         }
                     }
                 }
             }
-        }
     }
     
     // MARK: - Black List
@@ -271,9 +265,9 @@ extension FirebaseManager {
     // MARK: - profile pic
     
     func uploadPicToFirebase(userDocumentID: String,
-                             picString:String,
+                             picString: String,
                              picType: PicType,
-                             errorCompletion: @escaping (_ errorMessage:String) -> Void,
+                             errorCompletion: @escaping (_ errorMessage: String) -> Void,
                              succeededCompletion: @escaping () -> Void) {
         
         let profilePicSubCollection = FirebaseCollection.profilePicture(userInfoDocumentID: userDocumentID).reference

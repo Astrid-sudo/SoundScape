@@ -38,6 +38,41 @@ class SettingViewController: UIViewController {
         animationView.stop()
     }
     
+    // MARK: - action
+    
+    @objc func backToLastPage() {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    // MARK: - method
+    
+    // swiftlint:disable line_length
+    private func navigateToSignInPage() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let signInViewController = storyboard.instantiateViewController(withIdentifier: SignInViewController.reuseIdentifier) as? SignInViewController else { return }
+        navigationController?.pushViewController(signInViewController, animated: true)
+    }
+    
+    private func popSignOutAlert() {
+        let alert = UIAlertController(title: "Are you sure ?",
+                                      message: "Looking forward to hearing from you again.",
+                                      preferredStyle: .alert )
+        
+        let okButton = UIAlertAction(title: "Log out", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            self.signInHelper.signOutAuth {
+                self.navigateToSignInPage()
+            }
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     // MARK: - UI properties
     
     private lazy var tableView: UITableView = {
@@ -57,78 +92,6 @@ class SettingViewController: UIViewController {
                                                                                              y: 80,
                                                                                              width: UIProperties.screenWidth,
                                                                                              height: UIProperties.screenHeight / 3))
-    
-    // MARK: - action
-    
-    @objc func backToLastPage() {
-        self.navigationController?.popViewController(animated: true)
-    }
-    
-    // MARK: - method
-    
-    private func navigateToSignInPage() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let signInViewController = storyboard.instantiateViewController(withIdentifier: SignInViewController.reuseIdentifier) as? SignInViewController else { return }
-        navigationController?.pushViewController(signInViewController, animated: true)
-    }
-    
-    private func popSignOutAlert() {
-        
-        let alert = UIAlertController(title: "Are you sure ?",
-                                      message: "Looking forward to hearing from you again.",
-                                      preferredStyle: .alert )
-        
-        let okButton = UIAlertAction(title: "Log out", style: .destructive) { [weak self] _ in
-            guard let self = self else { return }
-            self.signInHelper.signOutAuth {
-                self.navigateToSignInPage()
-            }
-        }
-        
-        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
-        
-        alert.addAction(cancelButton)
-        alert.addAction(okButton)
-        
-        self.present(alert, animated: true, completion: nil)
-        
-    }
-    
-    // MARK: - UI method
-    
-    private func setBackgroundColor() {
-        view.backgroundColor = UIColor(named: Constant.scBlue)
-    }
-    
-    private func setNavigationBar() {
-        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationController?.navigationBar.shadowImage = UIImage()
-        navigationItem.title = Constant.Text.settings
-        navigationController?.navigationBar.barTintColor = UIColor(named: Constant.scBlue)
-        let font = UIFont(name: Constant.fontBungee, size: 28)
-        navigationController?.navigationBar.titleTextAttributes =
-        [NSAttributedString.Key.font: font,
-         NSAttributedString.Key.foregroundColor: UIColor(named: Constant.scWhite)]
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self, action: #selector(backToLastPage))
-        navigationItem.leftBarButtonItem?.image = UIImage(systemName: Constant.SFSymbol.back)
-        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: Constant.scWhite)
-    }
-    
-    private func setTableView() {
-        view.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.topAnchor.constraint(equalTo: view.centerYAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-    }
-    
-    private func addLottie() {
-        view.addSubview(animationView)
-    }
-    
 }
 
 // MARK: - conform to UITableViewDataSource
@@ -176,3 +139,44 @@ extension SettingViewController: UITableViewDelegate {
     }
     
 }
+
+// MARK: - UI method
+
+extension SettingViewController {
+    
+    private func setBackgroundColor() {
+        view.backgroundColor = UIColor(named: Constant.scBlue)
+    }
+    
+    private func setNavigationBar() {
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationItem.title = Constant.Text.settings
+        navigationController?.navigationBar.barTintColor = UIColor(named: Constant.scBlue)
+        let font = UIFont(name: Constant.fontBungee, size: 28)
+        navigationController?.navigationBar.titleTextAttributes =
+        [NSAttributedString.Key.font: font,
+         NSAttributedString.Key.foregroundColor: UIColor(named: Constant.scWhite)]
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self, action: #selector(backToLastPage))
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: Constant.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: Constant.scWhite)
+    }
+    
+    private func setTableView() {
+        view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.topAnchor.constraint(equalTo: view.centerYAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+    }
+    
+    private func addLottie() {
+        view.addSubview(animationView)
+    }
+    
+}
+
+// swiftlint:enable line_length

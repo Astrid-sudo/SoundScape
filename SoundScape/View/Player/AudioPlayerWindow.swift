@@ -26,12 +26,12 @@ class AudioPlayerWindow {
     
     let windowSmallSizeHeight: CGFloat = 60.adjusted
 
+    // swiftlint:disable line_length
     lazy var windowSmallSizeY: CGFloat = {
-        let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
+        let safeAreaHeight = UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.safeAreaInsets.bottom ?? 45.adjusted
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let sCTabBarController = storyboard.instantiateViewController(identifier: "SCTabBarController") as? SCTabBarController else { return 41.0 }
         let tabBarHeight = sCTabBarController.tabBar.frame.size.height
-
 
         let windowSmallSizeY = UIProperties.screenHeight - safeAreaHeight - tabBarHeight - windowSmallSizeHeight + 1
         return windowSmallSizeY
@@ -40,9 +40,8 @@ class AudioPlayerWindow {
     private lazy var windowSmallFrame: CGRect = CGRect(x: 0, y: windowSmallSizeY, width: UIProperties.screenWidth, height: windowSmallSizeHeight)
     
     private let windowFullFrame: CGRect = CGRect(x: 0, y: 0, width: UIProperties.screenWidth, height: UIProperties.screenHeight)
+    // swiftlint:enable line_length
 
-    // MARK: - properties
-    
     // MARK: - init
     
     private init() {
@@ -84,23 +83,18 @@ class AudioPlayerWindow {
     
 }
 
+// MARK: - DetailPageShowableDelegate
 extension AudioPlayerWindow: DetailPageShowableDelegate {
     
     func showDetailPage() {
-        
         delegate?.showDetailPage?()
-
         if let window = window {
-            
             UIView.animate(withDuration: 1, delay: 0, options: .curveEaseIn) { [weak self] in
                 guard let self = self else { return }
-
                 window.frame = self.windowFullFrame
                 window.layoutIfNeeded()
             }
-
         }
-        
     }
     
 }

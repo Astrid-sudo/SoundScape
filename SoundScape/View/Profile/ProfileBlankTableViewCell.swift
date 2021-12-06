@@ -9,6 +9,36 @@ import UIKit
 
 class ProfileBlankTableViewCell: UITableViewCell {
     
+    // MARK: - init
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        backgroundColor = UIColor(named: Constant.scGreen)
+        setLabel()
+        setImageView()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - method
+    
+    func cellType(profilePageSection: ProfilePageSection) {
+        
+        switch profilePageSection {
+            
+        case .followingsLatest:
+            label.text = "Follow other users to see their posts here."
+            
+        case .myFavorite:
+            label.text = "Press heart on small player to add your favorite posts."
+            
+        case .myAudio:
+            label.text = "Upload audio to see all your audio here."
+        }
+    }
+    
     // MARK: - UI properties
     
     lazy var label: UILabel = {
@@ -27,20 +57,12 @@ class ProfileBlankTableViewCell: UITableViewCell {
         return image
     }()
     
-    // MARK: - init
+
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = UIColor(named: Constant.scGreen)
-        setLabel()
-        setImageView()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - config UI method
+}
+
+// MARK: - UI methods
+extension ProfileBlankTableViewCell {
     
     private func setLabel() {
         contentView.addSubview(label)
@@ -62,21 +84,6 @@ class ProfileBlankTableViewCell: UITableViewCell {
             theImageView.topAnchor.constraint(equalTo: label.bottomAnchor),
             theImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
-    }
-    
-    func cellType(profilePageSection: ProfilePageSection) {
-        
-        switch profilePageSection {
-        case .followingsLatest:
-            label.text = "Follow other users to see their posts here."
-            
-        case .myFavorite:
-            label.text = "Press heart on small player to add your favorite posts."
-            
-        case .myAudio:
-            label.text = "Upload audio to see all your audio here."
-            
-        }
     }
     
 }

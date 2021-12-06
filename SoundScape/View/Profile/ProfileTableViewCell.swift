@@ -20,6 +20,117 @@ class ProfileTableViewCell: UITableViewCell {
     
     weak var delegate: ProfileCellDelegate?
     
+    // MARK: - init
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setCoverImageView()
+        setUserImageView()
+        setNameLabel()
+        setSocialStackView()
+        setFollowersStackView()
+        setFollowersStackView()
+        setFollowingsStackView()
+        setImageHintOnUserPic()
+        setImageHintOnUCoverPic()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - action
+    
+    @objc func block() {
+        delegate?.blockThisUser()
+    }
+    
+    @objc func toggleFollow() {
+        delegate?.toggleFollow()
+    }
+    
+    @objc func goSettingPage() {
+        delegate?.goSettingPage()
+    }
+    
+    @objc func selectUserImage() {
+        delegate?.pressSelectImage(selectedPicButton: .userPic)
+    }
+    
+    @objc func selectCoverImage() {
+        delegate?.pressSelectImage(selectedPicButton: .coverPic)
+    }
+    
+    // MARK: - method
+    
+    func configcell(userData: SCUser, followers: Int?, followings: Int?, userPic: String?, coverPic: String?) {
+        
+        nameLabel.text = userData.username
+        
+        if let userPic = userPic,
+           let userPicData = Data(base64Encoded: userPic) {
+            userImageView.image = UIImage(data: userPicData)
+            userImageView.contentMode = .scaleAspectFill
+        }
+        
+        if let coverPic = coverPic,
+           let coverPicData = Data(base64Encoded: coverPic) {
+            coverImageView.image = UIImage(data: coverPicData)
+            coverImageView.contentMode = .scaleAspectFill
+        }
+        
+        if let followers = followers {
+            followersNumberLabel.text = String(followers)
+        }
+        
+        if let followings = followings {
+            followingsNumberLabel.text = String(followings)
+        }
+        
+        followButton.isHidden = false
+        blockButton.isHidden = false
+        
+    }
+    
+    func configMyProfilecell(userData: SCUser, followers: Int?, followings: Int?, userPic: String?, coverPic: String?) {
+        
+        nameLabel.text = userData.username
+        
+        if let userPic = userPic,
+           let userPicData = Data(base64Encoded: userPic) {
+            userImageView.image = UIImage(data: userPicData)
+            userImageView.contentMode = .scaleAspectFill
+        }
+        
+        if let coverPic = coverPic,
+           let coverPicData = Data(base64Encoded: coverPic) {
+            coverImageView.image = UIImage(data: coverPicData)
+            coverImageView.contentMode = .scaleAspectFill
+        }
+        
+        if let followers = followers {
+            followersNumberLabel.text = String(followers)
+        }
+        
+        if let followings = followings {
+            followingsNumberLabel.text = String(followings)
+        }
+        
+        changeUserPicButton.isHidden = false
+        changeCoverPicButton.isHidden = false
+        settingButton.isHidden = false
+    }
+    
+    func makeButtonFollowed() {
+        followButton.setTitle(Constant.Text.unfollow, for: .normal)
+        followButton.backgroundColor = UIColor(named: Constant.scLightBlue)
+    }
+    
+    func makeButtonUnFollow() {
+        followButton.setTitle(Constant.Text.follow, for: .normal)
+        followButton.backgroundColor = UIColor(named: Constant.scLightBlue)
+    }
+    
     // MARK: - UI properties
     
     private lazy var coverImageView: UIImageView = {
@@ -162,52 +273,11 @@ class ProfileTableViewCell: UITableViewCell {
         button.isHidden = true
         return button
     }()
+    
+}
 
-
-    // MARK: - init
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setCoverImageView()
-        setUserImageView()
-        setNameLabel()
-        setSocialStackView()
-        setFollowersStackView()
-        setFollowersStackView()
-        setFollowingsStackView()
-        setImageHintOnUserPic()
-        setImageHintOnUCoverPic()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - action
-    
-    @objc func block() {
-        delegate?.blockThisUser()
-    }
-    
-    @objc func toggleFollow() {
-        delegate?.toggleFollow()
-    }
-    
-    @objc func goSettingPage() {
-        delegate?.goSettingPage()
-    }
-    
-    @objc func selectUserImage() {
-        delegate?.pressSelectImage(selectedPicButton: .userPic)
-    }
-    
-    @objc func selectCoverImage() {
-        delegate?.pressSelectImage(selectedPicButton: .coverPic)
-
-    }
-
-    
-    // MARK: - config UI method
+// MARK: - UI method
+extension ProfileTableViewCell {
     
     private func setCoverImageView() {
         contentView.addSubview(coverImageView)
@@ -263,7 +333,6 @@ class ProfileTableViewCell: UITableViewCell {
             settingButton.widthAnchor.constraint(equalToConstant: 100),
             blockButton.widthAnchor.constraint(equalToConstant: 80)
         ])
-
     }
     
     private func setFollowersStackView() {
@@ -297,77 +366,5 @@ class ProfileTableViewCell: UITableViewCell {
             changeCoverPicButton.widthAnchor.constraint(equalToConstant: 40)
         ])
     }
-
     
-    func configcell(userData: SCUser, followers: Int?, followings: Int?, userPic: String?, coverPic: String?) {
-        
-        nameLabel.text = userData.username
-        
-        if let userPic = userPic,
-            let userPicData = Data(base64Encoded: userPic) {
-            userImageView.image = UIImage(data: userPicData)
-            userImageView.contentMode = .scaleAspectFill
-        }
-        
-        if let coverPic = coverPic,
-            let coverPicData = Data(base64Encoded: coverPic) {
-            coverImageView.image = UIImage(data: coverPicData)
-            coverImageView.contentMode = .scaleAspectFill
-        }
-        
-        if let followers = followers {
-            followersNumberLabel.text = String(followers)
-        }
-        
-        if let followings = followings {
-            followingsNumberLabel.text = String(followings)
-        }
-        
-        followButton.isHidden = false
-        blockButton.isHidden = false
-
-        
-    }
-    
-    func configMyProfilecell(userData: SCUser, followers: Int?, followings: Int?, userPic: String?, coverPic: String?) {
-        
-        nameLabel.text = userData.username
-        
-        if let userPic = userPic,
-            let userPicData = Data(base64Encoded: userPic) {
-            userImageView.image = UIImage(data: userPicData)
-            userImageView.contentMode = .scaleAspectFill
-        }
-        
-        if let coverPic = coverPic,
-            let coverPicData = Data(base64Encoded: coverPic) {
-            coverImageView.image = UIImage(data: coverPicData)
-            coverImageView.contentMode = .scaleAspectFill
-        }
-        
-        if let followers = followers {
-            followersNumberLabel.text = String(followers)
-        }
-        
-        if let followings = followings {
-            followingsNumberLabel.text = String(followings)
-        }
-        
-        changeUserPicButton.isHidden = false
-        changeCoverPicButton.isHidden = false
-        settingButton.isHidden = false
-    }
-
-    
-     func makeButtonFollowed() {
-        followButton.setTitle(Constant.Text.unfollow, for: .normal)
-        followButton.backgroundColor = UIColor(named: Constant.scLightBlue)
-    }
-    
-     func makeButtonUnFollow() {
-        followButton.setTitle(Constant.Text.follow, for: .normal)
-        followButton.backgroundColor = UIColor(named: Constant.scLightBlue)
-    }
-
 }
-

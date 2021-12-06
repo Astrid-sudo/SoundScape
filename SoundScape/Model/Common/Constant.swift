@@ -7,6 +7,7 @@
 
 import Foundation
 
+// swiftlint:disable line_length
 struct Constant {
     
     static let privacyPolicyURL = "https://www.privacypolicies.com/live/441a63bf-7dcb-427a-8f2c-c13a9a69e488"
@@ -122,4 +123,4 @@ struct Constant {
     static let createdTime = "createdTime"
     static let comments = "Comments"
 }
-
+// swiftlint:enable line_length

@@ -10,32 +10,6 @@ import UniformTypeIdentifiers
 
 class CreateAudioViewController: UIViewController {
 
-    private let animationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .waveformBounce,
-                                                                               frame: CGRect(x: 0,
-                                                                                             y: 100,
-                                                                                             width: UIProperties.screenWidth,
-                                                                                             height: 200))
-
-    private lazy var recordButton: UIButton = {
-        let button = UIButton()
-        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
-        button.addTarget(self, action: #selector(goRecordPage), for: .touchUpInside)
-        button.backgroundColor = UIColor(named: Constant.scLightBlue)
-        button.layer.cornerRadius = 15
-        button.setTitle(Constant.Text.record, for: .normal)
-        return button
-    }()
-    
-    private lazy var selectFileButton: UIButton = {
-        let button = UIButton()
-        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
-        button.addTarget(self, action: #selector(selectDocument), for: .touchUpInside)
-        button.backgroundColor = UIColor(named: Constant.scLightBlue)
-        button.layer.cornerRadius = 15
-        button.setTitle(Constant.Text.selectFile, for: .normal)
-        return button
-    }()
-
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -70,23 +44,74 @@ class CreateAudioViewController: UIViewController {
             
             controller.delegate = self
             present(controller, animated: true, completion: nil)
-            
-        } else {
-            // Fallback on earlier versions
         }
-        
     }
     
     @objc func goRecordPage() {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        // swiftlint:disable line_length
         guard let recordVC = storyboard.instantiateViewController(withIdentifier:
                                                                     RecordViewController.reuseIdentifier) as? RecordViewController else { return }
+        // swiftlint:enable line_length
         navigationController?.pushViewController(recordVC, animated: true)
     }
     
-    // MARK: - method
+    // MARK: - UI properties
     
+    // swiftlint:disable line_length
+    private let animationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .waveformBounce,
+                                                                               frame: CGRect(x: 0,
+                                                                                             y: 100,
+                                                                                             width: UIProperties.screenWidth,
+                                                                                             height: 200))
+    // swiftlint:enable line_length
+
+    private lazy var recordButton: UIButton = {
+        let button = UIButton()
+        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
+        button.addTarget(self, action: #selector(goRecordPage), for: .touchUpInside)
+        button.backgroundColor = UIColor(named: Constant.scLightBlue)
+        button.layer.cornerRadius = 15
+        button.setTitle(Constant.Text.record, for: .normal)
+        return button
+    }()
+    
+    private lazy var selectFileButton: UIButton = {
+        let button = UIButton()
+        button.setTitleColor(UIColor(named: Constant.scWhite), for: .normal)
+        button.addTarget(self, action: #selector(selectDocument), for: .touchUpInside)
+        button.backgroundColor = UIColor(named: Constant.scLightBlue)
+        button.layer.cornerRadius = 15
+        button.setTitle(Constant.Text.selectFile, for: .normal)
+        return button
+    }()
+
+}
+
+// MARK: - conform to UIDocumentPickerDelegate
+
+extension CreateAudioViewController: UIDocumentPickerDelegate {
+    
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        
+        if let url = urls.last {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            // swiftlint:disable line_length
+            guard let editVC = storyboard.instantiateViewController(withIdentifier: EditViewController.reuseIdentifier) as? EditViewController else { return }
+            // swiftlint:enable line_length
+            editVC.selectedFileURL = url
+            editVC.originDuraion = AudioPlayHelper.shared.duration
+            navigationController?.pushViewController(editVC, animated: true)
+        }
+    }
+    
+}
+
+// MARK: - UI method
+
+extension CreateAudioViewController {
+   
     private func setNavigationBar() {
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationController?.navigationBar.shadowImage = UIImage()
@@ -121,23 +146,6 @@ class CreateAudioViewController: UIViewController {
             recordButton.bottomAnchor.constraint(equalTo: selectFileButton.topAnchor, constant: -16),
             recordButton.heightAnchor.constraint(equalToConstant: 48)
         ])
-    }
-    
-}
-
-// MARK: - conform to UIDocumentPickerDelegate
-
-extension CreateAudioViewController: UIDocumentPickerDelegate {
-    
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        
-        if let url = urls.last {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            guard let editVC = storyboard.instantiateViewController(withIdentifier: EditViewController.reuseIdentifier) as? EditViewController else { return }
-            editVC.selectedFileURL = url
-            editVC.originDuraion = AudioPlayHelper.shared.duration
-            navigationController?.pushViewController(editVC, animated: true)
-        }
     }
     
 }

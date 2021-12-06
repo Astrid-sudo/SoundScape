@@ -55,10 +55,7 @@ class AudioMapViewController: UIViewController {
     
     var searchedLocation: CLLocationCoordinate2D? {
         didSet {
-            guard let searchedLocation = searchedLocation else { return }
-            mapView.camera = GMSCameraPosition.camera(withLatitude: searchedLocation.latitude, longitude: searchedLocation.longitude, zoom: 15)
-            searchResultMarker.position = searchedLocation
-            searchResultMarker.map = mapView
+            displaySearchedLoacation()
         }
     }
     
@@ -75,10 +72,10 @@ class AudioMapViewController: UIViewController {
         }
     }
     
+    // swiftlint:disable line_length
     var newAudioDocumentIDs = Set<String>() {
         didSet {
             for documentID in newAudioDocumentIDs {
-                
                 firebaseManager.collectionfetchData(collectionType: .allAudioFiles) { (result: Result<[SCPost], Error>) in
                     switch result {
                         
@@ -94,6 +91,7 @@ class AudioMapViewController: UIViewController {
             }
         }
     }
+    // swiftlint:enable line_length
     
     var audioDocumentIDs = Set<String>() {
         didSet {
@@ -182,6 +180,16 @@ class AudioMapViewController: UIViewController {
         currentUserBlacklist = LoggedInUserManager.shared.currentUserBlacklist
     }
     
+    private func displaySearchedLoacation() {
+        guard let searchedLocation = searchedLocation else { return }
+        mapView.camera = GMSCameraPosition.camera(withLatitude: searchedLocation.latitude,
+                                                  longitude: searchedLocation.longitude,
+                                                  zoom: 15)
+        searchResultMarker.position = searchedLocation
+        searchResultMarker.map = mapView
+    }
+    
+    // swiftlint:disable line_length
     private func checkLocations() {
         _ = firebaseManager.collectionAddListener(collectionType: .allLocations) { (result: Result<[SCLocation], Error>) in
             switch result {
@@ -196,46 +204,16 @@ class AudioMapViewController: UIViewController {
         }
     }
     
-    
     private func filterOutAudioDocumentID() {
-        
         guard let locationsFromFirebase = locationsFromFirebase else { return }
-        
         audioDocumentIDs = Set(locationsFromFirebase.map({$0.audioDocumentID}))
     }
     
     private func makeMarker() {
-        
         if let currentUserBlacklist = currentUserBlacklist {
-            for newAudioDocumentID in newAudioDocumentIDs {
-                for blockedUser in currentUserBlacklist {
-                    
-                    if let post = audioPostCache[newAudioDocumentID] {
-                        
-                        if post.authorID != blockedUser.userID {
-                            if let audioLocation = post.audioLocation {
-                                let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: audioLocation.latitude, longitude: audioLocation.longitude))
-                                marker.userData = post
-                                marker.map = mapView
-                            }
-                        }
-                    }
-                }
-            }
-            
+            filterBlockOnMap(currentUserBlacklist: currentUserBlacklist)
         } else {
-            
-            for newAudioDocumentID in newAudioDocumentIDs {
-                
-                if let post = audioPostCache[newAudioDocumentID] {
-                    
-                    if let audioLocation = post.audioLocation {
-                        let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: audioLocation.latitude, longitude: audioLocation.longitude))
-                        marker.userData = post
-                        marker.map = mapView
-                    }
-                }
-            }
+            displayAudioOnMap()
         }
     }
     
@@ -252,6 +230,8 @@ class AudioMapViewController: UIViewController {
         table.isHidden = true
         return table
     }()
+    
+    // swiftlint:enable line_length
     
     private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
@@ -302,7 +282,7 @@ class AudioMapViewController: UIViewController {
         return marker
     }()
     
-    lazy var pinLoactionButton: UIButton = {
+    private lazy var pinLoactionButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(named: Constant.scWhite)
         button.setTitle(Constant.Text.finish, for: .normal)
@@ -313,7 +293,7 @@ class AudioMapViewController: UIViewController {
         return button
     }()
     
-    lazy var mapNoticeLabel: UILabel = {
+    private lazy var mapNoticeLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(named: Constant.scWhite)
         label.textAlignment = .left
@@ -322,67 +302,6 @@ class AudioMapViewController: UIViewController {
         label.text = Constant.Text.pinOnMapHint
         return label
     }()
-    
-}
-
-// MARK: - UI method
-
-extension AudioMapViewController {
-    
-    private func setNavigationBar() {
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: self,action: #selector(backToLastPage))
-        navigationItem.leftBarButtonItem?.image = UIImage(systemName: Constant.SFSymbol.back)
-        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: Constant.scWhite)
-    }
-    
-    private func addSearchBar() {
-        navigationItem.titleView = searchBar
-        navigationItem.titleView?.tintColor = UIColor(named: Constant.scWhite)
-        navigationItem.titleView?.backgroundColor = UIColor(named: Constant.scBlue)
-    }
-    
-    private func setPinLoactionButton() {
-        view.addSubview(pinLoactionButton)
-        pinLoactionButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            pinLoactionButton.widthAnchor.constraint(equalToConstant: UIProperties.screenWidth - 76),
-            pinLoactionButton.heightAnchor.constraint(equalToConstant: 41),
-            pinLoactionButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            pinLoactionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
-        ])
-    }
-    
-    private func setTableView() {
-        view.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
-        ])
-    }
-    
-    func setMapHintLabel() {
-        view.addSubview(mapNoticeLabel)
-        mapNoticeLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            mapNoticeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            mapNoticeLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32)
-        ])
-    }
-    
-    private func setMap() {
-        view.addSubview(mapView)
-        mapView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            mapView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            mapView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-    }
     
 }
 
@@ -440,8 +359,7 @@ extension AudioMapViewController: GMSMapViewDelegate {
         switch audioMapType {
             
         case .pinOnMap:
-            
-            pinnedLocation = coordinate
+                        pinnedLocation = coordinate
             pinMarker.title = audioTitle
             pinMarker.position = coordinate
             pinMarker.snippet = signInmanager.currentUserInfoFirebase?.username
@@ -450,7 +368,6 @@ extension AudioMapViewController: GMSMapViewDelegate {
             delegate?.displayPinOnSmallMap(locationFromBigMap: pinnedLocation)
             
         case .browseMap:
-            
             scInfoWindow.removeFromSuperview()
         }
     }
@@ -462,8 +379,8 @@ extension AudioMapViewController: GMSMapViewDelegate {
 extension AudioMapViewController: ButtonTappedPassableDelegate {
     
     func pushSoundDetailPage() {
-        guard let post = tappedMarker.userData as? SCPost,
-              let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerViewController else { return }
+        guard let post = tappedMarker.userData as? SCPost else { return }
+        let audioPlayerVC = AudioPlayerWindow.shared.vc
         audioPlayerVC.resetAudioPlayerUI(audioTitle: post.title,
                                          audioImageNumber: post.imageNumber)
         
@@ -493,7 +410,7 @@ extension AudioMapViewController: ButtonTappedPassableDelegate {
     
 }
 
-// MARK: - conform to UISearchBarDelegate
+// MARK: - UISearchBarDelegate
 
 extension AudioMapViewController: UISearchBarDelegate {
     
@@ -518,7 +435,7 @@ extension AudioMapViewController: UISearchBarDelegate {
     
 }
 
-// MARK: - conform to UITableViewDataSource
+// MARK: - UITableViewDataSource
 
 extension AudioMapViewController: UITableViewDataSource {
     
@@ -527,7 +444,9 @@ extension AudioMapViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // swiftlint:disable line_length
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MapSearchResultTableViewCell.reuseIdentifier, for: indexPath) as? MapSearchResultTableViewCell else { return UITableViewCell() }
+        // swiftlint:enable line_length
         let suggestion = completerResults[indexPath.row]
         let title = suggestion.title
         let subTitle = suggestion.subtitle
@@ -537,7 +456,7 @@ extension AudioMapViewController: UITableViewDataSource {
     
 }
 
-// MARK: - conform to UITableViewDelegate
+// MARK: - UITableViewDelegate
 
 extension AudioMapViewController: UITableViewDelegate {
     
@@ -546,9 +465,7 @@ extension AudioMapViewController: UITableViewDelegate {
         let address = suggestion.subtitle.isEmpty ? suggestion.title : suggestion.subtitle
         
         LocationService.getCoordinate(addressString: address) { [weak self] (coordinate, error) in
-            
             guard let self = self else { return }
-            
             if let error = error {
                 print("fetching coordinate error: \(error.localizedDescription)")
             } else {
@@ -556,16 +473,14 @@ extension AudioMapViewController: UITableViewDelegate {
                 self.searchedLocation = coordinate
             }
         }
-        
         tableView.isHidden = true
         searchBar.endEditing(true)
         searchBar.text = suggestion.title
-        
     }
     
 }
 
-// MARK: - conform to MKLocalSearchCompleterDelegate
+// MARK: - MKLocalSearchCompleterDelegate
 
 extension AudioMapViewController: MKLocalSearchCompleterDelegate {
     
@@ -579,3 +494,96 @@ extension AudioMapViewController: MKLocalSearchCompleterDelegate {
     }
     
 }
+
+// MARK: - UI method
+
+extension AudioMapViewController {
+    
+    private func setNavigationBar() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: nil,
+                                                           style: .plain,
+                                                           target: self,
+                                                           action: #selector(backToLastPage))
+        navigationItem.leftBarButtonItem?.image = UIImage(systemName: Constant.SFSymbol.back)
+        navigationItem.leftBarButtonItem?.tintColor = UIColor(named: Constant.scWhite)
+    }
+    
+    private func addSearchBar() {
+        navigationItem.titleView = searchBar
+        navigationItem.titleView?.tintColor = UIColor(named: Constant.scWhite)
+        navigationItem.titleView?.backgroundColor = UIColor(named: Constant.scBlue)
+    }
+    
+    private func setPinLoactionButton() {
+        view.addSubview(pinLoactionButton)
+        pinLoactionButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            pinLoactionButton.widthAnchor.constraint(equalToConstant: UIProperties.screenWidth - 76),
+            pinLoactionButton.heightAnchor.constraint(equalToConstant: 41),
+            pinLoactionButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pinLoactionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+        ])
+    }
+    
+    private func setTableView() {
+        view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+        ])
+    }
+    
+    private func setMapHintLabel() {
+        view.addSubview(mapNoticeLabel)
+        mapNoticeLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            mapNoticeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            mapNoticeLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32)
+        ])
+    }
+    
+    private func setMap() {
+        view.addSubview(mapView)
+        mapView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            mapView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            mapView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+    }
+    
+    private func filterBlockOnMap(currentUserBlacklist: [SCBlockUser]) {
+        for newAudioDocumentID in newAudioDocumentIDs {
+            for blockedUser in currentUserBlacklist {
+                if let post = audioPostCache[newAudioDocumentID] {
+                    if post.authorID != blockedUser.userID {
+                        if let audioLocation = post.audioLocation {
+                            let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: audioLocation.latitude, longitude: audioLocation.longitude))
+                            marker.userData = post
+                            marker.map = mapView
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func displayAudioOnMap() {
+        for newAudioDocumentID in newAudioDocumentIDs {
+            if let post = audioPostCache[newAudioDocumentID] {
+                if let audioLocation = post.audioLocation {
+                    let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: audioLocation.latitude, longitude: audioLocation.longitude))
+                    marker.userData = post
+                    marker.map = mapView
+                }
+            }
+        }
+    }
+    
+}
+
+

@@ -21,15 +21,7 @@ class SearchViewController: UIViewController {
     
     private var resultAudioFiles = [SCPost]() {
         didSet {
-            
-            if resultAudioFiles.count == 0 {
-                noResultImage.isHidden = false
-                noResultLabel.isHidden = false
-            } else {
-                noResultImage.isHidden = true
-                noResultLabel.isHidden = true
-            }
-
+            toggleResultImage(resultCount: resultAudioFiles.count)
             tableView.reloadData()
         }
     }
@@ -78,8 +70,17 @@ class SearchViewController: UIViewController {
         audioFiles = AudioPostManager.shared.filteredAudioFiles
     }
     
+    private func toggleResultImage(resultCount: Int) {
+        if resultCount == 0 {
+            noResultImage.isHidden = false
+            noResultLabel.isHidden = false
+        } else {
+            noResultImage.isHidden = true
+            noResultLabel.isHidden = true
+        }
+    }
+    
     private func search() {
-        
         guard let keyword = self.keyWord else { return }
         let titleResult = audioFiles.filter({$0.title.lowercased().contains(keyword.lowercased())})
         let authorResult = audioFiles.filter({$0.authorName.lowercased().contains(keyword.lowercased())})
@@ -89,24 +90,21 @@ class SearchViewController: UIViewController {
         let resultArray = Array(resultSet)
  
         if selectedCategories.count == 0 {
-            
             resultAudioFiles = resultArray
-       
         } else {
-            
             var filteredResult = [SCPost]()
-            
             for result in resultArray {
-                for category in selectedCategories {
-                    if result.category == category.rawValue {
+                for category in selectedCategories where result.category == category.rawValue {
                         filteredResult.append(result)
-                    }
                 }
             }
-            
             resultAudioFiles = filteredResult
-            
         }
+    }
+    
+    private func loadAudio(localURL: URL, playInfo: PlayInfo) {
+        AudioPlayHelper.shared.url = localURL
+        AudioPlayHelper.shared.setPlayInfo(playInfo: playInfo)
     }
     
     // MARK: - UI Properties
@@ -147,7 +145,6 @@ class SearchViewController: UIViewController {
         layout.itemSize = CGSize(width: 95, height: 30)
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 8
-        
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .white
         collectionView.bounces = true
@@ -156,7 +153,6 @@ class SearchViewController: UIViewController {
         collectionView.allowsMultipleSelection = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.backgroundColor = .clear
-        
         collectionView.register(SearchCollectionViewCell.self,
                                 forCellWithReuseIdentifier: SearchCollectionViewCell.reuseIdentifier)
         return collectionView
@@ -197,15 +193,169 @@ class SearchViewController: UIViewController {
         label.font = UIFont(name: Constant.font, size: 12)
         return label
     }()
-    
-    // MARK: - method
-    
-    private func loadAudio(localURL: URL, playInfo: PlayInfo) {
-        AudioPlayHelper.shared.url = localURL
-        AudioPlayHelper.shared.setPlayInfo(playInfo: playInfo)
-    }
 
-    // MARK: - UI method
+}
+
+// MARK: - UICollectionViewDataSource
+
+extension SearchViewController: UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        AudioCategory.allCases.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        // swiftlint:disable line_length
+        guard let cell =
+                collectionView.dequeueReusableCell(withReuseIdentifier:
+                                                    SearchCollectionViewCell.reuseIdentifier,
+                                                   for: indexPath) as? SearchCollectionViewCell else { return UICollectionViewCell() }
+        // swiftlint:enable line_length
+
+        cell.setContent(content: AudioCategory.allCases[indexPath.item].rawValue)
+        return cell
+    }
+    
+}
+
+// MARK: - UICollectionViewDelegate
+
+extension SearchViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        let selected = AudioCategory.allCases[indexPath.item]
+        
+        guard let cell = collectionView.cellForItem(at: indexPath) as? SearchCollectionViewCell else { return }
+        
+        if selectedCategories.contains(selected) {
+            selectedCategories.removeAll(where: {$0 == selected})
+            cell.setLabelColorLightBlue()
+        } else {
+            selectedCategories.append(selected)
+            cell.setLabelColorSupLightBlue()
+        }
+        
+        search()
+    }
+    
+}
+
+// MARK: - UITableViewDataSource
+
+extension SearchViewController: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        resultAudioFiles.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // swiftlint:disable line_length
+        guard let cell =
+                tableView.dequeueReusableCell(withIdentifier:
+                                                SearchTableViewCell.reuseIdentifier, for: indexPath) as? SearchTableViewCell else { return UITableViewCell() }
+        // swiftlint:enable line_length
+        let data = resultAudioFiles[indexPath.row]
+        cell.selectionStyle = .none
+        cell.setContent(title: data.title, author: data.authorName, imageNumber: data.imageNumber)
+        return cell
+    }
+    
+}
+
+// MARK: - UITableViewDelegate
+
+extension SearchViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        300
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath == IndexPath(row: resultAudioFiles.count - 1, section: 0) {
+            return 140
+        } else {
+            return 70
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+         let audioPlayerVC = AudioPlayerWindow.shared.vc
+
+        audioPlayerVC.resetAudioPlayerUI(audioTitle: resultAudioFiles[indexPath.item].title,
+                                         audioImageNumber: resultAudioFiles[indexPath.item].imageNumber)
+        AudioPlayerWindow.shared.show()
+        let playInfo = PlayInfo(title: resultAudioFiles[indexPath.item].title,
+                                author: resultAudioFiles[indexPath.item].authorName,
+                                content: resultAudioFiles[indexPath.item].content,
+                                duration: resultAudioFiles[indexPath.item].duration,
+                                documentID: resultAudioFiles[indexPath.item].documentID,
+                                authorUserID: resultAudioFiles[indexPath.item].authorID,
+                                audioImageNumber: resultAudioFiles[indexPath.item].imageNumber,
+                                authorAccountProvider: resultAudioFiles[indexPath.item].authIDProvider)
+        
+        if let remoteURL = resultAudioFiles[indexPath.item].audioURL {
+            AudioDownloadManager.shared.downloadRemoteURL(documentID: resultAudioFiles[indexPath.item].documentID,
+                                                        remoteURL: remoteURL, completion: { localURL in
+                self.loadAudio(localURL: localURL, playInfo: playInfo)
+            },
+            errorCompletion: { [weak self] errorMessage in
+                guard let self = self else { return }
+
+                DispatchQueue.main.async {
+                    self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
+                }
+            }
+ )
+        }
+    }
+    
+}
+
+// MARK: - UISearchBarDelegate
+
+extension SearchViewController: UISearchBarDelegate {
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        keyWord = searchBar.text
+        search()
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        keyWord = searchBar.text
+        search()
+        searchBar.endEditing(true)
+        searchBar.text = nil
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.endEditing(true)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        keyWord = searchText
+        search()
+    }
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
+
+extension SearchViewController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
+        UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+    }
+    
+}
+
+// MARK: - UI method
+
+extension SearchViewController {
     
     private func setViewBackgroundColor() {
         view.backgroundColor = UIColor(named: Constant.scBlue)
@@ -289,161 +439,6 @@ class SearchViewController: UIViewController {
             noResultLabel.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
             noResultLabel.topAnchor.constraint(equalTo: noResultImage.bottomAnchor, constant: 8)
         ])
-    }
-    
-}
-
-// MARK: - conform to UICollectionViewDataSource
-
-extension SearchViewController: UICollectionViewDataSource {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        AudioCategory.allCases.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchCollectionViewCell.reuseIdentifier,
-                                                            for: indexPath) as? SearchCollectionViewCell else { return UICollectionViewCell()}
-        cell.setContent(content: AudioCategory.allCases[indexPath.item].rawValue)
-        return cell
-    }
-    
-}
-
-// MARK: - conform to UICollectionViewDelegate
-
-extension SearchViewController: UICollectionViewDelegate {
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        let selected = AudioCategory.allCases[indexPath.item]
-        
-        guard let cell = collectionView.cellForItem(at: indexPath) as? SearchCollectionViewCell else { return }
-        
-        if selectedCategories.contains(selected) {
-            selectedCategories.removeAll(where: {$0 == selected})
-            cell.setLabelColorGreen()
-        } else {
-            selectedCategories.append(selected)
-            cell.setLabelColorRed()
-        }
-        
-        search()
-    }
-    
-}
-
-// MARK: - conform to UITableViewDataSource
-
-extension SearchViewController: UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        resultAudioFiles.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.reuseIdentifier,
-                                                       for: indexPath) as? SearchTableViewCell else { return UITableViewCell()}
-        let data = resultAudioFiles[indexPath.row]
-        cell.selectionStyle = .none
-        cell.setContent(title: data.title, author: data.authorName, imageNumber: data.imageNumber)
-        return cell
-    }
-    
-}
-
-// MARK: - conform to UITableViewDelegate
-
-extension SearchViewController: UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        300
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-
-        if indexPath == IndexPath(row: resultAudioFiles.count - 1, section: 0) {
-           
-            return 140
-        
-        } else {
-           
-            return 70
-        
-        }
-        
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        guard let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerViewController else { return }
-        audioPlayerVC.resetAudioPlayerUI(audioTitle: resultAudioFiles[indexPath.item].title,
-                                         audioImageNumber: resultAudioFiles[indexPath.item].imageNumber)
-        AudioPlayerWindow.shared.show()
-        let playInfo = PlayInfo(title: resultAudioFiles[indexPath.item].title,
-                                author: resultAudioFiles[indexPath.item].authorName,
-                                content: resultAudioFiles[indexPath.item].content,
-                                duration: resultAudioFiles[indexPath.item].duration,
-                                documentID: resultAudioFiles[indexPath.item].documentID,
-                                authorUserID: resultAudioFiles[indexPath.item].authorID,
-                                audioImageNumber: resultAudioFiles[indexPath.item].imageNumber,
-                                authorAccountProvider: resultAudioFiles[indexPath.item].authIDProvider)
-        
-        if let remoteURL = resultAudioFiles[indexPath.item].audioURL {
-            AudioDownloadManager.shared.downloadRemoteURL(documentID: resultAudioFiles[indexPath.item].documentID,
-                                                        remoteURL: remoteURL, completion: { localURL in
-                self.loadAudio(localURL: localURL, playInfo: playInfo)
-            },
-            errorCompletion: { [weak self] errorMessage in
-                guard let self = self else { return }
-
-                DispatchQueue.main.async {
-                    self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
-                }
-            }
- )
-        }
-    }
-    
-}
-
-// MARK: - conform to UISearchBarDelegate
-
-extension SearchViewController: UISearchBarDelegate {
-    
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        keyWord = searchBar.text
-        search()
-    }
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        keyWord = searchBar.text
-        search()
-        searchBar.endEditing(true)
-        searchBar.text = nil
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.endEditing(true)
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        keyWord = searchText
-        search()
-    }
-}
-
-// MARK: - conform to UICollectionViewDelegateFlowLayout
-
-extension SearchViewController: UICollectionViewDelegateFlowLayout {
-    
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        insetForSectionAt section: Int) -> UIEdgeInsets {
-        UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
     }
     
 }

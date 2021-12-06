@@ -138,7 +138,7 @@ class CommentViewController: UIViewController {
     }
     
     private func checkComment(from documentID: String) {
-        
+        // swiftlint:disable line_length
         _ = firebaseManager.collectionAddListener(collectionType: .comments(audioDocumentID: documentID)) { (result: Result<[SCComment], Error>) in
             switch result {
                 
@@ -150,6 +150,7 @@ class CommentViewController: UIViewController {
             }
         }
     }
+    // swiftlint:enable line_length
     
     @objc private func done() {
         commentTextView.endEditing(true)
@@ -173,7 +174,7 @@ class CommentViewController: UIViewController {
     
     // MARK: - method
     
-    private func popBlankCommentAlert() {
+    func popBlankCommentAlert() {
         popErrorAlert(title: "Yoy have a blank commet.", message: "Please type something to leave your comment.")
     }
     
@@ -218,11 +219,12 @@ class CommentViewController: UIViewController {
                                        toBeBlockedID: toBeBlockedID, completion: nil)
     }
     
-    private func popBlockAlert(toBeBlockedID: String) {
-        
+    func popBlockAlert(toBeBlockedID: String) {
+        // swiftlint:disable line_length
         let alert = UIAlertController(title: "Are you sure?",
                                       message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
                                       preferredStyle: .alert )
+        // swiftlint:enable line_length
         
         let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
             guard let self = self else { return }
@@ -237,7 +239,7 @@ class CommentViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    private func popDeleteCommentAlert(commentID: String) {
+    func popDeleteCommentAlert(commentID: String) {
         
         let alert = UIAlertController(title: "Are you sure to delete this comment?",
                                       message: nil,
@@ -271,9 +273,8 @@ class CommentViewController: UIViewController {
     }
     
     private func fetchUserPicFromFirebase(userID: String) {
-        firebaseManager.documentFetchData(documentType:
-                                                .userPicDoc(userInfoDocumentID: userID)) { (result:
-                                                                                                Result<SCPicture, Error>) in
+        // swiftlint:disable line_length
+        firebaseManager.documentFetchData(documentType: .userPicDoc(userInfoDocumentID: userID)) { (result: Result<SCPicture, Error>) in
             switch result {
             case .success(let picture):
                 self.userPicCache[userID] = picture.picture
@@ -282,10 +283,11 @@ class CommentViewController: UIViewController {
             }
         }
     }
+    // swiftlint:enable line_length
     
     // MARK: - UI properties
     
-    private lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let table = UITableView()
         table.dataSource = self
         table.delegate = self
@@ -297,7 +299,7 @@ class CommentViewController: UIViewController {
         return table
     }()
     
-    private lazy var commentTitleLabel: UILabel = {
+    lazy var commentTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(named: Constant.scWhite)
         label.textAlignment = .center
@@ -308,7 +310,7 @@ class CommentViewController: UIViewController {
         return label
     }()
     
-    private lazy var dismissButton: UIButton = {
+    lazy var dismissButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 25)
         let bigImage = UIImage(systemName: Constant.SFSymbol.chevronDown, withConfiguration: config)
@@ -326,7 +328,7 @@ class CommentViewController: UIViewController {
         return image
     }()
     
-    private lazy var commentTextView: UITextView = {
+    lazy var commentTextView: UITextView = {
         let textView = UITextView()
         textView.textColor = .white
         textView.font = UIFont(name: Constant.font, size: 15)
@@ -343,7 +345,7 @@ class CommentViewController: UIViewController {
         return textView
     }()
     
-    private lazy var sendButton: UIButton = {
+    lazy var sendButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 25)
         let bigImage = UIImage(systemName: Constant.SFSymbol.paperplaneFill, withConfiguration: config)
@@ -354,207 +356,12 @@ class CommentViewController: UIViewController {
         return button
     }()
     
-    private let animationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .commentLoading,
-                                                                               frame: CGRect(x: 0,
-                                                                                             y: 100,
-                                                                                             width: 400,
-                                                                                             height: 400))
-
-    private lazy var emptyTextViewConstraint = NSLayoutConstraint()
-    private lazy var fullTextViewConstraint = NSLayoutConstraint()
-    
-}
-
-// MARK: - conform to UITableViewDataSource
-
-extension CommentViewController: UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        commentsWillDisplay.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: CommentTableViewCell.reuseIdentifier, for: indexPath) as? CommentTableViewCell else { return UITableViewCell()}
-        let comment = commentsWillDisplay[indexPath.row]
-        let authorID = comment.userID
-        var authorImageString: String?
-        
-        if let authorPic = userPicCache[authorID] {
-            authorImageString = authorPic
-        }
-        
-        cell.configCell(comment: comment, authorImageString: authorImageString)
-        return cell
-    }
-    
-}
-
-// MARK: - conform to UITableViewDelegate
-
-extension CommentViewController: UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        300
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        UITableView.automaticDimension
-    }
-    
-    func tableView(_ tableView: UITableView,
-                   contextMenuConfigurationForRowAt indexPath: IndexPath,
-                   point: CGPoint) -> UIContextMenuConfiguration? {
-        
-        let comment = commentsWillDisplay[indexPath.row]
-        let authorID = comment.userID
-        let index = indexPath.row
-        let identifier = "\(index)" as NSString
-        
-        if authorID != signInManager.currentUserInfoFirebase?.userID {
-            
-            return UIContextMenuConfiguration(
-                identifier: identifier, previewProvider: nil) { _ in
-                    // 3
-                    let blockAction = UIAction(title: "Block this user",
-                                               image: nil) { _ in
-                        self.popBlockAlert(toBeBlockedID: authorID)
-                    }
-                    return UIMenu(title: "",
-                                  image: nil,
-                                  children: [blockAction])
-                }
-            
-        } else {
-            
-            guard let commentID = comment.commentDocumentID else { return nil}
-            
-            return UIContextMenuConfiguration(
-                identifier: identifier, previewProvider: nil) { _ in
-                    // 3
-                    let deleteAction = UIAction(title: "Delete this comment",
-                                                image: nil) { _ in
-                        self.popDeleteCommentAlert(commentID: commentID)
-                    }
-                    return UIMenu(title: "",
-                                  image: nil,
-                                  children: [deleteAction])
-                }
-        }
-    }
-    
-}
-
-// MARK: - UI method
-
-extension CommentViewController {
-    
-    private func setViewbackgroundColor() {
-        view.backgroundColor = UIColor(named: Constant.scLightBlue)
-    }
-    
-    private func setCommentTitleLabel() {
-        view.addSubview(commentTitleLabel)
-        commentTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            commentTitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            commentTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 8)
-        ])
-    }
-    
-    private func setDismissButton() {
-        view.addSubview(dismissButton)
-        dismissButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            dismissButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            dismissButton.centerYAnchor.constraint(equalTo: commentTitleLabel.centerYAnchor)
-        ])
-    }
-    
-    private func setTableView() {
-        view.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.topAnchor.constraint(equalTo: commentTitleLabel.bottomAnchor, constant: 8)
-        ])
-    }
-    
-    private func setUserImage() {
-        view.addSubview(currentUserImageView)
-        currentUserImageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            currentUserImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            currentUserImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            currentUserImageView.heightAnchor.constraint(equalToConstant: 50),
-            currentUserImageView.widthAnchor.constraint(equalToConstant: 50)
-            
-        ])
-    }
-    
-    private func setTextView() {
-        view.addSubview(commentTextView)
-        commentTextView.translatesAutoresizingMaskIntoConstraints = false
-        emptyTextViewConstraint = commentTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8)
-        
-        NSLayoutConstraint.activate([
-            commentTextView.leadingAnchor.constraint(equalTo: currentUserImageView.trailingAnchor, constant: 8),
-            emptyTextViewConstraint,
-            commentTextView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 16),
-            commentTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
-        ])
-    }
-    
-    private func setCommentPlaceHolder() {
-        commentTextView.text = Constant.Text.addComment
-        commentTextView.textColor = UIColor(named: Constant.scWhite)
-    }
-    
-    private func addSendButton() {
-        view.addSubview(sendButton)
-        sendButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            sendButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -4),
-            sendButton.bottomAnchor.constraint(equalTo: commentTextView.bottomAnchor, constant: -4)
-        ])
-    }
-    
-    private func addLottie() {
-        view.addSubview(animationView)
-        animationView.play()
-    }
-    
-}
-
-// MARK: - confrom to UITextViewDelegate
-
-extension CommentViewController: UITextViewDelegate {
-    
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == UIColor(named: Constant.scWhite) {
-            textView.text = nil
-            textView.textColor = UIColor(named: Constant.scBlue)
-        }
-    }
-    
-    func textViewDidChange(_ textView: UITextView) {
-        if textView.text != nil, textView.text != "" {
-            sendButton.isHidden = false
-            emptyTextViewConstraint.isActive = false
-            fullTextViewConstraint = commentTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40)
-            fullTextViewConstraint.isActive = true
-        }
-    }
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.text.isEmpty || textView.text == "" {
-            textView.text = Constant.Text.addComment
-            textView.textColor = UIColor(named: Constant.scWhite)
-            sendButton.isHidden = true
-            fullTextViewConstraint.isActive = false
-            emptyTextViewConstraint.isActive = true
-            view.layoutIfNeeded()
-        }
-    }
+    let animationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .commentLoading,
+                                                                       frame: CGRect(x: 0,
+                                                                                     y: 100,
+                                                                                     width: 400,
+                                                                                     height: 400))
+    lazy var emptyTextViewConstraint = NSLayoutConstraint()
+    lazy var fullTextViewConstraint = NSLayoutConstraint()
     
 }

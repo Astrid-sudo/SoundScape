@@ -9,6 +9,26 @@ import UIKit
 
 class MapSearchResultTableViewCell: UITableViewCell {
     
+    // MARK: - init
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setBackgroundcolor()
+        setTitleLabel()
+        setSubTitleLabel()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - method
+    
+    func configCell(title: String?, subTitle: String?) {
+        titleLabel.text = title
+        subTitleLabel.text = subTitle
+    }
+    
     // MARK: - UI properties
     
     lazy var titleLabel: UILabel = {
@@ -27,20 +47,11 @@ class MapSearchResultTableViewCell: UITableViewCell {
         return label
     }()
 
-    // MARK: - init
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setBackgroundcolor()
-        setTitleLabel()
-        setSubTitleLabel()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - config UI method
+}
+
+// MARK: - UI method
+
+extension MapSearchResultTableViewCell {
     
     private func setBackgroundcolor() {
         backgroundColor = UIColor(named: Constant.scBlue)
@@ -68,11 +79,6 @@ class MapSearchResultTableViewCell: UITableViewCell {
             subTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             subTitleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4)
         ])
-    }
-
-    func configCell(title: String?, subTitle: String?) {
-        titleLabel.text = title
-        subTitleLabel.text = subTitle
     }
     
 }

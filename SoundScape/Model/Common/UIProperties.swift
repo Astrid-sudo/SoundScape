@@ -16,7 +16,7 @@ struct UIProperties {
     static var ratio: CGFloat {
         return screenWidth / base
     }
-    
+    // swiftlint:disable line_length
     static let safeAreaHeight = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 45.adjusted
     
     static var tabBarHeight: CGFloat {
@@ -25,7 +25,8 @@ struct UIProperties {
         let tabBarHeight = sCTabBarController.tabBar.frame.size.height
         return tabBarHeight
     }
-    
+    // swiftlint:enable line_length
+
     static var audioImages: [UIImage?] = [UIImage(named: Constant.animalDog),
                                           UIImage(named: Constant.animalCat),
                                           UIImage(named: Constant.animalCatPaw),
@@ -51,9 +52,7 @@ protocol StoryboardID: ReuseID {}
 extension ReuseID {
     
     static var reuseIdentifier: String {
-        get {
             String(describing: self)
-        }
     }
 }
 

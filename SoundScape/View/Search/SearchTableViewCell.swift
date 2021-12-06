@@ -9,6 +9,29 @@ import UIKit
 
 class SearchTableViewCell: UITableViewCell {
 
+    // MARK: - init
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        backgroundColor = .clear
+        setImageView()
+        setTitleLabel()
+        setAuthorLabel()
+        setFavoriteButton()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - method
+    
+    func setContent(title: String, author: String, imageNumber: Int) {
+        titleLabel.text = title
+        authorLabel.text = author
+        theImageView.image = UIProperties.audioImages[imageNumber]
+    }
+    
     // MARK: - UI properties
     
     lazy var titleLabel: UILabel = {
@@ -43,22 +66,11 @@ class SearchTableViewCell: UITableViewCell {
         return button
     }()
     
-    // MARK: - init
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = .clear
-        setImageView()
-        setTitleLabel()
-        setAuthorLabel()
-        setFavoriteButton()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - config UI method
+}
+
+// MARK: - UI method
+
+extension SearchTableViewCell {
     
     private func setImageView() {
         contentView.addSubview(theImageView)
@@ -97,11 +109,5 @@ class SearchTableViewCell: UITableViewCell {
             favoriteButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
-    
-    func setContent(title: String, author: String, imageNumber: Int) {
-        titleLabel.text = title
-        authorLabel.text = author
-        theImageView.image = UIProperties.audioImages[imageNumber]
-    }
-    
+
 }

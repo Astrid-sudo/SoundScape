@@ -34,7 +34,11 @@ class SearchCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - configUI method
+}
+
+// MARK: - UI method
+
+extension SearchCollectionViewCell {
     
     private func setTextLabel() {
         contentView.addSubview(textLabel)
@@ -51,11 +55,11 @@ class SearchCollectionViewCell: UICollectionViewCell {
         textLabel.layer.cornerRadius = 10
     }
     
-    func setLabelColorRed() {
+    func setLabelColorSupLightBlue() {
         textLabel.backgroundColor = UIColor(named: Constant.scSuperLightBlue)
     }
     
-    func setLabelColorGreen() {
+    func setLabelColorLightBlue() {
         textLabel.backgroundColor = UIColor(named: Constant.scLightBlue)
     }
 

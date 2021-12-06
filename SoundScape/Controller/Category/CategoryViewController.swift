@@ -10,22 +10,19 @@ import UIKit
 class CategoryViewController: UIViewController {
     
     // MARK: - properties
-    
+    // swiftlint:disable line_length
     private var category: AudioCategory?
     
     private var profileSection: ProfilePageSection?
     
     private var audioFiles = [SCPost]() {
-        
         didSet {
-            
             if category != nil {
                 filterCategory()
             }
             
             if profileSection != nil {
                 filterSection()
-                
             }
         }
     }
@@ -52,6 +49,7 @@ class CategoryViewController: UIViewController {
             tableView.reloadData()
         }
     }
+    
     private var othersFollowingList: [SCFollow]? {
         didSet {
             if profileSection != nil {
@@ -65,51 +63,6 @@ class CategoryViewController: UIViewController {
     let firebaseManager = FirebaseManager.shared
     
     let signInManager = LoggedInUserManager.shared
-    // MARK: - UI properties
-    
-    let loadingAnimationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
-                                                                              frame: CGRect(x: 0, y: 0, width: UIProperties.screenWidth, height: UIProperties.screenHeight))
-    
-    private lazy var headView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.layer.cornerRadius = 10
-        imageView.clipsToBounds = true
-        return imageView
-    }()
-    
-    private lazy var categoryTitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor(named: Constant.scLightBlue)
-        label.textAlignment = .left
-        label.adjustsFontSizeToFitWidth = true
-        label.font = UIFont(name: Constant.fontBungee, size: 40)
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    private lazy var deleteHintLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor(named: Constant.scWhite)
-        label.textAlignment = .left
-        label.adjustsFontSizeToFitWidth = true
-        label.numberOfLines = 0
-        label.text = Constant.Text.deleteAudioMessage
-        return label
-    }()
-    
-    private lazy var tableView: UITableView = {
-        let table = UITableView()
-        table.dataSource = self
-        table.delegate = self
-        table.allowsSelection = true
-        table.separatorStyle = .none
-        table.showsVerticalScrollIndicator = false
-        table.backgroundColor = UIColor(named: Constant.scBlue)
-        table.register(CategoryTableViewCell.self, forCellReuseIdentifier: CategoryTableViewCell.reuseIdentifier)
-        return table
-    }()
-    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -360,7 +313,170 @@ class CategoryViewController: UIViewController {
                                        toBeBlockedID: toBeBlockedID, completion: nil)
     }
     
-    // MARK: - config UI method
+    // MARK: - UI properties
+    
+    let loadingAnimationView = LottieWrapper.shared.createLottieAnimationView(lottieType: .greyStripeLoading,
+                                                                              frame: CGRect(x: 0, y: 0, width: UIProperties.screenWidth, height: UIProperties.screenHeight))
+    
+    private lazy var headView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.cornerRadius = 10
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+    
+    private lazy var categoryTitleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: Constant.scLightBlue)
+        label.textAlignment = .left
+        label.adjustsFontSizeToFitWidth = true
+        label.font = UIFont(name: Constant.fontBungee, size: 40)
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    private lazy var deleteHintLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: Constant.scWhite)
+        label.textAlignment = .left
+        label.adjustsFontSizeToFitWidth = true
+        label.numberOfLines = 0
+        label.text = Constant.Text.deleteAudioMessage
+        return label
+    }()
+    
+    private lazy var tableView: UITableView = {
+        let table = UITableView()
+        table.dataSource = self
+        table.delegate = self
+        table.allowsSelection = true
+        table.separatorStyle = .none
+        table.showsVerticalScrollIndicator = false
+        table.backgroundColor = UIColor(named: Constant.scBlue)
+        table.register(CategoryTableViewCell.self, forCellReuseIdentifier: CategoryTableViewCell.reuseIdentifier)
+        return table
+    }()
+    
+}
+
+// MARK: - conform to UITableViewDataSource
+
+extension CategoryViewController: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        data.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell =
+                tableView.dequeueReusableCell(withIdentifier: CategoryTableViewCell.reuseIdentifier) as? CategoryTableViewCell else { return UITableViewCell()}
+        let data = data[indexPath.row]
+        cell.setContent(title: data.title, author: data.authorName, audioImageNumber: data.imageNumber)
+        cell.selectionStyle = .none
+        return cell
+    }
+    
+}
+
+// MARK: - conform to UITableViewDelegate
+
+extension CategoryViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let audioPlayerVC = AudioPlayerWindow.shared.vc 
+        audioPlayerVC.resetAudioPlayerUI(audioTitle: data[indexPath.item].title,
+                                         audioImageNumber: data[indexPath.item].imageNumber)
+        AudioPlayerWindow.shared.show()
+        
+        let playInfo = PlayInfo(title: data[indexPath.item].title,
+                                author: data[indexPath.item].authorName,
+                                content: data[indexPath.item].content,
+                                duration: data[indexPath.item].duration,
+                                documentID: data[indexPath.item].documentID,
+                                authorUserID: data[indexPath.item].authorID,
+                                audioImageNumber: data[indexPath.item].imageNumber,
+                                authorAccountProvider: data[indexPath.item].authIDProvider)
+        
+        if let remoteURL = data[indexPath.item].audioURL {
+            AudioDownloadManager.shared.downloadRemoteURL(documentID: data[indexPath.item].documentID,
+                                                          remoteURL: remoteURL, completion: { localURL in
+                self.loadAudio(localURL: localURL, playInfo: playInfo)
+            },
+                                                          errorCompletion: { [weak self] errorMessage in
+                guard let self = self else { return }
+                self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
+            }
+            )
+        }
+        
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        300
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        if indexPath.row == data.count - 1 {
+            return 180
+        } else {
+            return 100
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        let row = indexPath.row
+        let identifier = "\(row)" as NSString
+        let post = data[row]
+        
+        if profileSection != nil {
+            if profileSection == .myAudio,
+               data[0].authorID == LoggedInUserManager.shared.currentUserInfoFirebase?.userID {
+                
+                return UIContextMenuConfiguration(
+                    identifier: identifier, previewProvider: nil) { _ in
+                        // 3
+                        let deleteAction = UIAction(title: "Delete this audio",
+                                                    image: nil) { [weak self] _ in
+                            guard let self = self else { return }
+                            self.popDeletePostAlert(documentID: self.data[row].documentID)
+                        }
+                        return UIMenu(title: "",
+                                      image: nil,
+                                      children: [deleteAction])
+                    }
+                
+            } else {
+                return nil
+            }
+        }
+        
+        if category != nil,
+           post.authorID != signInManager.currentUserInfoFirebase?.userID {
+            
+            return UIContextMenuConfiguration(
+                identifier: identifier, previewProvider: nil) { _ in
+                    // 3
+                    let blockAction = UIAction(title: "Block this user",
+                                               image: nil) { _ in
+                        self.popBlockAlert(toBeBlockedID: post.authorID)
+                    }
+                    return UIMenu(title: "",
+                                  image: nil,
+                                  children: [blockAction])
+                }
+        }
+        return nil
+    }
+    
+}
+
+// MARK: - UI method
+
+extension CategoryViewController {
     
     private func setViewBackgroundColor() {
         view.backgroundColor = UIColor(named: Constant.scBlue)
@@ -452,116 +568,5 @@ class CategoryViewController: UIViewController {
     
 }
 
-// MARK: - conform to UITableViewDataSource
+// swiftlint:enable line_length
 
-extension CategoryViewController: UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        data.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell =
-                tableView.dequeueReusableCell(withIdentifier: CategoryTableViewCell.reuseIdentifier) as? CategoryTableViewCell else { return UITableViewCell()}
-        let data = data[indexPath.row]
-        cell.setContent(title: data.title, author: data.authorName, audioImageNumber: data.imageNumber)
-        cell.selectionStyle = .none
-        return cell
-    }
-    
-}
-
-// MARK: - conform to UITableViewDelegate
-
-extension CategoryViewController: UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        guard let audioPlayerVC = AudioPlayerWindow.shared.vc as? AudioPlayerViewController else { return }
-        audioPlayerVC.resetAudioPlayerUI(audioTitle: data[indexPath.item].title,
-                                         audioImageNumber: data[indexPath.item].imageNumber)
-        AudioPlayerWindow.shared.show()
-        
-        let playInfo = PlayInfo(title: data[indexPath.item].title,
-                                author: data[indexPath.item].authorName,
-                                content: data[indexPath.item].content,
-                                duration: data[indexPath.item].duration,
-                                documentID: data[indexPath.item].documentID,
-                                authorUserID: data[indexPath.item].authorID,
-                                audioImageNumber: data[indexPath.item].imageNumber,
-                                authorAccountProvider: data[indexPath.item].authIDProvider)
-        
-        if let remoteURL = data[indexPath.item].audioURL {
-            AudioDownloadManager.shared.downloadRemoteURL(documentID: data[indexPath.item].documentID,
-                                                          remoteURL: remoteURL, completion: { localURL in
-                self.loadAudio(localURL: localURL, playInfo: playInfo)
-            },
-                                                          errorCompletion: { [weak self] errorMessage in
-                guard let self = self else { return }
-                self.popErrorAlert(title: "Failed to load this audio", message: errorMessage)
-            }
-            )
-        }
-        
-    }
-    
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        300
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
-        if indexPath.row == data.count - 1 {
-            return 180
-        } else {
-            return 100
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        
-        let row = indexPath.row
-        let identifier = "\(row)" as NSString
-        let post = data[row]
-        
-        if profileSection != nil {
-            if profileSection == .myAudio,
-               data[0].authorID == LoggedInUserManager.shared.currentUserInfoFirebase?.userID {
-                
-                return UIContextMenuConfiguration(
-                    identifier: identifier, previewProvider: nil) { _ in
-                        // 3
-                        let deleteAction = UIAction(title: "Delete this audio",
-                                                    image: nil) { [weak self] _ in
-                            guard let self = self else { return }
-                            self.popDeletePostAlert(documentID: self.data[row].documentID)
-                        }
-                        return UIMenu(title: "",
-                                      image: nil,
-                                      children: [deleteAction])
-                    }
-                
-            } else {
-                return nil
-            }
-        }
-        
-        if category != nil,
-           post.authorID != signInManager.currentUserInfoFirebase?.userID {
-            
-            return UIContextMenuConfiguration(
-                identifier: identifier, previewProvider: nil) { _ in
-                    // 3
-                    let blockAction = UIAction(title: "Block this user",
-                                               image: nil) { _ in
-                        self.popBlockAlert(toBeBlockedID: post.authorID)
-                    }
-                    return UIMenu(title: "",
-                                  image: nil,
-                                  children: [blockAction])
-                }
-        }
-        return nil
-    }
-    
-}

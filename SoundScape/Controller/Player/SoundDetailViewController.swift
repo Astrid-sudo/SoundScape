@@ -148,15 +148,18 @@ class SoundDetailViewController: UIViewController {
         leave()
         
         navigationController?.popToRootViewController(animated: true)
+        // swiftlint:disable line_length
         guard let scTabBarController = UIApplication.shared.windows.filter({$0.rootViewController is SCTabBarController}).first?.rootViewController as? SCTabBarController else { return }
+        // swiftlint:enable line_length
         scTabBarController.selectedIndex = 0
     }
     
     private func popBlockAlert() {
+        // swiftlint:disable line_length
         let alert = UIAlertController(title: "Are you sure?",
                                       message: "You can't see this user's comments, audio posts and profile page after blocking. And you have no chance to unblock this user in the future",
                                       preferredStyle: .alert )
-        
+        // swiftlint:enable line_length
         let okButton = UIAlertAction(title: "Block", style: .destructive) {[weak self] _ in
             guard let self = self else { return }
             self.blockUser()

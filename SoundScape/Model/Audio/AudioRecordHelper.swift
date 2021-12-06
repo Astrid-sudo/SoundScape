@@ -67,7 +67,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     // MARK: - method
     
     func settingAudioSession(toMode mode: AudioSessionMode) {
-        
         let session = AVAudioSession.sharedInstance()
         do {
             switch mode {
@@ -115,7 +114,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
     }
     
     @objc func updateTimeAndPower() {
-        
         guard let audioRecorder = audioRecorder else {
             return
         }
@@ -125,7 +123,6 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         print("from AudioHelper Recorder_avaragePower: \(avaragePower), peak: \(peak)")
 
         delegate?.updateTimeAndPower(currentTime: audioRecorder.currentTime, power: avaragePower)
-        
     }
     
 }

@@ -9,6 +9,28 @@ import UIKit
 
 class CategoryTableViewCell: UITableViewCell {
     
+    // MARK: - init
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setBackgroundColor()
+        setImageView()
+        setTitlelabel()
+        setAuthorLabel()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - method
+    
+    func setContent(title: String, author: String, audioImageNumber: Int) {
+        titlelabel.text = title
+        authorLabel.text = author
+        theImageView.image = UIProperties.audioImages[audioImageNumber]
+    }
+    
     // MARK: - UI properties
     
     lazy var titlelabel: UILabel = {
@@ -26,7 +48,7 @@ class CategoryTableViewCell: UITableViewCell {
         label.textAlignment = .right
         return label
     }()
-
+    
     lazy var theImageView: UIImageView = {
         let image = UIImageView()
         image.layer.cornerRadius = 10
@@ -35,21 +57,11 @@ class CategoryTableViewCell: UITableViewCell {
         image.alpha = 0.4
         return image
     }()
-    
-    // MARK: - init
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setImageView()
-        setTitlelabel()
-        setAuthorLabel()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - config UI method
+}
+
+// MARK: - UI method
+
+extension CategoryTableViewCell {
     
     private func setBackgroundColor() {
         backgroundColor = UIColor(named: Constant.scBlue)
@@ -82,12 +94,6 @@ class CategoryTableViewCell: UITableViewCell {
             authorLabel.trailingAnchor.constraint(equalTo: theImageView.trailingAnchor, constant: -20),
             authorLabel.topAnchor.constraint(equalTo: titlelabel.bottomAnchor, constant: 8)
         ])
-    }
-    
-    func setContent(title: String, author: String, audioImageNumber: Int) {
-        titlelabel.text = title
-        authorLabel.text = author
-        theImageView.image = UIProperties.audioImages[audioImageNumber]
     }
     
 }

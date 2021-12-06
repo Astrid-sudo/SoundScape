@@ -156,7 +156,7 @@ extension SignInHelper: ASAuthorizationControllerDelegate {
                 }
                 
                 if let authResult = authResult,
-                   let currentUser = Auth.auth().currentUser {
+                   let _ = Auth.auth().currentUser {
                     
                     print("--------Sucessfully SignIn to firebase--------")
                     

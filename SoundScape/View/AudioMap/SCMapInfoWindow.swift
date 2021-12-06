@@ -5,15 +5,49 @@
 //  Created by Astrid on 2021/11/6.
 //
 
+import UIKit
+
 protocol ButtonTappedPassableDelegate: AnyObject {
     func pushSoundDetailPage()
 }
 
-import UIKit
-
 class SCMapInfoWindow: UIView {
     
     weak var delegate: ButtonTappedPassableDelegate?
+    
+    // MARK: - init
+    
+    init() {
+        super.init(frame: CGRect(x: 0, y: 0, width: UIProperties.screenWidth - 100, height: 50))
+        self.backgroundColor = UIColor(named: Constant.scLightBlue)
+        self.layer.cornerRadius = 10
+        self.layer.borderWidth = 0.5
+        self.layer.borderColor = UIColor(named: Constant.scGray)?.cgColor
+        setHeadphoneImageView()
+        setButton()
+        setTitleLabel()
+        setAuthorNamelabel()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - action
+    
+    @objc func goSoundDetailPage() {
+        delegate?.pushSoundDetailPage()
+    }
+    
+    // MARK: - method
+    
+    func setMapMarkerIcon(title: String?, authorName: String?, audioImageNumber: Int) {
+        titlelabel.text = title
+        authorNamelabel.text = authorName
+        audioImage.image = UIProperties.audioImages[audioImageNumber]
+    }
+    
+    // MARK: - UI properties
     
     private lazy var button: UIButton = {
         let button = UIButton()
@@ -48,31 +82,11 @@ class SCMapInfoWindow: UIView {
         return imageView
     }()
     
-    // MARK: - init
-    
-    init() {
-        super.init(frame: CGRect(x: 0, y: 0, width: UIProperties.screenWidth - 100, height: 50))
-        self.backgroundColor = UIColor(named: Constant.scLightBlue)
-        self.layer.cornerRadius = 10
-        self.layer.borderWidth = 0.5
-        self.layer.borderColor = UIColor(named: Constant.scGray)?.cgColor
-        setHeadphoneImageView()
-        setButton()
-        setTitleLabel()
-        setAuthorNamelabel()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - action
-    
-    @objc func goSoundDetailPage() {
-        delegate?.pushSoundDetailPage()
-    }
-    
-    // MARK: - UI method
+}
+
+// MARK: - UI method
+
+extension SCMapInfoWindow {
     
     private func setHeadphoneImageView() {
         self.addSubview(audioImage)
@@ -113,14 +127,6 @@ class SCMapInfoWindow: UIView {
             authorNamelabel.leadingAnchor.constraint(equalTo: audioImage.trailingAnchor, constant: 4),
             authorNamelabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4)
         ])
-    }
-    
-    // MARK: - method
-    
-    func setMapMarkerIcon(title: String?, authorName: String?, audioImageNumber: Int) {
-        titlelabel.text = title
-        authorNamelabel.text = authorName
-        audioImage.image = UIProperties.audioImages[audioImageNumber]
     }
     
 }

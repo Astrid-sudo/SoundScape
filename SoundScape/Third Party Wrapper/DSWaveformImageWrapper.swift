@@ -14,19 +14,11 @@ class DSWaveformImageWrapper {
     
     private init () {}
     
-    func initWaveformAnalyzer(audioAssetURL: URL) -> WaveformAnalyzer? {
-        let waveformAnalyzer = WaveformAnalyzer(audioAssetURL: audioAssetURL)
-        waveformAnalyzer?.samples(count: 10) { samples in
-            print("sampled down to 10, results are \(samples ?? [])")
-        }
-        return waveformAnalyzer
-    }
-    
     func initWaveformImageDrawer() -> WaveformImageDrawer {
         return WaveformImageDrawer()
     }
     
-    func createWaveformImageView(frame: CGRect) ->  WaveformImageView {
+    func createWaveformImageView(frame: CGRect) -> WaveformImageView {
         return  WaveformImageView(frame: frame)
     }
     

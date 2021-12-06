@@ -9,6 +9,40 @@ import UIKit
 
 class CommentTableViewCell: UITableViewCell {
     
+    // MARK: - init
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        backgroundColor = UIColor(named: Constant.scBlue)
+        setImagesConstraint()
+        setCommentStackView()
+        pinBackground(backgroundGrayView, to: commentStackView)
+        setWholeStackViewStackView()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - method
+    
+    func configCell(comment: SCComment, authorImageString: String?) {
+        
+        guard let createTime = comment.createdTime?.dateValue() else { return }
+        let createdTime = "\(createTime + 28800)"
+        let processedCreatedTime = String(createdTime.dropLast(9))
+        let commentAuthorName = comment.userName
+        
+        messageLabel.text = comment.comment
+        commentInfoLabel.text = "\(commentAuthorName) at \(processedCreatedTime)"
+        
+        if let authorImageString = authorImageString {
+            if let data = Data(base64Encoded: authorImageString) {
+                leftImageView.image = UIImage(data: data)
+            }
+        }
+    }
+    
     // MARK: - UI properties
     
     private lazy var wholeStackView: UIStackView = {
@@ -26,14 +60,6 @@ class CommentTableViewCell: UITableViewCell {
         image.layer.masksToBounds = true
         image.image = UIImage(named: Constant.yeh1024)
         image.contentMode = .scaleAspectFill
-        return image
-    }()
-    
-    lazy var rightImageView: UIImageView = {
-        let image = UIImageView()
-        image.layer.cornerRadius = 25
-        image.layer.masksToBounds = true
-        image.image = UIImage(named: Constant.yeh1024)
         return image
     }()
     
@@ -75,23 +101,11 @@ class CommentTableViewCell: UITableViewCell {
         return view
     }()
     
-    // MARK: - init
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = UIColor(named: Constant.scBlue)
-        setImagesConstraint()
-        setCommentStackView()
-        pinBackground(backgroundGrayView, to: commentStackView)
-        setWholeStackViewStackView()
-        rightImageView.isHidden = true
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - config UI method
+}
+
+// MARK: - UI method
+
+extension CommentTableViewCell {
     
     private func pinBackground(_ view: UIView, to stackView: UIStackView) {
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -102,9 +116,7 @@ class CommentTableViewCell: UITableViewCell {
     private func setImagesConstraint() {
         NSLayoutConstraint.activate([
             leftImageView.widthAnchor.constraint(equalToConstant: 50),
-            leftImageView.heightAnchor.constraint(equalToConstant: 50),
-            rightImageView.widthAnchor.constraint(equalToConstant: 50),
-            rightImageView.heightAnchor.constraint(equalToConstant: 50)
+            leftImageView.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
@@ -134,29 +146,8 @@ class CommentTableViewCell: UITableViewCell {
             wholeStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             wholeStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
         ])
-        
         wholeStackView.addArrangedSubview(leftImageView)
         wholeStackView.addArrangedSubview(commentStackView)
-        wholeStackView.addArrangedSubview(rightImageView)
-        
-    }
-    
-    func configCell(comment: SCComment, authorImageString: String?) {
-        
-        guard let createTime = comment.createdTime?.dateValue() else { return }
-        let createdTime = "\(createTime + 28800)"
-        let processedCreatedTime = String(createdTime.dropLast(9))
-        let commentAuthorName = comment.userName
-        
-        messageLabel.text = comment.comment
-        commentInfoLabel.text = "\(commentAuthorName) at \(processedCreatedTime)"
-        
-        if let authorImageString = authorImageString {
-            if let data = Data(base64Encoded: authorImageString) {
-                leftImageView.image = UIImage(data: data)
-            }
-        }
     }
     
 }
-
