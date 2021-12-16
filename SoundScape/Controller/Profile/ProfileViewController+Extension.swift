@@ -165,7 +165,7 @@ extension ProfileViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        300
+        350
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -176,7 +176,7 @@ extension ProfileViewController: UITableViewDelegate {
             
         } else if indexPath == IndexPath(row: 0, section: 0) {
             
-            return 250
+            return 310
             
         } else {
             

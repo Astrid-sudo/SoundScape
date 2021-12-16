@@ -64,7 +64,7 @@ class RecordViewController: UIViewController {
     
     private lazy var recordButton: UIButton = {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 30)
+        let config = UIImage.SymbolConfiguration(pointSize: 50)
         let bigImage = UIImage(systemName: Constant.SFSymbol.record, withConfiguration: config)
         button.setImage(bigImage, for: .normal)
         button.tintColor = UIColor(named: Constant.scRed)
@@ -155,7 +155,7 @@ class RecordViewController: UIViewController {
         noticeLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             noticeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            noticeLabel.topAnchor.constraint(equalTo: goEditButton.bottomAnchor, constant: 32),
+            noticeLabel.topAnchor.constraint(equalTo: goEditButton.bottomAnchor, constant: 8),
             noticeLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
     }
@@ -167,7 +167,7 @@ class RecordViewController: UIViewController {
             waveformLiveView.topAnchor.constraint(equalTo: noticeLabel.bottomAnchor, constant: 32),
             waveformLiveView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             waveformLiveView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            waveformLiveView.heightAnchor.constraint(equalToConstant: 200)
+            waveformLiveView.heightAnchor.constraint(equalToConstant: 100)
         ])
     }
     
@@ -223,13 +223,13 @@ class RecordViewController: UIViewController {
         
         if audioRecordHelper.isRecording == false {
             
-            let config = UIImage.SymbolConfiguration(pointSize: 30)
+            let config = UIImage.SymbolConfiguration(pointSize: 50)
             let bigImage = UIImage(systemName: Constant.SFSymbol.stopRecord, withConfiguration: config)
             recordButton.setImage(bigImage, for: .normal)
             
         } else {
             
-            let config = UIImage.SymbolConfiguration(pointSize: 30)
+            let config = UIImage.SymbolConfiguration(pointSize: 50)
             let bigImage = UIImage(systemName: Constant.SFSymbol.record, withConfiguration: config)
             recordButton.setImage(bigImage, for: .normal)
             

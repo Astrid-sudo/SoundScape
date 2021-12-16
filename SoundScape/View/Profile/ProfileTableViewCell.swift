@@ -145,7 +145,7 @@ class ProfileTableViewCell: UITableViewCell {
         let image = UIImageView()
         image.contentMode = .scaleToFill
         image.clipsToBounds = true
-        image.layer.cornerRadius = UIProperties.screenHeight / 10
+        image.layer.cornerRadius = 75
         image.layer.borderWidth = 3
         image.layer.borderColor = UIColor(named: Constant.scBlue)?.cgColor
         image.image = UIImage(named: Constant.yeh1024)
@@ -259,7 +259,11 @@ class ProfileTableViewCell: UITableViewCell {
     private lazy var changeUserPicButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: Constant.SFSymbol.photo), for: .normal)
-        button.tintColor = UIColor(named: Constant.scSuperLightBlue)
+        button.tintColor = .black
+        button.backgroundColor = .gray
+        button.layer.cornerRadius = 20
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.white.cgColor
         button.addTarget(self, action: #selector(selectUserImage), for: .touchUpInside)
         button.isHidden = true
         return button
@@ -268,7 +272,11 @@ class ProfileTableViewCell: UITableViewCell {
     private lazy var changeCoverPicButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: Constant.SFSymbol.photo), for: .normal)
-        button.tintColor = UIColor(named: Constant.scSuperLightBlue)
+        button.tintColor = .black
+        button.backgroundColor = .gray
+        button.layer.cornerRadius = 20
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.white.cgColor
         button.addTarget(self, action: #selector(selectCoverImage), for: .touchUpInside)
         button.isHidden = true
         return button
@@ -286,7 +294,7 @@ extension ProfileTableViewCell {
             coverImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             coverImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             coverImageView.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor),
-            coverImageView.heightAnchor.constraint(equalToConstant: UIProperties.screenHeight / 4)
+            coverImageView.heightAnchor.constraint(equalToConstant: 200)
         ])
     }
     
@@ -297,8 +305,8 @@ extension ProfileTableViewCell {
             userImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             userImageView.centerYAnchor.constraint(equalTo: coverImageView.bottomAnchor,
                                                    constant: -UIProperties.screenHeight / 16),
-            userImageView.widthAnchor.constraint(equalToConstant: UIProperties.screenHeight / 5),
-            userImageView.heightAnchor.constraint(equalToConstant: UIProperties.screenHeight / 5)
+            userImageView.widthAnchor.constraint(equalToConstant: 150),
+            userImageView.heightAnchor.constraint(equalToConstant: 150)
         ])
     }
     
@@ -360,8 +368,8 @@ extension ProfileTableViewCell {
         contentView.addSubview(changeCoverPicButton)
         changeCoverPicButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            changeCoverPicButton.trailingAnchor.constraint(equalTo: coverImageView.trailingAnchor, constant: -32),
-            changeCoverPicButton.bottomAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: -32),
+            changeCoverPicButton.trailingAnchor.constraint(equalTo: coverImageView.trailingAnchor, constant: -8),
+            changeCoverPicButton.bottomAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: -8),
             changeCoverPicButton.heightAnchor.constraint(equalToConstant: 40),
             changeCoverPicButton.widthAnchor.constraint(equalToConstant: 40)
         ])
