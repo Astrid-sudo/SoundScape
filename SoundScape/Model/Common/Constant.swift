@@ -64,7 +64,7 @@ struct Constant {
         static let chevronDown = "chevron.down"
         static let back = "chevron.backward"
         static let paperplaneFill = "paperplane.fill"
-        static let photo = "photo"
+        static let photo = "camera.fill"
         static let map = "map"
         static let headphonesCircleFill = "headphones.circle.fill"
         static let ellipsis = "ellipsis"
