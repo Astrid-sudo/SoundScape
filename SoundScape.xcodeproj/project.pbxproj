@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0130CC1600F3AB0D61D15930 /* Pods_SoundScape.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D1F5476A787CCE1C926A2EA /* Pods_SoundScape.framework */; };
+		181C01751C33D7ED79B3C0C9 /* Pods_SoundScape.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22A57838C6F92EB7EF6550F1 /* Pods_SoundScape.framework */; };
 		560DE84D27300B1200FFD240 /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560DE84C27300B1200FFD240 /* CommentViewController.swift */; };
 		560DE8502730113600FFD240 /* CommentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560DE84F2730113600FFD240 /* CommentTableViewCell.swift */; };
 		5616D0BD2753B60F00D9C9B3 /* FirebaseManager+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5616D0BC2753B60F00D9C9B3 /* FirebaseManager+Extension.swift */; };
@@ -78,8 +78,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0D1F5476A787CCE1C926A2EA /* Pods_SoundScape.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SoundScape.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		33696CC8AD27A37242783EC7 /* Pods-SoundScape.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SoundScape.release.xcconfig"; path = "Target Support Files/Pods-SoundScape/Pods-SoundScape.release.xcconfig"; sourceTree = "<group>"; };
+		22A57838C6F92EB7EF6550F1 /* Pods_SoundScape.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SoundScape.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		560DE84C27300B1200FFD240 /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
 		560DE84F2730113600FFD240 /* CommentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTableViewCell.swift; sourceTree = "<group>"; };
 		5616D0BC2753B60F00D9C9B3 /* FirebaseManager+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FirebaseManager+Extension.swift"; sourceTree = "<group>"; };
@@ -149,7 +148,8 @@
 		56F07D36272BCC0F00ABC7B9 /* SearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewCell.swift; sourceTree = "<group>"; };
 		56F07D38272BCFB300ABC7B9 /* SearchCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCollectionViewCell.swift; sourceTree = "<group>"; };
 		56F1C848271FA8F400F64846 /* AudioRecordHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecordHelper.swift; sourceTree = "<group>"; };
-		8CA8FF313E2441739C961F12 /* Pods-SoundScape.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SoundScape.debug.xcconfig"; path = "Target Support Files/Pods-SoundScape/Pods-SoundScape.debug.xcconfig"; sourceTree = "<group>"; };
+		723AEEE737A5E7EA520A4A48 /* Pods-SoundScape.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SoundScape.release.xcconfig"; path = "Target Support Files/Pods-SoundScape/Pods-SoundScape.release.xcconfig"; sourceTree = "<group>"; };
+		9E9DD72BE0A325D7630CD62B /* Pods-SoundScape.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SoundScape.debug.xcconfig"; path = "Target Support Files/Pods-SoundScape/Pods-SoundScape.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,13 +158,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				5662743B2727DE47000C62EB /* DSWaveformImage in Frameworks */,
-				0130CC1600F3AB0D61D15930 /* Pods_SoundScape.framework in Frameworks */,
+				181C01751C33D7ED79B3C0C9 /* Pods_SoundScape.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4A770282F88795EF47A37740 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				22A57838C6F92EB7EF6550F1 /* Pods_SoundScape.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		560DE84B27300AC200FFD240 /* Comment */ = {
 			isa = PBXGroup;
 			children = (
@@ -255,7 +263,7 @@
 				5679F0F9271D084A00663001 /* SoundScape */,
 				5679F0F8271D084A00663001 /* Products */,
 				882D089E5BAD7E12457C1D97 /* Pods */,
-				7E64B7E6DB8FC6FCC8429D99 /* Frameworks */,
+				4A770282F88795EF47A37740 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -466,19 +474,11 @@
 			path = Map;
 			sourceTree = "<group>";
 		};
-		7E64B7E6DB8FC6FCC8429D99 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				0D1F5476A787CCE1C926A2EA /* Pods_SoundScape.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		882D089E5BAD7E12457C1D97 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				8CA8FF313E2441739C961F12 /* Pods-SoundScape.debug.xcconfig */,
-				33696CC8AD27A37242783EC7 /* Pods-SoundScape.release.xcconfig */,
+				9E9DD72BE0A325D7630CD62B /* Pods-SoundScape.debug.xcconfig */,
+				723AEEE737A5E7EA520A4A48 /* Pods-SoundScape.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -490,14 +490,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5679F10B271D084B00663001 /* Build configuration list for PBXNativeTarget "SoundScape" */;
 			buildPhases = (
-				70A1E27FB71974FE766AAB92 /* [CP] Check Pods Manifest.lock */,
+				F0E5D4DAFF91AAB5D97A2B77 /* [CP] Check Pods Manifest.lock */,
 				5679F0F3271D084A00663001 /* Sources */,
 				5679F0F4271D084A00663001 /* Frameworks */,
 				5679F0F5271D084A00663001 /* Resources */,
 				5679F10E271D112900663001 /* ShellScript */,
-				514A335EAE3FE0DB3303B9A0 /* [CP] Embed Pods Frameworks */,
-				3BB5FA935A177BA83B3FF0F8 /* [CP] Copy Pods Resources */,
 				569EEE782745380F0054DB45 /* ShellScript */,
+				09D00E710358D234400E4589 /* [CP] Embed Pods Frameworks */,
+				BE34453218C408AAA80706BA /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -573,24 +573,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		3BB5FA935A177BA83B3FF0F8 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		514A335EAE3FE0DB3303B9A0 /* [CP] Embed Pods Frameworks */ = {
+		09D00E710358D234400E4589 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -643,7 +626,24 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/FirebaseCrashlytics/run\"\n";
 		};
-		70A1E27FB71974FE766AAB92 /* [CP] Check Pods Manifest.lock */ = {
+		BE34453218C408AAA80706BA /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SoundScape/Pods-SoundScape-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F0E5D4DAFF91AAB5D97A2B77 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -800,7 +800,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -856,7 +856,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -868,7 +868,7 @@
 		};
 		5679F10C271D084B00663001 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8CA8FF313E2441739C961F12 /* Pods-SoundScape.debug.xcconfig */;
+			baseConfigurationReference = 9E9DD72BE0A325D7630CD62B /* Pods-SoundScape.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -890,7 +890,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -906,7 +906,7 @@
 		};
 		5679F10D271D084B00663001 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 33696CC8AD27A37242783EC7 /* Pods-SoundScape.release.xcconfig */;
+			baseConfigurationReference = 723AEEE737A5E7EA520A4A48 /* Pods-SoundScape.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -927,7 +927,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -970,7 +970,7 @@
 			repositoryURL = "https://github.com/dmrschmidt/DSWaveformImage";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 9.0.0;
+				minimumVersion = 14.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

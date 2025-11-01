@@ -242,9 +242,11 @@ class SoundDetailViewController: UIViewController {
         
         self.waveformImageDrawer.waveformImage(fromAudioAt: localURL,
                                                with: waveformConfig,
-                                               completionHandler: { image in
+                                               completionHandler: { result in
             DispatchQueue.main.async {
-                self.waveformView.image = image
+                if case .success(let image) = result {
+                    self.waveformView.image = image
+                }
             }
         })
         
@@ -260,9 +262,11 @@ class SoundDetailViewController: UIViewController {
         
         self.waveformImageDrawer.waveformImage(fromAudioAt: localURL,
                                                with: progressWaveformConfig,
-                                               completionHandler: { image in
+                                               completionHandler: { result in
             DispatchQueue.main.async {
-                self.waveformProgressView.image = image
+                if case .success(let image) = result {
+                    self.waveformProgressView.image = image
+                }
             }
         })
     }

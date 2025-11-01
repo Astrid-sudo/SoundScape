@@ -156,9 +156,11 @@ class EditVC: UIViewController {
                 config: stripeConfig)
 
             self.waveformImageDrawer.waveformImage(fromAudioAt: localURL,
-                                                   with: waveformConfig, completionHandler: { image in
+                                                   with: waveformConfig, completionHandler: { result in
                 DispatchQueue.main.async {
-                    self.waveformImageView.image = image
+                    if case .success(let image) = result {
+                        self.waveformImageView.image = image
+                    }
                 }
             })
         }

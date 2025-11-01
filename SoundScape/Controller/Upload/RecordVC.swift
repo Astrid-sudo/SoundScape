@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import DSWaveformImage
 
 class RecordVC: UIViewController {
     
@@ -100,17 +101,12 @@ class RecordVC: UIViewController {
             spacing: 3.5,
             lineCap: .butt)
         
-        waveformLiveView.configuration = waveformLiveView.configuration.with(
+        // Configuration for placeholder waveform view
+        waveformLiveView.configuration = Waveform.Configuration(
             size: self.waveformLiveView.bounds.size,
-            backgroundColor: UIColor(named: CommonUsage.scBlue),
-            style: .striped(stripeConfig),
-            dampening: nil,
-            position: .middle,
-            scale: nil,
-            verticalScalingFactor: nil,
-            shouldDampenSides: true,
-            shouldAntialias: false)
-        
+            backgroundColor: UIColor(named: CommonUsage.scBlue) ?? .clear,
+            style: .striped(stripeConfig))
+
         waveformLiveView.shouldDrawSilencePadding = true
     }
     
