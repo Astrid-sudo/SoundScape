@@ -229,40 +229,46 @@ class SoundDetailViewController: UIViewController {
     }
     
     private func updateWaveformImages(localURL: URL) {
-        
+
         let stripeConfig = DSWaveformImageWrapper.shared.configWaveformStripe(
             color: UIColor(named: CommonUsage.scSuperLightBlue),
             width: 1.0,
             spacing: 1,
             lineCap: .round)
-        
+
         let waveformConfig = DSWaveformImageWrapper.shared.configWaveform(
             waveformImageView: self.waveformView,
             config: stripeConfig)
-        
+
+        // Generate and display waveform image
         self.waveformImageDrawer.waveformImage(fromAudioAt: localURL,
                                                with: waveformConfig,
-                                               completionHandler: { image in
+                                               completionHandler: { result in
             DispatchQueue.main.async {
-                self.waveformView.image = image
+                if case .success(let image) = result {
+                    self.waveformView.image = image
+                }
             }
         })
-        
+
         let progressStripeConfig = DSWaveformImageWrapper.shared.configWaveformStripe(
             color: UIColor(named: CommonUsage.scWhite),
             width: 1.0,
             spacing: 1,
             lineCap: .round)
-        
+
         let progressWaveformConfig = DSWaveformImageWrapper.shared.configWaveform(
             waveformImageView: self.waveformView,
             config: progressStripeConfig)
-        
+
+        // Generate and display progress waveform image
         self.waveformImageDrawer.waveformImage(fromAudioAt: localURL,
                                                with: progressWaveformConfig,
-                                               completionHandler: { image in
+                                               completionHandler: { result in
             DispatchQueue.main.async {
-                self.waveformProgressView.image = image
+                if case .success(let image) = result {
+                    self.waveformProgressView.image = image
+                }
             }
         })
     }

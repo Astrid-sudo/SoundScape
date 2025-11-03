@@ -144,7 +144,7 @@ class EditVC: UIViewController {
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            
+
             let stripeConfig = self.dSWaveformImageWrapper.configWaveformStripe(
                 color: UIColor(named: CommonUsage.scWhite),
                 width: 2,
@@ -155,10 +155,13 @@ class EditVC: UIViewController {
                 waveformImageView: self.waveformImageView,
                 config: stripeConfig)
 
+            // Generate and display waveform image
             self.waveformImageDrawer.waveformImage(fromAudioAt: localURL,
-                                                   with: waveformConfig, completionHandler: { image in
+                                                   with: waveformConfig, completionHandler: { result in
                 DispatchQueue.main.async {
-                    self.waveformImageView.image = image
+                    if case .success(let image) = result {
+                        self.waveformImageView.image = image
+                    }
                 }
             })
         }
