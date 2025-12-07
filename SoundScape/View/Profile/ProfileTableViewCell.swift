@@ -245,14 +245,15 @@ class ProfileTableViewCell: UITableViewCell {
     
     private func setSocialStackView() {
         contentView.addSubview(socialStackView)
-        socialStackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            socialStackView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
-            socialStackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            socialStackView.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor,
-                                                     constant: 4),
-            socialStackView.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -4)
-        ])
+		socialStackView.translatesAutoresizingMaskIntoConstraints = false
+		NSLayoutConstraint.activate([
+			socialStackView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
+			socialStackView.heightAnchor.constraint(equalToConstant: 50),
+			socialStackView.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor,
+													 constant: 16),
+			socialStackView.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+			socialStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
+		])
         
         socialStackView.addArrangedSubview(followersStackView)
         socialStackView.addArrangedSubview(followingsStackView)
