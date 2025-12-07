@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Firebase
 
 class SettingViewController: UIViewController {
     
@@ -91,7 +92,98 @@ class SettingViewController: UIViewController {
         alert.addAction(okButton)
         
         self.present(alert, animated: true, completion: nil)
-        
+
+    }
+
+    private func popDeleteAccountAlert() {
+        let message = """
+        ⚠️ This action cannot be undone.
+
+        All of your data will be permanently deleted:
+        • All your audio posts
+        • All comments
+        • Profile information
+        • Followers and following lists
+        • All uploaded files
+
+        Are you sure you want to delete your account?
+        """
+
+        let alert = UIAlertController(
+            title: "Delete Account",
+            message: message,
+            preferredStyle: .alert
+        )
+
+        let deleteButton = UIAlertAction(title: "Delete Account", style: .destructive) { [weak self] _ in
+            self?.performAccountDeletion()
+        }
+
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+
+        alert.addAction(cancelButton)
+        alert.addAction(deleteButton)
+
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    private func performAccountDeletion() {
+        // Get current user info
+        guard let currentUser = Auth.auth().currentUser else {
+            showErrorAlert(message: "No user is currently signed in.")
+            return
+        }
+
+        let userID = currentUser.uid
+        let userDocumentID = userID
+
+        print("🗑️ Starting account deletion for userID: \(userID)")
+
+        // Clear SignInManager image cache
+        print("🧹 Clearing SignInManager image cache...")
+        SignInManager.shared.currentUserPic = nil
+        SignInManager.shared.currentUserCover = nil
+
+        // Show loading indicator
+        let loadingAlert = UIAlertController(title: "Deleting Account", message: "Please wait...", preferredStyle: .alert)
+        present(loadingAlert, animated: true)
+
+        // Perform deletion
+        FirebaseManager.shared.deleteUserAccount(
+            userDocumentID: userDocumentID,
+            userID: userID,
+            progressHandler: { [weak self] progressMessage in
+                print("🗑️ Progress: \(progressMessage)")
+                DispatchQueue.main.async {
+                    loadingAlert.message = progressMessage
+                }
+            },
+            errorCompletion: { [weak self] errorMessage in
+                print("❌ Deletion failed: \(errorMessage)")
+                DispatchQueue.main.async {
+                    loadingAlert.dismiss(animated: true) {
+                        self?.showErrorAlert(message: "Failed to delete account: \(errorMessage)")
+                    }
+                }
+            },
+            successCompletion: { [weak self] in
+                print("✅ Account deletion completed successfully")
+                DispatchQueue.main.async {
+                    loadingAlert.dismiss(animated: true) {
+                        // Sign out locally before navigating
+                        try? Auth.auth().signOut()
+                        self?.navigateToSignInPage()
+                    }
+                }
+            }
+        )
+    }
+
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        let okButton = UIAlertAction(title: "OK", style: .default)
+        alert.addAction(okButton)
+        present(alert, animated: true)
     }
     
     // MARK: - UI method
@@ -166,11 +258,7 @@ extension SettingViewController: UITableViewDelegate {
         }
         
         if indexPath.row == 1 {
-            let alert = UIAlertController(title: "Please contact us to delete your account.", message: "astridtingan@gmail.com", preferredStyle: .alert )
-            let okButton = UIAlertAction(title: "ok", style: .default)
-            
-            alert.addAction(okButton)
-            present(alert, animated: true, completion: nil)
+            popDeleteAccountAlert()
         }
     }
     

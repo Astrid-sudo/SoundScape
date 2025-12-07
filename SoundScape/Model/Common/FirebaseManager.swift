@@ -389,5 +389,271 @@ class FirebaseManager {
             errorCompletion(error.localizedDescription)
         }
     }
-    
+
+    // MARK: - Delete Account methods
+
+    /// Delete user account and all related data
+    func deleteUserAccount(userDocumentID: String,
+                          userID: String,
+                          progressHandler: @escaping (String) -> Void,
+                          errorCompletion: @escaping (String) -> Void,
+                          successCompletion: @escaping () -> Void) {
+
+        progressHandler("Deleting user posts...")
+
+        // Step 1: Get and delete all user's audio posts
+        deleteAllUserPosts(userID: userID) { [weak self] error in
+            if let error = error {
+                errorCompletion("Failed to delete posts: \(error)")
+                return
+            }
+
+            progressHandler("Deleting user data...")
+
+            // Step 2: Delete user's subcollections and document
+            self?.deleteUserDataAndSubcollections(userDocumentID: userDocumentID) { error in
+                if let error = error {
+                    errorCompletion("Failed to delete user data: \(error)")
+                    return
+                }
+
+                progressHandler("Deleting Firebase Auth account...")
+
+                // Step 3: Delete Firebase Auth user
+                self?.deleteFirebaseAuthUser { error in
+                    if let error = error {
+                        errorCompletion("Failed to delete auth account: \(error)")
+                        return
+                    }
+
+                    successCompletion()
+                }
+            }
+        }
+    }
+
+    // MARK: - Private Delete Methods
+
+    private func deleteAllUserPosts(userID: String,
+                                   completion: @escaping (String?) -> Void) {
+
+        // Query all audio files by this user
+        FirebaseCollection.allAudioFiles.reference
+            .whereField("authorID", isEqualTo: userID)
+            .getDocuments { snapshot, error in
+
+                if let error = error {
+                    completion(error.localizedDescription)
+                    return
+                }
+
+                guard let documents = snapshot?.documents else {
+                    completion(nil)
+                    return
+                }
+
+                if documents.isEmpty {
+                    completion(nil)
+                    return
+                }
+
+                let group = DispatchGroup()
+                var deleteError: String?
+
+                for document in documents {
+                    group.enter()
+                    let documentID = document.documentID
+
+                    // Delete post, its location, comments, and storage files
+                    self.deletePostCompletely(documentID: documentID) { error in
+                        if let error = error {
+                            deleteError = error
+                        }
+                        group.leave()
+                    }
+                }
+
+                group.notify(queue: .main) {
+                    completion(deleteError)
+                }
+            }
+    }
+
+    private func deletePostCompletely(documentID: String,
+                                     completion: @escaping (String?) -> Void) {
+
+        // Delete all comments for this post
+        FirebaseCollection.comments(audioDocumentID: documentID).reference
+            .getDocuments { snapshot, error in
+
+                let commentDocs = snapshot?.documents ?? []
+                let commentGroup = DispatchGroup()
+
+                for commentDoc in commentDocs {
+                    commentGroup.enter()
+                    commentDoc.reference.delete { _ in
+                        commentGroup.leave()
+                    }
+                }
+
+                commentGroup.notify(queue: .main) {
+                    // After deleting comments, delete the post
+                    self.deletePostInAllAudio(documentID: documentID,
+                                             errorCompletion: { error in
+                        completion(error)
+                    }, succeededCompletion: {
+                        completion(nil)
+                    })
+                }
+            }
+    }
+
+    private func deleteUserDataAndSubcollections(userDocumentID: String,
+                                                completion: @escaping (String?) -> Void) {
+
+        let group = DispatchGroup()
+        var deleteError: String?
+
+        // Delete subcollections
+        let subcollections = [
+            FirebaseCollection.followedBy(userInfoDocumentID: userDocumentID).reference,
+            FirebaseCollection.following(userInfoDocumentID: userDocumentID).reference,
+            FirebaseCollection.myFavorite(userInfoDocumentID: userDocumentID).reference,
+            FirebaseCollection.blackList(userInfoDocumentID: userDocumentID).reference,
+            FirebaseCollection.profilePicture(userInfoDocumentID: userDocumentID).reference
+        ]
+
+        for collection in subcollections {
+            group.enter()
+            collection.getDocuments { snapshot, error in
+                guard let documents = snapshot?.documents else {
+                    group.leave()
+                    return
+                }
+
+                let deleteGroup = DispatchGroup()
+                for doc in documents {
+                    deleteGroup.enter()
+                    doc.reference.delete { error in
+                        if let error = error {
+                            deleteError = error.localizedDescription
+                        }
+                        deleteGroup.leave()
+                    }
+                }
+
+                deleteGroup.notify(queue: .main) {
+                    group.leave()
+                }
+            }
+        }
+
+        // Delete user profile pictures from Storage
+        group.enter()
+        let userPicRef = storage.child("\(userDocumentID)_userPic.jpg")
+        userPicRef.delete { error in
+            if let error = error {
+                print("⚠️ Failed to delete user pic: \(error.localizedDescription)")
+            } else {
+                print("✅ Deleted user pic")
+            }
+            group.leave()
+        }
+
+        group.enter()
+        let coverPicRef = storage.child("\(userDocumentID)_coverPic.jpg")
+        coverPicRef.delete { error in
+            if let error = error {
+                print("⚠️ Failed to delete cover pic: \(error.localizedDescription)")
+            } else {
+                print("✅ Deleted cover pic")
+            }
+            group.leave()
+        }
+
+        // Wait for all subcollections and storage files to be deleted
+        group.notify(queue: .main) {
+            print("🗑️ Deleting user document: \(userDocumentID)")
+            // Finally delete the user document itself
+            FirebaseCollection.allUsers.reference
+                .document(userDocumentID)
+                .delete { error in
+                    if let error = error {
+                        print("❌ Failed to delete user document: \(error.localizedDescription)")
+                        completion(error.localizedDescription)
+                    } else {
+                        print("✅ Successfully deleted user document")
+                        completion(deleteError)
+                    }
+                }
+        }
+    }
+
+    private func deleteFirebaseAuthUser(completion: @escaping (String?) -> Void) {
+        guard let user = Auth.auth().currentUser else {
+            print("❌ No authenticated user found")
+            completion("No authenticated user found")
+            return
+        }
+
+        print("🗑️ Attempting to delete Firebase Auth user: \(user.uid)")
+
+        // Check if user has Apple provider and needs reauthentication
+        let hasAppleProvider = user.providerData.contains { $0.providerID == "apple.com" }
+
+        if hasAppleProvider {
+            print("🔐 User logged in with Apple, attempting reauthentication...")
+            reauthenticateWithApple { [weak self] reauthError in
+                if let reauthError = reauthError {
+                    print("❌ Reauthentication failed: \(reauthError)")
+                    completion("Reauthentication required. Please try again: \(reauthError)")
+                    return
+                }
+
+                print("✅ Reauthentication successful, proceeding with deletion")
+                self?.performUserDeletion(completion: completion)
+            }
+        } else {
+            // If not Apple sign-in, try direct deletion
+            performUserDeletion(completion: completion)
+        }
+    }
+
+    private func performUserDeletion(completion: @escaping (String?) -> Void) {
+        guard let user = Auth.auth().currentUser else {
+            completion("No authenticated user found")
+            return
+        }
+
+        print("🗑️ Deleting Firebase Auth user: \(user.uid)")
+
+        user.delete { error in
+            if let error = error {
+                print("❌ Failed to delete Firebase Auth user: \(error.localizedDescription)")
+                completion(error.localizedDescription)
+            } else {
+                print("✅ Successfully deleted Firebase Auth user")
+                completion(nil)
+            }
+        }
+    }
+
+    private func reauthenticateWithApple(completion: @escaping (String?) -> Void) {
+        // Trigger Apple Sign In to get fresh credentials
+        SignInHelper.shared.performAppleSignInForReauth { credential in
+            guard let credential = credential else {
+                completion("Failed to get Apple credentials")
+                return
+            }
+
+            Auth.auth().currentUser?.reauthenticate(with: credential) { _, error in
+                if let error = error {
+                    completion(error.localizedDescription)
+                } else {
+                    completion(nil)
+                }
+            }
+        }
+    }
+
 }

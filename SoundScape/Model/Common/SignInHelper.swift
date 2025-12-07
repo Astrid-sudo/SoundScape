@@ -17,6 +17,7 @@ class SignInHelper: NSObject {
     private override init() {}
     
     fileprivate var currentNonce: String?
+    fileprivate var reauthCompletion: ((AuthCredential?) -> Void)?
     
     lazy var logInWithAppeButton: ASAuthorizationAppleIDButton = {
         let button = ASAuthorizationAppleIDButton()
@@ -111,6 +112,20 @@ class SignInHelper: NSObject {
         return hashString
     }
     
+    // MARK: - Reauthentication for account deletion
+
+    func performAppleSignInForReauth(completion: @escaping (AuthCredential?) -> Void) {
+        self.reauthCompletion = completion
+
+        let request = createAppleIDRequest()
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+
+        authorizationController.delegate = self
+        authorizationController.presentationContextProvider = self
+
+        authorizationController.performRequests()
+    }
+
 }
 
 // MARK: - apple signIn
@@ -128,24 +143,37 @@ extension SignInHelper: ASAuthorizationControllerDelegate {
             
             guard let appleIDToken = appleIDCredential.identityToken else {
                 print("Unable to fetch identity token")
+                reauthCompletion?(nil)
+                reauthCompletion = nil
                 return
             }
-            
-            var userName = "無名用戶"
-            if let givenName = appleIDCredential.fullName?.givenName {
-                userName = givenName
-            }
-            
+
             guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
                 print("Unable to serialize token string from data: \(appleIDToken.debugDescription)")
+                reauthCompletion?(nil)
+                reauthCompletion = nil
                 return
             }
+
             // Initialize a Firebase credential.
             let credential = OAuthProvider.credential(withProviderID: "apple.com",
                                                       idToken: idTokenString,
                                                       rawNonce: nonce)
-            // Sign in with Firebase.
-            
+
+            // Check if this is for reauthentication
+            if let reauthCompletion = reauthCompletion {
+                print("🔐 Credential obtained for reauthentication")
+                reauthCompletion(credential)
+                self.reauthCompletion = nil
+                return
+            }
+
+            // Otherwise, proceed with normal sign in
+            var userName = "無名用戶"
+            if let givenName = appleIDCredential.fullName?.givenName {
+                userName = givenName
+            }
+
             Auth.auth().signIn(with: credential) { (authResult, error) in
                 if let error = error {
                     // Error. If error.code == .MissingOrInvalidNonce, make sure
@@ -161,8 +189,8 @@ extension SignInHelper: ASAuthorizationControllerDelegate {
                     print("--------Sucessfully SignIn to firebase--------")
                     
                     SignInManager.shared.checkUserInFirebase(userID: authResult.user.uid,
-                                                             userProvider: authResult.credential?.provider ?? "dont know" ,
-                                                             userEmail: authResult.user.email ,
+                                                             userProvider: authResult.credential?.provider ?? "dont know",
+                                                             userEmail: authResult.user.email,
                                                              userName: userName)
                     
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -181,6 +209,12 @@ extension SignInHelper: ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         // Handle error.
         print("Sign in with Apple errored: \(error)")
+
+        // If this was for reauthentication, notify the completion handler
+        if let reauthCompletion = reauthCompletion {
+            reauthCompletion(nil)
+            self.reauthCompletion = nil
+        }
     }
     
 }
