@@ -9,20 +9,25 @@ import UIKit
 import SPAlert
 
 class SPAlertWrapper {
-    
+
     static let shared = SPAlertWrapper()
-    
+
     private init() {}
-    
+
     func presentSPAlert(title: String,
                         message: String?,
-                        preset: SPAlertIconPreset,
+                        preset: AlertIcon,
                         completion: (() -> Void)?) {
-        
-        SPAlert.present(title: title,
-                        message: message,
-                        preset: preset,
-                        completion: completion)
+
+        // SPAlert 5.x uses AlertKit API
+        AlertKitAPI.present(
+            title: title,
+            subtitle: message,
+            icon: preset,
+            style: .iOS17AppleMusic,
+            haptic: .success
+        )
+        completion?()
     }
-    
+
 }

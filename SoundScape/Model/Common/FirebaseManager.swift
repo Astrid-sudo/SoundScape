@@ -343,7 +343,7 @@ class FirebaseManager {
     func deleteComment(audioDocumentID: String,
                        commentDocumentID: String,
                        errorCompletion: @escaping (_ errorMessage:String) -> Void,
-                       successedCompletion: @escaping() -> Void) {
+                       successedCompletion: @escaping () -> Void) {
         let commentRef = FirebaseCollection.comments(audioDocumentID: audioDocumentID).reference.document(commentDocumentID)
         commentRef.delete { error in
             if let error = error {

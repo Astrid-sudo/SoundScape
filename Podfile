@@ -8,18 +8,18 @@ target 'SoundScape' do
   # Pods for SoundScape
   pod 'SwiftLint'
 
-  # Firebase - use version 10.x for Xcode 16 compatibility
-  pod 'Firebase/Firestore', '~> 10.0'
-  pod 'FirebaseFirestoreSwift', '~> 10.0'
-  pod 'Firebase/Storage', '~> 10.0'
-  pod 'Firebase/Database', '~> 10.0'
-  pod 'Firebase/Auth', '~> 10.0'
-  pod 'Firebase/Crashlytics', '~> 10.0'
+  # Firebase - use latest version with fixed gRPC
+  pod 'Firebase/Firestore'
+  pod 'FirebaseFirestoreSwift'
+  pod 'Firebase/Storage'
+  pod 'Firebase/Database'
+  pod 'Firebase/Auth'
+  pod 'Firebase/Crashlytics'
 
   pod 'IQKeyboardManagerSwift'
   pod 'lottie-ios'
-  pod 'GoogleMaps', '~> 9.0'
-  pod 'GooglePlaces', '~> 9.0'
+  pod 'GoogleMaps'
+  pod 'GooglePlaces'
   pod 'SPAlert'
   pod 'JGProgressHUD'
 
@@ -28,13 +28,25 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '17.0'
+
+      # Fix for gRPC-C++ and gRPC-Core template errors with Xcode 16
+      if target.name == 'gRPC-C++' || target.name == 'gRPC-Core'
+        config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
+        config.build_settings['WARNING_CFLAGS'] ||= ['$(inherited)']
+        config.build_settings['WARNING_CFLAGS'] << '-Wno-error=missing-template-arg-list-after-template-kw'
+      end
     end
   end
 
-  # Fix BoringSSL-GRPC compiler flags in the project file
-  project_file_path = File.join(installer.pods_project.path, 'project.pbxproj')
-  project_content = File.read(project_file_path)
-  project_content.gsub!('-GCC_WARN_INHIBIT_ALL_WARNINGS ', '')
-  File.write(project_file_path, project_content)
+  # Fix BoringSSL-GRPC -GCC_WARN_INHIBIT_ALL_WARNINGS flag
+  project_path = installer.pods_project.path
+  project_file_path = File.join(project_path, 'project.pbxproj')
+
+  if File.exist?(project_file_path)
+    project_content = File.read(project_file_path)
+    modified_content = project_content.gsub(/-GCC_WARN_INHIBIT_ALL_WARNINGS\s*/, '')
+    File.write(project_file_path, modified_content)
+    puts "Fixed BoringSSL-GRPC compiler flags"
+  end
 end

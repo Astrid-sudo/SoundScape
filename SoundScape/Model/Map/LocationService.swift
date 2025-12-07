@@ -10,7 +10,7 @@ import CoreLocation
 
 final class LocationService {
   static public func getCoordinate( addressString: String,
-                                    completionHandler: @escaping(CLLocationCoordinate2D, NSError?) -> Void ) {
+                                    completionHandler: @escaping (CLLocationCoordinate2D, NSError?) -> Void ) {
     let geocoder = CLGeocoder()
     geocoder.geocodeAddressString(addressString) { (placemarks, error) in
       if error == nil {

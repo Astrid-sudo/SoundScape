@@ -33,7 +33,7 @@ class SignInHelper: NSObject {
     
     // MARK: - sign out firebase auth
     
-    func signOutAuth(completion: @escaping() -> Void) {
+    func signOutAuth(completion: @escaping () -> Void) {
         let firebaseAuth = Auth.auth()
         do {
             try firebaseAuth.signOut()

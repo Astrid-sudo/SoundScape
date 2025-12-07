@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         FirebaseApp.configure()
         
-        IQKeyboardManager.shared.enable = true
+        IQKeyboardManager.shared.isEnabled = true
         
         if let user = Auth.auth().currentUser {
             print("You're sign in as \(user.uid), email: \(user.email), from provider: \(user.providerID)")
