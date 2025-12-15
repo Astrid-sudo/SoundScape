@@ -31,12 +31,14 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow SoundScape access your location so you can pin the sound location on map.</string>
+	<string>SoundScape needs access to your location so you can pin the sound location on the map and share geotagged audio with other users.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>SoundScape needs access to save images to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow SoundScape access your photo library so you can change your profile picture.</string>
+	<string>SoundScape needs access to your photo library so you can select and change your profile picture.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow SoundScape access your microphone so you can record sound and share with other user on SoundScape.</string>
+	<string>SoundScape needs access to your microphone so you can record audio and share it with other users on SoundScape.</string>
 	<key>NSDocumentsFolderUsageDescription</key>
-	<string>Allow SoundScape access your Doucument folder so you can select audio file and share with other user on SoundScape.</string>
+	<string>SoundScape needs access to your document folder so you can select audio files and share them with other users on SoundScape.</string>
 </dict>
 </plist>

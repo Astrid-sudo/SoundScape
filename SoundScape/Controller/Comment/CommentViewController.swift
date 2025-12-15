@@ -339,7 +339,7 @@ class CommentViewController: UIViewController {
         textView.delegate = self
         textView.textContainer.maximumNumberOfLines = 8
         textView.textContainer.lineBreakMode = .byWordWrapping
-        textView.addDoneOnKeyboardWithTarget(self, action: #selector(done))
+        textView.iq.addDone(target: self, action: #selector(done))
         return textView
     }()
     

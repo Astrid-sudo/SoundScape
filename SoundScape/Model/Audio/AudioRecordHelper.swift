@@ -82,8 +82,8 @@ class AudioRecordHelper: NSObject, AVAudioRecorderDelegate {
         }
     }
     
-     func checkAudioPermission(grantedCompletion: @escaping() -> Void,
-                               notGrantedCompletion: @escaping() -> Void) {
+     func checkAudioPermission(grantedCompletion: @escaping () -> Void,
+                               notGrantedCompletion: @escaping () -> Void) {
         AVAudioSession.sharedInstance().requestRecordPermission { granted in
             if granted {
                 grantedCompletion()
